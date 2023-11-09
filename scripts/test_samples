@@ -1,0 +1,14 @@
+ #!/usr/bin/env bash
+
+set -ex
+set -eo pipefail
+
+if [[ -n $CURRENT_SIMULATOR_UUID ]]; then
+    dest="id=$CURRENT_SIMULATOR_UUID"
+else
+    dest="platform=iOS Simulator,name=iPhone 14"
+fi
+
+cd Samples/
+
+# TODO: Run react native tests here

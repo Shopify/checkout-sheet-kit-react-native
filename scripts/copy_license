@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require 'find'
+
+license_text = "/*\n" + File.read('LICENSE') + "*/\n\n"
+
+Find.find('.') do |path|
+  next unless File.file?(path) && path.end_with?('.swift') && !path.end_with?('Package.swift')
+
+  content = File.read(path)
+
+  # Remove existing license
+  content.gsub!(/\/\*.*?\*\//m, '')
+  # remove existing newlines from start of file
+  content.gsub!(/\A\n*/, '')
+  # Add new license
+  content.prepend(license_text)
+
+  File.write(path, content)
+end
