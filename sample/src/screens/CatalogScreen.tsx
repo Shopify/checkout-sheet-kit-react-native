@@ -37,7 +37,7 @@ import {
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
-import ShopifyCheckout from '../../ShopifyCheckout';
+import ShopifyCheckout from '../../../package/ShopifyCheckout';
 import useShopify from '../hooks/useShopify';
 
 import type {ShopifyProduct} from '../../@types';
