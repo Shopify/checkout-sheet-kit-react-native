@@ -1,0 +1,27 @@
+disabled_rules:
+  - line_length
+  - redundant_void_return
+
+opt_in_rules:
+  - array_init
+  - collection_alignment
+  - comma_inheritance
+  - convenience_type
+  - closure_spacing
+  - direct_return
+  - empty_count
+  - empty_string
+  - fatal_error_message
+  - first_where
+  - identical_operands
+  - indentation_width
+  - joined_default_parameter
+  - modifier_order
+  - overridden_super_call
+  - toggle_bool
+
+nesting:
+  type_level:
+    warning: 2
+
+reporter: "xcode"

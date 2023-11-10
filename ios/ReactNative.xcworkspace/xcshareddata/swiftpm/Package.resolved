@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "mobile-checkout-sdk-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/shopify/mobile-checkout-sdk-ios",
+      "state" : {
+        "revision" : "b277a496b76c5244a175dbb59702c4c97aabbf0b",
+        "version" : "0.5.0"
+      }
+    }
+  ],
+  "version" : 2
+}
