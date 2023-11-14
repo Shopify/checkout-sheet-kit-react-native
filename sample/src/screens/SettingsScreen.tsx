@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {
   Pressable,
   SafeAreaView,
@@ -36,18 +36,57 @@ import {useConfig} from '../context/Config';
 import ShopifyCheckout, {ColorScheme} from '../../../package/ShopifyCheckout';
 import {Colors, useTheme} from '../context/Theme';
 
+enum SectionType {
+  Switch = 'switch',
+  SingleSelect = 'single-select',
+  Text = 'text',
+}
+
+interface SwitchItem {
+  type: SectionType.Switch;
+  title: string;
+  value: boolean;
+  handler: () => void;
+}
+
+interface SingleSelectItem {
+  type: SectionType.SingleSelect;
+  title: string;
+  value: ColorScheme;
+  selected: boolean;
+}
+
+interface TextItem {
+  type: SectionType.Text;
+  title: string;
+  value: string;
+}
+
+function isSwitchItem(item: any): item is SwitchItem {
+  return item.type === SectionType.Switch;
+}
+
+function isSingleSelectItem(item: any): item is SingleSelectItem {
+  return item.type === SectionType.SingleSelect;
+}
+
+function isTextItem(item: any): item is TextItem {
+  return item.type === SectionType.Text;
+}
+
+interface SectionData {
+  title: string;
+  data: readonly (SwitchItem | SingleSelectItem | TextItem)[];
+}
+
 function SettingsScreen() {
   const {config, configure} = useConfig();
   const {colors} = useTheme();
   const styles = createStyles(colors);
 
-  function isSelected(theme: string) {
-    return config?.colorScheme === theme;
-  }
-
-  const handleColorSchemeChange = (colorScheme: ColorScheme) => () => {
+  const handleColorSchemeChange = (item: SingleSelectItem) => {
     configure({
-      colorScheme,
+      colorScheme: item.value,
     });
   };
 
@@ -57,93 +96,109 @@ function SettingsScreen() {
     });
   }, [config?.preloading, configure]);
 
+  const configurationOptions: readonly SwitchItem[] = useMemo(
+    () => [
+      {
+        title: 'Preload checkout',
+        type: SectionType.Switch,
+        value: config?.preloading ?? false,
+        handler: handleTogglePreloading,
+      },
+    ],
+    [config?.preloading, handleTogglePreloading],
+  );
+
+  const themeOptions: readonly SingleSelectItem[] = useMemo(
+    () => [
+      {
+        title: 'Automatic',
+        type: SectionType.SingleSelect,
+        value: ColorScheme.automatic,
+        selected: config?.colorScheme === ColorScheme.automatic,
+      },
+      {
+        title: 'Light',
+        type: SectionType.SingleSelect,
+        value: ColorScheme.light,
+        selected: config?.colorScheme === ColorScheme.light,
+      },
+      {
+        title: 'Dark',
+        type: SectionType.SingleSelect,
+        value: ColorScheme.dark,
+        selected: config?.colorScheme === ColorScheme.dark,
+      },
+      {
+        title: 'Web',
+        type: SectionType.SingleSelect,
+        value: ColorScheme.web,
+        selected: config?.colorScheme === ColorScheme.web,
+      },
+    ],
+    [config?.colorScheme],
+  );
+
+  const informationalItems: readonly TextItem[] = useMemo(
+    () => [
+      {
+        title: 'SDK version',
+        type: SectionType.Text,
+        value: ShopifyCheckout.version,
+      },
+      {
+        title: 'App version',
+        type: SectionType.Text,
+        value: pkg.version,
+      },
+    ],
+    [],
+  );
+
+  const sections: SectionData[] = useMemo(
+    () => [
+      {
+        title: 'Configuration',
+        data: configurationOptions,
+      },
+      {
+        title: 'Theme',
+        data: themeOptions,
+      },
+      {
+        title: 'Information',
+        data: informationalItems,
+      },
+    ],
+    [themeOptions, configurationOptions, informationalItems],
+  );
+
   return (
     <SafeAreaView>
       <SectionList
-        sections={[
-          {
-            type: 'switch',
-            title: 'Configuration',
-            data: [
-              {
-                title: 'Preload checkout',
-                type: 'switch',
-                value: config?.preloading ?? false,
-                handler: handleTogglePreloading,
-              },
-            ],
-          },
-          {
-            type: 'single-select',
-            title: 'Theme',
-            data: [
-              {
-                title: 'Automatic',
-                type: 'single-select',
-                value: ColorScheme.automatic,
-                selected: isSelected(ColorScheme.automatic),
-              },
-              {
-                title: 'Light',
-                type: 'single-select',
-                value: ColorScheme.light,
-                selected: isSelected(ColorScheme.light),
-              },
-              {
-                title: 'Dark',
-                type: 'single-select',
-                value: ColorScheme.dark,
-                selected: isSelected(ColorScheme.dark),
-              },
-              {
-                title: 'Web',
-                type: 'single-select',
-                value: ColorScheme.web,
-                selected: isSelected(ColorScheme.web),
-              },
-            ],
-          },
-          {
-            type: 'text',
-            title: 'Information',
-            data: [
-              {
-                title: 'SDK version',
-                type: 'text',
-                value: ShopifyCheckout.version,
-              },
-              {
-                title: 'App version',
-                type: 'text',
-                value: pkg.version,
-              },
-            ],
-          },
-        ]}
+        sections={sections}
         keyExtractor={item => item.title}
         renderItem={({item}) => {
-          switch (item.type) {
-            case 'switch':
-              return (
-                <SwitchItem
-                  styles={styles}
-                  item={item}
-                  onChange={item.handler}
-                />
-              );
-            case 'single-select':
-              return (
-                <SelectItem
-                  item={item}
-                  styles={styles}
-                  onPress={handleColorSchemeChange(item.value as ColorScheme)}
-                />
-              );
-            case 'text':
-              return <TextItem item={item} styles={styles} />;
-            default:
-              return null;
+          if (isSwitchItem(item)) {
+            return (
+              <SwitchItem styles={styles} item={item} onChange={item.handler} />
+            );
           }
+
+          if (isSingleSelectItem(item)) {
+            return (
+              <SelectItem
+                item={item}
+                styles={styles}
+                onPress={() => handleColorSchemeChange(item)}
+              />
+            );
+          }
+
+          if (isTextItem(item)) {
+            return <TextItem item={item} styles={styles} />;
+          }
+
+          return null;
         }}
         renderSectionHeader={({section: {title}}) => (
           <View style={styles.section}>
@@ -156,29 +211,19 @@ function SettingsScreen() {
 }
 
 interface SwitchItemProps {
-  item: {
-    title: string;
-    value: boolean;
-  };
+  item: SwitchItem;
   styles: ReturnType<typeof createStyles>;
   onChange: () => void;
 }
 
 interface SelectItemProps {
-  item: {
-    title: string;
-    value: string;
-    selected: boolean;
-  };
+  item: SingleSelectItem;
   styles: ReturnType<typeof createStyles>;
   onPress: () => void;
 }
 
 interface TextItemProps {
-  item: {
-    title: string;
-    value: string;
-  };
+  item: TextItem;
   styles: ReturnType<typeof createStyles>;
 }
 
