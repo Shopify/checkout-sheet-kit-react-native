@@ -1,5 +1,7 @@
 # Checkout Kit - React Native
 
+![image](https://github.com/Shopify/checkout-kit-react-native/assets/318265/1f7b1b5b-0212-4ba9-93fa-14b76ae5d239)
+
 >**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
 
 ## Step 1: Start the Metro Server
