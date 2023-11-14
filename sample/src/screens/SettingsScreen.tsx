@@ -21,8 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {useReducer} from 'react';
+import React, {useCallback} from 'react';
 import {
+  Pressable,
   SafeAreaView,
   SectionList,
   StyleSheet,
@@ -30,16 +31,31 @@ import {
   Text,
   View,
 } from 'react-native';
+import pkg from '../../../package.json';
+import {useConfig} from '../context/Config';
+import ShopifyCheckout, {ColorScheme} from '../../../package/ShopifyCheckout';
+import {Colors, useTheme} from '../context/Theme';
 
 function SettingsScreen() {
-  const [preloadEnabled, togglePreload] = useReducer(
-    enabled => !enabled,
-    false,
-  );
-  const [prefillEnabled, togglePrefill] = useReducer(
-    enabled => !enabled,
-    false,
-  );
+  const {config, configure} = useConfig();
+  const {colors} = useTheme();
+  const styles = createStyles(colors);
+
+  function isSelected(theme: string) {
+    return config?.colorScheme === theme;
+  }
+
+  const handleColorSchemeChange = (colorScheme: ColorScheme) => () => {
+    configure({
+      colorScheme,
+    });
+  };
+
+  const handleTogglePreloading = useCallback(() => {
+    configure({
+      preloading: !config?.preloading,
+    });
+  }, [config?.preloading, configure]);
 
   return (
     <SafeAreaView>
@@ -52,44 +68,83 @@ function SettingsScreen() {
               {
                 title: 'Preload checkout',
                 type: 'switch',
-                value: preloadEnabled,
-                handler: togglePreload,
-              },
-              {
-                title: 'Prefill buyer information',
-                type: 'switch',
-                value: prefillEnabled,
-                handler: togglePrefill,
+                value: config?.preloading ?? false,
+                handler: handleTogglePreloading,
               },
             ],
           },
           {
-            type: 'multi-select',
+            type: 'single-select',
             title: 'Theme',
             data: [
-              {title: 'Automatic', type: 'multi-select', selected: false},
-              {title: 'Light', type: 'multi-select', selected: false},
-              {title: 'Dark', type: 'multi-select', selected: false},
-              {title: 'Web', type: 'multi-select', selected: false},
+              {
+                title: 'Automatic',
+                type: 'single-select',
+                value: ColorScheme.automatic,
+                selected: isSelected(ColorScheme.automatic),
+              },
+              {
+                title: 'Light',
+                type: 'single-select',
+                value: ColorScheme.light,
+                selected: isSelected(ColorScheme.light),
+              },
+              {
+                title: 'Dark',
+                type: 'single-select',
+                value: ColorScheme.dark,
+                selected: isSelected(ColorScheme.dark),
+              },
+              {
+                title: 'Web',
+                type: 'single-select',
+                value: ColorScheme.web,
+                selected: isSelected(ColorScheme.web),
+              },
+            ],
+          },
+          {
+            type: 'text',
+            title: 'Information',
+            data: [
+              {
+                title: 'SDK version',
+                type: 'text',
+                value: ShopifyCheckout.version,
+              },
+              {
+                title: 'App version',
+                type: 'text',
+                value: pkg.version,
+              },
             ],
           },
         ]}
-        keyExtractor={(item, index) => item + index}
-        renderItem={({item}) => (
-          <View style={styles.listItem}>
-            <Text style={styles.listItemText}>{item.title}</Text>
-            {item.type === 'switch' && (
-              <Switch
-                trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor="#fff"
-                ios_backgroundColor="#eee"
-                onValueChange={item.handler}
-                value={item.value}
-                style={styles.listItemSwitch}
-              />
-            )}
-          </View>
-        )}
+        keyExtractor={item => item.title}
+        renderItem={({item}) => {
+          switch (item.type) {
+            case 'switch':
+              return (
+                <SwitchItem
+                  styles={styles}
+                  item={item}
+                  onChange={item.handler}
+                />
+              );
+            case 'single-select':
+              return (
+                <SelectItem
+                  item={item}
+                  styles={styles}
+                  onPress={handleColorSchemeChange(item.value as ColorScheme)}
+                />
+              );
+            case 'text':
+              return <TextItem item={item} styles={styles} />;
+            default:
+              return null;
+          }
+        }}
         renderSectionHeader={({section: {title}}) => (
           <View style={styles.section}>
             <Text style={styles.sectionText}>{title}</Text>
@@ -100,35 +155,107 @@ function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  listItem: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderColor: '#eee',
-    borderBottomWidth: 1,
-    borderTopWidth: 1,
-    marginBottom: -1,
-  },
-  listItemText: {
-    flex: 1,
-    fontSize: 16,
-    alignSelf: 'center',
-  },
-  listItemSwitch: {},
-  section: {
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-  },
-  sectionText: {
-    fontSize: 13,
-    color: '#9f9f9f',
-  },
-});
+interface SwitchItemProps {
+  item: {
+    title: string;
+    value: boolean;
+  };
+  styles: ReturnType<typeof createStyles>;
+  onChange: () => void;
+}
+
+interface SelectItemProps {
+  item: {
+    title: string;
+    value: string;
+    selected: boolean;
+  };
+  styles: ReturnType<typeof createStyles>;
+  onPress: () => void;
+}
+
+interface TextItemProps {
+  item: {
+    title: string;
+    value: string;
+  };
+  styles: ReturnType<typeof createStyles>;
+}
+
+function SwitchItem({item, styles, onChange}: SwitchItemProps) {
+  return (
+    <View style={styles.listItem}>
+      <Text style={styles.listItemText}>{item.title}</Text>
+      <Switch
+        trackColor={{false: '#767577', true: '#81b0ff'}}
+        thumbColor="#fff"
+        ios_backgroundColor="#eee"
+        onValueChange={onChange}
+        value={item.value}
+        style={styles.listItemSwitch}
+      />
+    </View>
+  );
+}
+
+function SelectItem({item, styles, onPress}: SelectItemProps) {
+  return (
+    <Pressable style={styles.listItem} onPress={onPress}>
+      <Text style={styles.listItemText}>{item.title}</Text>
+
+      {item.selected && <Text style={styles.listItemCheck}>✓</Text>}
+    </Pressable>
+  );
+}
+
+function TextItem({item, styles}: TextItemProps) {
+  return (
+    <View style={styles.listItem}>
+      <Text style={styles.listItemText}>{item.title}</Text>
+      <Text style={styles.listItemSecondaryText}>{item.value}</Text>
+    </View>
+  );
+}
+
+function createStyles(colors: Colors) {
+  return StyleSheet.create({
+    listItem: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      padding: 10,
+      backgroundColor: colors.backgroundSubdued,
+      borderColor: colors.border,
+      borderBottomWidth: 1,
+      borderTopWidth: 1,
+      marginBottom: -1,
+    },
+    listItemText: {
+      flex: 1,
+      fontSize: 16,
+      alignSelf: 'center',
+      color: colors.text,
+    },
+    listItemSecondaryText: {
+      color: colors.textSubdued,
+    },
+    listItemSwitch: {},
+    listItemCheck: {
+      color: colors.primaryText,
+      fontWeight: 'bold',
+    },
+    section: {
+      paddingHorizontal: 16,
+      paddingVertical: 20,
+    },
+    sectionText: {
+      fontSize: 13,
+      color: '#9f9f9f',
+    },
+  });
+}
 
 export default SettingsScreen;

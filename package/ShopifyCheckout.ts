@@ -25,9 +25,45 @@ import {NativeModules} from 'react-native';
 
 const {ShopifyCheckout} = NativeModules;
 
+export enum ColorScheme {
+  automatic = 'automatic',
+  light = 'light',
+  dark = 'dark',
+  web = 'web_default',
+}
+
+export interface ShopifyCheckoutConfiguration {
+  /**
+   * The selected color scheme for the checkout. See README.md for more details.
+   */
+  colorScheme?: ColorScheme;
+  /**
+   * Enable/disable preloading for checkout. This option must be enabled for `.preload()` to work as expected.
+   */
+  preloading?: boolean;
+}
+
 interface ShopifyCheckout {
+  /**
+   * The version number of the Shopify Checkout SDK.
+   */
+  version: string;
+  /**
+   * Preload the checkout for faster presentation.
+   */
   preload(checkoutURL: string): void;
+  /**
+   * Present the checkout.
+   */
   present(checkoutURL: string): void;
+  /**
+   * Configure the checkout. See README.md for more details.
+   */
+  configure(config: ShopifyCheckoutConfiguration): void;
+  /**
+   * Return the current config for the checkout. See README.md for more details.
+   */
+  getConfig(): Promise<ShopifyCheckoutConfiguration>;
 }
 
 export default ShopifyCheckout as ShopifyCheckout;
