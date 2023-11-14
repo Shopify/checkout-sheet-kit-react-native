@@ -165,7 +165,7 @@ function SettingsScreen() {
         data: themeOptions,
       },
       {
-        title: 'Information',
+        title: 'About',
         data: informationalItems,
       },
     ],

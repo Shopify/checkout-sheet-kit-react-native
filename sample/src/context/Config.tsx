@@ -32,7 +32,9 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
   useEffect(() => {
     async function init() {
       try {
+        // Fetch the checkout configuration object
         const config = await ShopifyCheckout.getConfig();
+        // Store it in local state
         setConfig(config);
       } catch (error) {
         console.error('Failed to fetch Shopify checkout configuration', error);
@@ -45,12 +47,16 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
   const configure = useCallback(
     async (config: ShopifyCheckoutConfiguration) => {
       try {
+        // Update the SDK configuration
         ShopifyCheckout.configure(config);
 
+        // Fetch the latest configuration object
         const updatedConfig = await ShopifyCheckout.getConfig();
 
+        // Update local config state
         setConfig(updatedConfig);
 
+        // Update the color scheme theme setting if it changed
         if (updatedConfig.colorScheme) {
           setColorScheme(updatedConfig.colorScheme);
         }
