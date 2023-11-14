@@ -1,6 +1,7 @@
 import React, {
   PropsWithChildren,
   createContext,
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -9,6 +10,7 @@ import ShopifyCheckout, {
   ColorScheme,
   ShopifyCheckoutConfiguration,
 } from '../../../package/ShopifyCheckout';
+import {useTheme} from './Theme';
 
 interface Context {
   config: ShopifyCheckoutConfiguration | undefined;
@@ -25,6 +27,7 @@ const ConfigContext = createContext<Context>({
 
 export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
   const [config, setConfig] = useState<Context['config']>(undefined);
+  const {setColorScheme} = useTheme();
 
   useEffect(() => {
     async function init() {
@@ -32,33 +35,40 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
         const config = await ShopifyCheckout.getConfig();
         setConfig(config);
       } catch (error) {
-        console.error(
-          'Something went wrong fetching the ShopifyCheckout config',
-          error,
-        );
+        console.error('Failed to fetch Shopify checkout configuration', error);
       }
     }
 
     init();
   }, []);
 
-  const configure = async (config: ShopifyCheckoutConfiguration) => {
-    try {
-      ShopifyCheckout.configure(config);
-      const updatedConfig = await ShopifyCheckout.getConfig();
-      setConfig(updatedConfig);
-      return updatedConfig;
-    } catch (error) {
-      console.error('Something went wrong configuring ShopifyCheckout', error);
-    }
-  };
+  const configure = useCallback(
+    async (config: ShopifyCheckoutConfiguration) => {
+      try {
+        ShopifyCheckout.configure(config);
+
+        const updatedConfig = await ShopifyCheckout.getConfig();
+
+        setConfig(updatedConfig);
+
+        if (updatedConfig.colorScheme) {
+          setColorScheme(updatedConfig.colorScheme);
+        }
+
+        return updatedConfig;
+      } catch (error) {
+        console.error('Failed to configure Shopify checkout', error);
+      }
+    },
+    [setColorScheme],
+  );
 
   const value = useMemo(
     () => ({
       config,
       configure,
     }),
-    [config],
+    [config, configure],
   );
 
   return (

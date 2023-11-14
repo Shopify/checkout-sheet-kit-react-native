@@ -19,10 +19,10 @@ interface Context {
   setColorScheme: (colorScheme: ColorScheme) => void;
 }
 
-const darkColors = {
-  background: '#222',
-  backgroundSubdued: '#333',
-  border: '#555',
+const darkColors: Colors = {
+  background: '#222233',
+  backgroundSubdued: '#333344',
+  border: '#555566',
   text: '#fff',
   textSubdued: '#eee',
   primary: '#0087ff',
@@ -31,10 +31,22 @@ const darkColors = {
   secondaryText: '#fff',
 };
 
-const lightColors = {
+const lightColors: Colors = {
   background: '#eee',
   backgroundSubdued: '#fff',
   border: '#eee',
+  text: '#000',
+  textSubdued: '#a3a3a3',
+  primary: 'transparent',
+  primaryText: '#0087ff',
+  secondary: '#000',
+  secondaryText: '#fff',
+};
+
+const webColors = {
+  background: '#f0f0e8',
+  backgroundSubdued: '#e8e8e0',
+  border: '#d0d0cd',
   text: '#000',
   textSubdued: '#a3a3a3',
   primary: 'transparent',
@@ -97,11 +109,26 @@ export function getNavigationTheme(
     },
   };
 
+  const web = {
+    dark: false,
+    colors: {
+      ...DefaultTheme.colors,
+      primary,
+      background: colors.background,
+      card: colors.backgroundSubdued,
+      text: colors.text,
+      border: colors.border,
+      notification: colors.primary,
+    },
+  };
+
   switch (colorScheme) {
-    case 'automatic':
+    case ColorScheme.automatic:
       return preference === 'dark' ? dark : light;
-    case 'dark':
+    case ColorScheme.dark:
       return dark;
+    case ColorScheme.web:
+      return web;
     default:
       return light;
   }
@@ -116,6 +143,8 @@ function getColors(
       return preference === 'dark' ? darkColors : lightColors;
     case ColorScheme.dark:
       return darkColors;
+    case ColorScheme.web:
+      return webColors;
     default:
       return lightColors;
   }
@@ -146,6 +175,8 @@ export const ThemeProvider: React.FC<PropsWithChildren> = ({children}) => {
     }),
     [preference, colorScheme, setColorScheme],
   );
+
+  console.log('THEME', value);
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

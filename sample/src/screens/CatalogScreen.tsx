@@ -201,6 +201,7 @@ function createStyles(colors: Colors) {
     },
     loadingText: {
       marginVertical: 20,
+      color: colors.text,
     },
     scrollView: {
       paddingBottom: 55,
@@ -217,7 +218,6 @@ function createStyles(colors: Colors) {
       padding: 10,
       backgroundColor: colors.secondary,
       fontWeight: 'bold',
-      zIndex: 100,
     },
     cartButtonText: {
       fontSize: 16,
