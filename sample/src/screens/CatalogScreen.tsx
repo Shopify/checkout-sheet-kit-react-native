@@ -21,32 +21,35 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
-  StatusBar,
   View,
   StyleSheet,
   Text,
   Image,
   Pressable,
   ActivityIndicator,
-  DimensionValue,
 } from 'react-native';
-
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 import ShopifyCheckout from '../../../package/ShopifyCheckout';
 import useShopify from '../hooks/useShopify';
 
 import type {ShopifyProduct} from '../../@types';
+import {Colors, useTheme} from '../context/Theme';
 
 function App(): JSX.Element {
+  // Reuse the same cart ID for the lifetime of the app
   const [cartId, setCartId] = useState<string | null>(null);
+  // Keep track of the number of items in the cart
   const [lineItems, setLineItems] = useState<number>(0);
+  // Maintain a loading state for items being added to the cart
   const [addingToCart, setAddingToCart] = useState(new Set());
+
   const checkoutUrl = useRef<string | null>(null);
+  const {colors} = useTheme();
+  const styles = createStyles(colors);
 
   const {queries, mutations} = useShopify();
   const {loading, data} = queries.products;
@@ -71,7 +74,7 @@ function App(): JSX.Element {
       if (!id) {
         const cart = await createCart();
         id = cart.data.cartCreate.cart.id;
-        setCartId(cartId);
+        setCartId(id);
       }
 
       const {data} = await addLineItems({
@@ -92,17 +95,10 @@ function App(): JSX.Element {
       if (checkoutUrl.current) {
         ShopifyCheckout.preload(checkoutUrl.current);
       }
-      setLineItems(data.cartLinesAdd.cart.lines.edges.length);
+
+      setLineItems(data.cartLinesAdd.cart.totalQuantity);
     },
     [cartId, createCart, addLineItems, setCartId, setLineItems],
-  );
-
-  const scrollViewStyles = useMemo(
-    () => ({
-      ...styles.scrollView,
-      maxHeight: (lineItems > 0 ? '88%' : '100%') as DimensionValue,
-    }),
-    [lineItems],
   );
 
   if (loading) {
@@ -115,11 +111,10 @@ function App(): JSX.Element {
   }
 
   return (
-    <SafeAreaView>
-      <StatusBar barStyle="light-content" />
+    <SafeAreaView style={styles.container}>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        style={scrollViewStyles}>
+        contentContainerStyle={styles.scrollView}>
         <View style={styles.productList}>
           {data?.products.edges.map(({node}) => (
             <Product
@@ -159,6 +154,8 @@ function Product({
   loading?: boolean;
   onAddToCart: (variantId: string) => void;
 }) {
+  const {colors} = useTheme();
+  const styles = createStyles(colors);
   const image = product.images?.edges[0].node;
   const variant = getVariant(product);
 
@@ -197,87 +194,106 @@ function Product({
 
 export default App;
 
-const styles = StyleSheet.create({
-  loading: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginVertical: 20,
-  },
-  scrollView: {},
-  cartButton: {
-    borderRadius: 10,
-    margin: 20,
-    padding: 10,
-    backgroundColor: Colors.black,
-    fontWeight: 'bold',
-  },
-  cartButtonText: {
-    fontSize: 16,
-    lineHeight: 20,
-    textAlign: 'center',
-    color: Colors.white,
-    fontWeight: 'bold',
-  },
-  cartButtonTextSubtitle: {
-    fontSize: 12,
-    textAlign: 'center',
-    color: '#aaa',
-    fontWeight: 'bold',
-  },
-  productList: {
-    marginVertical: 20,
-    paddingHorizontal: 16,
-  },
-  productItem: {
-    flex: 1,
-    flexDirection: 'row',
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 5,
-  },
-  productText: {
-    paddingLeft: 20,
-    paddingTop: 10,
-    flexShrink: 1,
-    flexGrow: 1,
-    justifyContent: 'space-between',
-  },
-  productTitle: {
-    fontSize: 16,
-    marginBottom: 5,
-    fontWeight: 'bold',
-    lineHeight: 20,
-  },
-  productPrice: {
-    fontSize: 14,
-    flex: 1,
-    color: '#888',
-  },
-  productImage: {
-    width: 80,
-    height: 120,
-    marginRight: 5,
-    borderRadius: 6,
-  },
-  addToCartButtonContainer: {
-    alignItems: 'flex-end',
-    flexShrink: 1,
-    flexGrow: 0,
-  },
-  addToCartButton: {
-    borderRadius: 10,
-    fontSize: 8,
-    padding: 5,
-  },
-  addToCartButtonText: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: '#0087ff',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});
+function createStyles(colors: Colors) {
+  return StyleSheet.create({
+    container: {
+      maxHeight: '100%',
+    },
+    loading: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    loadingText: {
+      marginVertical: 20,
+      color: colors.text,
+    },
+    scrollView: {
+      paddingBottom: 55,
+    },
+    cartButton: {
+      position: 'absolute',
+      width: 'auto',
+      bottom: 10,
+      height: 55,
+      left: 0,
+      right: 0,
+      borderRadius: 10,
+      marginHorizontal: 20,
+      padding: 10,
+      backgroundColor: colors.secondary,
+      fontWeight: 'bold',
+    },
+    cartButtonText: {
+      fontSize: 16,
+      lineHeight: 20,
+      textAlign: 'center',
+      color: colors.secondaryText,
+      fontWeight: 'bold',
+    },
+    cartButtonTextSubtitle: {
+      fontSize: 12,
+      textAlign: 'center',
+      color: colors.textSubdued,
+      fontWeight: 'bold',
+    },
+    productList: {
+      marginVertical: 20,
+      paddingHorizontal: 16,
+    },
+    productItem: {
+      flex: 1,
+      flexDirection: 'row',
+      marginBottom: 10,
+      padding: 10,
+      backgroundColor: colors.backgroundSubdued,
+      borderRadius: 5,
+    },
+    productText: {
+      paddingLeft: 20,
+      paddingTop: 10,
+      flexShrink: 1,
+      flexGrow: 1,
+      color: colors.textSubdued,
+      justifyContent: 'space-between',
+    },
+    productTitle: {
+      fontSize: 16,
+      marginBottom: 5,
+      fontWeight: 'bold',
+      lineHeight: 20,
+      color: colors.text,
+    },
+    productPrice: {
+      fontSize: 14,
+      flex: 1,
+      color: colors.textSubdued,
+    },
+    productImage: {
+      width: 80,
+      height: 120,
+      marginRight: 5,
+      borderRadius: 6,
+    },
+    addToCartButtonContainer: {
+      alignItems: 'flex-end',
+      flexShrink: 1,
+      flexGrow: 0,
+    },
+    addToCartButton: {
+      borderRadius: 10,
+      fontSize: 8,
+      margin: 5,
+      backgroundColor: 'transparent',
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+    },
+    addToCartButtonText: {
+      fontSize: 14,
+      lineHeight: 20,
+      color: colors.primary,
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+  });
+}

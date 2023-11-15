@@ -1,6 +1,8 @@
 disabled_rules:
   - line_length
   - redundant_void_return
+  - todo
+  - tailing_comma
 
 opt_in_rules:
   - array_init

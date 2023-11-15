@@ -21,8 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {useReducer} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {
+  Pressable,
   SafeAreaView,
   SectionList,
   StyleSheet,
@@ -30,66 +31,175 @@ import {
   Text,
   View,
 } from 'react-native';
+import pkg from '../../../package.json';
+import {useConfig} from '../context/Config';
+import ShopifyCheckout, {ColorScheme} from '../../../package/ShopifyCheckout';
+import {Colors, useTheme} from '../context/Theme';
+
+enum SectionType {
+  Switch = 'switch',
+  SingleSelect = 'single-select',
+  Text = 'text',
+}
+
+interface SwitchItem {
+  type: SectionType.Switch;
+  title: string;
+  value: boolean;
+  handler: () => void;
+}
+
+interface SingleSelectItem {
+  type: SectionType.SingleSelect;
+  title: string;
+  value: ColorScheme;
+  selected: boolean;
+}
+
+interface TextItem {
+  type: SectionType.Text;
+  title: string;
+  value: string;
+}
+
+function isSwitchItem(item: any): item is SwitchItem {
+  return item.type === SectionType.Switch;
+}
+
+function isSingleSelectItem(item: any): item is SingleSelectItem {
+  return item.type === SectionType.SingleSelect;
+}
+
+function isTextItem(item: any): item is TextItem {
+  return item.type === SectionType.Text;
+}
+
+interface SectionData {
+  title: string;
+  data: readonly (SwitchItem | SingleSelectItem | TextItem)[];
+}
 
 function SettingsScreen() {
-  const [preloadEnabled, togglePreload] = useReducer(
-    enabled => !enabled,
-    false,
+  const {config, configure} = useConfig();
+  const {colors} = useTheme();
+  const styles = createStyles(colors);
+
+  const handleColorSchemeChange = (item: SingleSelectItem) => {
+    configure({
+      colorScheme: item.value,
+    });
+  };
+
+  const handleTogglePreloading = useCallback(() => {
+    configure({
+      preloading: !config?.preloading,
+    });
+  }, [config?.preloading, configure]);
+
+  const configurationOptions: readonly SwitchItem[] = useMemo(
+    () => [
+      {
+        title: 'Preload checkout',
+        type: SectionType.Switch,
+        value: config?.preloading ?? false,
+        handler: handleTogglePreloading,
+      },
+    ],
+    [config?.preloading, handleTogglePreloading],
   );
-  const [prefillEnabled, togglePrefill] = useReducer(
-    enabled => !enabled,
-    false,
+
+  const themeOptions: readonly SingleSelectItem[] = useMemo(
+    () => [
+      {
+        title: 'Automatic',
+        type: SectionType.SingleSelect,
+        value: ColorScheme.automatic,
+        selected: config?.colorScheme === ColorScheme.automatic,
+      },
+      {
+        title: 'Light',
+        type: SectionType.SingleSelect,
+        value: ColorScheme.light,
+        selected: config?.colorScheme === ColorScheme.light,
+      },
+      {
+        title: 'Dark',
+        type: SectionType.SingleSelect,
+        value: ColorScheme.dark,
+        selected: config?.colorScheme === ColorScheme.dark,
+      },
+      {
+        title: 'Web',
+        type: SectionType.SingleSelect,
+        value: ColorScheme.web,
+        selected: config?.colorScheme === ColorScheme.web,
+      },
+    ],
+    [config?.colorScheme],
+  );
+
+  const informationalItems: readonly TextItem[] = useMemo(
+    () => [
+      {
+        title: 'SDK version',
+        type: SectionType.Text,
+        value: ShopifyCheckout.version,
+      },
+      {
+        title: 'App version',
+        type: SectionType.Text,
+        value: pkg.version,
+      },
+    ],
+    [],
+  );
+
+  const sections: SectionData[] = useMemo(
+    () => [
+      {
+        title: 'Configuration',
+        data: configurationOptions,
+      },
+      {
+        title: 'Theme',
+        data: themeOptions,
+      },
+      {
+        title: 'About',
+        data: informationalItems,
+      },
+    ],
+    [themeOptions, configurationOptions, informationalItems],
   );
 
   return (
     <SafeAreaView>
       <SectionList
-        sections={[
-          {
-            type: 'switch',
-            title: 'Configuration',
-            data: [
-              {
-                title: 'Preload checkout',
-                type: 'switch',
-                value: preloadEnabled,
-                handler: togglePreload,
-              },
-              {
-                title: 'Prefill buyer information',
-                type: 'switch',
-                value: prefillEnabled,
-                handler: togglePrefill,
-              },
-            ],
-          },
-          {
-            type: 'multi-select',
-            title: 'Theme',
-            data: [
-              {title: 'Automatic', type: 'multi-select', selected: false},
-              {title: 'Light', type: 'multi-select', selected: false},
-              {title: 'Dark', type: 'multi-select', selected: false},
-              {title: 'Web', type: 'multi-select', selected: false},
-            ],
-          },
-        ]}
-        keyExtractor={(item, index) => item + index}
-        renderItem={({item}) => (
-          <View style={styles.listItem}>
-            <Text style={styles.listItemText}>{item.title}</Text>
-            {item.type === 'switch' && (
-              <Switch
-                trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor="#fff"
-                ios_backgroundColor="#eee"
-                onValueChange={item.handler}
-                value={item.value}
-                style={styles.listItemSwitch}
+        sections={sections}
+        keyExtractor={item => item.title}
+        renderItem={({item}) => {
+          if (isSwitchItem(item)) {
+            return (
+              <SwitchItem styles={styles} item={item} onChange={item.handler} />
+            );
+          }
+
+          if (isSingleSelectItem(item)) {
+            return (
+              <SelectItem
+                item={item}
+                styles={styles}
+                onPress={() => handleColorSchemeChange(item)}
               />
-            )}
-          </View>
-        )}
+            );
+          }
+
+          if (isTextItem(item)) {
+            return <TextItem item={item} styles={styles} />;
+          }
+
+          return null;
+        }}
         renderSectionHeader={({section: {title}}) => (
           <View style={styles.section}>
             <Text style={styles.sectionText}>{title}</Text>
@@ -100,35 +210,99 @@ function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  listItem: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderColor: '#eee',
-    borderBottomWidth: 1,
-    borderTopWidth: 1,
-    marginBottom: -1,
-  },
-  listItemText: {
-    flex: 1,
-    fontSize: 16,
-    alignSelf: 'center',
-  },
-  listItemSwitch: {},
-  section: {
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-  },
-  sectionText: {
-    fontSize: 13,
-    color: '#9f9f9f',
-  },
-});
+interface SwitchItemProps {
+  item: SwitchItem;
+  styles: ReturnType<typeof createStyles>;
+  onChange: () => void;
+}
+
+interface SelectItemProps {
+  item: SingleSelectItem;
+  styles: ReturnType<typeof createStyles>;
+  onPress: () => void;
+}
+
+interface TextItemProps {
+  item: TextItem;
+  styles: ReturnType<typeof createStyles>;
+}
+
+function SwitchItem({item, styles, onChange}: SwitchItemProps) {
+  return (
+    <View style={styles.listItem}>
+      <Text style={styles.listItemText}>{item.title}</Text>
+      <Switch
+        trackColor={{false: '#767577', true: '#81b0ff'}}
+        thumbColor="#fff"
+        ios_backgroundColor="#eee"
+        onValueChange={onChange}
+        value={item.value}
+        style={styles.listItemSwitch}
+      />
+    </View>
+  );
+}
+
+function SelectItem({item, styles, onPress}: SelectItemProps) {
+  return (
+    <Pressable style={styles.listItem} onPress={onPress}>
+      <Text style={styles.listItemText}>{item.title}</Text>
+
+      {item.selected && <Text style={styles.listItemCheck}>✓</Text>}
+    </Pressable>
+  );
+}
+
+function TextItem({item, styles}: TextItemProps) {
+  return (
+    <View style={styles.listItem}>
+      <Text style={styles.listItemText}>{item.title}</Text>
+      <Text style={styles.listItemSecondaryText}>{item.value}</Text>
+    </View>
+  );
+}
+
+function createStyles(colors: Colors) {
+  return StyleSheet.create({
+    listItem: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      padding: 10,
+      backgroundColor: colors.backgroundSubdued,
+      borderColor: colors.border,
+      borderBottomWidth: 1,
+      borderTopWidth: 1,
+      marginBottom: -1,
+    },
+    listItemText: {
+      flex: 1,
+      fontSize: 16,
+      alignSelf: 'center',
+      color: colors.text,
+    },
+    listItemSecondaryText: {
+      color: colors.textSubdued,
+    },
+    listItemSwitch: {},
+    listItemCheck: {
+      color: colors.secondary,
+      fontWeight: 'bold',
+    },
+    section: {
+      paddingHorizontal: 16,
+      paddingVertical: 20,
+    },
+    sectionText: {
+      fontSize: 13,
+      color: '#9f9f9f',
+      marginTop: 10,
+      marginBottom: -10,
+    },
+  });
+}
 
 export default SettingsScreen;

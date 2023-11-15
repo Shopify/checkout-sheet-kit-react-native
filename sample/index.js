@@ -30,6 +30,16 @@ import {STOREFRONT_DOMAIN, STOREFRONT_ACCESS_TOKEN} from '@env';
 import CatalogScreen from './src/screens/CatalogScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 
+import ShopifyCheckout, {ColorScheme} from '../package/ShopifyCheckout';
+import {ConfigProvider} from './src/context/Config';
+import {ThemeProvider, getNavigationTheme, useTheme} from './src/context/Theme';
+import {StatusBar} from 'react-native';
+
+ShopifyCheckout.configure({
+  colorScheme: ColorScheme.automatic,
+  preloading: true,
+});
+
 const Tab = createBottomTabNavigator();
 
 const client = new ApolloClient({
@@ -41,17 +51,34 @@ const client = new ApolloClient({
   },
 });
 
+function AppWithTheme({children}) {
+  return <ThemeProvider>{children}</ThemeProvider>;
+}
+
 function AppWithNavigation() {
+  const {colorScheme, preference} = useTheme();
   return (
-    <ApolloProvider client={client}>
-      <NavigationContainer>
-        <Tab.Navigator>
-          <Tab.Screen name="Catalog" component={CatalogScreen} />
-          <Tab.Screen name="Settings" component={SettingsScreen} />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </ApolloProvider>
+    <ConfigProvider>
+      <ApolloProvider client={client}>
+        <StatusBar barStyle="default" />
+        <NavigationContainer
+          theme={getNavigationTheme(colorScheme, preference)}>
+          <Tab.Navigator>
+            <Tab.Screen name="Catalog" component={CatalogScreen} />
+            <Tab.Screen name="Settings" component={SettingsScreen} />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </ApolloProvider>
+    </ConfigProvider>
   );
 }
 
-export default AppWithNavigation;
+function App() {
+  return (
+    <AppWithTheme>
+      <AppWithNavigation />
+    </AppWithTheme>
+  );
+}
+
+export default App;

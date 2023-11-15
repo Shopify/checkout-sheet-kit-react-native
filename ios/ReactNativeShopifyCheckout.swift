@@ -29,7 +29,7 @@ import UIKit
 class RCTShopifyCheckout: UIViewController, CheckoutDelegate {
     func checkoutDidComplete() {}
 
-    func checkoutDidFail(error: ShopifyCheckout.CheckoutError) {}
+    func checkoutDidFail(error _: ShopifyCheckout.CheckoutError) {}
 
     func checkoutDidCancel() {
         DispatchQueue.main.async {
@@ -39,17 +39,13 @@ class RCTShopifyCheckout: UIViewController, CheckoutDelegate {
         }
     }
 
-    @objc func constantsToExport() -> [AnyHashable: Any]! {
+    @objc func constantsToExport() -> [String: String]! {
         return [
-            "preloading": ShopifyCheckout.configuration.preloading.enabled,
-            "prefill": true,
-            "colorScheme": ShopifyCheckout.configuration.colorScheme,
-            "backgroundColor": ShopifyCheckout.configuration.backgroundColor,
-            "spinnerColor": ShopifyCheckout.configuration.spinnerColor
+            "version": ShopifyCheckout.version
         ]
     }
 
-    @objc func present(_ checkoutURL: String) -> Void {
+    @objc func present(_ checkoutURL: String) {
         DispatchQueue.main.async {
             let sharedDelegate = UIApplication.shared.delegate
 
@@ -59,7 +55,7 @@ class RCTShopifyCheckout: UIViewController, CheckoutDelegate {
         }
     }
 
-    @objc func preload(_ checkoutURL: String) -> Void {
+    @objc func preload(_ checkoutURL: String) {
         DispatchQueue.main.async {
             if let url = URL(string: checkoutURL) {
                 ShopifyCheckout.preload(checkout: url)
@@ -67,19 +63,38 @@ class RCTShopifyCheckout: UIViewController, CheckoutDelegate {
         }
     }
 
-    @objc func setConfiguration(_ configuration: [AnyHashable: Any]) {
+    private func getColorScheme(_ colorScheme: String) -> ShopifyCheckout.Configuration.ColorScheme {
+        switch colorScheme {
+        case "web_default":
+            return ShopifyCheckout.Configuration.ColorScheme.web
+        case "automatic":
+            return ShopifyCheckout.Configuration.ColorScheme.automatic
+        case "light":
+            return ShopifyCheckout.Configuration.ColorScheme.light
+        case "dark":
+            return ShopifyCheckout.Configuration.ColorScheme.dark
+        default:
+            return ShopifyCheckout.Configuration.ColorScheme.automatic
+        }
+    }
+
+    @objc func configure(_ configuration: [AnyHashable: Any]) {
         if let preloading = configuration["preloading"] as? Bool {
             ShopifyCheckout.configuration.preloading.enabled = preloading
         }
-        if let colorScheme = configuration["colorScheme"] as? Configuration.ColorScheme {
-            ShopifyCheckout.configuration.colorScheme = colorScheme
+
+        if let colorScheme = configuration["colorScheme"] as? String {
+            ShopifyCheckout.configuration.colorScheme = getColorScheme(colorScheme)
         }
-        if let backgroundColor = configuration["backgroundColor"] as? UIColor {
-            ShopifyCheckout.configuration.backgroundColor = backgroundColor
-        }
-        if let spinnerColor = configuration["spinnerColor"] as? UIColor {
-            ShopifyCheckout.configuration.spinnerColor = spinnerColor
-        }
+    }
+
+    @objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
+        let config: [String: Any] = [
+            "preloading": ShopifyCheckout.configuration.preloading.enabled,
+            "colorScheme": ShopifyCheckout.configuration.colorScheme.rawValue
+        ]
+
+        resolve(config)
     }
 
     @objc static func requiresMainQueueSetup() -> Bool {
