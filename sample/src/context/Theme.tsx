@@ -20,12 +20,12 @@ interface Context {
 }
 
 const darkColors: Colors = {
-  background: '#222233',
-  backgroundSubdued: '#333344',
-  border: '#555566',
+  background: '#1D1D1F',
+  backgroundSubdued: '#222',
+  border: '#333336',
   text: '#fff',
   textSubdued: '#eee',
-  primary: '#0087ff',
+  primary: '#0B96F1',
   primaryText: '#fff',
   secondary: '#0087ff',
   secondaryText: '#fff',
@@ -37,8 +37,8 @@ const lightColors: Colors = {
   border: '#eee',
   text: '#000',
   textSubdued: '#a3a3a3',
-  primary: 'transparent',
-  primaryText: '#0087ff',
+  primary: '#0087ff',
+  primaryText: '#fff',
   secondary: '#000',
   secondaryText: '#fff',
 };
@@ -49,7 +49,7 @@ const webColors = {
   border: '#d0d0cd',
   text: '#000',
   textSubdued: '#a3a3a3',
-  primary: 'transparent',
+  primary: '#2c2a38',
   primaryText: '#0087ff',
   secondary: '#000',
   secondaryText: '#fff',
@@ -175,8 +175,6 @@ export const ThemeProvider: React.FC<PropsWithChildren> = ({children}) => {
     }),
     [preference, colorScheme, setColorScheme],
   );
-
-  console.log('THEME', value);
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

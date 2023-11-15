@@ -75,13 +75,7 @@ const ADD_TO_CART_MUTATION = gql`
       cart {
         id
         checkoutUrl
-        lines(first: 10) {
-          edges {
-            node {
-              id
-            }
-          }
-        }
+        totalQuantity
       }
     }
   }

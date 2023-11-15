@@ -289,7 +289,7 @@ function createStyles(colors: Colors) {
     },
     listItemSwitch: {},
     listItemCheck: {
-      color: colors.primaryText,
+      color: colors.secondary,
       fontWeight: 'bold',
     },
     section: {
@@ -299,6 +299,8 @@ function createStyles(colors: Colors) {
     sectionText: {
       fontSize: 13,
       color: '#9f9f9f',
+      marginTop: 10,
+      marginBottom: -10,
     },
   });
 }

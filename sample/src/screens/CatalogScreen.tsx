@@ -40,9 +40,13 @@ import type {ShopifyProduct} from '../../@types';
 import {Colors, useTheme} from '../context/Theme';
 
 function App(): JSX.Element {
+  // Reuse the same cart ID for the lifetime of the app
   const [cartId, setCartId] = useState<string | null>(null);
+  // Keep track of the number of items in the cart
   const [lineItems, setLineItems] = useState<number>(0);
+  // Maintain a loading state for items being added to the cart
   const [addingToCart, setAddingToCart] = useState(new Set());
+
   const checkoutUrl = useRef<string | null>(null);
   const {colors} = useTheme();
   const styles = createStyles(colors);
@@ -70,7 +74,7 @@ function App(): JSX.Element {
       if (!id) {
         const cart = await createCart();
         id = cart.data.cartCreate.cart.id;
-        setCartId(cartId);
+        setCartId(id);
       }
 
       const {data} = await addLineItems({
@@ -91,7 +95,8 @@ function App(): JSX.Element {
       if (checkoutUrl.current) {
         ShopifyCheckout.preload(checkoutUrl.current);
       }
-      setLineItems(data.cartLinesAdd.cart.lines.edges.length);
+
+      setLineItems(data.cartLinesAdd.cart.totalQuantity);
     },
     [cartId, createCart, addLineItems, setCartId, setLineItems],
   );
@@ -279,14 +284,14 @@ function createStyles(colors: Colors) {
       borderRadius: 10,
       fontSize: 8,
       margin: 5,
-      backgroundColor: colors.primary,
+      backgroundColor: 'transparent',
       paddingHorizontal: 10,
       paddingVertical: 5,
     },
     addToCartButtonText: {
       fontSize: 14,
       lineHeight: 20,
-      color: colors.primaryText,
+      color: colors.primary,
       fontWeight: 'bold',
       textAlign: 'center',
     },
