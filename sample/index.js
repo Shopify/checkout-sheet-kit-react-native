@@ -34,6 +34,7 @@ import ShopifyCheckout, {ColorScheme} from '../package/ShopifyCheckout';
 import {ConfigProvider} from './src/context/Config';
 import {ThemeProvider, getNavigationTheme, useTheme} from './src/context/Theme';
 import {StatusBar} from 'react-native';
+import {CartProvider} from './src/context/Cart';
 
 ShopifyCheckout.configure({
   colorScheme: ColorScheme.automatic,
@@ -60,14 +61,16 @@ function AppWithNavigation() {
   return (
     <ConfigProvider>
       <ApolloProvider client={client}>
-        <StatusBar barStyle="default" />
-        <NavigationContainer
-          theme={getNavigationTheme(colorScheme, preference)}>
-          <Tab.Navigator>
-            <Tab.Screen name="Catalog" component={CatalogScreen} />
-            <Tab.Screen name="Settings" component={SettingsScreen} />
-          </Tab.Navigator>
-        </NavigationContainer>
+        <CartProvider>
+          <StatusBar barStyle="default" />
+          <NavigationContainer
+            theme={getNavigationTheme(colorScheme, preference)}>
+            <Tab.Navigator>
+              <Tab.Screen name="Catalog" component={CatalogScreen} />
+              <Tab.Screen name="Settings" component={SettingsScreen} />
+            </Tab.Navigator>
+          </NavigationContainer>
+        </CartProvider>
       </ApolloProvider>
     </ConfigProvider>
   );
