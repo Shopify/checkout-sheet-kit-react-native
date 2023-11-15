@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {useCallback, useRef, useState} from 'react';
+import React from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -38,68 +38,22 @@ import useShopify from '../hooks/useShopify';
 
 import type {ShopifyProduct} from '../../@types';
 import {Colors, useTheme} from '../context/Theme';
+import {useCart} from '../context/Cart';
 
 function App(): JSX.Element {
-  // Reuse the same cart ID for the lifetime of the app
-  const [cartId, setCartId] = useState<string | null>(null);
-  // Keep track of the number of items in the cart
-  const [lineItems, setLineItems] = useState<number>(0);
-  // Maintain a loading state for items being added to the cart
-  const [addingToCart, setAddingToCart] = useState(new Set());
+  const {checkoutURL, totalQuantity, addToCart, addingToCart} = useCart();
 
-  const checkoutUrl = useRef<string | null>(null);
   const {colors} = useTheme();
   const styles = createStyles(colors);
 
-  const {queries, mutations} = useShopify();
+  const {queries} = useShopify();
   const {loading, data} = queries.products;
-  const [createCart] = mutations.cartCreate;
-  const [addLineItems] = mutations.cartLinesAdd;
 
   const presentCheckout = async () => {
-    if (checkoutUrl.current) {
-      ShopifyCheckout.present(checkoutUrl.current);
+    if (checkoutURL) {
+      ShopifyCheckout.present(checkoutURL);
     }
   };
-
-  const handleAddToCart = useCallback(
-    async (variantId: string) => {
-      let id = cartId;
-      setAddingToCart(prev => {
-        const next = new Set(prev);
-        next.add(variantId);
-        return next;
-      });
-
-      if (!id) {
-        const cart = await createCart();
-        id = cart.data.cartCreate.cart.id;
-        setCartId(id);
-      }
-
-      const {data} = await addLineItems({
-        variables: {
-          cartId: id,
-          lines: [{quantity: 1, merchandiseId: variantId}],
-        },
-      });
-
-      setAddingToCart(prev => {
-        const next = new Set(prev);
-        next.delete(variantId);
-        return next;
-      });
-
-      checkoutUrl.current = data.cartLinesAdd.cart.checkoutUrl;
-
-      if (checkoutUrl.current) {
-        ShopifyCheckout.preload(checkoutUrl.current);
-      }
-
-      setLineItems(data.cartLinesAdd.cart.totalQuantity);
-    },
-    [cartId, createCart, addLineItems, setCartId, setLineItems],
-  );
 
   if (loading) {
     return (
@@ -121,19 +75,19 @@ function App(): JSX.Element {
               key={node.id}
               product={node}
               loading={addingToCart.has(getVariant(node).id)}
-              onAddToCart={handleAddToCart}
+              onAddToCart={addToCart}
             />
           ))}
         </View>
       </ScrollView>
-      {lineItems > 0 && (
+      {totalQuantity > 0 && (
         <Pressable
           style={styles.cartButton}
-          disabled={!lineItems}
+          disabled={totalQuantity === 0}
           onPress={presentCheckout}>
           <Text style={styles.cartButtonText}>Checkout</Text>
           <Text style={styles.cartButtonTextSubtitle}>
-            {lineItems} {lineItems === 1 ? 'item' : 'items'}
+            {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}
           </Text>
         </Pressable>
       )}
