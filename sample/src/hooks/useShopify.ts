@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import {gql, useMutation, useQuery} from '@apollo/client';
+import {gql, useLazyQuery, useMutation} from '@apollo/client';
 import {Edges, ShopifyProduct} from '../../@types';
 
 const PRODUCTS_QUERY = gql`
@@ -82,7 +82,9 @@ const ADD_TO_CART_MUTATION = gql`
 `;
 
 function useShopify() {
-  const products = useQuery<{products: Edges<ShopifyProduct>}>(PRODUCTS_QUERY);
+  const products = useLazyQuery<{products: Edges<ShopifyProduct>}>(
+    PRODUCTS_QUERY,
+  );
   const cartCreate = useMutation(CREATE_CART_MUTATION);
   const cartLinesAdd = useMutation(ADD_TO_CART_MUTATION);
 

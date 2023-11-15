@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -42,18 +42,35 @@ import {useCart} from '../context/Cart';
 
 function App(): JSX.Element {
   const {checkoutURL, totalQuantity, addToCart, addingToCart} = useCart();
-
   const {colors} = useTheme();
   const styles = createStyles(colors);
-
   const {queries} = useShopify();
-  const {loading, data} = queries.products;
+
+  const [fetchProducts, {loading, data, error: errorFetchingProducts}] =
+    queries.products;
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const presentCheckout = async () => {
     if (checkoutURL) {
       ShopifyCheckout.present(checkoutURL);
     }
   };
+
+  if (errorFetchingProducts) {
+    return (
+      <View style={styles.loading}>
+        <Text style={styles.loadingText}>
+          An error occurred while loading the catalog
+        </Text>
+        <Text style={styles.loadingText}>
+          {errorFetchingProducts?.name} {errorFetchingProducts?.message}
+        </Text>
+      </View>
+    );
+  }
 
   if (loading) {
     return (
@@ -155,6 +172,7 @@ function createStyles(colors: Colors) {
     },
     loading: {
       flex: 1,
+      p: 2,
       justifyContent: 'center',
       alignItems: 'center',
     },
