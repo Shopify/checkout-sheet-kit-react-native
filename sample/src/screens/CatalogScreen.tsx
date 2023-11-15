@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -52,9 +52,14 @@ function App(): JSX.Element {
   const styles = createStyles(colors);
 
   const {queries, mutations} = useShopify();
-  const {loading, data} = queries.products;
+  const [fetchProducts, {loading, data, error: errorFetchingProducts}] =
+    queries.products;
   const [createCart] = mutations.cartCreate;
   const [addLineItems] = mutations.cartLinesAdd;
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const presentCheckout = async () => {
     if (checkoutUrl.current) {
@@ -100,6 +105,19 @@ function App(): JSX.Element {
     },
     [cartId, createCart, addLineItems, setCartId, setLineItems],
   );
+
+  if (errorFetchingProducts) {
+    return (
+      <View style={styles.loading}>
+        <Text style={styles.loadingText}>
+          An error occurred while loading the catalog
+        </Text>
+        <Text style={styles.loadingText}>
+          {errorFetchingProducts?.name} {errorFetchingProducts?.message}
+        </Text>
+      </View>
+    );
+  }
 
   if (loading) {
     return (
@@ -201,6 +219,7 @@ function createStyles(colors: Colors) {
     },
     loading: {
       flex: 1,
+      p: 2,
       justifyContent: 'center',
       alignItems: 'center',
     },
