@@ -37,8 +37,10 @@ import {ThemeProvider, getNavigationTheme, useTheme} from './src/context/Theme';
 import {StatusBar} from 'react-native';
 import {CartProvider} from './src/context/Cart';
 
+const defaultColorScheme = ColorScheme.web;
+
 ShopifyCheckout.configure({
-  colorScheme: ColorScheme.automatic,
+  colorScheme: defaultColorScheme,
   preloading: true,
 });
 
@@ -54,7 +56,9 @@ const client = new ApolloClient({
 });
 
 function AppWithTheme({children}) {
-  return <ThemeProvider>{children}</ThemeProvider>;
+  return (
+    <ThemeProvider defaultValue={defaultColorScheme}>{children}</ThemeProvider>
+  );
 }
 
 const createNavigationIcon =
