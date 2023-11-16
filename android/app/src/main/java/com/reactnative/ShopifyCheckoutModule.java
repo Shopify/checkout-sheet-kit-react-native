@@ -66,7 +66,7 @@ public class ShopifyCheckoutModule extends ReactContextBaseJavaModule {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity instanceof ComponentActivity) {
             Context appContext = getReactApplicationContext();
-            CheckoutEventProcessor checkoutEventProcessor = new MyCheckoutEventProcessor(appContext);
+            CheckoutEventProcessor checkoutEventProcessor = new CustomCheckoutEventProcessor(appContext);
             currentActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

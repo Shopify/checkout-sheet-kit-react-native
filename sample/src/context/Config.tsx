@@ -49,6 +49,7 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
       try {
         // Update the SDK configuration
         ShopifyCheckout.configure(config);
+
         // Fetch the latest configuration object
         const updatedConfig = await ShopifyCheckout.getConfig();
 
