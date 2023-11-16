@@ -34,8 +34,6 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
       try {
         // Fetch the checkout configuration object
         const config = await ShopifyCheckout.getConfig();
-
-        console.log('CONFIG', config);
         // Store it in local state
         setConfig(config);
       } catch (error) {
@@ -51,7 +49,6 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
       try {
         // Update the SDK configuration
         ShopifyCheckout.configure(config);
-
         // Fetch the latest configuration object
         const updatedConfig = await ShopifyCheckout.getConfig();
 
