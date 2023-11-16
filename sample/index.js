@@ -35,7 +35,8 @@ import ShopifyCheckout, {ColorScheme} from '../package/ShopifyCheckout';
 import {ConfigProvider} from './src/context/Config';
 import {ThemeProvider, getNavigationTheme, useTheme} from './src/context/Theme';
 import {StatusBar} from 'react-native';
-import {CartProvider} from './src/context/Cart';
+import {CartProvider, useCart} from './src/context/Cart';
+import CartScreen from './src/screens/CartScreen';
 
 const defaultColorScheme = ColorScheme.web;
 
@@ -67,35 +68,51 @@ const createNavigationIcon =
     return <Icon name={name} color={color} size={size} />;
   };
 
-function AppWithNavigation() {
-  const {colorScheme, preference} = useTheme();
+function AppWithContext({children}) {
   return (
     <ConfigProvider>
       <ApolloProvider client={client}>
         <CartProvider>
           <StatusBar barStyle="default" />
-          <NavigationContainer
-            theme={getNavigationTheme(colorScheme, preference)}>
-            <Tab.Navigator>
-              <Tab.Screen
-                name="Catalog"
-                component={CatalogScreen}
-                options={{
-                  tabBarIcon: createNavigationIcon('shop'),
-                }}
-              />
-              <Tab.Screen
-                name="Settings"
-                component={SettingsScreen}
-                options={{
-                  tabBarIcon: createNavigationIcon('cog'),
-                }}
-              />
-            </Tab.Navigator>
-          </NavigationContainer>
+          {children}
         </CartProvider>
       </ApolloProvider>
     </ConfigProvider>
+  );
+}
+
+function AppWithNavigation() {
+  const {colorScheme, preference} = useTheme();
+  const {totalQuantity} = useCart();
+  return (
+    <AppWithContext>
+      <NavigationContainer theme={getNavigationTheme(colorScheme, preference)}>
+        <Tab.Navigator>
+          <Tab.Screen
+            name="Catalog"
+            component={CatalogScreen}
+            options={{
+              tabBarIcon: createNavigationIcon('shop'),
+            }}
+          />
+          <Tab.Screen
+            name="Cart"
+            component={CartScreen}
+            options={{
+              tabBarIcon: createNavigationIcon('shopping-cart'),
+              tabBarBadge: totalQuantity > 0 ? totalQuantity : null,
+            }}
+          />
+          <Tab.Screen
+            name="Settings"
+            component={SettingsScreen}
+            options={{
+              tabBarIcon: createNavigationIcon('cog'),
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </AppWithContext>
   );
 }
 

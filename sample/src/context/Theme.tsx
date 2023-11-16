@@ -47,11 +47,11 @@ const webColors = {
   background: '#f0f0e8',
   backgroundSubdued: '#e8e8e0',
   border: '#d0d0cd',
-  text: '#000',
+  text: '#2d2a38',
   textSubdued: '#a3a3a3',
   primary: '#2c2a38',
   primaryText: '#0087ff',
-  secondary: '#000',
+  secondary: '#2d2a38',
   secondaryText: '#fff',
 };
 

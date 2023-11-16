@@ -40,7 +40,7 @@ import type {ShopifyProduct} from '../../@types';
 import {Colors, useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 
-function App(): JSX.Element {
+function CatalogScreen(): JSX.Element {
   const {checkoutURL, totalQuantity, addToCart, addingToCart} = useCart();
   const {colors} = useTheme();
   const styles = createStyles(colors);
@@ -149,7 +149,9 @@ function Product({
         </View>
         <View style={styles.addToCartButtonContainer}>
           {loading ? (
-            <ActivityIndicator size="small" />
+            <View style={styles.addToCartLoading}>
+              <ActivityIndicator size="small" />
+            </View>
           ) : (
             <Pressable
               style={styles.addToCartButton}
@@ -163,7 +165,7 @@ function Product({
   );
 }
 
-export default App;
+export default CatalogScreen;
 
 function createStyles(colors: Colors) {
   return StyleSheet.create({
@@ -246,6 +248,10 @@ function createStyles(colors: Colors) {
       height: 120,
       marginRight: 5,
       borderRadius: 6,
+    },
+    addToCartLoading: {
+      padding: 10,
+      marginRight: 20,
     },
     addToCartButtonContainer: {
       alignItems: 'flex-end',
