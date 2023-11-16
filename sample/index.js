@@ -26,6 +26,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
 import {STOREFRONT_DOMAIN, STOREFRONT_ACCESS_TOKEN} from '@env';
+import Icon from 'react-native-vector-icons/Entypo';
 
 import CatalogScreen from './src/screens/CatalogScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
@@ -56,6 +57,12 @@ function AppWithTheme({children}) {
   return <ThemeProvider>{children}</ThemeProvider>;
 }
 
+const createNavigationIcon =
+  name =>
+  ({color, size}) => {
+    return <Icon name={name} color={color} size={size} />;
+  };
+
 function AppWithNavigation() {
   const {colorScheme, preference} = useTheme();
   return (
@@ -66,8 +73,20 @@ function AppWithNavigation() {
           <NavigationContainer
             theme={getNavigationTheme(colorScheme, preference)}>
             <Tab.Navigator>
-              <Tab.Screen name="Catalog" component={CatalogScreen} />
-              <Tab.Screen name="Settings" component={SettingsScreen} />
+              <Tab.Screen
+                name="Catalog"
+                component={CatalogScreen}
+                options={{
+                  tabBarIcon: createNavigationIcon('shop'),
+                }}
+              />
+              <Tab.Screen
+                name="Settings"
+                component={SettingsScreen}
+                options={{
+                  tabBarIcon: createNavigationIcon('cog'),
+                }}
+              />
             </Tab.Navigator>
           </NavigationContainer>
         </CartProvider>
