@@ -10,7 +10,7 @@ import {DarkTheme, DefaultTheme} from '@react-navigation/native';
 import {
   ColorScheme,
   ShopifyCheckoutConfiguration,
-} from '../../../package/ShopifyCheckout';
+} from 'react-native-shopify-checkout-kit';
 
 interface Context {
   colors: Colors;

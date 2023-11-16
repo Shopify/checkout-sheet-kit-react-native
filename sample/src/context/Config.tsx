@@ -9,7 +9,7 @@ import React, {
 import ShopifyCheckout, {
   ColorScheme,
   ShopifyCheckoutConfiguration,
-} from '../../../package/ShopifyCheckout';
+} from 'react-native-shopify-checkout-kit';
 import {useTheme} from './Theme';
 
 interface Context {

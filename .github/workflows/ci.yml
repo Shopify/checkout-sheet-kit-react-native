@@ -1,4 +1,4 @@
-name: Run Lint Checks
+name: CI Pipeline
 
 on:
   pull_request:

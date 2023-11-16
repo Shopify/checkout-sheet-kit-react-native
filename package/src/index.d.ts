@@ -21,10 +21,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import {NativeModules} from 'react-native';
-
-const {ShopifyCheckout} = NativeModules;
-
 export enum ColorScheme {
   automatic = 'automatic',
   light = 'light',
@@ -43,7 +39,7 @@ export interface ShopifyCheckoutConfiguration {
   preloading?: boolean;
 }
 
-interface ShopifyCheckout {
+export interface ShopifyCheckout {
   /**
    * The version number of the Shopify Checkout SDK.
    */
@@ -65,5 +61,3 @@ interface ShopifyCheckout {
    */
   getConfig(): Promise<ShopifyCheckoutConfiguration>;
 }
-
-export default ShopifyCheckout as ShopifyCheckout;

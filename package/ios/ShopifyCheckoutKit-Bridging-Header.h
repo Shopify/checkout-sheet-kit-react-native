@@ -22,3 +22,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 #import <React/RCTBridgeModule.h>
+#import <React/RCTViewManager.h>
