@@ -67,12 +67,9 @@ public class ShopifyCheckoutModule extends ReactContextBaseJavaModule {
         if (currentActivity instanceof ComponentActivity) {
             Context appContext = getReactApplicationContext();
             CheckoutEventProcessor checkoutEventProcessor = new CustomCheckoutEventProcessor(appContext);
-            currentActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ShopifyCheckoutKit.present(checkoutURL, (ComponentActivity) currentActivity,
-                            checkoutEventProcessor);
-                }
+            currentActivity.runOnUiThread(() -> {
+                ShopifyCheckoutKit.present(checkoutURL, (ComponentActivity) currentActivity,
+                        checkoutEventProcessor);
             });
         }
     }
@@ -102,33 +99,21 @@ public class ShopifyCheckoutModule extends ReactContextBaseJavaModule {
     }
 
     private String colorSchemeToString(ColorScheme colorScheme) {
-        if (colorScheme instanceof ColorScheme.Web) {
-            return "web_default";
-        } else if (colorScheme instanceof ColorScheme.Automatic) {
-            return "automatic";
-        } else if (colorScheme instanceof ColorScheme.Light) {
-            return "light";
-        } else if (colorScheme instanceof ColorScheme.Dark) {
-            return "dark";
-        } else {
-            return "automatic";
-        }
+        return colorScheme.getId();
     }
 
     @ReactMethod
     public void configure(ReadableMap config) {
-        ShopifyCheckoutKit.configure(new ConfigurationUpdater() {
-            public void configure(@NotNull Configuration configuration) {
-                if (config.hasKey("preloading")) {
-                    configuration.setPreloading(new Preloading(config.getBoolean("preloading")));
-                }
-
-                if (config.hasKey("colorScheme")) {
-                    configuration.setColorScheme(getColorScheme(config.getString("colorScheme")));
-                }
-
-                checkoutConfig = configuration;
+        ShopifyCheckoutKit.configure(configuration -> {
+            if (config.hasKey("preloading")) {
+                configuration.setPreloading(new Preloading(config.getBoolean("preloading")));
             }
+
+            if (config.hasKey("colorScheme")) {
+                configuration.setColorScheme(getColorScheme(config.getString("colorScheme")));
+            }
+
+            checkoutConfig = configuration;
         });
     }
 
