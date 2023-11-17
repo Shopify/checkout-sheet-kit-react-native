@@ -150,10 +150,10 @@ function getColors(
   }
 }
 
-export const ThemeProvider: React.FC<PropsWithChildren> = ({children}) => {
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(
-    ColorScheme.automatic,
-  );
+export const ThemeProvider: React.FC<
+  PropsWithChildren<{defaultValue: ColorScheme}>
+> = ({children, defaultValue = ColorScheme.automatic}) => {
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(defaultValue);
   const [preference, setThemePreference] = useState<ColorSchemeName>(
     Appearance.getColorScheme(),
   );
