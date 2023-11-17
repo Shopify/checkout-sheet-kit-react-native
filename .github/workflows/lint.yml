@@ -8,14 +8,11 @@ jobs:
   react:
     runs-on: shopify-ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Setup
+        uses: ./.github/actions/setup
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: 'yarn'
-      - run: yarn install --frozen-lockfile
-      - run: yarn lint
+      - name: Typecheck + ESLint
+        run: yarn lint
 
   swift:
     runs-on: shopify-ubuntu-latest

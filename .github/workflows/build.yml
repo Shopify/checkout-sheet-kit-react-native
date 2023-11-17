@@ -5,41 +5,69 @@ on:
   workflow_dispatch:
 
 jobs:
-  iOS:
-    runs-on: macOS-latest
+  Android:
+    runs-on: shopify-ubuntu-latest
+    # env:
+    #   TURBO_CACHE_DIR: .turbo/android
     steps:
-      - uses: actions/checkout@v3
+      - name: Setup
+        uses: ./.github/actions/setup
 
-      - uses: actions/setup-node@v3
+      - name: Install JDK
+        uses: actions/setup-java@v3
         with:
-          node-version: 16
-          cache: 'yarn'
+          distribution: 'zulu'
+          java-version: '11'
 
-      - name: Cache Node Modules
+      - name: Cache Gradle
         uses: actions/cache@v3
-        id: yarn-cache
         with:
           path: |
-            **/node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+            ~/.gradle/wrapper
+            ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-gradle-
 
-      - name: Cache iOS Pods
-        id: pods-cache
-        uses: actions/cache@v3
-        with:
-          path: ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-            ${{ runner.os }}-pods-
+      - name: Build Android sample app
+        run: |
+          yarn build:android"
 
-      - run: yarn install --frozen-lockfile
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
+  # iOS:
+  #   runs-on: macOS-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - run: npx pod-install
-        if: steps.pods-cache.outputs.cache-hit != 'true'
+  #     - uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 16
+  #         cache: 'yarn'
 
-      - run: yarn build:ios
+  #     - name: Cache Node Modules
+  #       uses: actions/cache@v3
+  #       id: yarn-cache
+  #       with:
+  #         path: |
+  #           **/node_modules
+  #         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+  #           ${{ runner.os }}-yarn-
+
+  #     - name: Cache iOS Pods
+  #       id: pods-cache
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: ios/Pods
+  #         key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+  #           ${{ runner.os }}-pods-
+
+  #     - run: yarn install --frozen-lockfile
+  #       if: steps.yarn-cache.outputs.cache-hit != 'true'
+
+  #     - run: npx pod-install
+  #       if: steps.pods-cache.outputs.cache-hit != 'true'
+
+  #     # - run: yarn build:ios

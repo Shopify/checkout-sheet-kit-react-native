@@ -55,13 +55,6 @@
 				<key>NSIncludesSubdomains</key>
 				<true/>
 			</dict>
-			<key>spin.dev</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
