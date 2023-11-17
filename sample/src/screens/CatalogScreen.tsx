@@ -46,8 +46,7 @@ function CatalogScreen(): JSX.Element {
   const styles = createStyles(colors);
   const {queries} = useShopify();
 
-  const [fetchProducts, {loading, data, error: errorFetchingProducts}] =
-    queries.products;
+  const [fetchProducts, {loading, data, error}] = queries.products;
 
   useEffect(() => {
     fetchProducts();
@@ -59,15 +58,13 @@ function CatalogScreen(): JSX.Element {
     }
   };
 
-  if (errorFetchingProducts) {
+  if (error) {
     return (
       <View style={styles.loading}>
         <Text style={styles.loadingText}>
-          An error occurred while loading the catalog
+          An error occurred while loading the catalog.
         </Text>
-        <Text style={styles.loadingText}>
-          {errorFetchingProducts?.name} {errorFetchingProducts?.message}
-        </Text>
+        <Text style={styles.loadingText}>"{error?.message}"</Text>
       </View>
     );
   }

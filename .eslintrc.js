@@ -3,5 +3,6 @@ module.exports = {
   extends: '@react-native',
   rules: {
     '@typescript-eslint/no-shadow': 'off',
+    'no-console': 'error',
   },
 };

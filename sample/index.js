@@ -84,42 +84,43 @@ function AppWithContext({children}) {
 function AppWithNavigation() {
   const {colorScheme, preference} = useTheme();
   const {totalQuantity} = useCart();
+
   return (
-    <AppWithContext>
-      <NavigationContainer theme={getNavigationTheme(colorScheme, preference)}>
-        <Tab.Navigator>
-          <Tab.Screen
-            name="Catalog"
-            component={CatalogScreen}
-            options={{
-              tabBarIcon: createNavigationIcon('shop'),
-            }}
-          />
-          <Tab.Screen
-            name="Cart"
-            component={CartScreen}
-            options={{
-              tabBarIcon: createNavigationIcon('shopping-cart'),
-              tabBarBadge: totalQuantity > 0 ? totalQuantity : null,
-            }}
-          />
-          <Tab.Screen
-            name="Settings"
-            component={SettingsScreen}
-            options={{
-              tabBarIcon: createNavigationIcon('cog'),
-            }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </AppWithContext>
+    <NavigationContainer theme={getNavigationTheme(colorScheme, preference)}>
+      <Tab.Navigator>
+        <Tab.Screen
+          name="Catalog"
+          component={CatalogScreen}
+          options={{
+            tabBarIcon: createNavigationIcon('shop'),
+          }}
+        />
+        <Tab.Screen
+          name="Cart"
+          component={CartScreen}
+          options={{
+            tabBarIcon: createNavigationIcon('shopping-cart'),
+            tabBarBadge: totalQuantity > 0 ? totalQuantity : null,
+          }}
+        />
+        <Tab.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            tabBarIcon: createNavigationIcon('cog'),
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
 
 function App() {
   return (
     <AppWithTheme>
-      <AppWithNavigation />
+      <AppWithContext>
+        <AppWithNavigation />
+      </AppWithContext>
     </AppWithTheme>
   );
 }

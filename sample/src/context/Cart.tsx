@@ -94,7 +94,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       if (!id) {
         const cart = await createCart();
         id = cart.data.cartCreate.cart.id;
-        console.log('cart id', id);
+
         if (id) {
           setCartId(id);
         }
