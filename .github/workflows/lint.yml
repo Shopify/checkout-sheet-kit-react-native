@@ -1,11 +1,11 @@
-name: Run Lint Checks
+name: Lint
 
 on:
   pull_request:
   workflow_dispatch:
 
 jobs:
-  lint-react:
+  react:
     runs-on: shopify-ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -17,7 +17,7 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn lint
 
-  lint-swift:
+  swift:
     runs-on: shopify-ubuntu-latest
     steps:
       - uses: actions/checkout@v3
