@@ -22,10 +22,51 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import {gql, useLazyQuery, useMutation} from '@apollo/client';
-import {Edges, ShopifyProduct} from '../../@types';
+import type {Edges, ShopifyProduct, ShopifyCart} from '../../@types';
+
+const moneyFragment = gql`
+  fragment Price on MoneyV2 {
+    currencyCode
+    amount
+  }
+`;
+
+const productFragment = gql`
+  fragment Product on ProductVariant {
+    id
+    price {
+      ...Price
+    }
+    product {
+      title
+    }
+    image {
+      id
+      width
+      height
+      url
+    }
+  }
+
+  ${moneyFragment}
+`;
+
+const cartCostFragment = gql`
+  fragment Cost on CartCost {
+    subtotalAmount {
+      ...Price
+    }
+    totalAmount {
+      ...Price
+    }
+    totalTaxAmount {
+      ...Price
+    }
+  }
+`;
 
 const PRODUCTS_QUERY = gql`
-  {
+  query FetchProducts {
     products(first: 10) {
       edges {
         node {
@@ -36,8 +77,7 @@ const PRODUCTS_QUERY = gql`
               node {
                 id
                 price {
-                  amount
-                  currencyCode
+                  ...Price
                 }
               }
             }
@@ -56,6 +96,40 @@ const PRODUCTS_QUERY = gql`
       }
     }
   }
+
+  ${moneyFragment}
+`;
+
+const CART_QUERY = gql`
+  query FetchCart($cartId: ID!) {
+    cart(id: $cartId) {
+      id
+      totalQuantity
+      cost {
+        ...Cost
+      }
+      lines(first: 100) {
+        edges {
+          node {
+            id
+            quantity
+            merchandise {
+              ...Product
+            }
+            cost {
+              totalAmount {
+                ...Price
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  ${productFragment}
+  ${moneyFragment}
+  ${cartCostFragment}
 `;
 
 const CREATE_CART_MUTATION = gql`
@@ -81,20 +155,38 @@ const ADD_TO_CART_MUTATION = gql`
   }
 `;
 
+const REMOVE_FROM_CART_MUTATION = gql`
+  mutation RemoveFromCart($cartId: ID!, $lineIds: [ID!]!) {
+    cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+      cart {
+        id
+        checkoutUrl
+        totalQuantity
+      }
+    }
+  }
+`;
+
 function useShopify() {
   const products = useLazyQuery<{products: Edges<ShopifyProduct>}>(
     PRODUCTS_QUERY,
   );
+  const cart = useLazyQuery<{cart: ShopifyCart}>(CART_QUERY, {
+    fetchPolicy: 'network-only',
+  });
   const cartCreate = useMutation(CREATE_CART_MUTATION);
   const cartLinesAdd = useMutation(ADD_TO_CART_MUTATION);
+  const cartLinesRemove = useMutation(REMOVE_FROM_CART_MUTATION);
 
   return {
     queries: {
+      cart,
       products,
     },
     mutations: {
       cartCreate,
       cartLinesAdd,
+      cartLinesRemove,
     },
   };
 }

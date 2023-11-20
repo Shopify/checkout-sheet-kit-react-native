@@ -2,6 +2,7 @@ import React, {
   PropsWithChildren,
   createContext,
   useCallback,
+  useEffect,
   useMemo,
   useReducer,
   useState,
@@ -10,17 +11,23 @@ import ShopifyCheckout from '../../../package/ShopifyCheckout';
 import useShopify from '../hooks/useShopify';
 
 interface Context {
+  cartId: string | undefined;
   checkoutURL: string | undefined;
   totalQuantity: number;
   addingToCart: Set<string>;
   addToCart: (variantId: string) => Promise<void>;
+  removeFromCart: (variantId: string) => Promise<void>;
 }
 
+const defaultCartId = undefined;
+
 const CartContext = createContext<Context>({
+  cartId: defaultCartId,
   checkoutURL: undefined,
   totalQuantity: 0,
   addingToCart: new Set(),
   addToCart: async () => {},
+  removeFromCart: async () => {},
 });
 
 type AddingToCartAction =
@@ -32,7 +39,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const [checkoutURL, setCheckoutURL] =
     useState<Context['checkoutURL']>(undefined);
   // Reuse the same cart ID for the lifetime of the app
-  const [cartId, setCartId] = useState<string | undefined>(undefined);
+  const [cartId, setCartId] = useState<string | undefined>(defaultCartId);
   // Keep track of the number of items in the cart
   const [totalQuantity, setTotalQuantity] = useState<number>(0);
   // Maintain a loading state for items being added to the cart
@@ -53,9 +60,30 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const defaultSet: Set<string> = new Set();
   const [addingToCart, dispatch] = useReducer(addingToCartReducer, defaultSet);
 
-  const {mutations} = useShopify();
+  const {mutations, queries} = useShopify();
   const [createCart] = mutations.cartCreate;
   const [addLineItems] = mutations.cartLinesAdd;
+  const [removeLineItems] = mutations.cartLinesRemove;
+  const [fetchCart] = queries.cart;
+
+  useEffect(() => {
+    async function getCart() {
+      try {
+        const {data} = await fetchCart({
+          variables: {
+            cartId,
+          },
+        });
+        if (data?.cart.totalQuantity) {
+          setTotalQuantity(data?.cart.totalQuantity);
+        }
+      } catch {}
+    }
+
+    if (cartId) {
+      getCart();
+    }
+  }, [cartId, fetchCart]);
 
   const addToCart = useCallback(
     async (variantId: string) => {
@@ -66,6 +94,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       if (!id) {
         const cart = await createCart();
         id = cart.data.cartCreate.cart.id;
+
         if (id) {
           setCartId(id);
         }
@@ -86,10 +115,19 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       if (checkoutURL) {
         ShopifyCheckout.preload(checkoutURL);
       }
+
+      if (id) {
+        fetchCart({
+          variables: {
+            cartId: id,
+          },
+        });
+      }
     },
     [
       cartId,
       createCart,
+      fetchCart,
       addLineItems,
       setCartId,
       setTotalQuantity,
@@ -97,14 +135,58 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
     ],
   );
 
+  const removeFromCart = useCallback(
+    async (variantId: string) => {
+      if (!cartId) {
+        return;
+      }
+
+      dispatch({type: 'add', variantId});
+
+      const {data} = await removeLineItems({
+        variables: {
+          cartId,
+          lineIds: [variantId],
+        },
+      });
+
+      dispatch({type: 'remove', variantId});
+
+      setCheckoutURL(data.cartLinesRemove.cart.checkoutUrl);
+      setTotalQuantity(data.cartLinesRemove.cart.totalQuantity);
+
+      if (checkoutURL) {
+        ShopifyCheckout.preload(checkoutURL);
+      }
+
+      if (cartId) {
+        fetchCart({
+          variables: {
+            cartId,
+          },
+        });
+      }
+    },
+    [cartId, removeLineItems, fetchCart, setTotalQuantity, checkoutURL],
+  );
+
   const value = useMemo(
     () => ({
+      cartId,
       checkoutURL,
       addToCart,
+      removeFromCart,
       totalQuantity,
       addingToCart,
     }),
-    [checkoutURL, addToCart, totalQuantity, addingToCart],
+    [
+      cartId,
+      checkoutURL,
+      addToCart,
+      removeFromCart,
+      totalQuantity,
+      addingToCart,
+    ],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
