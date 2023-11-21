@@ -5,6 +5,7 @@ const exclusionList = require('metro-config/src/defaults/exclusionList');
 const pkg = require('../package.json');
 
 const root = path.resolve(__dirname, '..');
+const sample = path.resolve(root, 'sample');
 
 const modules = Object.keys({...pkg.peerDependencies});
 /**
@@ -14,6 +15,8 @@ const modules = Object.keys({...pkg.peerDependencies});
  * @type {import('metro-config').MetroConfig}
  */
 const config = mergeConfig(getDefaultConfig(__dirname), {
+  projectRoot: sample,
+
   watchFolders: [root],
 
   // We need to make sure that only one version is loaded for peerDependencies
@@ -25,10 +28,15 @@ const config = mergeConfig(getDefaultConfig(__dirname), {
       ),
     ),
 
-    extraNodeModules: modules.reduce((acc, name) => {
-      acc[name] = path.join(__dirname, 'node_modules', name);
-      return acc;
-    }, {}),
+    extraNodeModules: {
+      react: path.resolve(sample, 'node_modules', 'react'),
+      'react-native': path.resolve(sample, 'node_modules', 'react-native'),
+      'react-native-shopify-checkout-kit': path.resolve(
+        root,
+        'modules',
+        'react-native-shopify-checkout-kit',
+      ),
+    },
   },
 
   transformer: {

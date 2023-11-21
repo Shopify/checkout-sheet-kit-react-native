@@ -106,7 +106,7 @@ function AppWithNavigation() {
           name="Cart"
           component={CartScreen}
           options={{
-            tabBarIcon: createNavigationIcon('shopping-cart'),
+            tabBarIcon: createNavigationIcon('shopping-bag'),
             tabBarBadge: totalQuantity > 0 ? totalQuantity : undefined,
           }}
         />
