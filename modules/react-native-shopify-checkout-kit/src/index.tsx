@@ -21,43 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-export enum ColorScheme {
-  automatic = 'automatic',
-  light = 'light',
-  dark = 'dark',
-  web = 'web_default',
+import {NativeModules} from 'react-native';
+import type {ShopifyCheckoutKit, ShopifyCheckoutConfiguration} from './index.d';
+import {ColorScheme} from './index.d';
+
+const ShopifyCheckout = NativeModules.ShopifyCheckout as ShopifyCheckoutKit;
+
+if (ShopifyCheckout == null) {
+  throw new Error(`
+  "react-native-shopify-checkout-kit" is not correctly linked.
+
+  If installing for iOS, make sure to run "pod install" and restart the server.`);
 }
 
-export interface ShopifyCheckoutConfiguration {
-  /**
-   * The selected color scheme for the checkout. See README.md for more details.
-   */
-  colorScheme?: ColorScheme;
-  /**
-   * Enable/disable preloading for checkout. This option must be enabled for `.preload()` to work as expected.
-   */
-  preloading?: boolean;
-}
+// API
+export {ColorScheme, ShopifyCheckout};
 
-export interface ShopifyCheckout {
-  /**
-   * The version number of the Shopify Checkout SDK.
-   */
-  version: string;
-  /**
-   * Preload the checkout for faster presentation.
-   */
-  preload(checkoutURL: string): void;
-  /**
-   * Present the checkout.
-   */
-  present(checkoutURL: string): void;
-  /**
-   * Configure the checkout. See README.md for more details.
-   */
-  configure(config: ShopifyCheckoutConfiguration): void;
-  /**
-   * Return the current config for the checkout. See README.md for more details.
-   */
-  getConfig(): Promise<ShopifyCheckoutConfiguration>;
-}
+// Types
+export type {ShopifyCheckoutConfiguration};

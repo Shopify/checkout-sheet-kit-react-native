@@ -31,7 +31,7 @@ import Icon from 'react-native-vector-icons/Entypo';
 import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
-import ShopifyCheckout, {ColorScheme} from 'react-native-shopify-checkout-kit';
+import {ShopifyCheckout, ColorScheme} from 'react-native-shopify-checkout-kit';
 import {ConfigProvider} from './context/Config';
 import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
 import {StatusBar} from 'react-native';

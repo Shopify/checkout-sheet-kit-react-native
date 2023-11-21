@@ -21,17 +21,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import {NativeModules} from 'react-native';
+package com.shopify.reactnative.checkoutkit;
 
-import type {ShopifyCheckout} from './index.d';
+import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.ViewManager;
 
-const {ShopifyCheckout} = NativeModules;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-if (ShopifyCheckout == null) {
-  throw new Error(`
-  "react-native-shopify-checkout-kit" is not correctly linked.
+public class ShopifyCheckoutPackage implements ReactPackage {
 
-  If installing for iOS, make sure to run "pod install" and restart the server.`);
+  @Override
+  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public List<NativeModule> createNativeModules(
+      ReactApplicationContext reactContext) {
+    List<NativeModule> modules = new ArrayList<>();
+
+    modules.add(new ShopifyCheckoutModule(reactContext));
+
+    return modules;
+  }
+
 }
-
-export default ShopifyCheckout as ShopifyCheckout;

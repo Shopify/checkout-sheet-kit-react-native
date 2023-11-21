@@ -118,8 +118,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
-    implementation("com.shopify:checkout-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
 }
 
 project.ext.vectoricons = [

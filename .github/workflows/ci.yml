@@ -5,7 +5,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  lint-react:
+  lint-sample:
+    name: Lint Sample App
     runs-on: shopify-ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -15,7 +16,20 @@ jobs:
           node-version: 16
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
-      - run: yarn lint
+      - run: yarn sample lint
+
+  lint-native-module:
+    name: Lint Native Module
+    runs-on: shopify-ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn module lint
 
   lint-swift:
     runs-on: shopify-ubuntu-latest

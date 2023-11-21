@@ -33,7 +33,7 @@ import {
 } from 'react-native';
 import pkg from '../../../package.json';
 import {useConfig} from '../context/Config';
-import ShopifyCheckout, {ColorScheme} from 'react-native-shopify-checkout-kit';
+import {ColorScheme, ShopifyCheckout} from 'react-native-shopify-checkout-kit';
 import {Colors, useTheme} from '../context/Theme';
 
 enum SectionType {

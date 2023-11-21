@@ -1,0 +1,67 @@
+{
+  "name": "react-native-shopify-checkout-kit",
+  "license": "MIT",
+  "version": "0.1.0",
+  "main": "lib/commonjs/index.js",
+  "types": "src/index.tsx",
+  "source": "src/index.tsx",
+  "module": "lib/module/index.js",
+  "description": "A React Native library for Shopify's Checkout Kit.",
+  "author": "Shopify",
+  "homepage": "https://github.com/shopify/checkout-kit-react-native",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "clean": "rm -rf lib",
+    "build": "bob build",
+    "lint": "yarn typecheck && yarn lint src",
+    "typescript": "tsx --noEmit"
+  },
+  "files": [
+    "../../LICENSE",
+    "../../README.md",
+    "package.json",
+    "src",
+    "ios",
+    "android",
+    "lib",
+    "*.podspec",
+    "!ios/build",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/*.spec.*",
+    "!**/*.test.*",
+    "!**/.*"
+  ],
+  "keywords": [
+    "react-native",
+    "shopify",
+    "checkout"
+  ],
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "react-native-builder-bob": "^0.23.1",
+    "typescript": "^5.3.2"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  }
+}

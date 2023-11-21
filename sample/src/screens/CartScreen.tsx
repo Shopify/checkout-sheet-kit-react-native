@@ -34,7 +34,7 @@ import {
   RefreshControl,
 } from 'react-native';
 
-import ShopifyCheckout from '../../../package/ShopifyCheckout';
+import {ShopifyCheckout} from 'react-native-shopify-checkout-kit';
 import useShopify from '../hooks/useShopify';
 
 import type {CartItem} from '../../@types';

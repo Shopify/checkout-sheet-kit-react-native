@@ -11,10 +11,6 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		6A257A182AFBF30A00610DA5 /* ShopifyCheckout in Frameworks */ = {isa = PBXBuildFile; productRef = 6A257A172AFBF30A00610DA5 /* ShopifyCheckout */; };
-		6AAEC3582B067AD500C7099B /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6AAEC3572B067AD500C7099B /* Entypo.ttf */; };
-		6AB7C6882AF16549000DB11B /* ReactNativeShopifyCheckout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AB7C6872AF16549000DB11B /* ReactNativeShopifyCheckout.swift */; };
-		6AB7C68D2AF16897000DB11B /* ReactNativeShopifyCheckout.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AB7C68C2AF16897000DB11B /* ReactNativeShopifyCheckout.m */; };
 		6DD718326170A9CA79F67AFD /* libPods-ReactNative-ReactNativeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A0B385261A10DD7902279444 /* libPods-ReactNative-ReactNativeTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		DE2E63BB93F24622FD36DF1C /* libPods-ReactNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13FD99BCA5FBF578CF538EBA /* libPods-ReactNative.a */; };
@@ -46,9 +42,7 @@
 		5B7EB9410499542E8C5724F5 /* Pods-ReactNative-ReactNativeTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNative-ReactNativeTests.debug.xcconfig"; path = "Target Support Files/Pods-ReactNative-ReactNativeTests/Pods-ReactNative-ReactNativeTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6A8D64CF2AF25C1200FE4E4A /* ReactNative.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ReactNative.entitlements; path = ReactNative/ReactNative.entitlements; sourceTree = "<group>"; };
 		6AAEC3572B067AD500C7099B /* Entypo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
-		6AB7C6872AF16549000DB11B /* ReactNativeShopifyCheckout.swift */ = {isa = PBXFileReference; indentWidth = 4; lastKnownFileType = sourcecode.swift; path = ReactNativeShopifyCheckout.swift; sourceTree = "<group>"; usesTabs = 0; };
-		6AB7C68C2AF16897000DB11B /* ReactNativeShopifyCheckout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ReactNativeShopifyCheckout.m; sourceTree = "<group>"; };
-		6AB7C68E2AF16CAF000DB11B /* ReactNative-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ReactNative-Bridging-Header.h"; sourceTree = "<group>"; };
+		6AF2B3762B0BCA6600C6CE4F /* ReactNative-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ReactNative-Bridging-Header.h"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ReactNative/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-ReactNative-ReactNativeTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNative-ReactNativeTests.release.xcconfig"; path = "Target Support Files/Pods-ReactNative-ReactNativeTests/Pods-ReactNative-ReactNativeTests.release.xcconfig"; sourceTree = "<group>"; };
 		A0B385261A10DD7902279444 /* libPods-ReactNative-ReactNativeTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ReactNative-ReactNativeTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -68,7 +62,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE2E63BB93F24622FD36DF1C /* libPods-ReactNative.a in Frameworks */,
-				6A257A182AFBF30A00610DA5 /* ShopifyCheckout in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,6 +88,7 @@
 		13B07FAE1A68108700A75B9A /* ReactNative */ = {
 			isa = PBXGroup;
 			children = (
+				6AF2B3762B0BCA6600C6CE4F /* ReactNative-Bridging-Header.h */,
 				6AAEC3572B067AD500C7099B /* Entypo.ttf */,
 				6A8D64CF2AF25C1200FE4E4A /* ReactNative.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -103,9 +97,6 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
-				6AB7C6872AF16549000DB11B /* ReactNativeShopifyCheckout.swift */,
-				6AB7C68C2AF16897000DB11B /* ReactNativeShopifyCheckout.m */,
-				6AB7C68E2AF16CAF000DB11B /* ReactNative-Bridging-Header.h */,
 			);
 			name = ReactNative;
 			sourceTree = "<group>";
@@ -211,9 +202,6 @@
 			dependencies = (
 			);
 			name = ReactNative;
-			packageProductDependencies = (
-				6A257A172AFBF30A00610DA5 /* ShopifyCheckout */,
-			);
 			productName = ReactNative;
 			productReference = 13B07F961A680F5B00A75B9A /* ReactNative.app */;
 			productType = "com.apple.product-type.application";
@@ -229,6 +217,7 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
+						LastSwiftMigration = 1430;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
@@ -245,9 +234,6 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
-			packageReferences = (
-				6A257A162AFBF30A00610DA5 /* XCRemoteSwiftPackageReference "mobile-checkout-sdk-ios" */,
-			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -271,7 +257,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
-				6AAEC3582B067AD500C7099B /* Entypo.ttf in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -441,10 +426,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6AB7C6882AF16549000DB11B /* ReactNativeShopifyCheckout.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				6AB7C68D2AF16897000DB11B /* ReactNativeShopifyCheckout.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -463,8 +446,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-ReactNative-ReactNativeTests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -483,6 +466,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ReactNativeTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ReactNative.app/ReactNative";
 			};
 			name = Debug;
@@ -491,8 +477,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 89C6BE57DB24E9ADA2F236DE /* Pods-ReactNative-ReactNativeTests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = ReactNativeTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
@@ -508,6 +494,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "ReactNativeTests-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ReactNative.app/ReactNative";
 			};
 			name = Release;
@@ -757,25 +745,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		6A257A162AFBF30A00610DA5 /* XCRemoteSwiftPackageReference "mobile-checkout-sdk-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/shopify/mobile-checkout-sdk-ios";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.5.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		6A257A172AFBF30A00610DA5 /* ShopifyCheckout */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 6A257A162AFBF30A00610DA5 /* XCRemoteSwiftPackageReference "mobile-checkout-sdk-ios" */;
-			productName = ShopifyCheckout;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }

@@ -21,32 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.reactnative;
+package com.shopify.reactnative.checkoutkit;
 
-import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
+import android.content.Context;
+import com.shopify.checkoutkit.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
+  public CustomCheckoutEventProcessor(Context context) {
+    super(context);
+  }
 
-public class ShopifyCheckoutPackage implements ReactPackage {
+  @Override
+  public void onCheckoutCompleted() {
+    // Handle checkout completion
+  }
 
-   @Override
-   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-       return Collections.emptyList();
-   }
+  @Override
+  public void onCheckoutFailed(CheckoutException error) {
+    // Handle checkout failure
+  }
 
-   @Override
-   public List<NativeModule> createNativeModules(
-           ReactApplicationContext reactContext) {
-       List<NativeModule> modules = new ArrayList<>();
-
-       modules.add(new ShopifyCheckoutModule(reactContext));
-
-       return modules;
-   }
-
+  @Override
+  public void onCheckoutCanceled() {
+    // Handle checkout cancellation
+  }
 }

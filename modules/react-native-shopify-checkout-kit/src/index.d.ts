@@ -21,28 +21,43 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.reactnative;
+export enum ColorScheme {
+  automatic = 'automatic',
+  light = 'light',
+  dark = 'dark',
+  web = 'web_default',
+}
 
-import android.content.Context;
-import com.shopify.checkoutkit.*;
+export interface ShopifyCheckoutConfiguration {
+  /**
+   * The selected color scheme for the checkout. See README.md for more details.
+   */
+  colorScheme?: ColorScheme;
+  /**
+   * Enable/disable preloading for checkout. This option must be enabled for `.preload()` to work as expected.
+   */
+  preloading?: boolean;
+}
 
-public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
-    public CustomCheckoutEventProcessor(Context context) {
-        super(context);
-    }
-
-    @Override
-    public void onCheckoutCompleted() {
-        // Handle checkout completion
-    }
-
-    @Override
-    public void onCheckoutFailed(CheckoutException error) {
-        // Handle checkout failure
-    }
-
-    @Override
-    public void onCheckoutCanceled() {
-        // Handle checkout cancellation
-    }
+export interface ShopifyCheckoutKit {
+  /**
+   * The version number of the Shopify Checkout SDK.
+   */
+  version: string;
+  /**
+   * Preload the checkout for faster presentation.
+   */
+  preload(checkoutURL: string): void;
+  /**
+   * Present the checkout.
+   */
+  present(checkoutURL: string): void;
+  /**
+   * Configure the checkout. See README.md for more details.
+   */
+  configure(config: ShopifyCheckoutConfiguration): void;
+  /**
+   * Return the current config for the checkout. See README.md for more details.
+   */
+  getConfig(): Promise<ShopifyCheckoutConfiguration>;
 }
