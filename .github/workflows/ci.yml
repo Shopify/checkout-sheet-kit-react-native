@@ -13,7 +13,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
       - run: yarn sample lint
@@ -26,12 +26,13 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
       - run: yarn module lint
 
   lint-swift:
+    name: Lint Swift code for Native Module
     runs-on: shopify-ubuntu-latest
     steps:
       - uses: actions/checkout@v3

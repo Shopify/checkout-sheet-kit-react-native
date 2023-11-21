@@ -15,8 +15,8 @@
   "scripts": {
     "clean": "rm -rf lib",
     "build": "bob build",
-    "lint": "yarn typecheck && yarn lint src",
-    "typescript": "tsx --noEmit"
+    "lint": "yarn typecheck && eslint src",
+    "typecheck": "tsc --noEmit"
   },
   "files": [
     "../../LICENSE",
