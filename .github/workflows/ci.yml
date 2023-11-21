@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: 18
           cache: 'yarn'
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --immutable
       - run: yarn sample lint
 
   lint-native-module:
@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: 18
           cache: 'yarn'
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --immutable
       - run: yarn module lint
 
   lint-swift:
@@ -44,3 +44,16 @@ jobs:
 
       - name: Check License Headers
         run: ./scripts/copy_license && git diff --name-only --exit-code
+
+  build-native-module:
+    name: Build `react-native-shopify-checkout-kit`
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - run: yarn module build
