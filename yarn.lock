@@ -3964,7 +3964,6 @@ __metadata:
     babel-jest: "npm:^29.2.1"
     eslint: "npm:^8.19.0"
     jest: "npm:^29.2.1"
-    metro-react-native-babel-preset: "npm:0.76.8"
     pod-install: "npm:^0.1.39"
     prettier: "npm:^2.4.1"
     react-native: "npm:^0.72.7"
