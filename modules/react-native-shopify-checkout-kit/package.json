@@ -16,11 +16,12 @@
     "clean": "rm -rf lib",
     "build": "bob build",
     "lint": "yarn typecheck && eslint src",
+    "prepack": "yarn clean && yarn build",
     "typecheck": "tsc --noEmit"
   },
   "files": [
-    "../../LICENSE",
-    "../../README.md",
+    "LICENSE",
+    "README.md",
     "package.json",
     "src",
     "ios",
