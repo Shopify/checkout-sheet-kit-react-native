@@ -61,4 +61,4 @@ target 'ReactNative' do
   end
 end
 
-pod "ShopifyCheckoutKit", "~> 0.7.0"
+pod "react-native-shopify-checkout-kit", :path => "../../modules/react-native-shopify-checkout-kit"

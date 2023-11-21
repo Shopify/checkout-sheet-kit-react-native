@@ -71,8 +71,5 @@
       "no-console": "error"
     }
   },
-  "packageManager": "yarn@4.0.2",
-  "dependencies": {
-    "react-native-shopify-checkout-kit": "link:./modules/react-native-shopify-checkout-kit"
-  }
+  "packageManager": "yarn@4.0.2"
 }

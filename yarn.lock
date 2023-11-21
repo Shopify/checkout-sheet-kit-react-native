@@ -3970,7 +3970,6 @@ __metadata:
     react-native: "npm:^0.72.7"
     react-native-dotenv: "npm:^3.4.9"
     react-native-gradle-plugin: "npm:^0.71.19"
-    react-native-shopify-checkout-kit: "link:./modules/react-native-shopify-checkout-kit"
     react-test-renderer: "npm:18.2.0"
     turbo: "npm:^1.10.16"
     typescript: "npm:4.8.4"
@@ -8679,12 +8678,6 @@ __metadata:
   checksum: 30d0275d1a41915e3b2ca151854ca41ceed0bbdc6baf782e5e886a5842b92e003bb2183e4017bd6b03ee7000ec6312a6570a02901c1a990d0fefcdcf511f1e06
   languageName: node
   linkType: hard
-
-"react-native-shopify-checkout-kit@link:./modules/react-native-shopify-checkout-kit::locator=checkout-kit-react-native%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "react-native-shopify-checkout-kit@link:./modules/react-native-shopify-checkout-kit::locator=checkout-kit-react-native%40workspace%3A."
-  languageName: node
-  linkType: soft
 
 "react-native-shopify-checkout-kit@npm:*, react-native-shopify-checkout-kit@workspace:modules/react-native-shopify-checkout-kit":
   version: 0.0.0-use.local

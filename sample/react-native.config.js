@@ -1,10 +1,13 @@
 const path = require('path');
-const pak = require('../package.json');
+const pkg = require('../modules/react-native-shopify-checkout-kit/package.json');
+
+const root = path.resolve(__dirname, '..');
+const pod = path.resolve(root, 'modules', 'react-native-shopify-checkout-kit');
 
 module.exports = {
   dependencies: {
-    [pak.name]: {
-      root: path.join(__dirname, '..'),
+    [pkg.name]: {
+      root: pod,
     },
   },
 };

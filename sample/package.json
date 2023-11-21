@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "clean": "rm -rf node_modules ios/build ios/pods && (cd android && ./gradlew clean)",
+    "clean": "rm -rf node_modules ios/build ios/pods",
+    "clean:android": "(cd android && ./gradlew clean)",
     "lint": "yarn typecheck && eslint .",
     "ios": "react-native run-ios --simulator 'iPhone 14 Pro'",
     "start": "react-native start",

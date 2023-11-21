@@ -29,7 +29,7 @@ import UIKit
 class RCTShopifyCheckout: UIViewController, CheckoutDelegate {
     func checkoutDidComplete() {}
 
-    func checkoutDidFail(error _: ShopifyCheckout.CheckoutError) {}
+    func checkoutDidFail(error _: ShopifyCheckoutKit.CheckoutError) {}
 
     func checkoutDidCancel() {
         DispatchQueue.main.async {

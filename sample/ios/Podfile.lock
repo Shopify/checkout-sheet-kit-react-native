@@ -378,8 +378,8 @@ PODS:
   - react-native-safe-area-context (4.7.4):
     - React-Core
   - react-native-shopify-checkout-kit (0.1.0):
-    - RCT-Folly (= 2021.07.22.00)
     - React-Core
+    - ShopifyCheckoutKit (~> 0.7.0)
   - React-NativeModulesApple (0.72.6):
     - hermes-engine
     - React-callinvoker
@@ -583,7 +583,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
-  - react-native-shopify-checkout-kit (from `../node_modules/react-native-shopify-checkout-kit`)
+  - react-native-shopify-checkout-kit (from `../../modules/react-native-shopify-checkout-kit`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -606,7 +606,6 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
-  - ShopifyCheckoutKit (~> 0.7.0)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -674,7 +673,7 @@ EXTERNAL SOURCES:
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-shopify-checkout-kit:
-    :path: "../node_modules/react-native-shopify-checkout-kit"
+    :path: "../../modules/react-native-shopify-checkout-kit"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
@@ -757,7 +756,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 194e32c6aab382d88713ad3dd0025c5f5c4ee072
   React-logger: cebf22b6cf43434e471dc561e5911b40ac01d289
   react-native-safe-area-context: 2cd91d532de12acdb0a9cbc8d43ac72a8e4c897c
-  react-native-shopify-checkout-kit: 1f5922528634f4f09a26ab6419f673ebcd1d718d
+  react-native-shopify-checkout-kit: b3afc2a24011d6e7f7e68fa1a9bf52afcf9b0cf7
   React-NativeModulesApple: 02e35e9a51e10c6422f04f5e4076a7c02243fff2
   React-perflogger: e3596db7e753f51766bceadc061936ef1472edc3
   React-RCTActionSheet: 17ab132c748b4471012abbcdcf5befe860660485
@@ -785,6 +784,6 @@ SPEC CHECKSUMS:
   Yoga: b76f1acfda8212aa16b7e26bcce3983230c82603
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: af0afd7b5bbdd4dbc8bbbbc6103a2f149d82ebd8
+PODFILE CHECKSUM: 79451314bbad6b6331725d6f5a7768170be34c44
 
 COCOAPODS: 1.14.3
