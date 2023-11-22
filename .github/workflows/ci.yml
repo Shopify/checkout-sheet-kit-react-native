@@ -43,7 +43,7 @@ jobs:
 
   build-native-module:
     name: Build `react-native-shopify-checkout-kit`
-    runs-on: ubuntu-latest
+    runs-on: shopify-ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 

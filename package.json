@@ -65,11 +65,6 @@
   "eslintConfig": {
     "root": true,
     "extends": "@react-native",
-    "parserOptions": {
-      "babelOptions": {
-        "configFile": "./sample/babel.config.js"
-      }
-    },
     "rules": {
       "@typescript-eslint/no-shadow": "off",
       "no-console": "error"
