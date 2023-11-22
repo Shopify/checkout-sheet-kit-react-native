@@ -67,3 +67,30 @@ jobs:
         run: sudo apt-get install -y jq
 
       - run: ./scripts/compare_snapshot
+
+  build-android:
+    name: Build Android Sample App
+    runs-on: shopify-ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/wrapper
+            ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - run: yarn sample build:android
