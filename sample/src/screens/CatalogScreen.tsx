@@ -33,7 +33,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import ShopifyCheckout from '../../../package/ShopifyCheckout';
+import {ShopifyCheckout} from 'react-native-shopify-checkout-kit';
 import useShopify from '../hooks/useShopify';
 
 import type {ShopifyProduct} from '../../@types';
@@ -88,7 +88,7 @@ function CatalogScreen(): JSX.Element {
             <Product
               key={node.id}
               product={node}
-              loading={addingToCart.has(getVariant(node).id)}
+              loading={addingToCart.has(getVariant(node)?.id ?? '')}
               onAddToCart={addToCart}
             />
           ))}
@@ -110,7 +110,7 @@ function CatalogScreen(): JSX.Element {
 }
 
 function getVariant(node: ShopifyProduct) {
-  return node.variants.edges[0].node;
+  return node.variants.edges[0]?.node;
 }
 
 function Product({
@@ -124,7 +124,7 @@ function Product({
 }) {
   const {colors} = useTheme();
   const styles = createStyles(colors);
-  const image = product.images?.edges[0].node;
+  const image = product.images?.edges[0]?.node;
   const variant = getVariant(product);
 
   return (
@@ -152,7 +152,7 @@ function Product({
           ) : (
             <Pressable
               style={styles.addToCartButton}
-              onPress={() => onAddToCart(variant.id)}>
+              onPress={() => variant?.id && onAddToCart(variant.id)}>
               <Text style={styles.addToCartButtonText}>Add to cart</Text>
             </Pressable>
           )}

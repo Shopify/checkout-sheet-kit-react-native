@@ -6,10 +6,11 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import ShopifyCheckout, {
+import {
   ColorScheme,
+  ShopifyCheckout,
   ShopifyCheckoutConfiguration,
-} from '../../../package/ShopifyCheckout';
+} from 'react-native-shopify-checkout-kit';
 import {useTheme} from './Theme';
 
 interface Context {
@@ -66,6 +67,7 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Failed to configure Shopify checkout', error);
+        return undefined;
       }
     },
     [setColorScheme],

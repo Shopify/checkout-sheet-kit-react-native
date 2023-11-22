@@ -7,14 +7,11 @@ import React, {
 } from 'react';
 import {Appearance, ColorSchemeName} from 'react-native';
 import {DarkTheme, DefaultTheme} from '@react-navigation/native';
-import {
-  ColorScheme,
-  ShopifyCheckoutConfiguration,
-} from '../../../package/ShopifyCheckout';
+import {ColorScheme} from 'react-native-shopify-checkout-kit';
 
 interface Context {
   colors: Colors;
-  colorScheme: ShopifyCheckoutConfiguration['colorScheme'];
+  colorScheme: ColorScheme;
   preference: ColorSchemeName;
   setColorScheme: (colorScheme: ColorScheme) => void;
 }

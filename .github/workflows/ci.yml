@@ -1,0 +1,53 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint-sample:
+    name: Lint Sample App
+    runs-on: shopify-ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - run: yarn sample lint
+
+  lint-native-module:
+    name: Lint Native Module
+    runs-on: shopify-ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - run: yarn module lint
+
+  lint-swift:
+    name: Lint Swift code for Native Module
+    runs-on: shopify-ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run SwiftLint
+        uses: norio-nomura/action-swiftlint@3.2.1
+        with:
+          args: --strict
+
+      - name: Check License Headers
+        run: ./scripts/copy_license && git diff --name-only --exit-code
+
+  build-native-module:
+    name: Build `react-native-shopify-checkout-kit`
+    runs-on: shopify-ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - run: yarn module build

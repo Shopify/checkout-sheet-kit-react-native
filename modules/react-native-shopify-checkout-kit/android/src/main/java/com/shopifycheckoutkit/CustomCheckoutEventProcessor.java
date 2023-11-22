@@ -21,8 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import SampleApp from './src/App';
-import {name} from './app.json';
-import {AppRegistry} from 'react-native';
+package com.shopify.reactnative.checkoutkit;
 
-AppRegistry.registerComponent(name, () => SampleApp);
+import android.content.Context;
+import com.shopify.checkoutkit.*;
+
+public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
+  public CustomCheckoutEventProcessor(Context context) {
+    super(context);
+  }
+
+  @Override
+  public void onCheckoutCompleted() {
+    // Handle checkout completion
+  }
+
+  @Override
+  public void onCheckoutFailed(CheckoutException error) {
+    // Handle checkout failure
+  }
+
+  @Override
+  public void onCheckoutCanceled() {
+    // Handle checkout cancellation
+  }
+}

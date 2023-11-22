@@ -33,8 +33,9 @@ import {
   Pressable,
   RefreshControl,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Entypo';
 
-import ShopifyCheckout from '../../../package/ShopifyCheckout';
+import {ShopifyCheckout} from 'react-native-shopify-checkout-kit';
 import useShopify from '../hooks/useShopify';
 
 import type {CartItem} from '../../@types';
@@ -102,6 +103,7 @@ function CartScreen(): JSX.Element {
   if (!data || !data.cart || data.cart.lines.edges.length === 0) {
     return (
       <View style={styles.loading}>
+        <Icon name="shopping-bag" size={60} color="#bbc1d6" />
         <Text style={styles.loadingText}>Your cart is empty.</Text>
       </View>
     );

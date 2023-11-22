@@ -1,3 +1,4 @@
+
 {
   "compilerOptions": {
     "rootDir": ".",
@@ -5,7 +6,7 @@
     "allowUnusedLabels": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "jsx": "react",
+    "jsx": "react-native",
     "lib": ["esnext"],
     "module": "esnext",
     "moduleResolution": "node",

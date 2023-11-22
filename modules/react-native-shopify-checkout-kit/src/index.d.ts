@@ -21,8 +21,43 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import SampleApp from './src/App';
-import {name} from './app.json';
-import {AppRegistry} from 'react-native';
+export enum ColorScheme {
+  automatic = 'automatic',
+  light = 'light',
+  dark = 'dark',
+  web = 'web_default',
+}
 
-AppRegistry.registerComponent(name, () => SampleApp);
+export interface ShopifyCheckoutConfiguration {
+  /**
+   * The selected color scheme for the checkout. See README.md for more details.
+   */
+  colorScheme?: ColorScheme;
+  /**
+   * Enable/disable preloading for checkout. This option must be enabled for `.preload()` to work as expected.
+   */
+  preloading?: boolean;
+}
+
+export interface ShopifyCheckoutKit {
+  /**
+   * The version number of the Shopify Checkout SDK.
+   */
+  version: string;
+  /**
+   * Preload the checkout for faster presentation.
+   */
+  preload(checkoutURL: string): void;
+  /**
+   * Present the checkout.
+   */
+  present(checkoutURL: string): void;
+  /**
+   * Configure the checkout. See README.md for more details.
+   */
+  configure(config: ShopifyCheckoutConfiguration): void;
+  /**
+   * Return the current config for the checkout. See README.md for more details.
+   */
+  getConfig(): Promise<ShopifyCheckoutConfiguration>;
+}

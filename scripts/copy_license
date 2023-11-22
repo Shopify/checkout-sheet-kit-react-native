@@ -4,8 +4,14 @@ require 'find'
 
 license_text = "/*\n" + File.read('LICENSE') + "*/\n\n"
 
-Find.find('.') do |path|
-  next unless File.file?(path) && path.end_with?('.swift') && !path.end_with?('Package.swift')
+Find.find('modules') do |path|
+  next unless File.file?(path) && (
+    path.end_with?('.swift') ||
+    path.end_with?('.h') ||
+    path.end_with?('.mm') ||
+    path.end_with?('.java') ||
+    path.end_with?('.js')
+  )
 
   content = File.read(path)
 

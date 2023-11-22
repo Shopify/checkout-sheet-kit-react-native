@@ -21,8 +21,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import SampleApp from './src/App';
-import {name} from './app.json';
-import {AppRegistry} from 'react-native';
+import {NativeModules} from 'react-native';
+import type {ShopifyCheckoutKit, ShopifyCheckoutConfiguration} from './index.d';
+import {ColorScheme} from './index.d';
 
-AppRegistry.registerComponent(name, () => SampleApp);
+const ShopifyCheckout = NativeModules.ShopifyCheckout as ShopifyCheckoutKit;
+
+if (ShopifyCheckout == null) {
+  throw new Error(`
+  "react-native-shopify-checkout-kit" is not correctly linked.
+
+  If installing for iOS, make sure to run "pod install" and restart the server.`);
+}
+
+// API
+export {ColorScheme, ShopifyCheckout};
+
+// Types
+export type {ShopifyCheckoutConfiguration};
