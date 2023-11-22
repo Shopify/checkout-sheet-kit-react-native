@@ -115,13 +115,22 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Cache Android SDK
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /usr/local/android-sdk
           key: ${{ runner.os }}-android-sdk
           restore-keys: |
             ${{ runner.os }}-android-sdk
 
+      - name: Cache build output
+        uses: actions/cache@v3
+        with:
+          path: ./sample/android/app/build
+          key: ${{ runner.os }}-build-${{ hashFiles('**/*.java', '**/*.xml', '**/*.gradle', '**/gradle.properties') }}
+
+          restore-keys: |
+            ${{ runner.os }}-build-
+
       - name: Build example for Android
         run: |
-          yarn turbo run build:android
+          yarn turbo run build:android --cache-dir="${{ env.TURBO_CACHE_DIR }}"
