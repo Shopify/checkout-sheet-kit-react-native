@@ -33,7 +33,10 @@ import {
 } from 'react-native';
 import pkg from '../../../package.json';
 import {useConfig} from '../context/Config';
-import {ColorScheme, ShopifyCheckout} from 'react-native-shopify-checkout-kit';
+import {
+  ColorScheme,
+  ShopifyCheckoutKit,
+} from 'react-native-shopify-checkout-kit';
 import {Colors, useTheme} from '../context/Theme';
 
 enum SectionType {
@@ -143,7 +146,7 @@ function SettingsScreen() {
       {
         title: 'SDK version',
         type: SectionType.Text,
-        value: ShopifyCheckout.version,
+        value: ShopifyCheckoutKit.version,
       },
       {
         title: 'App version',

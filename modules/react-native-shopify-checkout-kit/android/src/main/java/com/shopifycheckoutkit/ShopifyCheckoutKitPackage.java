@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ShopifyCheckoutPackage implements ReactPackage {
+public class ShopifyCheckoutKitPackage implements ReactPackage {
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
@@ -44,7 +44,7 @@ public class ShopifyCheckoutPackage implements ReactPackage {
       ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
 
-    modules.add(new ShopifyCheckoutModule(reactContext));
+    modules.add(new ShopifyCheckoutKitModule(reactContext));
 
     return modules;
   }

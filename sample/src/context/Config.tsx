@@ -8,14 +8,14 @@ import React, {
 } from 'react';
 import {
   ColorScheme,
-  ShopifyCheckout,
-  ShopifyCheckoutConfiguration,
+  Configuration,
+  ShopifyCheckoutKit,
 } from 'react-native-shopify-checkout-kit';
 import {useTheme} from './Theme';
 
 interface Context {
-  config: ShopifyCheckoutConfiguration | undefined;
-  configure: typeof ShopifyCheckout.configure;
+  config: Configuration | undefined;
+  configure: typeof ShopifyCheckoutKit.configure;
 }
 
 const ConfigContext = createContext<Context>({
@@ -34,7 +34,7 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
     async function init() {
       try {
         // Fetch the checkout configuration object
-        const config = await ShopifyCheckout.getConfig();
+        const config = await ShopifyCheckoutKit.getConfig();
         // Store it in local state
         setConfig(config);
       } catch (error) {
@@ -47,13 +47,13 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
   }, []);
 
   const configure = useCallback(
-    async (config: ShopifyCheckoutConfiguration) => {
+    async (config: Configuration) => {
       try {
         // Update the SDK configuration
-        ShopifyCheckout.configure(config);
+        ShopifyCheckoutKit.configure(config);
 
         // Fetch the latest configuration object
-        const updatedConfig = await ShopifyCheckout.getConfig();
+        const updatedConfig = await ShopifyCheckoutKit.getConfig();
 
         // Update local config state
         setConfig(updatedConfig);

@@ -15,7 +15,7 @@ npm install react-native-shopify-checkout-kit
 ## Usage
 
 ```tsx
-import {ShopifyCheckout} from "react-native-shopify-checkout-kit"
+import {ShopifyCheckoutKit} from "react-native-shopify-checkout-kit"
 
 function App() {
   const checkoutURL = useRef<string>(null)
@@ -28,7 +28,7 @@ function App() {
 
   const handleCheckout = useCallback(() => {
     if (checkoutURL.current) {
-      ShopifyCheckout.present(checkoutURL.current)
+      ShopifyCheckoutKit.present(checkoutURL.current)
     }
   }, [])
 

@@ -33,7 +33,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import {ShopifyCheckout} from 'react-native-shopify-checkout-kit';
+import {ShopifyCheckoutKit} from 'react-native-shopify-checkout-kit';
 import useShopify from '../hooks/useShopify';
 
 import type {ShopifyProduct} from '../../@types';
@@ -54,7 +54,7 @@ function CatalogScreen(): JSX.Element {
 
   const presentCheckout = async () => {
     if (checkoutURL) {
-      ShopifyCheckout.present(checkoutURL);
+      ShopifyCheckoutKit.present(checkoutURL);
     }
   };
 
