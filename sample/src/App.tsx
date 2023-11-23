@@ -31,7 +31,10 @@ import Icon from 'react-native-vector-icons/Entypo';
 import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
-import {ShopifyCheckout, ColorScheme} from 'react-native-shopify-checkout-kit';
+import {
+  ShopifyCheckoutKit,
+  ColorScheme,
+} from 'react-native-shopify-checkout-kit';
 import {ConfigProvider} from './context/Config';
 import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
 import {StatusBar} from 'react-native';
@@ -40,7 +43,7 @@ import CartScreen from './screens/CartScreen';
 
 const defaultColorScheme = ColorScheme.web;
 
-ShopifyCheckout.configure({
+ShopifyCheckoutKit.configure({
   colorScheme: defaultColorScheme,
   preloading: true,
 });

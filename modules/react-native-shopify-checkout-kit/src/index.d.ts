@@ -28,7 +28,7 @@ export enum ColorScheme {
   web = 'web_default',
 }
 
-export interface ShopifyCheckoutConfiguration {
+export interface Configuration {
   /**
    * The selected color scheme for the checkout. See README.md for more details.
    */
@@ -55,9 +55,9 @@ export interface ShopifyCheckoutKit {
   /**
    * Configure the checkout. See README.md for more details.
    */
-  configure(config: ShopifyCheckoutConfiguration): void;
+  configure(config: Configuration): void;
   /**
    * Return the current config for the checkout. See README.md for more details.
    */
-  getConfig(): Promise<ShopifyCheckoutConfiguration>;
+  getConfig(): Promise<Configuration>;
 }

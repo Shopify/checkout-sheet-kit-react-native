@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 #import <React/RCTBridgeModule.h>
 
-@interface RCT_EXTERN_MODULE(RCTShopifyCheckout, NSObject)
+@interface RCT_EXTERN_MODULE(RCTShopifyCheckoutKit, NSObject)
 
 /// Present checkout
 RCT_EXTERN_METHOD(present:(NSString *)checkoutURLString);

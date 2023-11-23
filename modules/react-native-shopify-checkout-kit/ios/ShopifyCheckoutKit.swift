@@ -25,8 +25,8 @@ import Foundation
 import ShopifyCheckoutKit
 import UIKit
 
-@objc(RCTShopifyCheckout)
-class RCTShopifyCheckout: UIViewController, CheckoutDelegate {
+@objc(RCTShopifyCheckoutKit)
+class RCTShopifyCheckoutKit: UIViewController, CheckoutDelegate {
     func checkoutDidComplete() {}
 
     func checkoutDidFail(error _: ShopifyCheckoutKit.CheckoutError) {}

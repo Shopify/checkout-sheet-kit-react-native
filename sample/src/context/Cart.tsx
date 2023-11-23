@@ -7,7 +7,7 @@ import React, {
   useReducer,
   useState,
 } from 'react';
-import {ShopifyCheckout} from 'react-native-shopify-checkout-kit';
+import {ShopifyCheckoutKit} from 'react-native-shopify-checkout-kit';
 import useShopify from '../hooks/useShopify';
 
 interface Context {
@@ -113,7 +113,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setTotalQuantity(data.cartLinesAdd.cart.totalQuantity);
 
       if (checkoutURL) {
-        ShopifyCheckout.preload(checkoutURL);
+        ShopifyCheckoutKit.preload(checkoutURL);
       }
 
       if (id) {
@@ -156,7 +156,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setTotalQuantity(data.cartLinesRemove.cart.totalQuantity);
 
       if (checkoutURL) {
-        ShopifyCheckout.preload(checkoutURL);
+        ShopifyCheckoutKit.preload(checkoutURL);
       }
 
       if (cartId) {

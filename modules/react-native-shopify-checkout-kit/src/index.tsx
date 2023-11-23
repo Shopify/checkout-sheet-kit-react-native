@@ -22,12 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import {NativeModules} from 'react-native';
-import type {ShopifyCheckoutKit, ShopifyCheckoutConfiguration} from './index.d';
+import type {
+  Configuration,
+  ShopifyCheckoutKit as ShopifyCheckout,
+} from './index.d';
 import {ColorScheme} from './index.d';
 
-const ShopifyCheckout = NativeModules.ShopifyCheckout as ShopifyCheckoutKit;
+const ShopifyCheckoutKit = NativeModules.ShopifyCheckoutKit as ShopifyCheckout;
 
-if (ShopifyCheckout == null) {
+if (ShopifyCheckoutKit == null) {
   throw new Error(`
   "react-native-shopify-checkout-kit" is not correctly linked.
 
@@ -35,7 +38,7 @@ if (ShopifyCheckout == null) {
 }
 
 // API
-export {ColorScheme, ShopifyCheckout};
+export {ColorScheme, ShopifyCheckoutKit};
 
 // Types
-export type {ShopifyCheckoutConfiguration};
+export type {Configuration};

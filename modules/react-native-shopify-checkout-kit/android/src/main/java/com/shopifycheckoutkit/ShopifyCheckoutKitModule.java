@@ -40,12 +40,12 @@ import com.shopify.checkoutkit.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ShopifyCheckoutModule extends ReactContextBaseJavaModule {
-  private static final String MODULE_NAME = "ShopifyCheckout";
+public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
+  private static final String MODULE_NAME = "ShopifyCheckoutKit";
 
   private static Configuration checkoutConfig = new Configuration();
 
-  public ShopifyCheckoutModule(ReactApplicationContext reactContext) {
+  public ShopifyCheckoutKitModule(ReactApplicationContext reactContext) {
     super(reactContext);
   }
 
