@@ -86,6 +86,14 @@ class RCTShopifyCheckoutKit: UIViewController, CheckoutDelegate {
         if let colorScheme = configuration["colorScheme"] as? String {
             ShopifyCheckoutKit.configuration.colorScheme = getColorScheme(colorScheme)
         }
+
+         if let spinnerColorHex = configuration["spinnerColor"] as? String {
+            ShopifyCheckoutKit.configuration.spinnerColor = UIColor(hex: spinnerColorHex)
+        }
+
+        if let backgroundColorHex = configuration["backgroundColor"] as? String {
+            ShopifyCheckoutKit.configuration.backgroundColor = UIColor(hex: backgroundColorHex)
+        }
     }
 
     @objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
@@ -99,5 +107,30 @@ class RCTShopifyCheckoutKit: UIViewController, CheckoutDelegate {
 
     @objc static func requiresMainQueueSetup() -> Bool {
         return true
+    }
+}
+
+extension UIColor {
+    convenience init(hex: String) {
+        let hexString: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        let scanner = Scanner(string: hexString)
+
+        if (hexString.hasPrefix("#")) {
+            scanner.scanLocation = 1
+        }
+
+        var color: UInt32 = 0
+        scanner.scanHexInt32(&color)
+
+        let mask = 0x000000FF
+        let r = Int(color >> 16) & mask
+        let g = Int(color >> 8) & mask
+        let b = Int(color) & mask
+
+        let red   = CGFloat(r) / 255.0
+        let green = CGFloat(g) / 255.0
+        let blue  = CGFloat(b) / 255.0
+
+        self.init(red:red, green:green, blue:blue, alpha:1)
     }
 }

@@ -25,7 +25,9 @@ package com.shopify.reactnative.checkoutkit;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import androidx.activity.ComponentActivity;
+import androidx.core.content.ContextCompat;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -104,13 +106,31 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void configure(ReadableMap config) {
+    Context context = getReactApplicationContext();
+
     ShopifyCheckoutKit.configure(configuration -> {
       if (config.hasKey("preloading")) {
         configuration.setPreloading(new Preloading(config.getBoolean("preloading")));
       }
 
       if (config.hasKey("colorScheme")) {
-        configuration.setColorScheme(getColorScheme(config.getString("colorScheme")));
+        ColorScheme colorScheme = getColorScheme(config.getString("colorScheme"));
+
+        if (colorScheme instanceof ColorScheme.Web) {
+          ReadableMap androidConfig = config.getMap("android");
+
+          int backgroundColor = parseColor(config.getString("backgroundColor"));
+          int spinnerColor = parseColor(config.getString("spinnerColor"));
+          int headerTextColor = parseColor(androidConfig.getString("headerTextColor"));
+          int headerBackgroundColor = parseColor(androidConfig.getString("headerBackgroundColor"));
+
+          ((ColorScheme.Web) colorScheme).setColors(new Colors(
+              backgroundColor,
+              headerTextColor,
+              headerBackgroundColor,
+              spinnerColor));
+        }
+        configuration.setColorScheme(colorScheme);
       }
 
       checkoutConfig = configuration;
@@ -125,5 +145,14 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
     resultConfig.putString("colorScheme", colorSchemeToString(checkoutConfig.getColorScheme()));
 
     promise.resolve(resultConfig);
+  }
+
+  private int parseColor(String hexColor) {
+    try {
+      return Color.parseColor(hexColor);
+    } catch (IllegalArgumentException e) {
+      // returns black
+      return Color.parseColor("#000000");
+    }
   }
 }

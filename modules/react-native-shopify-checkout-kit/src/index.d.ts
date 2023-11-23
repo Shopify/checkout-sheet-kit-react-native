@@ -37,6 +37,27 @@ export interface Configuration {
    * Enable/disable preloading for checkout. This option must be enabled for `.preload()` to work as expected.
    */
   preloading?: boolean;
+  /**
+   * A HEX color value for customizing the color of the loading spinner.
+   */
+  spinnerColor?: string;
+  /**
+   * A HEX color value for customizing the background color of the webview.
+   */
+  backgroundColor?: string;
+  /**
+   * Configuration objects exclusive to Android.
+   */
+  android?: {
+    /**
+     * A HEX color value for customizing the background color of the webview header.
+     */
+    headerBackgroundColor?: string;
+    /**
+     * A HEX color value for customizing the text color of the webview header.
+     */
+    headerTextColor?: string;
+  };
 }
 
 export interface ShopifyCheckoutKit {
