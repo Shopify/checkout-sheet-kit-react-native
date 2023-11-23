@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Set up some colors to use later
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+reset=$(tput sgr0)
+
+./scripts/create_snapshot temp.snap
+
+diff modules/react-native-shopify-checkout-kit/package.snap temp.snap &>/dev/null
+
+if [ $? -eq 0 ]
+then
+    echo "${green}SUCCESS${reset}: The package files have not changed."
+else
+    echo "
+
+    ${red}ERROR${reset}: The package files have changed.
+
+    If this is intentional, run \"yarn snapshot\" at the root of this repo to update the \"modules/react-native-shopify-checkout-kit/package.snap\" file.
+
+    If it NOT intentional, please manually check the diff below to discern if the file(s) should be included in the public package or not:
+
+
+${green}EXISTING SNAPSHOT${reset}                                                      ${red}NEW SNAPSHOT${reset}
+    "
+    diff --color --side-by-side modules/react-native-shopify-checkout-kit/package.snap temp.snap
+
+    exit 1
+fi
+
+rm temp.snap
