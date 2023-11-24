@@ -28,7 +28,60 @@ export enum ColorScheme {
   web = 'web_default',
 }
 
-export interface Configuration {
+interface IosConfigurationOptions {
+  ios: {
+    colors: {
+      /**
+       * A HEX color value for customizing the color of the loading spinner.
+       */
+      spinnerColor?: string;
+      backgroundColor?: string;
+    };
+  };
+}
+
+interface AndroidColors {
+  /**
+   * A HEX color value for customizing the color of the loading spinner.
+   */
+  spinnerColor: string;
+  /**
+   * A HEX color value for customizing the background color of the webview.
+   */
+  backgroundColor: string;
+  /**
+   * A HEX color value for customizing the background color of the webview header.
+   */
+  headerBackgroundColor: string;
+  /**
+   * A HEX color value for customizing the text color of the webview header.
+   */
+  headerTextColor: string;
+}
+
+interface AndroidColorSchemeNonAutomatic {
+  colorScheme: ColorScheme.web | ColorScheme.light | ColorScheme.dark;
+  android: {
+    colors: AndroidColors;
+  };
+}
+
+interface AndroidColorSchemeAutomatic {
+  colorScheme: ColorScheme.automatic;
+  android: {
+    colors: {
+      light: AndroidColors;
+      dark: AndroidColors;
+    };
+  };
+}
+
+type AndroidConfigurationOptions =
+  | AndroidColorSchemeNonAutomatic
+  | AndroidColorSchemeAutomatic
+  | CommonConfigurationOptions;
+
+interface CommonConfigurationOptions {
   /**
    * The selected color scheme for the checkout. See README.md for more details.
    */
@@ -37,28 +90,11 @@ export interface Configuration {
    * Enable/disable preloading for checkout. This option must be enabled for `.preload()` to work as expected.
    */
   preloading?: boolean;
-  /**
-   * A HEX color value for customizing the color of the loading spinner.
-   */
-  spinnerColor?: string;
-  /**
-   * A HEX color value for customizing the background color of the webview.
-   */
-  backgroundColor?: string;
-  /**
-   * Configuration objects exclusive to Android.
-   */
-  android?: {
-    /**
-     * A HEX color value for customizing the background color of the webview header.
-     */
-    headerBackgroundColor?: string;
-    /**
-     * A HEX color value for customizing the text color of the webview header.
-     */
-    headerTextColor?: string;
-  };
 }
+
+export type Configuration = CommonConfigurationOptions &
+  AndroidConfigurationOptions &
+  IosConfigurationOptions;
 
 export interface ShopifyCheckoutKit {
   /**

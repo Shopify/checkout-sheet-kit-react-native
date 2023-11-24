@@ -25,7 +25,6 @@ package com.shopify.reactnative.checkoutkit;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import androidx.activity.ComponentActivity;
 import androidx.core.content.ContextCompat;
 import com.facebook.react.bridge.Arguments;
@@ -66,7 +65,7 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void present(String checkoutURL) {
     Activity currentActivity = getCurrentActivity();
-    if (currentActivity instanceof ComponentActivity) {
+    if (currentActivity != null) {
       Context appContext = getReactApplicationContext();
       CheckoutEventProcessor checkoutEventProcessor = new CustomCheckoutEventProcessor(appContext);
       currentActivity.runOnUiThread(() -> {
@@ -80,7 +79,7 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
   public void preload(String checkoutURL) {
     Activity currentActivity = getCurrentActivity();
 
-    if (currentActivity instanceof ComponentActivity) {
+    if (currentActivity != null) {
       ShopifyCheckoutKit.preload(checkoutURL, (ComponentActivity) currentActivity);
     }
   }
@@ -89,12 +88,11 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
     switch (colorScheme) {
       case "web_default":
         return new ColorScheme.Web();
-      case "automatic":
-        return new ColorScheme.Automatic();
       case "light":
         return new ColorScheme.Light();
       case "dark":
         return new ColorScheme.Dark();
+      case "automatic":
       default:
         return new ColorScheme.Automatic();
     }
@@ -102,6 +100,105 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
 
   private String colorSchemeToString(ColorScheme colorScheme) {
     return colorScheme.getId();
+  }
+
+  private boolean isValidColorConfig(ReadableMap config) {
+    if (config == null) {
+      return false;
+    }
+
+    String[] colorKeys = {"backgroundColor", "spinnerColor", "headerTextColor", "headerBackgroundColor"};
+
+    for (String key : colorKeys) {
+      if (!config.hasKey(key) || config.getString(key) == null || parseColor(config.getString(key)) == null) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private boolean isValidColorScheme(ColorScheme colorScheme, ReadableMap colorConfig) {
+    if (colorConfig == null) {
+      return false;
+    }
+
+    if (colorScheme instanceof ColorScheme.Automatic) {
+      if (!colorConfig.hasKey("light") || !colorConfig.hasKey("dark")) {
+        return false;
+      }
+
+      boolean validLight = this.isValidColorConfig(colorConfig.getMap("light"));
+      boolean validDark = this.isValidColorConfig(colorConfig.getMap("dark"));
+
+      return validLight && validDark;
+    }
+
+    return this.isValidColorConfig(colorConfig);
+  }
+
+  private Color parseColorFromConfig(ReadableMap config, String colorKey) {
+    if (config.hasKey(colorKey)) {
+      String colorStr = config.getString(colorKey);
+      return parseColor(colorStr);
+    }
+
+    return null;
+  }
+
+  private Colors createColorsFromConfig(ReadableMap config) {
+    if (config == null) {
+      return null;
+    }
+
+    Color webViewBackground = parseColorFromConfig(config, "backgroundColor");
+    Color spinnerColor = parseColorFromConfig(config, "spinnerColor");
+    Color headerFont = parseColorFromConfig(config, "headerTextColor");
+    Color headerBackground = parseColorFromConfig(config, "headerBackgroundColor");
+
+    if (webViewBackground != null && spinnerColor != null && headerFont != null && headerBackground != null) {
+      return new Colors(
+        webViewBackground,
+        spinnerColor,
+        headerFont,
+        headerBackground
+      );
+    }
+
+    return null;
+  }
+
+  private ColorScheme getColors(ColorScheme colorScheme, ReadableMap config) {
+    if (!this.isValidColorScheme(colorScheme, config)) {
+      return null;
+    }
+
+    // if (colorScheme instanceof ColorScheme.Automatic && this.isValidColorScheme(colorScheme, config)) {
+    //   Colors lightColors = createColorsFromConfig(config.getMap("light"));
+    //   Colors darkColors = createColorsFromConfig(config.getMap("dark"));
+
+    //   if (lightColors != null && darkColors != null) {
+    //     ColorScheme.Automatic automaticColorScheme = (ColorScheme.Automatic) colorScheme;
+    //     automaticColorScheme.setLightColors(lightColors);
+    //     automaticColorScheme.setDarkColors(darkColors);
+    //     return automaticColorScheme;
+    //   }
+    // }
+
+    Colors colors = createColorsFromConfig(config);
+
+    if (colors != null) {
+      if (!(colorScheme instanceof ColorScheme.Light)) {
+        ((ColorScheme.Light) colorScheme).setColors(colors);
+      } else if (colorScheme instanceof ColorScheme.Dark) {
+        ((ColorScheme.Dark) colorScheme).setColors(colors);
+      } else if (colorScheme instanceof ColorScheme.Web) {
+        ((ColorScheme.Web) colorScheme).setColors(colors);
+      }
+      return colorScheme;
+    }
+
+    return null;
   }
 
   @ReactMethod
@@ -115,22 +212,16 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
 
       if (config.hasKey("colorScheme")) {
         ColorScheme colorScheme = getColorScheme(config.getString("colorScheme"));
+        ReadableMap androidConfig = config.getMap("android");
 
-        if (colorScheme instanceof ColorScheme.Web) {
-          ReadableMap androidConfig = config.getMap("android");
-
-          int backgroundColor = parseColor(config.getString("backgroundColor"));
-          int spinnerColor = parseColor(config.getString("spinnerColor"));
-          int headerTextColor = parseColor(androidConfig.getString("headerTextColor"));
-          int headerBackgroundColor = parseColor(androidConfig.getString("headerBackgroundColor"));
-
-          ((ColorScheme.Web) colorScheme).setColors(new Colors(
-              backgroundColor,
-              headerTextColor,
-              headerBackgroundColor,
-              spinnerColor));
+        if (this.isValidColorConfig(androidConfig)) {
+          ColorScheme colorSchemeWithOverrides = getColors(colorScheme, androidConfig);
+          if (colorSchemeWithOverrides != null) {
+            configuration.setColorScheme(colorSchemeWithOverrides);
+          }
+        } else {
+          configuration.setColorScheme(colorScheme);
         }
-        configuration.setColorScheme(colorScheme);
       }
 
       checkoutConfig = configuration;
@@ -141,18 +232,29 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
   public void getConfig(Promise promise) {
     WritableNativeMap resultConfig = new WritableNativeMap();
 
+    Configuration checkoutConfig = ShopifyCheckoutKit.getConfiguration();
+
     resultConfig.putBoolean("preloading", checkoutConfig.getPreloading().getEnabled());
     resultConfig.putString("colorScheme", colorSchemeToString(checkoutConfig.getColorScheme()));
 
     promise.resolve(resultConfig);
   }
 
-  private int parseColor(String hexColor) {
+  private Color parseColor(String colorStr) {
     try {
-      return Color.parseColor(hexColor);
-    } catch (IllegalArgumentException e) {
-      // returns black
-      return Color.parseColor("#000000");
+      colorStr = colorStr.replace("#", "");
+
+      long color = Long.parseLong(colorStr, 16);
+
+      if (colorStr.length() == 6) {
+        // If alpha is not included, assume full opacity
+        color = color | 0xFF000000;
+      }
+
+      return new Color.SRGB((int) color);
+    } catch (NumberFormatException e) {
+      System.out.println("Warning: Invalid color string. Default color will be used.");
+      return null;
     }
   }
 }

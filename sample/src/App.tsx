@@ -46,11 +46,19 @@ const defaultColorScheme = ColorScheme.web;
 ShopifyCheckoutKit.configure({
   colorScheme: defaultColorScheme,
   preloading: true,
-  backgroundColor: '#f0f0e8',
-  spinnerColor: '#2d2a38',
+  ios: {
+    colors: {
+      backgroundColor: '#f0f0e8',
+      spinnerColor: '#2d2a38',
+    },
+  },
   android: {
-    headerBackgroundColor: '#f0f0e8',
-    headerTextColor: '#2d2a38',
+    colors: {
+      backgroundColor: '#f0f0e8',
+      spinnerColor: '#2d2a38',
+      headerBackgroundColor: '#f0f0e8',
+      headerTextColor: '#2d2a38',
+    },
   },
 });
 
