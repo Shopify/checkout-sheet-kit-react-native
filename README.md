@@ -7,11 +7,12 @@
 
 **Shopify Checkout Kit** is a React Native Native Module, part of [Shopify's Native SDKs](https://shopify.dev/docs/custom-storefronts/mobile-kit), that enables React Native apps to provide the world’s highest converting, customizable, one-page checkout within the app. The presented experience is a fully-featured checkout that preserves all of the store customizations: Checkout UI extensions, Functions, branding, and more. It also provides platform idiomatic defaults such as support for light and dark mode, and convenient developer APIs to embed, customize, and follow the lifecycle of the checkout experience. Check out our blog to [learn how and why we built Checkout Kit](https://www.shopify.com/partners/blog/mobile-checkout-sdks-for-ios-and-android).
 
-### Requirements
+### Platform Requirements
 
-- React Native (Minimum SDK Version 23)
-- iOS 13.0+
-- The SDK is **not** compatible with checkout.liquid. Your Shopify Store must be migrated for extensibility.
+- **React Native** - Minimum version `0.70`
+- **iOS** - Minimum version iOS 13
+- **Android** - Minimum Java 11 & Android SDK version `23`
+- **Shopify** - The SDK is _**not**_ compatible with checkout.liquid. Your Shopify Store must be migrated for extensibility.
 
 ### Getting Started
 
