@@ -1,15 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
+    "lint": {},
+    "build": {},
     "build:android": {
+      "cache": false,
       "inputs": [
-        "package.json",
-        "sample/android",
-        "!sample/android/build",
-        "src/*.ts",
-        "src/*.tsx",
         "sample/package.json",
         "sample/android",
+        "sample/src/**/*",
         "!sample/android/.gradle",
         "!sample/android/build",
         "!sample/android/app/build"
@@ -17,18 +16,15 @@
       "outputs": []
     },
     "build:ios": {
+      "cache": false,
       "inputs": [
-        "package.json",
-        "*.podspec",
-        "ios",
-        "src/*.ts",
-        "src/*.tsx",
         "sample/package.json",
         "sample/ios",
+        "sample/src/**/*",
         "!sample/ios/build",
         "!sample/ios/Pods"
       ],
-      "outputs": []
+      "outputs": ["sample/ios/build"]
     }
   }
 }

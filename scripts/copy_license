@@ -10,13 +10,17 @@ Find.find('modules') do |path|
     path.end_with?('.h') ||
     path.end_with?('.mm') ||
     path.end_with?('.java') ||
-    path.end_with?('.js')
+    path.end_with?('.js') ||
+    path.end_with?('.ts') ||
+    path.end_with?('.tsx')
   )
+
+  print("[copy_license] " + path + "\n")
 
   content = File.read(path)
 
   # Remove existing license
-  content.gsub!(/\/\*.*?\*\//m, '')
+  content.sub!(/\/\*.*?\*\//m, '')
   # remove existing newlines from start of file
   content.gsub!(/\A\n*/, '')
   # Add new license

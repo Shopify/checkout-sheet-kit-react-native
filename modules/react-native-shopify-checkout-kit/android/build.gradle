@@ -36,13 +36,13 @@ def supportsNamespace() {
   return (major == 7 && minor >= 3) || major >= 8
 }
 
-        buildToolsVersion = "33.0.0"
-        minSdkVersion = 23
-        compileSdkVersion = 33
-        targetSdkVersion = 33
+buildToolsVersion = "33.0.0"
+minSdkVersion = 23
+compileSdkVersion = 33
+targetSdkVersion = 33
 
-        // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
-        ndkVersion = "23.1.7779620"
+// We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
+ndkVersion = "23.1.7779620"
 
 android {
   if (supportsNamespace()) {
