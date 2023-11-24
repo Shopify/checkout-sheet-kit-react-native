@@ -18,7 +18,8 @@
     "clean": "watchman watch-del .",
     "sample": "yarn workspace sample",
     "module": "yarn workspace react-native-shopify-checkout-kit",
-    "snapshot": "./scripts/create_snapshot"
+    "snapshot": "./scripts/create_snapshot",
+    "turbo": "turbo"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
