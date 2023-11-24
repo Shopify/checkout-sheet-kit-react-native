@@ -7,7 +7,7 @@ import React, {
   useReducer,
   useState,
 } from 'react';
-import {ShopifyCheckoutKit} from 'react-native-shopify-checkout-kit';
+import {useShopifyCheckoutKit} from 'react-native-shopify-checkout-kit';
 import useShopify from '../hooks/useShopify';
 
 interface Context {
@@ -35,6 +35,7 @@ type AddingToCartAction =
   | {type: 'remove'; variantId: string};
 
 export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
+  const ShopifyCheckoutKit = useShopifyCheckoutKit();
   // Reuse the same cart ID for the lifetime of the app
   const [checkoutURL, setCheckoutURL] =
     useState<Context['checkoutURL']>(undefined);
@@ -132,6 +133,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setCartId,
       setTotalQuantity,
       checkoutURL,
+      ShopifyCheckoutKit,
     ],
   );
 
@@ -167,7 +169,14 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
         });
       }
     },
-    [cartId, removeLineItems, fetchCart, setTotalQuantity, checkoutURL],
+    [
+      cartId,
+      removeLineItems,
+      fetchCart,
+      setTotalQuantity,
+      checkoutURL,
+      ShopifyCheckoutKit,
+    ],
   );
 
   const value = useMemo(

@@ -32,8 +32,9 @@ import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
 import {
-  ShopifyCheckoutKit,
   ColorScheme,
+  Configuration,
+  ShopifyCheckoutKitProvider,
 } from 'react-native-shopify-checkout-kit';
 import {ConfigProvider} from './context/Config';
 import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
@@ -41,12 +42,10 @@ import {Appearance, StatusBar} from 'react-native';
 import {CartProvider, useCart} from './context/Cart';
 import CartScreen from './screens/CartScreen';
 
-const defaultColorScheme = ColorScheme.web;
+const colorScheme = ColorScheme.web;
 
-Appearance.setColorScheme('light');
-
-ShopifyCheckoutKit.configure({
-  colorScheme: defaultColorScheme,
+const config: Configuration = {
+  colorScheme,
   preloading: true,
   colors: {
     ios: {
@@ -60,7 +59,9 @@ ShopifyCheckoutKit.configure({
       headerTextColor: '#2d2a38',
     },
   },
-});
+};
+
+Appearance.setColorScheme('light');
 
 const Tab = createBottomTabNavigator();
 
@@ -74,9 +75,7 @@ const client = new ApolloClient({
 });
 
 function AppWithTheme({children}: PropsWithChildren) {
-  return (
-    <ThemeProvider defaultValue={defaultColorScheme}>{children}</ThemeProvider>
-  );
+  return <ThemeProvider defaultValue={colorScheme}>{children}</ThemeProvider>;
 }
 
 const createNavigationIcon =
@@ -141,11 +140,13 @@ function AppWithNavigation() {
 
 function App() {
   return (
-    <AppWithTheme>
-      <AppWithContext>
-        <AppWithNavigation />
-      </AppWithContext>
-    </AppWithTheme>
+    <ShopifyCheckoutKitProvider configuration={config}>
+      <AppWithTheme>
+        <AppWithContext>
+          <AppWithNavigation />
+        </AppWithContext>
+      </AppWithTheme>
+    </ShopifyCheckoutKitProvider>
   );
 }
 

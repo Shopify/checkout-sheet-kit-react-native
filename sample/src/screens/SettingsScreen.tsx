@@ -36,7 +36,7 @@ import pkg from '../../../package.json';
 import {useConfig} from '../context/Config';
 import {
   ColorScheme,
-  ShopifyCheckoutKit,
+  useShopifyCheckoutKit,
 } from 'react-native-shopify-checkout-kit';
 import {
   Colors,
@@ -90,6 +90,7 @@ interface SectionData {
 }
 
 function SettingsScreen() {
+  const ShopifyCheckoutKit = useShopifyCheckoutKit();
   const {config, configure} = useConfig();
   const {colors} = useTheme();
   const styles = createStyles(colors);
@@ -201,7 +202,7 @@ function SettingsScreen() {
         value: pkg.version,
       },
     ],
-    [],
+    [ShopifyCheckoutKit.version],
   );
 
   const sections: SectionData[] = useMemo(

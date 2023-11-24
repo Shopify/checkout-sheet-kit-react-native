@@ -21,24 +21,89 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import {NativeModules} from 'react-native';
+import {
+  NativeModules,
+  NativeEventEmitter,
+  EmitterSubscription,
+} from 'react-native';
 import type {
+  CheckoutEvent,
   Configuration,
   ShopifyCheckoutKit as ShopifyCheckout,
 } from './index.d';
 import {ColorScheme} from './index.d';
+import {ShopifyCheckoutKitProvider, useShopifyCheckoutKit} from './context';
 
-const ShopifyCheckoutKit = NativeModules.ShopifyCheckoutKit as ShopifyCheckout;
+const RNShopifyCheckoutKit =
+  NativeModules.ShopifyCheckoutKit as ShopifyCheckout;
 
-if (ShopifyCheckoutKit == null) {
+if (!('ShopifyCheckoutKit' in NativeModules)) {
   throw new Error(`
   "react-native-shopify-checkout-kit" is not correctly linked.
 
-  If installing for iOS, make sure to run "pod install" and restart the server.`);
+  If you are building for iOS, make sure to run "pod install" first and restart the metro server.`);
+}
+
+class ShopifyCheckoutKit implements ShopifyCheckout {
+  public eventEmitter: NativeEventEmitter;
+
+  private subscriptions: Map<CheckoutEvent, EmitterSubscription[]> = new Map();
+
+  constructor(configuration?: Configuration) {
+    if (configuration != null) {
+      this.configure(configuration);
+    }
+
+    this.eventEmitter = new NativeEventEmitter(RNShopifyCheckoutKit);
+  }
+
+  public version: string = RNShopifyCheckoutKit.version;
+
+  public configure(configuration: Configuration): void {
+    RNShopifyCheckoutKit.configure(configuration);
+  }
+
+  public preload(checkoutUrl: string): void {
+    RNShopifyCheckoutKit.preload(checkoutUrl);
+  }
+
+  public present(checkoutUrl: string): void {
+    RNShopifyCheckoutKit.present(checkoutUrl);
+  }
+
+  public async getConfig(): Promise<Configuration> {
+    return RNShopifyCheckoutKit.getConfig();
+  }
+
+  public addListener(eventName: string): void {
+    const subscription = this.eventEmitter.addListener(eventName, () => {});
+
+    this.subscriptions.set(eventName as CheckoutEvent, [
+      ...(this.subscriptions.get(eventName as CheckoutEvent) ?? []),
+      subscription,
+    ]);
+  }
+
+  public removeListeners(_count: number): void {
+    for (const [eventName, subscriptions] of this.subscriptions.entries()) {
+      this.eventEmitter.removeAllListeners(eventName);
+      if (subscriptions.length > 0) {
+        subscriptions.forEach(subscription => {
+          subscription.remove();
+        });
+        this.subscriptions.set(eventName, []);
+      }
+    }
+  }
 }
 
 // API
-export {ColorScheme, ShopifyCheckoutKit};
+export {
+  ColorScheme,
+  ShopifyCheckoutKit,
+  ShopifyCheckoutKitProvider,
+  useShopifyCheckoutKit,
+};
 
 // Types
-export type {Configuration};
+export type {Configuration, CheckoutEvent};
