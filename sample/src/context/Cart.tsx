@@ -68,6 +68,19 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const [fetchCart] = queries.cart;
 
   useEffect(() => {
+    const subscription = ShopifyCheckoutKit.addEventListener(
+      'completed',
+      () => {
+        // Clear the cart ID and checkout URL when the checkout is completed
+        setCartId(defaultCartId);
+        setCheckoutURL(undefined);
+      },
+    );
+
+    return subscription?.remove;
+  }, [ShopifyCheckoutKit]);
+
+  useEffect(() => {
     async function getCart() {
       try {
         const {data} = await fetchCart({
