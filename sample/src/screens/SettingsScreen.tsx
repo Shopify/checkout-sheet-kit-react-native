@@ -69,7 +69,7 @@ interface SingleSelectItem {
 interface TextItem {
   type: SectionType.Text;
   title: string;
-  value: string;
+  value?: string;
 }
 
 function isSwitchItem(item: any): item is SwitchItem {
