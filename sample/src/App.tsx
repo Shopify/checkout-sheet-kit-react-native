@@ -37,23 +37,23 @@ import {
 } from 'react-native-shopify-checkout-kit';
 import {ConfigProvider} from './context/Config';
 import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
-import {StatusBar} from 'react-native';
+import {Appearance, StatusBar} from 'react-native';
 import {CartProvider, useCart} from './context/Cart';
 import CartScreen from './screens/CartScreen';
 
 const defaultColorScheme = ColorScheme.web;
 
+Appearance.setColorScheme('light');
+
 ShopifyCheckoutKit.configure({
   colorScheme: defaultColorScheme,
   preloading: true,
-  ios: {
-    colors: {
+  colors: {
+    ios: {
       backgroundColor: '#f0f0e8',
       spinnerColor: '#2d2a38',
     },
-  },
-  android: {
-    colors: {
+    android: {
       backgroundColor: '#f0f0e8',
       spinnerColor: '#2d2a38',
       headerBackgroundColor: '#f0f0e8',

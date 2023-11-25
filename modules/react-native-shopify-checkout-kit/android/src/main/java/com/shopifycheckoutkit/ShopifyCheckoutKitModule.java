@@ -65,7 +65,7 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void present(String checkoutURL) {
     Activity currentActivity = getCurrentActivity();
-    if (currentActivity != null) {
+    if (currentActivity instanceof ComponentActivity) {
       Context appContext = getReactApplicationContext();
       CheckoutEventProcessor checkoutEventProcessor = new CustomCheckoutEventProcessor(appContext);
       currentActivity.runOnUiThread(() -> {
@@ -79,7 +79,7 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
   public void preload(String checkoutURL) {
     Activity currentActivity = getCurrentActivity();
 
-    if (currentActivity != null) {
+    if (currentActivity instanceof ComponentActivity) {
       ShopifyCheckoutKit.preload(checkoutURL, (ComponentActivity) currentActivity);
     }
   }
@@ -152,16 +152,16 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
     }
 
     Color webViewBackground = parseColorFromConfig(config, "backgroundColor");
-    Color spinnerColor = parseColorFromConfig(config, "spinnerColor");
-    Color headerFont = parseColorFromConfig(config, "headerTextColor");
     Color headerBackground = parseColorFromConfig(config, "headerBackgroundColor");
+    Color headerFont = parseColorFromConfig(config, "headerTextColor");
+    Color spinnerColor = parseColorFromConfig(config, "spinnerColor");
 
     if (webViewBackground != null && spinnerColor != null && headerFont != null && headerBackground != null) {
       return new Colors(
         webViewBackground,
-        spinnerColor,
+        headerBackground,
         headerFont,
-        headerBackground
+        spinnerColor
       );
     }
 
@@ -188,7 +188,7 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
     Colors colors = createColorsFromConfig(config);
 
     if (colors != null) {
-      if (!(colorScheme instanceof ColorScheme.Light)) {
+      if (colorScheme instanceof ColorScheme.Light) {
         ((ColorScheme.Light) colorScheme).setColors(colors);
       } else if (colorScheme instanceof ColorScheme.Dark) {
         ((ColorScheme.Dark) colorScheme).setColors(colors);
@@ -212,16 +212,23 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
 
       if (config.hasKey("colorScheme")) {
         ColorScheme colorScheme = getColorScheme(config.getString("colorScheme"));
-        ReadableMap androidConfig = config.getMap("android");
+        ReadableMap colorsConfig = config.hasKey("colors") ? config.getMap("colors") : null;
+        ReadableMap androidConfig = null;
 
-        if (this.isValidColorConfig(androidConfig)) {
+        if (colorsConfig != null && colorsConfig.hasKey("android")) {
+          androidConfig = colorsConfig.getMap("android");
+        }
+
+        if (androidConfig != null && this.isValidColorConfig(androidConfig)) {
           ColorScheme colorSchemeWithOverrides = getColors(colorScheme, androidConfig);
           if (colorSchemeWithOverrides != null) {
             configuration.setColorScheme(colorSchemeWithOverrides);
+            checkoutConfig = configuration;
+            return;
           }
-        } else {
-          configuration.setColorScheme(colorScheme);
         }
+
+        configuration.setColorScheme(colorScheme);
       }
 
       checkoutConfig = configuration;
@@ -231,8 +238,6 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getConfig(Promise promise) {
     WritableNativeMap resultConfig = new WritableNativeMap();
-
-    Configuration checkoutConfig = ShopifyCheckoutKit.getConfiguration();
 
     resultConfig.putBoolean("preloading", checkoutConfig.getPreloading().getEnabled());
     resultConfig.putString("colorScheme", colorSchemeToString(checkoutConfig.getColorScheme()));

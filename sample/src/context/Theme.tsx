@@ -1,11 +1,11 @@
 import React, {
   PropsWithChildren,
   createContext,
-  useEffect,
+  useCallback,
   useMemo,
   useState,
 } from 'react';
-import {Appearance, ColorSchemeName} from 'react-native';
+import {Appearance, ColorSchemeName, useColorScheme} from 'react-native';
 import {DarkTheme, DefaultTheme} from '@react-navigation/native';
 import {ColorScheme} from 'react-native-shopify-checkout-kit';
 
@@ -16,7 +16,7 @@ interface Context {
   setColorScheme: (colorScheme: ColorScheme) => void;
 }
 
-const darkColors: Colors = {
+export const darkColors: Colors = {
   background: '#1D1D1F',
   backgroundSubdued: '#222',
   border: '#333336',
@@ -26,9 +26,14 @@ const darkColors: Colors = {
   primaryText: '#fff',
   secondary: '#0087ff',
   secondaryText: '#fff',
+
+  webviewBackgroundColor: '#1D1D1F',
+  webviewSpinnerColor: '#0B96F1',
+  webviewHeaderBackgroundColor: '#1D1D1F',
+  webviewHeaderTextColor: '#ffffff',
 };
 
-const lightColors: Colors = {
+export const lightColors: Colors = {
   background: '#eee',
   backgroundSubdued: '#fff',
   border: '#eee',
@@ -38,9 +43,14 @@ const lightColors: Colors = {
   primaryText: '#fff',
   secondary: '#000',
   secondaryText: '#fff',
+
+  webviewBackgroundColor: '#ffffff',
+  webviewSpinnerColor: '#0087ff',
+  webviewHeaderBackgroundColor: '#ffffff',
+  webviewHeaderTextColor: '#000000',
 };
 
-const webColors = {
+export const webColors: Colors = {
   background: '#f0f0e8',
   backgroundSubdued: '#e8e8e0',
   border: '#d0d0cd',
@@ -50,6 +60,11 @@ const webColors = {
   primaryText: '#0087ff',
   secondary: '#2d2a38',
   secondaryText: '#fff',
+
+  webviewBackgroundColor: '#f0f0e8',
+  webviewSpinnerColor: '#2c2a38',
+  webviewHeaderBackgroundColor: '#f0f0e8',
+  webviewHeaderTextColor: '#2c2a38',
 };
 
 const ThemeContext = createContext<Context>({
@@ -69,6 +84,10 @@ export interface Colors {
   primaryText: string;
   secondary: string;
   secondaryText: string;
+  webviewBackgroundColor: string;
+  webviewSpinnerColor: string;
+  webviewHeaderBackgroundColor: string;
+  webviewHeaderTextColor: string;
 }
 
 export function getNavigationTheme(
@@ -131,7 +150,7 @@ export function getNavigationTheme(
   }
 }
 
-function getColors(
+export function getColors(
   colorScheme: ColorScheme,
   preference: ColorSchemeName,
 ): Colors {
@@ -150,18 +169,18 @@ function getColors(
 export const ThemeProvider: React.FC<
   PropsWithChildren<{defaultValue: ColorScheme}>
 > = ({children, defaultValue = ColorScheme.automatic}) => {
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(defaultValue);
-  const [preference, setThemePreference] = useState<ColorSchemeName>(
-    Appearance.getColorScheme(),
-  );
+  const preference = useColorScheme();
+  const [colorScheme, setColorSchemeInternal] =
+    useState<ColorScheme>(defaultValue);
 
-  useEffect(() => {
-    const {remove} = Appearance.addChangeListener(({colorScheme}) => {
-      setThemePreference(colorScheme);
-    });
-
-    return remove;
-  });
+  const setColorScheme = useCallback((colorScheme: ColorScheme) => {
+    if (colorScheme !== ColorScheme.automatic) {
+      Appearance.setColorScheme(
+        colorScheme === ColorScheme.dark ? 'dark' : 'light',
+      );
+    }
+    setColorSchemeInternal(colorScheme);
+  }, []);
 
   const value = useMemo(
     () => ({

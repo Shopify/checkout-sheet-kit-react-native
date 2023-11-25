@@ -79,6 +79,9 @@ class RCTShopifyCheckoutKit: UIViewController, CheckoutDelegate {
     }
 
     @objc func configure(_ configuration: [AnyHashable: Any]) {
+        let colorConfig = configuration["colors"] as? [AnyHashable: Any]
+        let iosConfig = colorConfig?["ios"] as? [String: String]
+
         if let preloading = configuration["preloading"] as? Bool {
             ShopifyCheckoutKit.configuration.preloading.enabled = preloading
         }
@@ -87,11 +90,11 @@ class RCTShopifyCheckoutKit: UIViewController, CheckoutDelegate {
             ShopifyCheckoutKit.configuration.colorScheme = getColorScheme(colorScheme)
         }
 
-         if let spinnerColorHex = configuration["spinnerColor"] as? String {
+         if let spinnerColorHex = iosConfig?["spinnerColor"] as? String {
             ShopifyCheckoutKit.configuration.spinnerColor = UIColor(hex: spinnerColorHex)
         }
 
-        if let backgroundColorHex = configuration["backgroundColor"] as? String {
+        if let backgroundColorHex = iosConfig?["backgroundColor"] as? String {
             ShopifyCheckoutKit.configuration.backgroundColor = UIColor(hex: backgroundColorHex)
         }
     }
@@ -113,24 +116,25 @@ class RCTShopifyCheckoutKit: UIViewController, CheckoutDelegate {
 extension UIColor {
     convenience init(hex: String) {
         let hexString: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        let scanner = Scanner(string: hexString)
+        let start = hexString.index(hexString.startIndex, offsetBy: hexString.hasPrefix("#") ? 1 : 0)
+        let hexColor = String(hexString[start...])
 
-        if (hexString.hasPrefix("#")) {
-            scanner.scanLocation = 1
+        let scanner = Scanner(string: hexColor)
+        var hexNumber: UInt64 = 0
+
+        if scanner.scanHexInt64(&hexNumber) {
+            let red = (hexNumber & 0xff0000) >> 16
+            let green = (hexNumber & 0x00ff00) >> 8
+            let blue = hexNumber & 0x0000ff
+
+            self.init(
+                red: CGFloat(red) / 0xff,
+                green: CGFloat(green) / 0xff,
+                blue: CGFloat(blue) / 0xff,
+                alpha: 1
+            )
+        } else {
+            self.init(red: 0, green: 0, blue: 0, alpha: 1)
         }
-
-        var color: UInt32 = 0
-        scanner.scanHexInt32(&color)
-
-        let mask = 0x000000FF
-        let r = Int(color >> 16) & mask
-        let g = Int(color >> 8) & mask
-        let b = Int(color) & mask
-
-        let red   = CGFloat(r) / 255.0
-        let green = CGFloat(g) / 255.0
-        let blue  = CGFloat(b) / 255.0
-
-        self.init(red:red, green:green, blue:blue, alpha:1)
     }
 }

@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import React, {useCallback, useMemo} from 'react';
 import {
+  Appearance,
   Pressable,
   SafeAreaView,
   SectionList,
@@ -37,7 +38,13 @@ import {
   ColorScheme,
   ShopifyCheckoutKit,
 } from 'react-native-shopify-checkout-kit';
-import {Colors, useTheme} from '../context/Theme';
+import {
+  Colors,
+  darkColors,
+  getColors,
+  lightColors,
+  useTheme,
+} from '../context/Theme';
 
 enum SectionType {
   Switch = 'switch',
@@ -88,9 +95,49 @@ function SettingsScreen() {
   const styles = createStyles(colors);
 
   const handleColorSchemeChange = (item: SingleSelectItem) => {
-    configure({
-      colorScheme: item.value,
-    });
+    const updatedColors = getColors(item.value, Appearance.getColorScheme());
+
+    if (item.value === ColorScheme.automatic) {
+      configure({
+        colorScheme: ColorScheme.automatic,
+        colors: {
+          ios: {
+            backgroundColor: updatedColors.webviewBackgroundColor,
+            spinnerColor: updatedColors.webviewSpinnerColor,
+          },
+          android: {
+            light: {
+              backgroundColor: lightColors.webviewBackgroundColor,
+              spinnerColor: lightColors.webviewSpinnerColor,
+              headerBackgroundColor: lightColors.webviewBackgroundColor,
+              headerTextColor: lightColors.text,
+            },
+            dark: {
+              backgroundColor: darkColors.webviewBackgroundColor,
+              spinnerColor: darkColors.webviewSpinnerColor,
+              headerBackgroundColor: darkColors.webviewBackgroundColor,
+              headerTextColor: darkColors.text,
+            },
+          },
+        },
+      });
+    } else {
+      configure({
+        colorScheme: item.value,
+        colors: {
+          ios: {
+            backgroundColor: updatedColors.webviewBackgroundColor,
+            spinnerColor: updatedColors.webviewSpinnerColor,
+          },
+          android: {
+            backgroundColor: updatedColors.webviewBackgroundColor,
+            spinnerColor: updatedColors.webviewSpinnerColor,
+            headerBackgroundColor: updatedColors.webviewBackgroundColor,
+            headerTextColor: updatedColors.text,
+          },
+        },
+      });
+    }
   };
 
   const handleTogglePreloading = useCallback(() => {

@@ -28,19 +28,18 @@ export enum ColorScheme {
   web = 'web_default',
 }
 
-interface IosConfigurationOptions {
-  ios: {
-    colors: {
-      /**
-       * A HEX color value for customizing the color of the loading spinner.
-       */
-      spinnerColor?: string;
-      backgroundColor?: string;
-    };
-  };
+export interface IosColors {
+  /**
+   * A HEX color value for customizing the color of the loading spinner.
+   */
+  spinnerColor?: string;
+  /**
+   * A HEX color value for customizing the background color of the webview.
+   */
+  backgroundColor?: string;
 }
 
-interface AndroidColors {
+export interface AndroidColors {
   /**
    * A HEX color value for customizing the color of the loading spinner.
    */
@@ -59,42 +58,52 @@ interface AndroidColors {
   headerTextColor: string;
 }
 
-interface AndroidColorSchemeNonAutomatic {
-  colorScheme: ColorScheme.web | ColorScheme.light | ColorScheme.dark;
-  android: {
-    colors: AndroidColors;
-  };
+export interface AndroidAutomaticColors {
+  /**
+   * Color overrides when the theme preference is 'light'.
+   */
+  light: AndroidColors;
+  /**
+   * Color overrides when the theme preference is 'dark'.
+   */
+  dark: AndroidColors;
 }
 
-interface AndroidColorSchemeAutomatic {
-  colorScheme: ColorScheme.automatic;
-  android: {
-    colors: {
-      light: AndroidColors;
-      dark: AndroidColors;
+export type Configuration =
+  | {
+      /**
+       * The selected color scheme for the checkout. See README.md for more details.
+       */
+      colorScheme?: ColorScheme.web | ColorScheme.light | ColorScheme.dark;
+      /**
+       * Enable/disable preloading for checkout. This option must be enabled for `.preload()` to work as expected.
+       */
+      preloading?: boolean;
+      /**
+       * Platform-specific color overrides
+       */
+      colors?: {
+        ios?: IosColors;
+        android?: AndroidColors;
+      };
+    }
+  | {
+      /**
+       * The selected color scheme for the checkout. See README.md for more details.
+       */
+      colorScheme?: ColorScheme.automatic;
+      /**
+       * Enable/disable preloading for checkout. This option must be enabled for `.preload()` to work as expected.
+       */
+      preloading?: boolean;
+      /**
+       * Platform-specific color overrides
+       */
+      colors?: {
+        ios?: IosColors;
+        android?: AndroidAutomaticColors;
+      };
     };
-  };
-}
-
-type AndroidConfigurationOptions =
-  | AndroidColorSchemeNonAutomatic
-  | AndroidColorSchemeAutomatic
-  | CommonConfigurationOptions;
-
-interface CommonConfigurationOptions {
-  /**
-   * The selected color scheme for the checkout. See README.md for more details.
-   */
-  colorScheme?: ColorScheme;
-  /**
-   * Enable/disable preloading for checkout. This option must be enabled for `.preload()` to work as expected.
-   */
-  preloading?: boolean;
-}
-
-export type Configuration = CommonConfigurationOptions &
-  AndroidConfigurationOptions &
-  IosConfigurationOptions;
 
 export interface ShopifyCheckoutKit {
   /**
