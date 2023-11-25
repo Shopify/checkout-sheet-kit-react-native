@@ -104,16 +104,16 @@ class RCTShopifyCheckoutKit: RCTEventEmitter, CheckoutDelegate {
 
 	private func getColorScheme(_ colorScheme: String) -> ShopifyCheckoutKit.Configuration.ColorScheme {
 		switch colorScheme {
-			case "web_default":
-				return ShopifyCheckoutKit.Configuration.ColorScheme.web
-			case "automatic":
-				return ShopifyCheckoutKit.Configuration.ColorScheme.automatic
-			case "light":
-				return ShopifyCheckoutKit.Configuration.ColorScheme.light
-			case "dark":
-				return ShopifyCheckoutKit.Configuration.ColorScheme.dark
-			default:
-				return ShopifyCheckoutKit.Configuration.ColorScheme.automatic
+		case "web_default":
+			return ShopifyCheckoutKit.Configuration.ColorScheme.web
+		case "automatic":
+			return ShopifyCheckoutKit.Configuration.ColorScheme.automatic
+		case "light":
+			return ShopifyCheckoutKit.Configuration.ColorScheme.light
+		case "dark":
+			return ShopifyCheckoutKit.Configuration.ColorScheme.dark
+		default:
+			return ShopifyCheckoutKit.Configuration.ColorScheme.automatic
 		}
 	}
 
