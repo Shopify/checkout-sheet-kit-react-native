@@ -58,20 +58,20 @@ class RCTShopifyCheckoutKit: RCTEventEmitter, CheckoutDelegate {
 	}
 
 	func checkoutDidComplete() {
-		if (hasListeners) {
+		if hasListeners {
 			self.sendEvent(withName: "completed", body: nil)
 		}
 	}
 
 	func checkoutDidFail(error _: ShopifyCheckoutKit.CheckoutError) {
-		if (hasListeners) {
+		if hasListeners {
 			self.sendEvent(withName: "error", body: nil)
 		}
 	}
 
 	func checkoutDidCancel() {
 		DispatchQueue.main.async {
-			if (self.hasListeners) {
+			if self.hasListeners {
 				self.sendEvent(withName: "dismiss", body: nil)
 			}
 			self.rootViewController?.dismiss(animated: true)
