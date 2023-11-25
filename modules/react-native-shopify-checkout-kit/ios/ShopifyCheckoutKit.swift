@@ -27,114 +27,114 @@ import UIKit
 
 @objc(RCTShopifyCheckoutKit)
 class RCTShopifyCheckoutKit: UIViewController, CheckoutDelegate {
-    func checkoutDidComplete() {}
+	func checkoutDidComplete() {}
 
-    func checkoutDidFail(error _: ShopifyCheckoutKit.CheckoutError) {}
+	func checkoutDidFail(error _: ShopifyCheckoutKit.CheckoutError) {}
 
-    func checkoutDidCancel() {
-        DispatchQueue.main.async {
-            if let rootViewController = UIApplication.shared.delegate?.window??.rootViewController {
-                rootViewController.dismiss(animated: true)
-            }
-        }
-    }
+	func checkoutDidCancel() {
+		DispatchQueue.main.async {
+			if let rootViewController = UIApplication.shared.delegate?.window??.rootViewController {
+				rootViewController.dismiss(animated: true)
+			}
+		}
+	}
 
-    @objc func constantsToExport() -> [String: String]! {
-        return [
-            "version": ShopifyCheckoutKit.version
-        ]
-    }
+	@objc func constantsToExport() -> [String: String]! {
+		return [
+			"version": ShopifyCheckoutKit.version
+		]
+	}
 
-    @objc func present(_ checkoutURL: String) {
-        DispatchQueue.main.async {
-            let sharedDelegate = UIApplication.shared.delegate
+	@objc func present(_ checkoutURL: String) {
+		DispatchQueue.main.async {
+			let sharedDelegate = UIApplication.shared.delegate
 
-            if let url = URL(string: checkoutURL), let rootViewController = sharedDelegate?.window??.rootViewController {
-                ShopifyCheckoutKit.present(checkout: url, from: rootViewController, delegate: self)
-            }
-        }
-    }
+			if let url = URL(string: checkoutURL), let rootViewController = sharedDelegate?.window??.rootViewController {
+				ShopifyCheckoutKit.present(checkout: url, from: rootViewController, delegate: self)
+			}
+		}
+	}
 
-    @objc func preload(_ checkoutURL: String) {
-        DispatchQueue.main.async {
-            if let url = URL(string: checkoutURL) {
-                ShopifyCheckoutKit.preload(checkout: url)
-            }
-        }
-    }
+	@objc func preload(_ checkoutURL: String) {
+		DispatchQueue.main.async {
+			if let url = URL(string: checkoutURL) {
+				ShopifyCheckoutKit.preload(checkout: url)
+			}
+		}
+	}
 
-    private func getColorScheme(_ colorScheme: String) -> ShopifyCheckoutKit.Configuration.ColorScheme {
-        switch colorScheme {
-        case "web_default":
-            return ShopifyCheckoutKit.Configuration.ColorScheme.web
-        case "automatic":
-            return ShopifyCheckoutKit.Configuration.ColorScheme.automatic
-        case "light":
-            return ShopifyCheckoutKit.Configuration.ColorScheme.light
-        case "dark":
-            return ShopifyCheckoutKit.Configuration.ColorScheme.dark
-        default:
-            return ShopifyCheckoutKit.Configuration.ColorScheme.automatic
-        }
-    }
+	private func getColorScheme(_ colorScheme: String) -> ShopifyCheckoutKit.Configuration.ColorScheme {
+		switch colorScheme {
+		case "web_default":
+			return ShopifyCheckoutKit.Configuration.ColorScheme.web
+		case "automatic":
+			return ShopifyCheckoutKit.Configuration.ColorScheme.automatic
+		case "light":
+			return ShopifyCheckoutKit.Configuration.ColorScheme.light
+		case "dark":
+			return ShopifyCheckoutKit.Configuration.ColorScheme.dark
+		default:
+			return ShopifyCheckoutKit.Configuration.ColorScheme.automatic
+		}
+	}
 
-    @objc func configure(_ configuration: [AnyHashable: Any]) {
-        let colorConfig = configuration["colors"] as? [AnyHashable: Any]
-        let iosConfig = colorConfig?["ios"] as? [String: String]
+	@objc func configure(_ configuration: [AnyHashable: Any]) {
+		let colorConfig = configuration["colors"] as? [AnyHashable: Any]
+		let iosConfig = colorConfig?["ios"] as? [String: String]
 
-        if let preloading = configuration["preloading"] as? Bool {
-            ShopifyCheckoutKit.configuration.preloading.enabled = preloading
-        }
+		if let preloading = configuration["preloading"] as? Bool {
+			ShopifyCheckoutKit.configuration.preloading.enabled = preloading
+		}
 
-        if let colorScheme = configuration["colorScheme"] as? String {
-            ShopifyCheckoutKit.configuration.colorScheme = getColorScheme(colorScheme)
-        }
+		if let colorScheme = configuration["colorScheme"] as? String {
+			ShopifyCheckoutKit.configuration.colorScheme = getColorScheme(colorScheme)
+		}
 
-         if let spinnerColorHex = iosConfig?["spinnerColor"] as? String {
-            ShopifyCheckoutKit.configuration.spinnerColor = UIColor(hex: spinnerColorHex)
-        }
+		if let spinnerColorHex = iosConfig?["spinnerColor"] as? String {
+			ShopifyCheckoutKit.configuration.spinnerColor = UIColor(hex: spinnerColorHex)
+		}
 
-        if let backgroundColorHex = iosConfig?["backgroundColor"] as? String {
-            ShopifyCheckoutKit.configuration.backgroundColor = UIColor(hex: backgroundColorHex)
-        }
-    }
+		if let backgroundColorHex = iosConfig?["backgroundColor"] as? String {
+			ShopifyCheckoutKit.configuration.backgroundColor = UIColor(hex: backgroundColorHex)
+		}
+	}
 
-    @objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
-        let config: [String: Any] = [
-            "preloading": ShopifyCheckoutKit.configuration.preloading.enabled,
-            "colorScheme": ShopifyCheckoutKit.configuration.colorScheme.rawValue
-        ]
+	@objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
+		let config: [String: Any] = [
+			"preloading": ShopifyCheckoutKit.configuration.preloading.enabled,
+			"colorScheme": ShopifyCheckoutKit.configuration.colorScheme.rawValue
+		]
 
-        resolve(config)
-    }
+		resolve(config)
+	}
 
-    @objc static func requiresMainQueueSetup() -> Bool {
-        return true
-    }
+	@objc static func requiresMainQueueSetup() -> Bool {
+		return true
+	}
 }
 
 extension UIColor {
-    convenience init(hex: String) {
-        let hexString: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        let start = hexString.index(hexString.startIndex, offsetBy: hexString.hasPrefix("#") ? 1 : 0)
-        let hexColor = String(hexString[start...])
+	convenience init(hex: String) {
+		let hexString: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+		let start = hexString.index(hexString.startIndex, offsetBy: hexString.hasPrefix("#") ? 1 : 0)
+		let hexColor = String(hexString[start...])
 
-        let scanner = Scanner(string: hexColor)
-        var hexNumber: UInt64 = 0
+		let scanner = Scanner(string: hexColor)
+		var hexNumber: UInt64 = 0
 
-        if scanner.scanHexInt64(&hexNumber) {
-            let red = (hexNumber & 0xff0000) >> 16
-            let green = (hexNumber & 0x00ff00) >> 8
-            let blue = hexNumber & 0x0000ff
+		if scanner.scanHexInt64(&hexNumber) {
+			let red = (hexNumber & 0xff0000) >> 16
+			let green = (hexNumber & 0x00ff00) >> 8
+			let blue = hexNumber & 0x0000ff
 
-            self.init(
-                red: CGFloat(red) / 0xff,
-                green: CGFloat(green) / 0xff,
-                blue: CGFloat(blue) / 0xff,
-                alpha: 1
-            )
-        } else {
-            self.init(red: 0, green: 0, blue: 0, alpha: 1)
-        }
-    }
+			self.init(
+				red: CGFloat(red) / 0xff,
+				green: CGFloat(green) / 0xff,
+				blue: CGFloat(blue) / 0xff,
+				alpha: 1
+			)
+		} else {
+			self.init(red: 0, green: 0, blue: 0, alpha: 1)
+		}
+	}
 }
