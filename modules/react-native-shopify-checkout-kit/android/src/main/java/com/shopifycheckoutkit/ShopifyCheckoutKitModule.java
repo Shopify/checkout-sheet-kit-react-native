@@ -48,8 +48,6 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
 
   private ReactApplicationContext reactContext;
 
-  private int listenerCount = 0;
-
   public ShopifyCheckoutKitModule(ReactApplicationContext reactContext) {
     super(reactContext);
 
@@ -70,12 +68,12 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void addListener(String eventName) {
-    listenerCount += 1;
+    // No-op but required for RN to register module
   }
 
   @ReactMethod
   public void removeListeners(Integer count) {
-    listenerCount -= count;
+    // No-op but required for RN to register module
   }
 
   @ReactMethod
