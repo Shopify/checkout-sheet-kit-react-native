@@ -26,6 +26,7 @@ package com.shopify.reactnative.checkoutkit;
 import android.app.Activity;
 import android.content.Context;
 import androidx.activity.ComponentActivity;
+import androidx.core.content.ContextCompat;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -87,12 +88,11 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
     switch (colorScheme) {
       case "web_default":
         return new ColorScheme.Web();
-      case "automatic":
-        return new ColorScheme.Automatic();
       case "light":
         return new ColorScheme.Light();
       case "dark":
         return new ColorScheme.Dark();
+      case "automatic":
       default:
         return new ColorScheme.Automatic();
     }
@@ -102,15 +102,133 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
     return colorScheme.getId();
   }
 
+  private boolean isValidColorConfig(ReadableMap config) {
+    if (config == null) {
+      return false;
+    }
+
+    String[] colorKeys = {"backgroundColor", "spinnerColor", "headerTextColor", "headerBackgroundColor"};
+
+    for (String key : colorKeys) {
+      if (!config.hasKey(key) || config.getString(key) == null || parseColor(config.getString(key)) == null) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private boolean isValidColorScheme(ColorScheme colorScheme, ReadableMap colorConfig) {
+    if (colorConfig == null) {
+      return false;
+    }
+
+    if (colorScheme instanceof ColorScheme.Automatic) {
+      if (!colorConfig.hasKey("light") || !colorConfig.hasKey("dark")) {
+        return false;
+      }
+
+      boolean validLight = this.isValidColorConfig(colorConfig.getMap("light"));
+      boolean validDark = this.isValidColorConfig(colorConfig.getMap("dark"));
+
+      return validLight && validDark;
+    }
+
+    return this.isValidColorConfig(colorConfig);
+  }
+
+  private Color parseColorFromConfig(ReadableMap config, String colorKey) {
+    if (config.hasKey(colorKey)) {
+      String colorStr = config.getString(colorKey);
+      return parseColor(colorStr);
+    }
+
+    return null;
+  }
+
+  private Colors createColorsFromConfig(ReadableMap config) {
+    if (config == null) {
+      return null;
+    }
+
+    Color webViewBackground = parseColorFromConfig(config, "backgroundColor");
+    Color headerBackground = parseColorFromConfig(config, "headerBackgroundColor");
+    Color headerFont = parseColorFromConfig(config, "headerTextColor");
+    Color spinnerColor = parseColorFromConfig(config, "spinnerColor");
+
+    if (webViewBackground != null && spinnerColor != null && headerFont != null && headerBackground != null) {
+      return new Colors(
+        webViewBackground,
+        headerBackground,
+        headerFont,
+        spinnerColor
+      );
+    }
+
+    return null;
+  }
+
+  private ColorScheme getColors(ColorScheme colorScheme, ReadableMap config) {
+    if (!this.isValidColorScheme(colorScheme, config)) {
+      return null;
+    }
+
+    if (colorScheme instanceof ColorScheme.Automatic && this.isValidColorScheme(colorScheme, config)) {
+      Colors lightColors = createColorsFromConfig(config.getMap("light"));
+      Colors darkColors = createColorsFromConfig(config.getMap("dark"));
+
+      if (lightColors != null && darkColors != null) {
+        ColorScheme.Automatic automaticColorScheme = (ColorScheme.Automatic) colorScheme;
+        automaticColorScheme.setLightColors(lightColors);
+        automaticColorScheme.setDarkColors(darkColors);
+        return automaticColorScheme;
+      }
+    }
+
+    Colors colors = createColorsFromConfig(config);
+
+    if (colors != null) {
+      if (colorScheme instanceof ColorScheme.Light) {
+        ((ColorScheme.Light) colorScheme).setColors(colors);
+      } else if (colorScheme instanceof ColorScheme.Dark) {
+        ((ColorScheme.Dark) colorScheme).setColors(colors);
+      } else if (colorScheme instanceof ColorScheme.Web) {
+        ((ColorScheme.Web) colorScheme).setColors(colors);
+      }
+      return colorScheme;
+    }
+
+    return null;
+  }
+
   @ReactMethod
   public void configure(ReadableMap config) {
+    Context context = getReactApplicationContext();
+
     ShopifyCheckoutKit.configure(configuration -> {
       if (config.hasKey("preloading")) {
         configuration.setPreloading(new Preloading(config.getBoolean("preloading")));
       }
 
       if (config.hasKey("colorScheme")) {
-        configuration.setColorScheme(getColorScheme(config.getString("colorScheme")));
+        ColorScheme colorScheme = getColorScheme(config.getString("colorScheme"));
+        ReadableMap colorsConfig = config.hasKey("colors") ? config.getMap("colors") : null;
+        ReadableMap androidConfig = null;
+
+        if (colorsConfig != null && colorsConfig.hasKey("android")) {
+          androidConfig = colorsConfig.getMap("android");
+        }
+
+        if (androidConfig != null && this.isValidColorConfig(androidConfig)) {
+          ColorScheme colorSchemeWithOverrides = getColors(colorScheme, androidConfig);
+          if (colorSchemeWithOverrides != null) {
+            configuration.setColorScheme(colorSchemeWithOverrides);
+            checkoutConfig = configuration;
+            return;
+          }
+        }
+
+        configuration.setColorScheme(colorScheme);
       }
 
       checkoutConfig = configuration;
@@ -125,5 +243,23 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
     resultConfig.putString("colorScheme", colorSchemeToString(checkoutConfig.getColorScheme()));
 
     promise.resolve(resultConfig);
+  }
+
+  private Color parseColor(String colorStr) {
+    try {
+      colorStr = colorStr.replace("#", "");
+
+      long color = Long.parseLong(colorStr, 16);
+
+      if (colorStr.length() == 6) {
+        // If alpha is not included, assume full opacity
+        color = color | 0xFF000000;
+      }
+
+      return new Color.SRGB((int) color);
+    } catch (NumberFormatException e) {
+      System.out.println("Warning: Invalid color string. Default color will be used.");
+      return null;
+    }
   }
 }

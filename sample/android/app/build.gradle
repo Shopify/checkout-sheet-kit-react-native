@@ -73,6 +73,15 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
+    lintOptions {
+        checkDependencies false
+    }
+    tasks.whenTaskAdded { task ->
+        if (task.name == 'lintAnalyzeDebug') {
+            task.dependsOn 'copyReactNativeVectorIconFonts'
+        }
+    }
+
     namespace "com.reactnative"
     defaultConfig {
         applicationId "com.reactnative"
