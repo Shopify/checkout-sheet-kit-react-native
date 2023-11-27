@@ -1,0 +1,24 @@
+name: Cocoapods
+description: Install cocoapods for sample app
+
+runs:
+  using: composite
+  steps:
+    - name: Cache cocoapods
+      id: cache-cocoapods
+      uses: actions/cache@v3
+      with:
+        path: |
+          **/ios/Pods
+        key: ${{ runner.os }}-cocoapods-${{ hashFiles('sample/ios/Podfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cocoapods-
+
+    - name: Install cocoapods
+      if: steps.cocoapods-cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        NO_FLIPPER: "1"
+      run: |
+        yarn pod-install sample/ios
+

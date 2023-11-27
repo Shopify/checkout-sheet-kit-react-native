@@ -1,29 +1,18 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
-    "lint": {},
-    "build": {},
+    "lint": {
+      "dependsOn": ["build"]
+    },
+    "build": {
+      "outputs": ["modules/react-native-shopify-checkout-kit/lib/**/*"]
+    },
     "build:android": {
-      "cache": false,
-      "inputs": [
-        "sample/package.json",
-        "sample/android",
-        "sample/src/**/*",
-        "!sample/android/.gradle",
-        "!sample/android/build",
-        "!sample/android/app/build"
-      ],
-      "outputs": []
+      "dependsOn": ["build", "lint"],
+      "outputs": ["sample/android/app/build"]
     },
     "build:ios": {
-      "cache": false,
-      "inputs": [
-        "sample/package.json",
-        "sample/ios",
-        "sample/src/**/*",
-        "!sample/ios/build",
-        "!sample/ios/Pods"
-      ],
+      "dependsOn": ["build", "lint"],
       "outputs": ["sample/ios/build"]
     }
   }
