@@ -107,7 +107,7 @@ export type Configuration =
       };
     };
 
-export type CheckoutEvent = 'dismiss' | 'error' | 'completed';
+export type CheckoutEvent = 'cancel' | 'error' | 'completed';
 
 export interface ShopifyCheckoutKit extends NativeModule {
   /**
