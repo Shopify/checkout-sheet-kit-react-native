@@ -63,9 +63,12 @@ class RCTShopifyCheckoutKit: RCTEventEmitter, CheckoutDelegate {
 		}
 	}
 
-	func checkoutDidFail(error _: ShopifyCheckoutKit.CheckoutError) {
+	func checkoutDidFail(error checkoutError: ShopifyCheckoutKit.CheckoutError) {
 		if hasListeners {
-			self.sendEvent(withName: "error", body: nil)
+			let errorInfo: [String: Any] = [
+				"message": checkoutError.localizedDescription
+			]
+			self.sendEvent(withName: "error", body: errorInfo)
 		}
 	}
 

@@ -24,17 +24,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 import React, {PropsWithChildren, useCallback, useMemo, useRef} from 'react';
 import {EmitterSubscription} from 'react-native';
 import {ShopifyCheckoutKit} from './index';
-import type {CheckoutEvent, Configuration} from './index.d';
+import type {
+  AddEventListener,
+  RemoveEventListeners,
+  CheckoutEvent,
+  Configuration,
+} from './index.d';
 
 type Maybe<T> = T | undefined;
 
 interface Context {
-  addEventListener: (
-    event: CheckoutEvent,
-    callback: () => void,
-  ) => Maybe<EmitterSubscription>;
+  addEventListener: AddEventListener;
   getConfig: () => Promise<Configuration | undefined>;
-  removeEventListeners: (event: CheckoutEvent) => void;
+  removeEventListeners: RemoveEventListeners;
   preload: (checkoutUrl: string) => void;
   present: (checkoutUrl: string) => void;
   configure: (config: Configuration) => void;
@@ -67,11 +69,8 @@ export function ShopifyCheckoutKitProvider({
     instance.current = new ShopifyCheckoutKit(configuration);
   }
 
-  const addEventListener = useCallback(
-    (
-      eventName: CheckoutEvent,
-      callback: () => void,
-    ): EmitterSubscription | undefined => {
+  const addEventListener: AddEventListener = useCallback(
+    (eventName, callback): EmitterSubscription | undefined => {
       return instance.current?.eventEmitter.addListener(eventName, callback);
     },
     [],

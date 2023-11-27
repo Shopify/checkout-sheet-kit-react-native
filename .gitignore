@@ -82,3 +82,9 @@ sample/ios/Pods/
 lib
 dist
 .turbo
+
+# Module
+modules/react-native-shopify-checkout-kit/android/gradle/wrapper/gradle-wrapper.jar
+modules/react-native-shopify-checkout-kit/android/gradle/wrapper/gradle-wrapper.properties
+modules/react-native-shopify-checkout-kit/android/gradlew
+modules/react-native-shopify-checkout-kit/android/gradlew.bat

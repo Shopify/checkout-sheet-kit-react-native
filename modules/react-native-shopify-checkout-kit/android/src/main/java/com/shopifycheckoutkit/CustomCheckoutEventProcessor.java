@@ -49,10 +49,12 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   }
 
   @Override
-  public void onCheckoutFailed(CheckoutException error) {
-    // WritableMap params = Arguments.createMap();
-    // params.putString("error", error.toString());
-    sendEvent(this.reactContext, "error", null);
+  public void onCheckoutFailed(CheckoutException checkoutError) {
+    WritableMap error = Arguments.createMap();
+
+    error.putString("message", checkoutError.getErrorDescription());
+
+    sendEvent(this.reactContext, "error", error);
   }
 
   @Override

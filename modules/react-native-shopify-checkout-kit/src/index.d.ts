@@ -21,7 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import {NativeModule} from 'react-native';
+import {NativeModule, EmitterSubscription} from 'react-native';
+
+export type Maybe<T> = T | undefined;
 
 export enum ColorScheme {
   automatic = 'automatic',
@@ -107,7 +109,26 @@ export type Configuration =
       };
     };
 
-export type CheckoutEvent = 'cancel' | 'error' | 'completed';
+export interface CheckoutException {
+  message: string;
+}
+
+export type CheckoutEvent = 'cancel' | 'completed' | 'error';
+
+function addEventListener(
+  event: 'cancel' | 'completed',
+  callback: () => void,
+): Maybe<EmitterSubscription>;
+
+function addEventListener(
+  event: 'error',
+  callback: (error: CheckoutException) => void,
+): Maybe<EmitterSubscription>;
+
+function removeEventListeners(event: CheckoutEvent): void;
+
+export type AddEventListener = typeof addEventListener;
+export type RemoveEventListeners = typeof removeEventListeners;
 
 export interface ShopifyCheckoutKit extends NativeModule {
   /**
