@@ -113,10 +113,10 @@ export interface CheckoutException {
   message: string;
 }
 
-export type CheckoutEvent = 'cancel' | 'completed' | 'error';
+export type CheckoutEvent = 'close' | 'completed' | 'error';
 
 function addEventListener(
-  event: 'cancel' | 'completed',
+  event: 'close' | 'completed',
   callback: () => void,
 ): Maybe<EmitterSubscription>;
 

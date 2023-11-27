@@ -59,7 +59,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
   @Override
   public void onCheckoutCanceled() {
-    sendEvent(this.reactContext, "cancel", null);
+    sendEvent(this.reactContext, "close", null);
   }
 
   private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {

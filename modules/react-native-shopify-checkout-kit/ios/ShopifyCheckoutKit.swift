@@ -46,7 +46,7 @@ class RCTShopifyCheckoutKit: RCTEventEmitter, CheckoutDelegate {
 	}
 
 	override func supportedEvents() -> [String]! {
-		return ["cancel", "completed", "error"]
+		return ["close", "completed", "error"]
 	}
 
 	override func startObserving() {
@@ -75,7 +75,7 @@ class RCTShopifyCheckoutKit: RCTEventEmitter, CheckoutDelegate {
 	func checkoutDidCancel() {
 		DispatchQueue.main.async {
 			if self.hasListeners {
-				self.sendEvent(withName: "cancel", body: nil)
+				self.sendEvent(withName: "close", body: nil)
 			}
 			self.rootViewController?.dismiss(animated: true)
 		}
