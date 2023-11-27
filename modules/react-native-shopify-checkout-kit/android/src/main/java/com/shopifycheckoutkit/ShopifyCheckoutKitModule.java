@@ -173,17 +173,17 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
       return null;
     }
 
-    // if (colorScheme instanceof ColorScheme.Automatic && this.isValidColorScheme(colorScheme, config)) {
-    //   Colors lightColors = createColorsFromConfig(config.getMap("light"));
-    //   Colors darkColors = createColorsFromConfig(config.getMap("dark"));
+    if (colorScheme instanceof ColorScheme.Automatic && this.isValidColorScheme(colorScheme, config)) {
+      Colors lightColors = createColorsFromConfig(config.getMap("light"));
+      Colors darkColors = createColorsFromConfig(config.getMap("dark"));
 
-    //   if (lightColors != null && darkColors != null) {
-    //     ColorScheme.Automatic automaticColorScheme = (ColorScheme.Automatic) colorScheme;
-    //     automaticColorScheme.setLightColors(lightColors);
-    //     automaticColorScheme.setDarkColors(darkColors);
-    //     return automaticColorScheme;
-    //   }
-    // }
+      if (lightColors != null && darkColors != null) {
+        ColorScheme.Automatic automaticColorScheme = (ColorScheme.Automatic) colorScheme;
+        automaticColorScheme.setLightColors(lightColors);
+        automaticColorScheme.setDarkColors(darkColors);
+        return automaticColorScheme;
+      }
+    }
 
     Colors colors = createColorsFromConfig(config);
 
