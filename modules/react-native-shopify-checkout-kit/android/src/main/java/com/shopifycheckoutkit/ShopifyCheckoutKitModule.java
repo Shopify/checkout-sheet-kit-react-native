@@ -46,8 +46,12 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
 
   private static Configuration checkoutConfig = new Configuration();
 
+  private ReactApplicationContext reactContext;
+
   public ShopifyCheckoutKitModule(ReactApplicationContext reactContext) {
     super(reactContext);
+
+    this.reactContext = reactContext;
   }
 
   @Override
@@ -63,11 +67,21 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void addListener(String eventName) {
+    // No-op but required for RN to register module
+  }
+
+  @ReactMethod
+  public void removeListeners(Integer count) {
+    // No-op but required for RN to register module
+  }
+
+  @ReactMethod
   public void present(String checkoutURL) {
     Activity currentActivity = getCurrentActivity();
     if (currentActivity instanceof ComponentActivity) {
       Context appContext = getReactApplicationContext();
-      CheckoutEventProcessor checkoutEventProcessor = new CustomCheckoutEventProcessor(appContext);
+      CheckoutEventProcessor checkoutEventProcessor = new CustomCheckoutEventProcessor(appContext, this.reactContext);
       currentActivity.runOnUiThread(() -> {
         ShopifyCheckoutKit.present(checkoutURL, (ComponentActivity) currentActivity,
             checkoutEventProcessor);

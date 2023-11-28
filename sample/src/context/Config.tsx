@@ -9,13 +9,13 @@ import React, {
 import {
   ColorScheme,
   Configuration,
-  ShopifyCheckoutKit,
+  useShopifyCheckoutKit,
 } from 'react-native-shopify-checkout-kit';
 import {useTheme} from './Theme';
 
 interface Context {
   config: Configuration | undefined;
-  configure: typeof ShopifyCheckoutKit.configure;
+  configure: (config: Configuration) => void;
 }
 
 const ConfigContext = createContext<Context>({
@@ -27,6 +27,7 @@ const ConfigContext = createContext<Context>({
 });
 
 export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
+  const ShopifyCheckoutKit = useShopifyCheckoutKit();
   const [config, setConfig] = useState<Context['config']>(undefined);
   const {setColorScheme} = useTheme();
 
@@ -44,7 +45,7 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
     }
 
     init();
-  }, []);
+  }, [ShopifyCheckoutKit]);
 
   const configure = useCallback(
     async (config: Configuration) => {
@@ -59,7 +60,7 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
         setConfig(updatedConfig);
 
         // Update the color scheme theme setting if it changed
-        if (updatedConfig.colorScheme) {
+        if (updatedConfig?.colorScheme) {
           setColorScheme(updatedConfig.colorScheme);
         }
 
@@ -70,7 +71,7 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
         return undefined;
       }
     },
-    [setColorScheme],
+    [setColorScheme, ShopifyCheckoutKit],
   );
 
   const value = useMemo(

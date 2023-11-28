@@ -21,6 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+import {EmitterSubscription} from 'react-native';
+
+export type Maybe<T> = T | undefined;
+
 export enum ColorScheme {
   automatic = 'automatic',
   light = 'light',
@@ -105,11 +109,36 @@ export type Configuration =
       };
     };
 
+export interface CheckoutException {
+  message: string;
+}
+
+export type CheckoutEvent = 'close' | 'completed' | 'error';
+
+export type CheckoutEventCallback =
+  | (() => void)
+  | ((error: CheckoutException) => void);
+
+function addEventListener(
+  event: 'close' | 'completed',
+  callback: () => void,
+): Maybe<EmitterSubscription>;
+
+function addEventListener(
+  event: 'error',
+  callback: (error: CheckoutException) => void,
+): Maybe<EmitterSubscription>;
+
+function removeEventListeners(event: CheckoutEvent): void;
+
+export type AddEventListener = typeof addEventListener;
+export type RemoveEventListeners = typeof removeEventListeners;
+
 export interface ShopifyCheckoutKit {
   /**
    * The version number of the Shopify Checkout SDK.
    */
-  version: string;
+  readonly version: string;
   /**
    * Preload the checkout for faster presentation.
    */
@@ -126,4 +155,12 @@ export interface ShopifyCheckoutKit {
    * Return the current config for the checkout. See README.md for more details.
    */
   getConfig(): Promise<Configuration>;
+  /**
+   * Listen for checkout events
+   */
+  addEventListener: AddEventListener;
+  /**
+   * Remove subscriptions to checkout events
+   */
+  removeEventListeners: RemoveEventListeners;
 }

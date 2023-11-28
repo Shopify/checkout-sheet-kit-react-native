@@ -24,22 +24,64 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 import Foundation
 import ShopifyCheckoutKit
 import UIKit
+import React
 
 @objc(RCTShopifyCheckoutKit)
-class RCTShopifyCheckoutKit: UIViewController, CheckoutDelegate {
-	func checkoutDidComplete() {}
+class RCTShopifyCheckoutKit: RCTEventEmitter, CheckoutDelegate {
+	private var rootViewController: UIViewController?
 
-	func checkoutDidFail(error _: ShopifyCheckoutKit.CheckoutError) {}
+	private var hasListeners = false
 
-	func checkoutDidCancel() {
-		DispatchQueue.main.async {
-			if let rootViewController = UIApplication.shared.delegate?.window??.rootViewController {
-				rootViewController.dismiss(animated: true)
-			}
+	override init() {
+		super.init()
+		self.rootViewController = UIApplication.shared.delegate?.window??.rootViewController
+	}
+
+	override var methodQueue: DispatchQueue! {
+		return DispatchQueue.main
+	}
+
+	@objc override static func requiresMainQueueSetup() -> Bool {
+		return true
+	}
+
+	override func supportedEvents() -> [String]! {
+		return ["close", "completed", "error"]
+	}
+
+	override func startObserving() {
+		hasListeners = true
+	}
+
+	override func stopObserving() {
+		hasListeners = false
+	}
+
+	func checkoutDidComplete() {
+		if hasListeners {
+			self.sendEvent(withName: "completed", body: nil)
 		}
 	}
 
-	@objc func constantsToExport() -> [String: String]! {
+	func checkoutDidFail(error checkoutError: ShopifyCheckoutKit.CheckoutError) {
+		if hasListeners {
+			let errorInfo: [String: Any] = [
+				"message": checkoutError.localizedDescription
+			]
+			self.sendEvent(withName: "error", body: errorInfo)
+		}
+	}
+
+	func checkoutDidCancel() {
+		DispatchQueue.main.async {
+			if self.hasListeners {
+				self.sendEvent(withName: "close", body: nil)
+			}
+			self.rootViewController?.dismiss(animated: true)
+		}
+	}
+
+	@objc override func constantsToExport() -> [AnyHashable: Any]! {
 		return [
 			"version": ShopifyCheckoutKit.version
 		]
@@ -96,7 +138,7 @@ class RCTShopifyCheckoutKit: UIViewController, CheckoutDelegate {
 
 		if let backgroundColorHex = iosConfig?["backgroundColor"] as? String {
 			ShopifyCheckoutKit.configuration.backgroundColor = UIColor(hex: backgroundColorHex)
-		}
+    }
 	}
 
 	@objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
@@ -106,10 +148,6 @@ class RCTShopifyCheckoutKit: UIViewController, CheckoutDelegate {
 		]
 
 		resolve(config)
-	}
-
-	@objc static func requiresMainQueueSetup() -> Bool {
-		return true
 	}
 }
 

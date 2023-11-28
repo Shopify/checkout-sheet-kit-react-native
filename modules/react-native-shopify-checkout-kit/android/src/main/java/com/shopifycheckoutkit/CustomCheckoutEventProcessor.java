@@ -25,24 +25,46 @@ package com.shopify.reactnative.checkoutkit;
 
 import android.content.Context;
 import com.shopify.checkoutkit.*;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
+import org.jetbrains.annotations.Nullable;
 
 public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
-  public CustomCheckoutEventProcessor(Context context) {
+  private ReactContext reactContext;
+
+  public CustomCheckoutEventProcessor(Context context, ReactContext reactContext) {
     super(context);
+
+    this.reactContext = reactContext;
   }
 
   @Override
   public void onCheckoutCompleted() {
-    // Handle checkout completion
+    sendEvent(this.reactContext, "completed", null);
   }
 
   @Override
-  public void onCheckoutFailed(CheckoutException error) {
-    // Handle checkout failure
+  public void onCheckoutFailed(CheckoutException checkoutError) {
+    WritableMap error = Arguments.createMap();
+
+    error.putString("message", checkoutError.getErrorDescription());
+
+    sendEvent(this.reactContext, "error", error);
   }
 
   @Override
   public void onCheckoutCanceled() {
-    // Handle checkout cancellation
+    sendEvent(this.reactContext, "close", null);
+  }
+
+  private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+    reactContext
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+      .emit(eventName, params);
   }
 }

@@ -15,6 +15,7 @@
   "scripts": {
     "clean": "rm -rf lib",
     "build": "bob build",
+    "lint:swift": "./../../sample/ios/Pods/SwiftLint/swiftlint --strict --quiet ios",
     "lint": "yarn typecheck && eslint src",
     "prepack": "yarn clean && yarn build",
     "typecheck": "tsc --noEmit"

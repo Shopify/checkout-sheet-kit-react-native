@@ -33,7 +33,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import {ShopifyCheckoutKit} from 'react-native-shopify-checkout-kit';
+import {useShopifyCheckoutKit} from 'react-native-shopify-checkout-kit';
 import useShopify from '../hooks/useShopify';
 
 import type {ShopifyProduct} from '../../@types';
@@ -41,6 +41,7 @@ import {Colors, useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 
 function CatalogScreen(): JSX.Element {
+  const ShopifyCheckoutKit = useShopifyCheckoutKit();
   const {checkoutURL, totalQuantity, addToCart, addingToCart} = useCart();
   const {colors} = useTheme();
   const styles = createStyles(colors);

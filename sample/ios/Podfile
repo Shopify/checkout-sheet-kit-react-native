@@ -61,4 +61,6 @@ target 'ReactNative' do
   end
 end
 
+pod 'SwiftLint'
+
 pod "react-native-shopify-checkout-kit", :path => "../../modules/react-native-shopify-checkout-kit"

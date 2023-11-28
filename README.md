@@ -83,8 +83,6 @@ function YourReactNativeApp() {
 The `checkoutURL` object is a standard web checkout URL that can be opened in any browser. To present a native checkout sheet in your application, provide the `checkoutURL` alongside optional runtime configuration settings to the `present(checkoutURL)` function provided by the SDK:
 
 ```tsx
-import {ShopifyCheckoutKit} from "react-native-shopify-checkout-kit"
-
 function App() {
   const [createCart] = useMutation(createCartMutation)
   const [addToCart] = useMutation(addToCartMutation)
@@ -98,9 +96,24 @@ function App() {
 The `checkoutUrl` value is a standard web checkout URL that can be opened in any browser. To present a native checkout sheet in your application, provide the `checkoutUrl` alongside optional runtime configuration settings to the `present(checkoutUrl)` function provided by the SDK:
 
 ```tsx
-import {ShopifyCheckoutKit} from "react-native-shopify-checkout-kit"
+import {ShopifyCheckoutKitProvider, ColorScheme} from "react-native-shopify-checkout-kit"
+
+function AppWithContext() {
+  return (
+    <ShopifyCheckoutKitProvider
+      configuration={{
+        colorScheme: ColorScheme.automatic
+      }}
+    >
+      <ApolloProvider>
+        <App />
+      </ApolloProvider>
+    </ShopifyCheckoutKitProvider>
+  )
+}
 
 function App() {
+  const shopifyCheckout = useShopifyCheckoutKit()
   const checkoutUrl = useRef<string>(null)
   const [createCart] = useMutation(createCartMutation)
   const [addToCart] = useMutation(addToCartMutation)
@@ -117,11 +130,15 @@ function App() {
     })
     // Retrieve checkoutUrl from the Storefront response
     checkoutUrl.current = addToCartResponse.cartLinesAdd.cart.checkoutUrl
+
+    // Preload the checkout in the background for faster presentation
+    shopifyCheckout.preload(checkoutUrl.current)
   }, []);
 
   const handleCheckout = useCallback(() => {
     if (checkoutURL.current) {
-      ShopifyCheckoutKit.present(checkoutURL.current)
+      // Present the checkout to the buyer
+      shopifyCheckout.present(checkoutURL.current)
     }
   }, [])
 
