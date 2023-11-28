@@ -28,14 +28,14 @@ import {
 } from 'react-native';
 import type {
   CheckoutEvent,
+  CheckoutEventCallback,
   Configuration,
   ShopifyCheckoutKit as ShopifyCheckout,
 } from './index.d';
 import {ColorScheme} from './index.d';
 import {ShopifyCheckoutKitProvider, useShopifyCheckoutKit} from './context';
 
-const RNShopifyCheckoutKit =
-  NativeModules.ShopifyCheckoutKit as ShopifyCheckout;
+const RNShopifyCheckoutKit = NativeModules.ShopifyCheckoutKit;
 
 if (!('ShopifyCheckoutKit' in NativeModules)) {
   throw new Error(`
@@ -45,9 +45,7 @@ if (!('ShopifyCheckoutKit' in NativeModules)) {
 }
 
 class ShopifyCheckoutKit implements ShopifyCheckout {
-  public eventEmitter: NativeEventEmitter;
-
-  private subscriptions: Map<CheckoutEvent, EmitterSubscription[]> = new Map();
+  private eventEmitter: NativeEventEmitter;
 
   constructor(configuration?: Configuration) {
     if (configuration != null) {
@@ -57,7 +55,7 @@ class ShopifyCheckoutKit implements ShopifyCheckout {
     this.eventEmitter = new NativeEventEmitter(RNShopifyCheckoutKit);
   }
 
-  public version: string = RNShopifyCheckoutKit.version;
+  public readonly version: string = RNShopifyCheckoutKit.version;
 
   public configure(configuration: Configuration): void {
     RNShopifyCheckoutKit.configure(configuration);
@@ -75,25 +73,15 @@ class ShopifyCheckoutKit implements ShopifyCheckout {
     return RNShopifyCheckoutKit.getConfig();
   }
 
-  public addListener(eventName: string): void {
-    const subscription = this.eventEmitter.addListener(eventName, () => {});
-
-    this.subscriptions.set(eventName as CheckoutEvent, [
-      ...(this.subscriptions.get(eventName as CheckoutEvent) ?? []),
-      subscription,
-    ]);
+  public addEventListener(
+    eventName: CheckoutEvent,
+    callback: CheckoutEventCallback,
+  ): EmitterSubscription | undefined {
+    return this.eventEmitter.addListener(eventName, callback);
   }
 
-  public removeListeners(_count: number): void {
-    for (const [eventName, subscriptions] of this.subscriptions.entries()) {
-      this.eventEmitter.removeAllListeners(eventName);
-      if (subscriptions.length > 0) {
-        subscriptions.forEach(subscription => {
-          subscription.remove();
-        });
-        this.subscriptions.set(eventName, []);
-      }
-    }
+  public removeEventListeners(event: CheckoutEvent) {
+    this.eventEmitter.removeAllListeners(event);
   }
 }
 

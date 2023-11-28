@@ -71,13 +71,13 @@ export function ShopifyCheckoutKitProvider({
 
   const addEventListener: AddEventListener = useCallback(
     (eventName, callback): EmitterSubscription | undefined => {
-      return instance.current?.eventEmitter.addListener(eventName, callback);
+      return instance.current?.addEventListener(eventName, callback);
     },
     [],
   );
 
   const removeEventListeners = useCallback((eventName: CheckoutEvent) => {
-    instance.current?.eventEmitter.removeAllListeners(eventName);
+    instance.current?.removeEventListeners(eventName);
   }, []);
 
   const present = useCallback((checkoutUrl: string) => {
