@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -e
+
+cd android
+
+./gradlew test --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a
