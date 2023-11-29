@@ -57,7 +57,8 @@
     "singleQuote": true,
     "trailingComma": "all",
     "semi": true,
-    "useTabs": false
+    "useTabs": false,
+    "proseWrap": "always"
   },
   "keywords": [
     "react-native",
