@@ -23,10 +23,11 @@
 
 import Foundation
 import XCTest
-import ShopifyCheckoutKit
+@testable import ShopifyCheckoutKit
 @testable import react_native_shopify_checkout_kit
 
 class ShopifyCheckoutKitTests: XCTestCase {
+  /// getConfig
   func testReturnsDefaultConfig() {
     let shopifyCheckout = getInstance()
 
@@ -39,6 +40,7 @@ class ShopifyCheckoutKitTests: XCTestCase {
     XCTAssertEqual(result?["colorScheme"] as? String, "automatic")
   }
 
+  /// checkoutDidComplete
   func testCheckoutDidCompleteSendsEvent() {
     let mock = mockSendEvent(eventName: "completed")
 
@@ -48,6 +50,7 @@ class ShopifyCheckoutKitTests: XCTestCase {
     XCTAssertTrue(mock.didSendEvent)
   }
 
+  /// checkoutDidCancel
   func testCheckoutDidCancelSendsEvent() {
     let mock = mockAsyncSendEvent(eventName: "close")
 
@@ -69,6 +72,7 @@ class ShopifyCheckoutKitTests: XCTestCase {
     XCTAssertTrue(mock.didSendEvent)
   }
 
+  /// checkoutDidFail
   func testCheckoutDidFailSendsEvent() {
     let mock = mockSendEvent(eventName: "error")
 
