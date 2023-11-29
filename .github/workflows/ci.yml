@@ -95,8 +95,8 @@ jobs:
         run: |
           yarn turbo run build:android --cache-dir=".turbo"
 
-  build-ios:
-    name: Build iOS Sample App
+  test-ios:
+    name: Test iOS
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -113,7 +113,7 @@ jobs:
 
       - name: Check build cache
         run: |
-          CACHE_STATUS=$(./scripts/check_cache sample build:ios)
+          CACHE_STATUS=$(./scripts/check_cache sample test:ios)
           echo "[sample] build:ios - $CACHE_STATUS"
           echo "turbo_cache_hit=$CACHE_STATUS" >> $GITHUB_ENV
 
@@ -122,29 +122,5 @@ jobs:
 
       - name: Build sample for iOS
         # If turbo has already cached the build it will return instantly here
-        run: |
-          yarn turbo run build:ios --cache-dir=".turbo"
-
-  test-ios:
-    name: Run iOS tests
-    runs-on: macos-latest
-    needs: build-ios
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup iOS Simulator
-        uses: ./.github/actions/setup-simulator
-
-      - name: Setup
-        uses: ./.github/actions/setup
-
-      - name: Check turbo cache
-        uses: ./.github/actions/use-turbo-cache
-
-      - name: Install cocoapods
-        uses: ./.github/actions/install-cocoapods
-
-      - name: Run iOS tests
         run: |
           yarn turbo run test:ios --cache-dir=".turbo"
