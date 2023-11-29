@@ -1,0 +1,14 @@
+ #!/usr/bin/env bash
+
+set -ex
+set -eo pipefail
+
+if [[ -n $CURRENT_SIMULATOR_UUID ]]; then
+    dest="id=$CURRENT_SIMULATOR_UUID"
+else
+    dest="platform=iOS Simulator,name=iPhone 14 Pro Max"
+fi
+
+cd ios
+
+xcodebuild clean test -workspace ReactNative.xcworkspace -scheme ReactNative -destination "$dest" -skipPackagePluginValidation

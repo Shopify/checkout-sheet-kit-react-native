@@ -85,7 +85,7 @@ jobs:
             ~/.gradle/caches
             sample/android/.gradle/wrapper
             sample/android/.gradle/caches
-          key:
+          key: |
             ${{ runner.os }}-gradle-${{ hashFiles('sample/android/gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
@@ -103,14 +103,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup iOS Simulator
-        run: |
-          xcode-select -p
-          xcrun xcodebuild -version
-          xcrun simctl list runtimes
-          xcrun simctl list devicetypes
-          xcrun simctl delete all
-          CURRENT_SIMULATOR_UUID=$(xcrun simctl create TestDevice "iPhone 14 Pro Max")
-          echo "CURRENT_SIMULATOR_UUID=$CURRENT_SIMULATOR_UUID" >> $GITHUB_ENV
+        uses: ./.github/actions/setup-simulator
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -131,3 +124,27 @@ jobs:
         # If turbo has already cached the build it will return instantly here
         run: |
           yarn turbo run build:ios --cache-dir=".turbo"
+
+  test-ios:
+    name: Run iOS tests
+    runs-on: macos-latest
+    needs: build-ios
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup iOS Simulator
+        uses: ./.github/actions/setup-simulator
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Check turbo cache
+        uses: ./.github/actions/use-turbo-cache
+
+      - name: Install cocoapods
+        uses: ./.github/actions/install-cocoapods
+
+      - name: Run iOS tests
+        run: |
+          yarn turbo run test:ios --cache-dir=".turbo"
