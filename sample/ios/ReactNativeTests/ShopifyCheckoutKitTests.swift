@@ -27,17 +27,83 @@ import XCTest
 @testable import react_native_shopify_checkout_kit
 
 class ShopifyCheckoutKitTests: XCTestCase {
+  private var shopifyCheckoutKit: RCTShopifyCheckoutKit!
+
+  override func setUp() {
+    super.setUp()
+    shopifyCheckoutKit = getShopifyCheckoutKit()
+    resetShopifyCheckoutKitDefaults()
+  }
+
+  override func tearDown() {
+    shopifyCheckoutKit = nil
+    super.tearDown()
+  }
+
+  private func resetShopifyCheckoutKitDefaults() {
+    ShopifyCheckoutKit.configuration.preloading = Configuration.Preloading(enabled: true)
+    ShopifyCheckoutKit.configuration.colorScheme = .automatic
+  }
+
+  private func getShopifyCheckoutKit() -> RCTShopifyCheckoutKit {
+    return RCTShopifyCheckoutKit()
+  }
+
   /// getConfig
   func testReturnsDefaultConfig() {
-    let shopifyCheckout = getInstance()
-
     // Call getConfig and capture the result
     var result: [String: Any]?
-    shopifyCheckout.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+    shopifyCheckoutKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
 
     // Verify that getConfig returned the expected result
     XCTAssertEqual(result?["preloading"] as? Bool, true)
     XCTAssertEqual(result?["colorScheme"] as? String, "automatic")
+  }
+
+  /// configure
+  func testConfigure() {
+    let configuration: [AnyHashable: Any] = [
+      "preloading": true,
+      "colorScheme": "dark",
+      "colors": [
+        "ios": [
+          "spinnerColor": "#FF0000",
+          "backgroundColor": "#0000FF"
+        ]
+      ]
+    ]
+
+    shopifyCheckoutKit.configure(configuration)
+
+    XCTAssertTrue(ShopifyCheckoutKit.configuration.preloading.enabled)
+    XCTAssertEqual(ShopifyCheckoutKit.configuration.colorScheme, .dark)
+    XCTAssertEqual(ShopifyCheckoutKit.configuration.spinnerColor, UIColor(hex: "#FF0000"))
+    XCTAssertEqual(ShopifyCheckoutKit.configuration.backgroundColor, UIColor(hex: "#0000FF"))
+  }
+
+  func testConfigureWithPartialConfig() {
+    let configuration: [AnyHashable: Any] = [
+      "preloading": false
+    ]
+
+    shopifyCheckoutKit.configure(configuration)
+
+    XCTAssertFalse(ShopifyCheckoutKit.configuration.preloading.enabled)
+  }
+
+  func testConfigureWithInvalidColors() {
+    let configuration: [AnyHashable: Any] = [
+      "colors": [
+        "ios": [
+          "spinnerColor": "invalid"
+        ]
+      ]
+    ]
+
+    let defaultColorFallback = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
+    shopifyCheckoutKit.configure(configuration)
+
+    XCTAssertEqual(ShopifyCheckoutKit.configuration.spinnerColor, defaultColorFallback)
   }
 
   /// checkoutDidComplete
@@ -86,10 +152,6 @@ class ShopifyCheckoutKitTests: XCTestCase {
     } else {
       XCTFail("Failed to get the message from eventBody")
     }
-  }
-
-  private func getInstance() -> RCTShopifyCheckoutKit {
-    return RCTShopifyCheckoutKit()
   }
 
   private func mockSendEvent(eventName: String) -> RCTShopifyCheckoutKitMock {
