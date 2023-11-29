@@ -11,7 +11,8 @@
     "lint": "yarn typecheck && eslint .",
     "ios": "react-native run-ios --simulator 'iPhone 14 Pro'",
     "start": "react-native start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:swift": "xcodebuild test -workspace ./ios/ReactNative.xcworkspace -scheme ReactNative -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=latest'"
   },
   "dependencies": {
     "@apollo/client": "^3.8.6",
