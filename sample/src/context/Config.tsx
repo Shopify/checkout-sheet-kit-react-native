@@ -15,7 +15,7 @@ import {useTheme} from './Theme';
 
 interface Context {
   config: Configuration | undefined;
-  configure: (config: Configuration) => void;
+  setConfig: (config: Configuration) => void;
 }
 
 const ConfigContext = createContext<Context>({
@@ -23,12 +23,12 @@ const ConfigContext = createContext<Context>({
     colorScheme: ColorScheme.automatic,
     preloading: false,
   },
-  configure: () => undefined,
+  setConfig: () => undefined,
 });
 
 export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
   const ShopifyCheckoutKit = useShopifyCheckoutKit();
-  const [config, setConfig] = useState<Context['config']>(undefined);
+  const [config, setInternalConfig] = useState<Context['config']>(undefined);
   const {setColorScheme} = useTheme();
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
         // Fetch the checkout configuration object
         const config = await ShopifyCheckoutKit.getConfig();
         // Store it in local state
-        setConfig(config);
+        setInternalConfig(config);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Failed to fetch Shopify checkout configuration', error);
@@ -47,17 +47,17 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
     init();
   }, [ShopifyCheckoutKit]);
 
-  const configure = useCallback(
+  const setConfig = useCallback(
     async (config: Configuration) => {
       try {
         // Update the SDK configuration
-        ShopifyCheckoutKit.configure(config);
+        ShopifyCheckoutKit.setConfig(config);
 
         // Fetch the latest configuration object
         const updatedConfig = await ShopifyCheckoutKit.getConfig();
 
         // Update local config state
-        setConfig(updatedConfig);
+        setInternalConfig(updatedConfig);
 
         // Update the color scheme theme setting if it changed
         if (updatedConfig?.colorScheme) {
@@ -77,9 +77,9 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
   const value = useMemo(
     () => ({
       config,
-      configure,
+      setConfig,
     }),
-    [config, configure],
+    [config, setConfig],
   );
 
   return (

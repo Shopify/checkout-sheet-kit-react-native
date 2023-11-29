@@ -91,7 +91,7 @@ interface SectionData {
 
 function SettingsScreen() {
   const ShopifyCheckoutKit = useShopifyCheckoutKit();
-  const {config, configure} = useConfig();
+  const {config, setConfig} = useConfig();
   const {colors} = useTheme();
   const styles = createStyles(colors);
 
@@ -99,7 +99,7 @@ function SettingsScreen() {
     const updatedColors = getColors(item.value, Appearance.getColorScheme());
 
     if (item.value === ColorScheme.automatic) {
-      configure({
+      setConfig({
         colorScheme: ColorScheme.automatic,
         colors: {
           ios: {
@@ -123,7 +123,7 @@ function SettingsScreen() {
         },
       });
     } else {
-      configure({
+      setConfig({
         colorScheme: item.value,
         colors: {
           ios: {
@@ -142,10 +142,10 @@ function SettingsScreen() {
   };
 
   const handleTogglePreloading = useCallback(() => {
-    configure({
+    setConfig({
       preloading: !config?.preloading,
     });
-  }, [config?.preloading, configure]);
+  }, [config?.preloading, setConfig]);
 
   const configurationOptions: readonly SwitchItem[] = useMemo(
     () => [

@@ -150,7 +150,7 @@ export interface ShopifyCheckoutKit {
   /**
    * Configure the checkout. See README.md for more details.
    */
-  configure(config: Configuration): void;
+  setConfig(config: Configuration): void;
   /**
    * Return the current config for the checkout. See README.md for more details.
    */

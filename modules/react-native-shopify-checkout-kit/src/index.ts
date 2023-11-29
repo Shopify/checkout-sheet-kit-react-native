@@ -49,17 +49,13 @@ class ShopifyCheckoutKit implements ShopifyCheckout {
 
   constructor(configuration?: Configuration) {
     if (configuration != null) {
-      this.configure(configuration);
+      this.setConfig(configuration);
     }
 
     this.eventEmitter = new NativeEventEmitter(RNShopifyCheckoutKit);
   }
 
   public readonly version: string = RNShopifyCheckoutKit.version;
-
-  public configure(configuration: Configuration): void {
-    RNShopifyCheckoutKit.configure(configuration);
-  }
 
   public preload(checkoutUrl: string): void {
     RNShopifyCheckoutKit.preload(checkoutUrl);
@@ -71,6 +67,10 @@ class ShopifyCheckoutKit implements ShopifyCheckout {
 
   public async getConfig(): Promise<Configuration> {
     return RNShopifyCheckoutKit.getConfig();
+  }
+
+  public setConfig(configuration: Configuration): void {
+    RNShopifyCheckoutKit.configure(configuration);
   }
 
   public addEventListener(

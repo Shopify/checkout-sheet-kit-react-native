@@ -36,10 +36,10 @@ type Maybe<T> = T | undefined;
 interface Context {
   addEventListener: AddEventListener;
   getConfig: () => Promise<Configuration | undefined>;
+  setConfig: (config: Configuration) => void;
   removeEventListeners: RemoveEventListeners;
   preload: (checkoutUrl: string) => void;
   present: (checkoutUrl: string) => void;
-  configure: (config: Configuration) => void;
   version: Maybe<string>;
 }
 
@@ -48,7 +48,7 @@ const noop = () => undefined;
 const ShopifyCheckoutKitContext = React.createContext<Context>({
   addEventListener: noop,
   removeEventListeners: noop,
-  configure: noop,
+  setConfig: noop,
   getConfig: async () => undefined,
   preload: noop,
   present: noop,
@@ -92,8 +92,8 @@ export function ShopifyCheckoutKitProvider({
     }
   }, []);
 
-  const configure = useCallback((config: Configuration) => {
-    instance.current?.configure(config);
+  const setConfig = useCallback((config: Configuration) => {
+    instance.current?.setConfig(config);
   }, []);
 
   const getConfig = useCallback(async () => {
@@ -103,7 +103,7 @@ export function ShopifyCheckoutKitProvider({
   const context = useMemo((): Context => {
     return {
       addEventListener,
-      configure,
+      setConfig,
       getConfig,
       preload,
       present,
@@ -113,8 +113,8 @@ export function ShopifyCheckoutKitProvider({
   }, [
     addEventListener,
     removeEventListeners,
-    configure,
     getConfig,
+    setConfig,
     preload,
     present,
   ]);
