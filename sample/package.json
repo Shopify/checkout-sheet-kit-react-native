@@ -6,11 +6,11 @@
     "android": "react-native run-android",
     "clean": "rm -rf node_modules ios/build ios/pods",
     "clean:android": "(cd android && ./gradlew clean)",
+    "build:android": "sh ./scripts/build_android",
+    "build:ios": "sh ./scripts/build_ios",
     "lint": "yarn typecheck && eslint .",
     "ios": "react-native run-ios --simulator 'iPhone 14 Pro'",
     "start": "react-native start",
-    "build:android": "cd android && ./gradlew assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a",
-    "build:ios": "cd ios && xcodebuild -workspace ReactNative.xcworkspace -scheme ReactNative -configuration Debug -sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

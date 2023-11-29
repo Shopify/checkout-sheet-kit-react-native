@@ -1,0 +1,13 @@
+name: Setup
+description: Setup Node.js and install dependencies
+
+runs:
+  using: composite
+  steps:
+    - name: Cache turbo build setup
+      uses: actions/cache@v3
+      with:
+        path: .turbo
+        key: turbo-${{ github.sha }}
+        restore-keys: |
+          turbo-

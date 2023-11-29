@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -e
+
+WORKSPACE=$1
+COMMAND=$2
+
+if [ -z "$WORKSPACE" ]; then
+  echo "Workspace not found. Example usage: ./scripts/check_cache.sh sample build:android"
+  exit 1
+fi
+
+if [ -z "$COMMAND" ]; then
+  echo "Command not found. Example usage: ./scripts/check_cache.sh sample build:android"
+  exit 1
+fi
+
+TASK_ID="$1#$2"
+
+# Fetch the turbo cache for the specified command
+CACHE=$(yarn turbo run $2 --cache-dir=".turbo" --dry=json)
+
+# Check the status of the cache
+RESULT=$(echo $CACHE | jq ".tasks[] | select(.taskId==\"$TASK_ID\") | .cache.status")
+
+if [[ $RESULT == "HIT" ]]; then
+  echo "1"
+else
+  echo "0"
+fi
