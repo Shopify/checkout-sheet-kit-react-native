@@ -53,7 +53,7 @@ class ShopifyCheckoutKitTests: XCTestCase {
 
     let expectation = self.expectation(description: "CheckoutDidCancel")
 
-    mock.sendEventImplementation = { name, body in
+    mock.sendEventImplementation = { name, _ in
       if name == "close" {
         mock.didSendEvent = true
         expectation.fulfill()
@@ -77,8 +77,11 @@ class ShopifyCheckoutKitTests: XCTestCase {
     mock.checkoutDidFail(error: error)
 
     XCTAssertTrue(mock.didSendEvent)
-    let message = (mock.eventBody as? [String: Any])?["message"] as! String
-    XCTAssertEqual(message, error.localizedDescription)
+    if let eventBody = mock.eventBody as? [String: Any], let message = eventBody["message"] as? String {
+      XCTAssertEqual(message, error.localizedDescription)
+    } else {
+      XCTFail("Failed to get the message from eventBody")
+    }
   }
 
   private func getInstance() -> RCTShopifyCheckoutKit {
