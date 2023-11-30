@@ -33,7 +33,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import {useShopifyCheckoutKit} from 'react-native-shopify-checkout-kit';
+import {useShopifyCheckoutKit} from '@shopify/react-native-checkout-kit';
 import useShopify from '../hooks/useShopify';
 
 import type {ShopifyProduct} from '../../@types';

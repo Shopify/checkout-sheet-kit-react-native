@@ -7,7 +7,7 @@ import React, {
   useReducer,
   useState,
 } from 'react';
-import {useShopifyCheckoutKit} from 'react-native-shopify-checkout-kit';
+import {useShopifyCheckoutKit} from '@shopify/react-native-checkout-kit';
 import useShopify from '../hooks/useShopify';
 
 interface Context {

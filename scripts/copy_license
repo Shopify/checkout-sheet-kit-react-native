@@ -30,6 +30,6 @@ def copy_license(dir, text)
   end
 end
 
-copy_license('modules/react-native-shopify-checkout-kit/ios', license_text)
-copy_license('modules/react-native-shopify-checkout-kit/android', license_text)
-copy_license('modules/react-native-shopify-checkout-kit/src', license_text)
+copy_license('modules/react-native-checkout-kit/ios', license_text)
+copy_license('modules/react-native-checkout-kit/android', license_text)
+copy_license('modules/react-native-checkout-kit/src', license_text)

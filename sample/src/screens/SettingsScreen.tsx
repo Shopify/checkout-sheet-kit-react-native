@@ -37,7 +37,7 @@ import {useConfig} from '../context/Config';
 import {
   ColorScheme,
   useShopifyCheckoutKit,
-} from 'react-native-shopify-checkout-kit';
+} from '@shopify/react-native-checkout-kit';
 import {
   Colors,
   darkColors,

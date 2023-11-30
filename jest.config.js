@@ -1,6 +1,6 @@
 module.exports = {
   preset: 'react-native',
-  modulePathIgnorePatterns: ['modules/react-native-shopify-checkout-kit/lib'],
+  modulePathIgnorePatterns: ['modules/react-native-checkout-kit/lib'],
   transform: {
     '\\.[jt]sx?$': 'babel-jest',
   },

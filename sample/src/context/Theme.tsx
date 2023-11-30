@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import {Appearance, ColorSchemeName, useColorScheme} from 'react-native';
 import {DarkTheme, DefaultTheme} from '@react-navigation/native';
-import {ColorScheme} from 'react-native-shopify-checkout-kit';
+import {ColorScheme} from '@shopify/react-native-checkout-kit';
 
 interface Context {
   colors: Colors;
