@@ -11,4 +11,4 @@ fi
 
 cd ios
 
-xcodebuild clean build test -workspace ReactNative.xcworkspace -scheme ReactNative -destination "$dest" -skipPackagePluginValidation -sdk iphonesimulator ASSETCATALOG_COMPILER_OPTIMIZATION=time COMPILER_INDEX_STORE_ENABLE=NO | xcpretty -c
+xcodebuild build-for-testing test -workspace ReactNative.xcworkspace -scheme ReactNative -destination "$dest" -skipPackagePluginValidation -sdk iphonesimulator ASSETCATALOG_COMPILER_OPTIMIZATION=time COMPILER_INDEX_STORE_ENABLE=NO | xcpretty -c
