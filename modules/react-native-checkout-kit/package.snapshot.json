@@ -1,6 +1,5 @@
 [
   "LICENSE",
-  "README.md",
   "RNShopifyCheckoutKit.podspec",
   "android/build.gradle",
   "android/gradle.properties",
