@@ -39,6 +39,17 @@ jobs:
 
       - run: ./scripts/compare_snapshot
 
+  test:
+    name: Run jest tests
+    runs-on: shopify-ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - run: yarn test
+
   build-android:
     name: Build Android Sample App
     runs-on: shopify-ubuntu-latest
@@ -74,7 +85,8 @@ jobs:
             ~/.gradle/caches
             sample/android/.gradle/wrapper
             sample/android/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('sample/android/gradle/wrapper/gradle-wrapper.properties') }}
+          key:
+            ${{ runner.os }}-gradle-${{ hashFiles('sample/android/gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
 

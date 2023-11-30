@@ -1,5 +1,5 @@
 #!/bin/bash
 
-OUTPUT_FILE=${1:-modules/react-native-shopify-checkout-kit/package.snap}
+OUTPUT_FILE=${1:-modules/react-native-shopify-checkout-kit/package.snapshot.json}
 
 (cd modules/react-native-shopify-checkout-kit && npm pack --dry-run --json) | jq ".[0].files | map(.path)" > $OUTPUT_FILE

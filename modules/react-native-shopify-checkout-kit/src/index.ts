@@ -26,14 +26,14 @@ import {
   NativeEventEmitter,
   EmitterSubscription,
 } from 'react-native';
+import type {ShopifyCheckoutKit as ShopifyCheckout} from '.';
+import {ColorScheme} from './index.d';
+import {ShopifyCheckoutKitProvider, useShopifyCheckoutKit} from './context';
 import type {
   CheckoutEvent,
   CheckoutEventCallback,
   Configuration,
-  ShopifyCheckoutKit as ShopifyCheckout,
 } from './index.d';
-import {ColorScheme} from './index.d';
-import {ShopifyCheckoutKitProvider, useShopifyCheckoutKit} from './context';
 
 const RNShopifyCheckoutKit = NativeModules.ShopifyCheckoutKit;
 
@@ -87,11 +87,11 @@ class ShopifyCheckoutKit implements ShopifyCheckout {
 
 // API
 export {
-  ColorScheme,
   ShopifyCheckoutKit,
   ShopifyCheckoutKitProvider,
   useShopifyCheckoutKit,
+  ColorScheme,
 };
 
 // Types
-export type {Configuration, CheckoutEvent};
+export {CheckoutEvent, CheckoutEventCallback, Configuration};

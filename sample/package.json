@@ -19,7 +19,6 @@
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "graphql": "^16.8.1",
-    "react": "18.2.0",
     "react-native": "0.72.6",
     "react-native-dotenv": "^3.4.9",
     "react-native-gesture-handler": "^2.13.4",
@@ -28,6 +27,9 @@
     "react-native-screens": "^3.27.0",
     "react-native-shopify-checkout-kit": "*",
     "react-native-vector-icons": "^10.0.2"
+  },
+  "peerDependencies": {
+    "react": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
