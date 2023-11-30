@@ -6,7 +6,7 @@
   "types": "src/index.ts",
   "source": "src/index.ts",
   "module": "lib/module/index.js",
-  "description": "A React Native library for Shopify's Checkout Kit.",
+  "description": "Shopify's Checkout Kit enables developers to integrate the world's highest-converting checkout into React Native applications.",
   "author": "Shopify Inc.",
   "homepage": "https://github.com/shopify/checkout-kit-react-native",
   "bugs": {
