@@ -31,5 +31,5 @@
   "react-native-shopify-checkout-kit.podspec",
   "src/context.tsx",
   "src/index.d.ts",
-  "src/index.tsx"
+  "src/index.ts"
 ]

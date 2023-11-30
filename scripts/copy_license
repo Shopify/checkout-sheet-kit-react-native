@@ -4,27 +4,32 @@ require 'find'
 
 license_text = "/*\n" + File.read('LICENSE') + "*/\n\n"
 
-Find.find('modules') do |path|
-  next unless File.file?(path) && (
-    path.end_with?('.swift') ||
-    path.end_with?('.h') ||
-    path.end_with?('.mm') ||
-    path.end_with?('.java') ||
-    path.end_with?('.js') ||
-    path.end_with?('.ts') ||
-    path.end_with?('.tsx')
-  )
+def copy_license(dir, text)
+  Find.find(dir) do |path|
+    next unless File.file?(path) &&
+      path.end_with?('.swift') ||
+      path.end_with?('.h') ||
+      path.end_with?('.mm') ||
+      path.end_with?('.java') ||
+      path.end_with?('.js') ||
+      path.end_with?('.ts') ||
+      path.end_with?('.tsx')
 
-  print("[copy_license] " + path + "\n")
+    print("[copy_license] " + path + "\n")
 
-  content = File.read(path)
+    content = File.read(path)
 
-  # Remove existing license
-  content.sub!(/\/\*.*?\*\//m, '')
-  # remove existing newlines from start of file
-  content.gsub!(/\A\n*/, '')
-  # Add new license
-  content.prepend(license_text)
+    # Remove existing license
+    content.sub!(/\/\*.*?\*\//m, '')
+    # remove existing newlines from start of file
+    content.gsub!(/\A\n*/, '')
+    # Add new license
+    content.prepend(text)
 
-  File.write(path, content)
+    File.write(path, content)
+  end
 end
+
+copy_license('modules/react-native-shopify-checkout-kit/ios', license_text)
+copy_license('modules/react-native-shopify-checkout-kit/android', license_text)
+copy_license('modules/react-native-shopify-checkout-kit/src', license_text)
