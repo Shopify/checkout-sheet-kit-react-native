@@ -39,7 +39,7 @@ const RNShopifyCheckoutKit = NativeModules.ShopifyCheckoutKit;
 
 if (!('ShopifyCheckoutKit' in NativeModules)) {
   throw new Error(`
-  "react-native-shopify-checkout-kit" is not correctly linked.
+  "@shopify/react-native-checkout-kit" is not correctly linked.
 
   If you are building for iOS, make sure to run "pod install" first and restart the metro server.`);
 }
