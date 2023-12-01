@@ -70,7 +70,7 @@ class ShopifyCheckoutKit implements ShopifyCheckout {
   }
 
   public setConfig(configuration: Configuration): void {
-    RNShopifyCheckoutKit.configure(configuration);
+    RNShopifyCheckoutKit.setConfig(configuration);
   }
 
   public addEventListener(

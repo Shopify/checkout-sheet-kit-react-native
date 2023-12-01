@@ -21,10 +21,10 @@ jest.mock('react-native', () => {
 
   const ShopifyCheckoutKit = {
     version: '0.7.0',
-    configure: jest.fn(),
     preload: jest.fn(),
     present: jest.fn(),
     getConfig: jest.fn(async () => exampleConfig),
+    setConfig: jest.fn(),
     addEventListener: jest.fn(),
     removeEventListeners: jest.fn(),
   };
@@ -39,31 +39,31 @@ jest.mock('react-native', () => {
 
 describe('ShopifyCheckoutKit', () => {
   afterEach(() => {
-    NativeModules.ShopifyCheckoutKit.configure.mockReset();
+    NativeModules.ShopifyCheckoutKit.setConfig.mockReset();
   });
 
   describe('instantiation', () => {
-    it('calls `configure` with the specified config on instantiation', () => {
+    it('calls `setConfig` with the specified config on instantiation', () => {
       new ShopifyCheckoutKit(config);
-      expect(NativeModules.ShopifyCheckoutKit.configure).toHaveBeenCalledWith(
+      expect(NativeModules.ShopifyCheckoutKit.setConfig).toHaveBeenCalledWith(
         config,
       );
     });
 
-    it('does not call `configure` if no config was specified on instantiation', () => {
+    it('does not call `setConfig` if no config was specified on instantiation', () => {
       new ShopifyCheckoutKit();
-      expect(NativeModules.ShopifyCheckoutKit.configure).not.toHaveBeenCalled();
+      expect(NativeModules.ShopifyCheckoutKit.setConfig).not.toHaveBeenCalled();
     });
   });
 
-  describe('configure', () => {
-    it('calls the `configure` on the Native Module', () => {
+  describe('setConfig', () => {
+    it('calls the `setConfig` on the Native Module', () => {
       const instance = new ShopifyCheckoutKit();
-      instance.configure(config);
-      expect(NativeModules.ShopifyCheckoutKit.configure).toHaveBeenCalledTimes(
+      instance.setConfig(config);
+      expect(NativeModules.ShopifyCheckoutKit.setConfig).toHaveBeenCalledTimes(
         1,
       );
-      expect(NativeModules.ShopifyCheckoutKit.configure).toHaveBeenCalledWith(
+      expect(NativeModules.ShopifyCheckoutKit.setConfig).toHaveBeenCalledWith(
         config,
       );
     });

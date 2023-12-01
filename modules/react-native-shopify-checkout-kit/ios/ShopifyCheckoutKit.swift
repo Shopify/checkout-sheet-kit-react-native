@@ -120,7 +120,7 @@ class RCTShopifyCheckoutKit: RCTEventEmitter, CheckoutDelegate {
 		}
 	}
 
-	@objc func configure(_ configuration: [AnyHashable: Any]) {
+	@objc func setConfig(_ configuration: [AnyHashable: Any]) {
 		let colorConfig = configuration["colors"] as? [AnyHashable: Any]
 		let iosConfig = colorConfig?["ios"] as? [String: String]
 
