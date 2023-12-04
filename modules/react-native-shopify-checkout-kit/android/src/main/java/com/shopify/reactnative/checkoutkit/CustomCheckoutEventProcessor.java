@@ -31,7 +31,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.JavaOnlyMap;
 import org.jetbrains.annotations.Nullable;
 
 public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
@@ -50,7 +50,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
   @Override
   public void onCheckoutFailed(CheckoutException checkoutError) {
-    WritableMap error = Arguments.createMap();
+    JavaOnlyMap error = new JavaOnlyMap();
 
     error.putString("message", checkoutError.getErrorDescription());
 

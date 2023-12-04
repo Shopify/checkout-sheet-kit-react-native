@@ -26,16 +26,13 @@ package com.shopify.reactnative.checkoutkit;
 import android.app.Activity;
 import android.content.Context;
 import androidx.activity.ComponentActivity;
-import androidx.core.content.ContextCompat;
-import com.facebook.react.bridge.Arguments;
+import androidx.annotation.NonNull;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-import org.jetbrains.annotations.NotNull;
-import android.net.Uri;
 import com.shopify.checkoutkit.*;
 
 import java.util.HashMap;
@@ -46,7 +43,7 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
 
   public static Configuration checkoutConfig = new Configuration();
 
-  private ReactApplicationContext reactContext;
+  private final ReactApplicationContext reactContext;
 
   public ShopifyCheckoutKitModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -54,6 +51,7 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
     this.reactContext = reactContext;
   }
 
+  @NonNull
   @Override
   public String getName() {
     return MODULE_NAME;
