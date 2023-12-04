@@ -50,8 +50,8 @@ jobs:
 
       - run: yarn test
 
-  build-android:
-    name: Build Android Sample App
+  test-android:
+    name: Run Android Tests
     runs-on: shopify-ubuntu-latest
     steps:
       - name: Checkout
@@ -90,10 +90,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build sample for Android
+      - name: Run Android tests
         # If turbo has already cached the build it will return instantly here
         run: |
-          yarn turbo run build:android --cache-dir=".turbo"
+          yarn turbo run test:android --cache-dir=".turbo"
 
   test-ios:
     name: Test iOS

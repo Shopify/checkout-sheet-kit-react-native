@@ -16,8 +16,10 @@
       "outputs": ["sample/ios/build"]
     },
     "test:ios": {
-      "dependsOn": ["build", "lint"],
-      "outputs": []
+      "dependsOn": ["build", "lint"]
+    },
+    "test:android": {
+      "dependsOn": ["build", "lint"]
     }
   }
 }
