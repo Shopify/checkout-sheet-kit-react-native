@@ -73,7 +73,7 @@ class ShopifyCheckoutKitTests: XCTestCase {
       ]
     ]
 
-    shopifyCheckoutKit.configure(configuration)
+    shopifyCheckoutKit.setConfig(configuration)
 
     XCTAssertTrue(ShopifyCheckoutKit.configuration.preloading.enabled)
     XCTAssertEqual(ShopifyCheckoutKit.configuration.colorScheme, .dark)
@@ -86,7 +86,7 @@ class ShopifyCheckoutKitTests: XCTestCase {
       "preloading": false
     ]
 
-    shopifyCheckoutKit.configure(configuration)
+    shopifyCheckoutKit.setConfig(configuration)
 
     XCTAssertFalse(ShopifyCheckoutKit.configuration.preloading.enabled)
   }
@@ -101,7 +101,7 @@ class ShopifyCheckoutKitTests: XCTestCase {
     ]
 
     let defaultColorFallback = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
-    shopifyCheckoutKit.configure(configuration)
+    shopifyCheckoutKit.setConfig(configuration)
 
     XCTAssertEqual(ShopifyCheckoutKit.configuration.spinnerColor, defaultColorFallback)
   }
