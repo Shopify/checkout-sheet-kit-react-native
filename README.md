@@ -1,4 +1,4 @@
-# Checkout Kit - React Native (Developer Preview)
+# Shopify Checkout Kit - React Native (Developer Preview)
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/Shopify/checkout-kit-react-native/blob/main/LICENSE)
 
