@@ -44,7 +44,7 @@ import java.util.Map;
 public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
   private static final String MODULE_NAME = "ShopifyCheckoutKit";
 
-  private static Configuration checkoutConfig = new Configuration();
+  public static Configuration checkoutConfig = new Configuration();
 
   private ReactApplicationContext reactContext;
 
