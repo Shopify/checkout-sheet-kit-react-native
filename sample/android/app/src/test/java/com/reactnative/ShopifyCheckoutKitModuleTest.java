@@ -6,6 +6,8 @@ import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.shopify.checkoutkit.ShopifyCheckoutKit;
 import com.shopify.reactnative.checkoutkit.ShopifyCheckoutKitModule;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -22,58 +24,52 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ShopifyCheckoutKitModuleTest {
-    @Mock
-    private ReactApplicationContext mockReactContext;
+  @Mock
+  private ReactApplicationContext mockReactContext;
 
-    @Mock
-    private ComponentActivity mockComponentActivity;
+  @Mock
+  private ComponentActivity mockComponentActivity;
 
-    @Captor
-    ArgumentCaptor<Runnable> runnableCaptor;
+  @Captor
+  ArgumentCaptor<Runnable> runnableCaptor;
 
-    private ShopifyCheckoutKitModule shopifyCheckoutKitModule;
+  private ShopifyCheckoutKitModule shopifyCheckoutKitModule;
 
-    @Test
-    public void callsPresentWithCheckoutURL() {
-      when(mockReactContext.getCurrentActivity()).thenReturn(mockComponentActivity);
-      shopifyCheckoutKitModule = new ShopifyCheckoutKitModule(mockReactContext);
+  @Before
+  public void setup() {
+    when(mockReactContext.getCurrentActivity()).thenReturn(mockComponentActivity);
+    shopifyCheckoutKitModule = new ShopifyCheckoutKitModule(mockReactContext);
+  }
 
-      try (MockedStatic<ShopifyCheckoutKit> mockedShopifyCheckoutKit  = Mockito.mockStatic(ShopifyCheckoutKit.class)) {
-        String checkoutUrl = "https://shopify.com";
-        shopifyCheckoutKitModule.present(checkoutUrl);
+  @Test
+  public void callsPresentWithCheckoutURL() {
+    try (MockedStatic<ShopifyCheckoutKit> mockedShopifyCheckoutKit = Mockito.mockStatic(ShopifyCheckoutKit.class)) {
+      String checkoutUrl = "https://shopify.com";
+      shopifyCheckoutKitModule.present(checkoutUrl);
 
-        // run runOnUiThread function
-        verify(mockComponentActivity).runOnUiThread(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
+      verify(mockComponentActivity).runOnUiThread(runnableCaptor.capture());
+      runnableCaptor.getValue().run();
 
-        // verify checkout kit was called
-        mockedShopifyCheckoutKit.verify(() -> {
-          ShopifyCheckoutKit.present(eq(checkoutUrl), any(), any());
-        });
-      }
+      mockedShopifyCheckoutKit.verify(() -> {
+        ShopifyCheckoutKit.present(eq(checkoutUrl), any(), any());
+      });
     }
+  }
 
-    @Test
-    public void callsPreloadWithCheckoutURL() {
-      when(mockReactContext.getCurrentActivity()).thenReturn(mockComponentActivity);
-      shopifyCheckoutKitModule = new ShopifyCheckoutKitModule(mockReactContext);
+  @Test
+  public void callsPreloadWithCheckoutURL() {
+    try (MockedStatic<ShopifyCheckoutKit> mockedShopifyCheckoutKit = Mockito.mockStatic(ShopifyCheckoutKit.class)) {
+      String checkoutUrl = "https://shopify.com";
+      shopifyCheckoutKitModule.preload(checkoutUrl);
 
-      try (MockedStatic<ShopifyCheckoutKit> mockedShopifyCheckoutKit  = Mockito.mockStatic(ShopifyCheckoutKit.class)) {
-        String checkoutUrl = "https://shopify.com";
-        shopifyCheckoutKitModule.preload(checkoutUrl);
-
-        // verify checkout kit was called
-        mockedShopifyCheckoutKit.verify(() -> {
-          ShopifyCheckoutKit.preload(eq(checkoutUrl), any());
-        });
-      }
+      mockedShopifyCheckoutKit.verify(() -> {
+        ShopifyCheckoutKit.preload(eq(checkoutUrl), any());
+      });
     }
+  }
 
   @Test
   public void configuresInternalConfig() {
-//    when(mockReactContext.getCurrentActivity()).thenReturn(mockComponentActivity);
-    shopifyCheckoutKitModule = new ShopifyCheckoutKitModule(mockReactContext);
-
     assertFalse(ShopifyCheckoutKitModule.checkoutConfig.getPreloading().getEnabled());
 
     JavaOnlyMap updatedConfig = new JavaOnlyMap();
