@@ -96,7 +96,7 @@ jobs:
           yarn turbo run test:android --cache-dir=".turbo"
 
   test-ios:
-    name: Test iOS
+    name: Run iOS Tests
     runs-on: macos-latest
     steps:
       - name: Checkout
