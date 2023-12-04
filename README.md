@@ -1,11 +1,11 @@
-# Checkout Kit - React Native
+# Checkout Kit - React Native (Developer Preview)
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/Shopify/checkout-kit-react-native/blob/main/LICENSE)
 
 ![image](https://github.com/Shopify/checkout-kit-react-native/assets/2034704/107fbeb8-50be-43ac-8837-33d576cac9ab)
 
 
-**Shopify Checkout Kit** is a Native Module that enables React Native apps to
+**Shopify Checkout Kit** is a Native Module (currently in [Developer Preview](https://shopify.dev/docs/api/release-notes/developer-previews)) that enables React Native apps to
 provide the world’s highest converting, customizable, one-page checkout within
 the app. The presented experience is a fully-featured checkout that preserves
 all of the store customizations: Checkout UI extensions, Functions, branding,
