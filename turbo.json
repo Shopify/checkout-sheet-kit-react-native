@@ -1,11 +1,11 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
-    "lint": {
-      "dependsOn": ["build"]
-    },
     "build": {
       "outputs": ["modules/react-native-shopify-checkout-kit/lib/**/*"]
+    },
+    "lint": {
+      "dependsOn": ["build"]
     },
     "build:android": {
       "dependsOn": ["build", "lint"],
@@ -14,6 +14,9 @@
     "build:ios": {
       "dependsOn": ["build", "lint"],
       "outputs": ["sample/ios/build"]
+    },
+    "test:ios": {
+      "dependsOn": ["build", "lint"]
     },
     "test:android": {
       "dependsOn": ["build", "lint"]
