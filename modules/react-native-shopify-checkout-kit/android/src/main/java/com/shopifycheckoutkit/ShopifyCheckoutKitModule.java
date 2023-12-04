@@ -216,7 +216,7 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void configure(ReadableMap config) {
+  public void setConfig(ReadableMap config) {
     Context context = getReactApplicationContext();
 
     ShopifyCheckoutKit.configure(configuration -> {

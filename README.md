@@ -266,7 +266,7 @@ session in the background and ahead of time.
 ### Configuration
 
 The SDK provides a way to customize the presented checkout experience through a
-`configuration` object in the Context Provider or a `configure` method on an
+`configuration` object in the Context Provider or a `setConfig` method on an
 instance of the `ShopifyCheckoutKit` class.
 
 | Name          | Required | Default     | Description                                                                                                                                                    |

@@ -32,7 +32,7 @@ RCT_EXTERN_METHOD(present:(NSString *)checkoutURLString);
 RCT_EXTERN_METHOD(preload:(NSString *)checkoutURLString);
 
 /// Set configuration for checkout
-RCT_EXTERN_METHOD(configure:(NSDictionary *)configuration);
+RCT_EXTERN_METHOD(setConfig:(NSDictionary *)configuration);
 
 // Return configuration for checkout
 RCT_EXTERN_METHOD(getConfig: (RCTPromiseResolveBlock) resolve reject: (RCTPromiseRejectBlock) reject)
