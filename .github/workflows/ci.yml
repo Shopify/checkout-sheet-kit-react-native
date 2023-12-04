@@ -65,8 +65,8 @@ jobs:
 
       - name: Check build cache
         run: |
-          CACHE_STATUS=$(./scripts/check_cache sample build:android)
-          echo "[sample] build:android - $CACHE_STATUS"
+          CACHE_STATUS=$(./scripts/check_cache sample test:android)
+          echo "[sample] test:android - $CACHE_STATUS"
           echo "turbo_cache_hit=$CACHE_STATUS" >> $GITHUB_ENV
 
       - name: Install JDK
@@ -93,7 +93,7 @@ jobs:
       - name: Run Android tests
         # If turbo has already cached the build it will return instantly here
         run: |
-          yarn turbo run test:android --cache-dir=".turbo"
+          yarn turbo run test:android --cache-dir=".turbo" --no-daemon
 
   test-ios:
     name: Run iOS Tests
@@ -120,7 +120,7 @@ jobs:
       - name: Install cocoapods
         uses: ./.github/actions/install-cocoapods
 
-      - name: Build sample for iOS
+      - name: Run Swift tests
         # If turbo has already cached the build it will return instantly here
         run: |
-          yarn turbo run test:ios --cache-dir=".turbo"
+          yarn turbo run test:ios --cache-dir=".turbo" --no-daemon
