@@ -62,6 +62,14 @@ target 'ReactNative' do
       :mac_catalyst_enabled => false
     )
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
+
+    # WORKAROUND
+    # This fixes issues with the 'React-Core-AccessibilityResources' dependency when archiving the sample app in XCode:
+    installer.pods_project.targets.each do |target|
+      if target.name == "React-Core-AccessibilityResources"
+        target.remove_from_project
+      end
+    end
   end
 end
 
