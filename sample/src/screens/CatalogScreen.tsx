@@ -39,8 +39,12 @@ import useShopify from '../hooks/useShopify';
 import type {ShopifyProduct} from '../../@types';
 import {Colors, useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../App';
 
-function CatalogScreen(): JSX.Element {
+type Props = NativeStackScreenProps<RootStackParamList, 'CatalogScreen'>;
+
+function CatalogScreen({navigation}: Props) {
   const ShopifyCheckoutKit = useShopifyCheckoutKit();
   const {checkoutURL, totalQuantity, addToCart, addingToCart} = useCart();
   const {colors} = useTheme();
@@ -89,6 +93,12 @@ function CatalogScreen(): JSX.Element {
             <Product
               key={node.id}
               product={node}
+              onPress={() => {
+                navigation.navigate('ProductDetails', {
+                  product: node,
+                  variant: getVariant(node),
+                });
+              }}
               loading={addingToCart.has(getVariant(node)?.id ?? '')}
               onAddToCart={addToCart}
             />
@@ -118,9 +128,11 @@ function Product({
   product,
   onAddToCart,
   loading = false,
+  onPress,
 }: {
   product: ShopifyProduct;
   loading?: boolean;
+  onPress: () => void;
   onAddToCart: (variantId: string) => void;
 }) {
   const {colors} = useTheme();
@@ -129,7 +141,7 @@ function Product({
   const variant = getVariant(product);
 
   return (
-    <View key={product.id} style={styles.productItem}>
+    <Pressable key={product.id} style={styles.productItem} onPress={onPress}>
       <Image
         resizeMethod="resize"
         resizeMode="cover"
@@ -159,7 +171,7 @@ function Product({
           )}
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 

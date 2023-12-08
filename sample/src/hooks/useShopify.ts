@@ -72,6 +72,7 @@ const PRODUCTS_QUERY = gql`
         node {
           id
           title
+          description
           variants(first: 1) {
             edges {
               node {

@@ -2779,6 +2779,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-navigation/native-stack@npm:^6.9.17":
+  version: 6.9.17
+  resolution: "@react-navigation/native-stack@npm:6.9.17"
+  dependencies:
+    "@react-navigation/elements": "npm:^1.3.21"
+    warn-once: "npm:^0.1.0"
+  peerDependencies:
+    "@react-navigation/native": ^6.0.0
+    react: "*"
+    react-native: "*"
+    react-native-safe-area-context: ">= 3.0.0"
+    react-native-screens: ">= 3.0.0"
+  checksum: a788e854464e176e824252da7ff55c5ccbee95b3f261e9da67d45e08e341ab48f7b9f1f3effb607f78f4b9c3f742df01ef46fbddfb06619ca3bc9edf51cfffd0
+  languageName: node
+  linkType: hard
+
 "@react-navigation/native@npm:^6.1.9":
   version: 6.1.9
   resolution: "@react-navigation/native@npm:6.1.9"
@@ -9237,6 +9253,7 @@ __metadata:
     "@react-native/metro-config": "npm:^0.72.11"
     "@react-navigation/bottom-tabs": "npm:^6.5.11"
     "@react-navigation/native": "npm:^6.1.9"
+    "@react-navigation/native-stack": "npm:^6.9.17"
     "@types/react-native-dotenv": "npm:^0.2.1"
     "@types/react-native-vector-icons": "npm:^6.4.18"
     babel-plugin-module-resolver: "npm:^5.0.0"

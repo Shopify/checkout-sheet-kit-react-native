@@ -13,18 +13,21 @@ interface CartCost {
   totalTaxAmount: Price;
 }
 
+export interface ProductVariant {
+  id: string;
+  price: Price;
+}
+
 export interface ShopifyProduct {
   id: string;
   title: string;
+  description: string;
   images: Edges<{
     id: string;
     altText: string;
     url: string;
   }>;
-  variants: Edges<{
-    id: string;
-    price: Price;
-  }>;
+  variants: Edges<ProductVariant>;
 }
 
 export interface CartItem {
