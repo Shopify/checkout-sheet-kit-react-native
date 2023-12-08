@@ -335,7 +335,7 @@ function createStyles(colors: Colors) {
       paddingBottom: 65,
       paddingHorizontal: 2,
       borderTopWidth: 1,
-      borderTopColor: '#e2e2e2',
+      borderTopColor: colors.border,
     },
     costBlock: {
       display: 'flex',

@@ -165,8 +165,6 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
         },
       });
 
-      dispatch({type: 'remove', variantId});
-
       setCheckoutURL(data.cartLinesRemove.cart.checkoutUrl);
       setTotalQuantity(data.cartLinesRemove.cart.totalQuantity);
 
@@ -175,12 +173,14 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       }
 
       if (cartId) {
-        fetchCart({
+        await fetchCart({
           variables: {
             cartId,
           },
         });
       }
+
+      dispatch({type: 'remove', variantId});
     },
     [
       cartId,

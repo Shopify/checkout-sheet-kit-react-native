@@ -24,6 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 import React, {PropsWithChildren, ReactNode} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
 import {STOREFRONT_DOMAIN, STOREFRONT_ACCESS_TOKEN} from '@env';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -41,6 +42,8 @@ import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
 import {Appearance, StatusBar} from 'react-native';
 import {CartProvider, useCart} from './context/Cart';
 import CartScreen from './screens/CartScreen';
+import ProductDetailsScreen from './screens/ProductDetailsScreen';
+import {ProductVariant, ShopifyProduct} from '../@types';
 
 const colorScheme = ColorScheme.web;
 
@@ -63,7 +66,16 @@ const config: Configuration = {
 
 Appearance.setColorScheme('light');
 
-const Tab = createBottomTabNavigator();
+export type RootStackParamList = {
+  Catalog: undefined;
+  CatalogScreen: undefined;
+  ProductDetails: {product: ShopifyProduct; variant?: ProductVariant};
+  Cart: {userId: string};
+  Settings: undefined;
+};
+
+const Tab = createBottomTabNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const client = new ApolloClient({
   uri: `https://${STOREFRONT_DOMAIN}/api/2023-10/graphql.json`,
@@ -104,6 +116,31 @@ function AppWithContext({children}: PropsWithChildren) {
   );
 }
 
+function CatalogStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerBackTitleVisible: true,
+      }}>
+      <Stack.Screen
+        name="CatalogScreen"
+        component={CatalogScreen}
+        options={{headerShown: true, headerTitle: 'Catalog'}}
+      />
+      <Stack.Screen
+        name="ProductDetails"
+        component={ProductDetailsScreen}
+        options={({route}) => ({
+          headerTitle: route.params.product.title,
+          headerShown: true,
+          headerBackVisible: true,
+          headerBackTitle: 'Back',
+        })}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function AppWithNavigation() {
   const {colorScheme, preference} = useTheme();
   const {totalQuantity} = useCart();
@@ -113,8 +150,9 @@ function AppWithNavigation() {
       <Tab.Navigator>
         <Tab.Screen
           name="Catalog"
-          component={CatalogScreen}
+          component={CatalogStack}
           options={{
+            headerShown: false,
             tabBarIcon: createNavigationIcon('shop'),
           }}
         />
