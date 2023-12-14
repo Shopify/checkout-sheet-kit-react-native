@@ -26,14 +26,14 @@ import {
   NativeEventEmitter,
   EmitterSubscription,
 } from 'react-native';
-import type {ShopifyCheckoutKit as ShopifyCheckout} from '.';
-import {ColorScheme} from './index.d';
 import {ShopifyCheckoutKitProvider, useShopifyCheckoutKit} from './context';
 import type {
   CheckoutEvent,
   CheckoutEventCallback,
   Configuration,
+  ShopifyCheckoutKit as ShopifyCheckout,
 } from './index.d';
+import {ColorScheme} from './index.d';
 
 const RNShopifyCheckoutKit = NativeModules.ShopifyCheckoutKit;
 
@@ -45,14 +45,14 @@ if (!('ShopifyCheckoutKit' in NativeModules)) {
 }
 
 class ShopifyCheckoutKit implements ShopifyCheckout {
-  private eventEmitter: NativeEventEmitter;
+  private static eventEmitter: NativeEventEmitter = new NativeEventEmitter(
+    NativeModules.ShopifyCheckoutKit,
+  );
 
   constructor(configuration?: Configuration) {
     if (configuration != null) {
       this.setConfig(configuration);
     }
-
-    this.eventEmitter = new NativeEventEmitter(RNShopifyCheckoutKit);
   }
 
   public readonly version: string = RNShopifyCheckoutKit.version;
@@ -77,11 +77,11 @@ class ShopifyCheckoutKit implements ShopifyCheckout {
     eventName: CheckoutEvent,
     callback: CheckoutEventCallback,
   ): EmitterSubscription | undefined {
-    return this.eventEmitter.addListener(eventName, callback);
+    return ShopifyCheckoutKit.eventEmitter.addListener(eventName, callback);
   }
 
-  public removeEventListeners(event: CheckoutEvent) {
-    this.eventEmitter.removeAllListeners(event);
+  public removeEventListeners(eventName: CheckoutEvent) {
+    ShopifyCheckoutKit.eventEmitter.removeAllListeners(eventName);
   }
 }
 

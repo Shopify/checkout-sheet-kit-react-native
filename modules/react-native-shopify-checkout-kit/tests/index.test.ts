@@ -20,6 +20,7 @@ jest.mock('react-native', () => {
   };
 
   const ShopifyCheckoutKit = {
+    eventEmitter: NativeEventEmitter(),
     version: '0.7.0',
     preload: jest.fn(),
     present: jest.fn(),
@@ -110,7 +111,7 @@ describe('ShopifyCheckoutKit', () => {
       const callback = jest.fn();
       instance.addEventListener(eventName, callback);
       // @ts-expect-error
-      expect(instance.eventEmitter.addListener).toHaveBeenCalledWith(
+      expect(ShopifyCheckoutKit.eventEmitter.addListener).toHaveBeenCalledWith(
         eventName,
         callback,
       );
@@ -123,10 +124,10 @@ describe('ShopifyCheckoutKit', () => {
       instance.addEventListener('close', () => {});
       instance.addEventListener('close', () => {});
       instance.removeEventListeners('close');
-      // @ts-expect-error
-      expect(instance.eventEmitter.removeAllListeners).toHaveBeenCalledWith(
-        'close',
-      );
+      expect(
+        // @ts-expect-error
+        ShopifyCheckoutKit.eventEmitter.removeAllListeners,
+      ).toHaveBeenCalledWith('close');
     });
   });
 });
