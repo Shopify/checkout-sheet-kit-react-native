@@ -23,16 +23,15 @@ __metadata:
   linkType: hard
 
 "@apollo/client@npm:^3.8.6":
-  version: 3.8.7
-  resolution: "@apollo/client@npm:3.8.7"
+  version: 3.8.8
+  resolution: "@apollo/client@npm:3.8.8"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.1.1"
-    "@wry/context": "npm:^0.7.3"
     "@wry/equality": "npm:^0.5.6"
-    "@wry/trie": "npm:^0.4.3"
+    "@wry/trie": "npm:^0.5.0"
     graphql-tag: "npm:^2.12.6"
     hoist-non-react-statics: "npm:^3.3.2"
-    optimism: "npm:^0.17.5"
+    optimism: "npm:^0.18.0"
     prop-types: "npm:^15.7.2"
     response-iterator: "npm:^0.2.6"
     symbol-observable: "npm:^4.0.0"
@@ -54,7 +53,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: e88be52f6393ab0625999abf7f6ed6c1035e5f290a738477210f9563d85d369b3dcb86dff7613be84a012192b66c2fae18ee9d5acf55f2b0ca30c1cc77c38559
+  checksum: a097fb49d68fa77d59f8d63f73f0335624608102ebe2a30270d679b50f3fc2d697298fde8619571b419c93660a5ba90874d93e3b10efc8d910d752f14df1770b
   languageName: node
   linkType: hard
 
@@ -2817,11 +2816,11 @@ __metadata:
   linkType: hard
 
 "@types/react-native@npm:^0.70":
-  version: 0.70.18
-  resolution: "@types/react-native@npm:0.70.18"
+  version: 0.70.19
+  resolution: "@types/react-native@npm:0.70.19"
   dependencies:
     "@types/react": "npm:*"
-  checksum: 81618aa039c6ff7b5101cfaf71a56ef75684a8710a1d89f94f7d13999547e955b3ed90eac9ba99d997631bc9c13ba20d68b12b2850dd90d3730edb071119254c
+  checksum: 09a5191dd0f3b85abfa8939df585860ba11a666d888846c7fd7d8d5d1cd72a39224e154403f90a5b82f1dc6c896fa3447e4f5061b2d3e102d0ce798e559d7f13
   languageName: node
   linkType: hard
 
@@ -3028,7 +3027,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wry/context@npm:^0.7.0, @wry/context@npm:^0.7.3":
+"@wry/caches@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "@wry/caches@npm:1.0.1"
+  dependencies:
+    tslib: "npm:^2.3.0"
+  checksum: a7bca3377f1131d3f1080f2e39d0692c9d1ca86bfd55734786f167f46aad28a4c8e772107324e8319843fb8068fdf98abcdea376d8a589316b1f0cdadf81f8b1
+  languageName: node
+  linkType: hard
+
+"@wry/context@npm:^0.7.0":
   version: 0.7.4
   resolution: "@wry/context@npm:0.7.4"
   dependencies:
@@ -3052,6 +3060,15 @@ __metadata:
   dependencies:
     tslib: "npm:^2.3.0"
   checksum: 1a14edba595b1967d0cf38208c2660b2952a8e8a649bb669b67907df48f602c7f2acbe16c1e1b115afa7d7effb9f1a4dbde38eef16ee92e7521a511262a53281
+  languageName: node
+  linkType: hard
+
+"@wry/trie@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "@wry/trie@npm:0.5.0"
+  dependencies:
+    tslib: "npm:^2.3.0"
+  checksum: 8c8cfcac96ba4bc69dabf02740e19e613f501b398e80bacc32cd95e87228f75ecb41cd1a76a65abae9756c0f61ab3536e0da52de28857456f9381ffdf5995d3e
   languageName: node
   linkType: hard
 
@@ -7962,14 +7979,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"optimism@npm:^0.17.5":
-  version: 0.17.5
-  resolution: "optimism@npm:0.17.5"
+"optimism@npm:^0.18.0":
+  version: 0.18.0
+  resolution: "optimism@npm:0.18.0"
   dependencies:
+    "@wry/caches": "npm:^1.0.0"
     "@wry/context": "npm:^0.7.0"
     "@wry/trie": "npm:^0.4.3"
     tslib: "npm:^2.3.0"
-  checksum: 0c3a526e2dc1451735e66d2a6bef46a6395e8c7e7f6f323d998361ad281f01d91337a58ad4ad5fa5db18a87d6c9e64ff79a564aff9fb5d3ce614cb3d921c027d
+  checksum: 8e97c6d660cb80cf5f444209b9dd29ee6951fa7b344d4c4fc6d4aaf0ad0710dddaf834d0f5d7211b3658b15ef6c6a22cbcb98c7a8121e3fee9666fe0fd62d876
   languageName: node
   linkType: hard
 
@@ -8461,8 +8479,8 @@ __metadata:
   linkType: hard
 
 "react-native-gesture-handler@npm:^2.13.4":
-  version: 2.13.4
-  resolution: "react-native-gesture-handler@npm:2.13.4"
+  version: 2.14.0
+  resolution: "react-native-gesture-handler@npm:2.14.0"
   dependencies:
     "@egjs/hammerjs": "npm:^2.0.17"
     hoist-non-react-statics: "npm:^3.3.0"
@@ -8472,7 +8490,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 87820d12550eaa4904b8f4b0d29579fecd51df62d558e56adbc382324a8fe176aac92384a2b4dd3809006c9628688a7c844ac1b95d5982680e867fffd9fb2839
+  checksum: d567c26756aefc85fb6056efc6be4cdf0c1e7fd45a9d92f4bf0dc0fd94d3e099207398978bac8bdf3fa731f1020d41a7576566b552c525dc71bf7bc270bad25f
   languageName: node
   linkType: hard
 
@@ -8484,8 +8502,8 @@ __metadata:
   linkType: hard
 
 "react-native-reanimated@npm:^3.5.4":
-  version: 3.5.4
-  resolution: "react-native-reanimated@npm:3.5.4"
+  version: 3.6.1
+  resolution: "react-native-reanimated@npm:3.6.1"
   dependencies:
     "@babel/plugin-transform-object-assign": "npm:^7.16.7"
     "@babel/preset-typescript": "npm:^7.16.7"
@@ -8500,30 +8518,30 @@ __metadata:
     "@babel/plugin-transform-template-literals": ^7.0.0-0
     react: "*"
     react-native: "*"
-  checksum: 68182fdc5725bee1220f06a850eb94d81f119d8e661d55be601d83ebfd01268e84529ab5677691dc3d5f408378b30ef059834f8859c3e4584c5e97754619d3f5
+  checksum: 9cf65e62a32b49e2c3452850b01f3365dfb90c74f9e219058cb6d41d6833866051fcc192d9baa5559dcd84cbe9127d1d7911667e7878dbb0152cfe675e4be22c
   languageName: node
   linkType: hard
 
 "react-native-safe-area-context@npm:^4.7.4":
-  version: 4.7.4
-  resolution: "react-native-safe-area-context@npm:4.7.4"
+  version: 4.8.1
+  resolution: "react-native-safe-area-context@npm:4.8.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 72744331ec2487e8f4a04efda0343e5fae75a2db95762711f2ae18c5b16c25eec89262e8f8cffb6224410b103c5077251c201a8489179259f5fd161b7f8baf13
+  checksum: 8e01b05c1d40edeefaafca5abe32595c4d2707c3f3369f5f6e4d64d24c536a4e084611cf34c85c7c080a152ae35f7212e95081d977cc6dc3f46e1002dbb0350f
   languageName: node
   linkType: hard
 
 "react-native-screens@npm:^3.27.0":
-  version: 3.27.0
-  resolution: "react-native-screens@npm:3.27.0"
+  version: 3.29.0
+  resolution: "react-native-screens@npm:3.29.0"
   dependencies:
     react-freeze: "npm:^1.0.0"
     warn-once: "npm:^0.1.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 30d0275d1a41915e3b2ca151854ca41ceed0bbdc6baf782e5e886a5842b92e003bb2183e4017bd6b03ee7000ec6312a6570a02901c1a990d0fefcdcf511f1e06
+  checksum: 90c32eb5452007f64c2f56412c671de98b4b89f09cf09cc7a7dca1cb23b1ac6de9bc726c67e774c7cb68dbd05bb329c053c1c2f071f534ad4e27d9d60be76eb0
   languageName: node
   linkType: hard
 
@@ -8540,8 +8558,8 @@ __metadata:
   linkType: soft
 
 "react-native-vector-icons@npm:^10.0.2":
-  version: 10.0.2
-  resolution: "react-native-vector-icons@npm:10.0.2"
+  version: 10.0.3
+  resolution: "react-native-vector-icons@npm:10.0.3"
   dependencies:
     prop-types: "npm:^15.7.2"
     yargs: "npm:^16.1.1"
@@ -8550,7 +8568,7 @@ __metadata:
     fa5-upgrade: bin/fa5-upgrade.sh
     fa6-upgrade: bin/fa6-upgrade.sh
     generate-icon: bin/generate-icon.js
-  checksum: 67164a2d9283fb900ed1f50e319818fced59c74205de9f53e4face97ce20f49708f1f2a2dbbb1ecd8ba1d26a354dac8c5f53b7592b38026094b863e7b8984f13
+  checksum: f7741e03cba701ac577779784db64ef581d5056a14698ac34de0bea731ff0d2bbe4b1c5ede441caa1b8748b18e57ee96b4d8dd75d53ef1b240995d1ffdc6419d
   languageName: node
   linkType: hard
 
