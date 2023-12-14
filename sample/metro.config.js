@@ -31,10 +31,10 @@ const config = mergeConfig(getDefaultConfig(__dirname), {
     extraNodeModules: {
       react: path.resolve(sample, 'node_modules', 'react'),
       'react-native': path.resolve(sample, 'node_modules', 'react-native'),
-      'react-native-checkout-kit': path.resolve(
+      '@shopify/checkout-sheet-kit': path.resolve(
         root,
         'modules',
-        'react-native-checkout-kit',
+        'checkout-sheet-kit',
       ),
     },
   },

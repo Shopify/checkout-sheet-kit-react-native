@@ -1,6 +1,6 @@
 /* eslint-disable no-new */
 
-import {ShopifyCheckoutKit} from '../src';
+import {ShopifyCheckoutSheet} from '../src';
 import {ColorScheme, type Configuration} from '../src';
 import {NativeModules} from 'react-native';
 
@@ -19,7 +19,7 @@ jest.mock('react-native', () => {
     preloading: true,
   };
 
-  const ShopifyCheckoutKit = {
+  const ShopifyCheckoutSheet = {
     version: '0.7.0',
     configure: jest.fn(),
     preload: jest.fn(),
@@ -32,38 +32,40 @@ jest.mock('react-native', () => {
   return {
     NativeEventEmitter,
     NativeModules: {
-      ShopifyCheckoutKit,
+      ShopifyCheckoutSheet,
     },
   };
 });
 
-describe('ShopifyCheckoutKit', () => {
+describe('ShopifyCheckoutSheet', () => {
   afterEach(() => {
-    NativeModules.ShopifyCheckoutKit.configure.mockReset();
+    NativeModules.ShopifyCheckoutSheet.configure.mockReset();
   });
 
   describe('instantiation', () => {
     it('calls `configure` with the specified config on instantiation', () => {
-      new ShopifyCheckoutKit(config);
-      expect(NativeModules.ShopifyCheckoutKit.configure).toHaveBeenCalledWith(
+      new ShopifyCheckoutSheet(config);
+      expect(NativeModules.ShopifyCheckoutSheet.configure).toHaveBeenCalledWith(
         config,
       );
     });
 
     it('does not call `configure` if no config was specified on instantiation', () => {
-      new ShopifyCheckoutKit();
-      expect(NativeModules.ShopifyCheckoutKit.configure).not.toHaveBeenCalled();
+      new ShopifyCheckoutSheet();
+      expect(
+        NativeModules.ShopifyCheckoutSheet.configure,
+      ).not.toHaveBeenCalled();
     });
   });
 
   describe('configure', () => {
     it('calls the `configure` on the Native Module', () => {
-      const instance = new ShopifyCheckoutKit();
+      const instance = new ShopifyCheckoutSheet();
       instance.configure(config);
-      expect(NativeModules.ShopifyCheckoutKit.configure).toHaveBeenCalledTimes(
-        1,
-      );
-      expect(NativeModules.ShopifyCheckoutKit.configure).toHaveBeenCalledWith(
+      expect(
+        NativeModules.ShopifyCheckoutSheet.configure,
+      ).toHaveBeenCalledTimes(1);
+      expect(NativeModules.ShopifyCheckoutSheet.configure).toHaveBeenCalledWith(
         config,
       );
     });
@@ -71,10 +73,12 @@ describe('ShopifyCheckoutKit', () => {
 
   describe('preload', () => {
     it('calls `preload` with a checkout URL', () => {
-      const instance = new ShopifyCheckoutKit();
+      const instance = new ShopifyCheckoutSheet();
       instance.preload(checkoutUrl);
-      expect(NativeModules.ShopifyCheckoutKit.preload).toHaveBeenCalledTimes(1);
-      expect(NativeModules.ShopifyCheckoutKit.preload).toHaveBeenCalledWith(
+      expect(NativeModules.ShopifyCheckoutSheet.preload).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(NativeModules.ShopifyCheckoutSheet.preload).toHaveBeenCalledWith(
         checkoutUrl,
       );
     });
@@ -82,10 +86,12 @@ describe('ShopifyCheckoutKit', () => {
 
   describe('present', () => {
     it('calls `present` with a checkout URL', () => {
-      const instance = new ShopifyCheckoutKit();
+      const instance = new ShopifyCheckoutSheet();
       instance.present(checkoutUrl);
-      expect(NativeModules.ShopifyCheckoutKit.present).toHaveBeenCalledTimes(1);
-      expect(NativeModules.ShopifyCheckoutKit.present).toHaveBeenCalledWith(
+      expect(NativeModules.ShopifyCheckoutSheet.present).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(NativeModules.ShopifyCheckoutSheet.present).toHaveBeenCalledWith(
         checkoutUrl,
       );
     });
@@ -93,19 +99,19 @@ describe('ShopifyCheckoutKit', () => {
 
   describe('getConfig', () => {
     it('returns the config from the Native Module', async () => {
-      const instance = new ShopifyCheckoutKit();
+      const instance = new ShopifyCheckoutSheet();
       await expect(instance.getConfig()).resolves.toStrictEqual({
         preloading: true,
       });
-      expect(NativeModules.ShopifyCheckoutKit.getConfig).toHaveBeenCalledTimes(
-        1,
-      );
+      expect(
+        NativeModules.ShopifyCheckoutSheet.getConfig,
+      ).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('addEventListener', () => {
     it('creates a new event listener for a specific event', () => {
-      const instance = new ShopifyCheckoutKit();
+      const instance = new ShopifyCheckoutSheet();
       const eventName = 'close';
       const callback = jest.fn();
       instance.addEventListener(eventName, callback);
@@ -119,7 +125,7 @@ describe('ShopifyCheckoutKit', () => {
 
   describe('removeEventListeners', () => {
     it('Removes all listeners for a specific event', () => {
-      const instance = new ShopifyCheckoutKit();
+      const instance = new ShopifyCheckoutSheet();
       instance.addEventListener('close', () => {});
       instance.addEventListener('close', () => {});
       instance.removeEventListeners('close');

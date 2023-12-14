@@ -1,6 +1,6 @@
 module.exports = {
   preset: 'react-native',
-  modulePathIgnorePatterns: ['modules/react-native-checkout-kit/lib'],
+  modulePathIgnorePatterns: ['modules/checkout-sheet-kit/lib'],
   transform: {
     '\\.[jt]sx?$': 'babel-jest',
   },

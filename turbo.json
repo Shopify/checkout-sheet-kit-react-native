@@ -5,7 +5,7 @@
       "dependsOn": ["build"]
     },
     "build": {
-      "outputs": ["modules/react-native-checkout-kit/lib/**/*"]
+      "outputs": ["modules/checkout-sheet-kit/lib/**/*"]
     },
     "build:android": {
       "dependsOn": ["build", "lint"],

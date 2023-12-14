@@ -3,8 +3,7 @@
 This repo is subdivided into 3 parts using yarn workspaces:
 
 - The base repo (workspace name = `checkout-kit-react-native`)
-- The `@shopify/react-native-checkout-kit` Native Module (workspace name =
-  `module`)
+- The `@shopify/checkout-sheet-kit` Native Module (workspace name = `module`)
 - The sample application (workspace name = `sample`)
 
 Each of the worksapces contains a separate `package.json` to manage tasks
@@ -18,7 +17,7 @@ Run `yarn` to install the dependencies for all workspaces in the repo.
 
 ---
 
-## `@shopify/react-native-checkout-kit` Module
+## `@shopify/checkout-sheet-kit` Module
 
 ### Clean the modules folder
 
@@ -26,7 +25,7 @@ Run `yarn` to install the dependencies for all workspaces in the repo.
 yarn module clean
 ```
 
-### Build the `@shopify/react-native-checkout-kit` module
+### Build the `@shopify/checkout-sheet-kit` module
 
 ```sh
 yarn module build

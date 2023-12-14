@@ -26,25 +26,25 @@ import {
   NativeEventEmitter,
   EmitterSubscription,
 } from 'react-native';
-import type {ShopifyCheckoutKit as ShopifyCheckout} from '.';
-import {ColorScheme} from './index.d';
-import {ShopifyCheckoutKitProvider, useShopifyCheckoutKit} from './context';
+import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
 import type {
   CheckoutEvent,
   CheckoutEventCallback,
   Configuration,
+  ShopifyCheckoutSheet as ShopifyCheckout,
 } from './index.d';
+import {ColorScheme} from './index.d';
 
-const RNShopifyCheckoutKit = NativeModules.ShopifyCheckoutKit;
+const RNShopifyCheckout = NativeModules.ShopifyCheckoutSheetKit;
 
-if (!('ShopifyCheckoutKit' in NativeModules)) {
+if (!('ShopifyCheckoutSheetKit' in NativeModules)) {
   throw new Error(`
-  "@shopify/react-native-checkout-kit" is not correctly linked.
+  "@shopify/checkout-sheet-kit" is not correctly linked.
 
   If you are building for iOS, make sure to run "pod install" first and restart the metro server.`);
 }
 
-class ShopifyCheckoutKit implements ShopifyCheckout {
+class ShopifyCheckoutSheet implements ShopifyCheckout {
   private eventEmitter: NativeEventEmitter;
 
   constructor(configuration?: Configuration) {
@@ -52,25 +52,25 @@ class ShopifyCheckoutKit implements ShopifyCheckout {
       this.configure(configuration);
     }
 
-    this.eventEmitter = new NativeEventEmitter(RNShopifyCheckoutKit);
+    this.eventEmitter = new NativeEventEmitter(RNShopifyCheckout);
   }
 
-  public readonly version: string = RNShopifyCheckoutKit.version;
+  public readonly version: string = RNShopifyCheckout.version;
 
   public configure(configuration: Configuration): void {
-    RNShopifyCheckoutKit.configure(configuration);
+    RNShopifyCheckout.configure(configuration);
   }
 
   public preload(checkoutUrl: string): void {
-    RNShopifyCheckoutKit.preload(checkoutUrl);
+    RNShopifyCheckout.preload(checkoutUrl);
   }
 
   public present(checkoutUrl: string): void {
-    RNShopifyCheckoutKit.present(checkoutUrl);
+    RNShopifyCheckout.present(checkoutUrl);
   }
 
   public async getConfig(): Promise<Configuration> {
-    return RNShopifyCheckoutKit.getConfig();
+    return RNShopifyCheckout.getConfig();
   }
 
   public addEventListener(
@@ -87,9 +87,9 @@ class ShopifyCheckoutKit implements ShopifyCheckout {
 
 // API
 export {
-  ShopifyCheckoutKit,
-  ShopifyCheckoutKitProvider,
-  useShopifyCheckoutKit,
+  ShopifyCheckoutSheet,
+  ShopifyCheckoutSheetProvider,
+  useShopifyCheckoutSheet,
   ColorScheme,
 };
 

@@ -1,5 +1,5 @@
 {
-  "name": "@shopify/react-native-checkout-kit",
+  "name": "@shopify/checkout-sheet-kit",
   "license": "MIT",
   "version": "0.1.0",
   "main": "lib/commonjs/index.js",

@@ -1,5 +1,5 @@
 #!/bin/bash
 
-OUTPUT_FILE=${1:-modules/react-native-checkout-kit/package.snapshot.json}
+OUTPUT_FILE=${1:-modules/checkout-sheet-kit/package.snapshot.json}
 
-(cd modules/react-native-checkout-kit && npm pack --dry-run --json) | jq ".[0].files | map(.path)" > $OUTPUT_FILE
+(cd modules/checkout-sheet-kit && npm pack --dry-run --json) | jq ".[0].files | map(.path)" > $OUTPUT_FILE

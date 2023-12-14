@@ -7,7 +7,7 @@ import React, {
   useReducer,
   useState,
 } from 'react';
-import {useShopifyCheckoutKit} from '@shopify/react-native-checkout-kit';
+import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
 
 interface Context {
@@ -35,7 +35,7 @@ type AddingToCartAction =
   | {type: 'remove'; variantId: string};
 
 export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
-  const ShopifyCheckoutKit = useShopifyCheckoutKit();
+  const shopifyCheckout = useShopifyCheckoutSheet();
   // Reuse the same cart ID for the lifetime of the app
   const [checkoutURL, setCheckoutURL] =
     useState<Context['checkoutURL']>(undefined);
@@ -68,17 +68,14 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const [fetchCart] = queries.cart;
 
   useEffect(() => {
-    const subscription = ShopifyCheckoutKit.addEventListener(
-      'completed',
-      () => {
-        // Clear the cart ID and checkout URL when the checkout is completed
-        setCartId(defaultCartId);
-        setCheckoutURL(undefined);
-      },
-    );
+    const subscription = shopifyCheckout.addEventListener('completed', () => {
+      // Clear the cart ID and checkout URL when the checkout is completed
+      setCartId(defaultCartId);
+      setCheckoutURL(undefined);
+    });
 
     return subscription?.remove;
-  }, [ShopifyCheckoutKit]);
+  }, [shopifyCheckout]);
 
   useEffect(() => {
     async function getCart() {
@@ -127,7 +124,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setTotalQuantity(data.cartLinesAdd.cart.totalQuantity);
 
       if (checkoutURL) {
-        ShopifyCheckoutKit.preload(checkoutURL);
+        shopifyCheckout.preload(checkoutURL);
       }
 
       if (id) {
@@ -146,7 +143,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setCartId,
       setTotalQuantity,
       checkoutURL,
-      ShopifyCheckoutKit,
+      shopifyCheckout,
     ],
   );
 
@@ -171,7 +168,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setTotalQuantity(data.cartLinesRemove.cart.totalQuantity);
 
       if (checkoutURL) {
-        ShopifyCheckoutKit.preload(checkoutURL);
+        shopifyCheckout.preload(checkoutURL);
       }
 
       if (cartId) {
@@ -188,7 +185,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       fetchCart,
       setTotalQuantity,
       checkoutURL,
-      ShopifyCheckoutKit,
+      shopifyCheckout,
     ],
   );
 

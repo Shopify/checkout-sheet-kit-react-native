@@ -63,4 +63,4 @@ end
 
 pod 'SwiftLint'
 
-pod "RNShopifyCheckoutKit", :path => "../../modules/react-native-checkout-kit"
+pod "RNShopifyCheckoutSheetKit", :path => "../../modules/checkout-sheet-kit"

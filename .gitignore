@@ -84,7 +84,7 @@ dist
 .turbo
 
 # Module
-modules/react-native-checkout-kit/android/gradle/wrapper/gradle-wrapper.jar
-modules/react-native-checkout-kit/android/gradle/wrapper/gradle-wrapper.properties
-modules/react-native-checkout-kit/android/gradlew
-modules/react-native-checkout-kit/android/gradlew.bat
+modules/**/android/gradle/wrapper/gradle-wrapper.jar
+modules/**/android/gradle/wrapper/gradle-wrapper.properties
+modules/**/android/gradlew
+modules/**/android/gradlew.bat

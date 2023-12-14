@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILENAME="modules/react-native-checkout-kit/package.snapshot.json"
+FILENAME="modules/checkout-sheet-kit/package.snapshot.json"
 TMP_SNAPSHOT_FILENAME="snapshot.json"
 
 # Set up some colors to use later

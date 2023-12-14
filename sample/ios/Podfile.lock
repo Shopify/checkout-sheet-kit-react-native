@@ -439,7 +439,7 @@ PODS:
   - RNScreens (3.27.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - RNShopifyCheckoutKit (0.1.0):
+  - RNShopifyCheckoutSheetKit (0.1.0):
     - React-Core
     - ShopifyCheckoutKit (~> 0.7.0)
   - RNVectorIcons (10.0.2):
@@ -496,7 +496,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
-  - RNShopifyCheckoutKit (from `../../modules/react-native-checkout-kit`)
+  - RNShopifyCheckoutSheetKit (from `../../modules/checkout-sheet-kit`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - SwiftLint
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -597,8 +597,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
-  RNShopifyCheckoutKit:
-    :path: "../../modules/react-native-checkout-kit"
+  RNShopifyCheckoutSheetKit:
+    :path: "../../modules/checkout-sheet-kit"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
   Yoga:
@@ -650,13 +650,13 @@ SPEC CHECKSUMS:
   RNGestureHandler: 32a01c29ecc9bb0b5bf7bc0a33547f61b4dc2741
   RNReanimated: 1dcf7602777a195cf34f1dcd658037a80a2c8af1
   RNScreens: 3c2d122f5e08c192e254c510b212306da97d2581
-  RNShopifyCheckoutKit: 435c43deaec9f1e7b22ad51b2af6e75b973e6900
+  RNShopifyCheckoutSheetKit: c122ad7c4d57755b99bce8a0bc1de7f7ebababac
   RNVectorIcons: 23b6e11af4aaf104d169b1b0afa7e5cf96c676ce
   ShopifyCheckoutKit: 6451baa4f635ad4cefed1a6b72d0698b62fed52a
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   SwiftLint: c1de071d9d08c8aba837545f6254315bc900e211
   Yoga: b76f1acfda8212aa16b7e26bcce3983230c82603
 
-PODFILE CHECKSUM: 298412b71e3d713e3ceaba12721a417715b85588
+PODFILE CHECKSUM: c2c607ae0906a55acce974793a14eeae2b303cb7
 
 COCOAPODS: 1.14.3

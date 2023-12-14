@@ -1,8 +1,8 @@
 const path = require('path');
-const pkg = require('../modules/react-native-checkout-kit/package.json');
+const pkg = require('../modules/checkout-sheet-kit/package.json');
 
 const root = path.resolve(__dirname, '..');
-const pod = path.resolve(root, 'modules', 'react-native-checkout-kit');
+const pod = path.resolve(root, 'modules', 'checkout-sheet-kit');
 
 module.exports = {
   dependencies: {

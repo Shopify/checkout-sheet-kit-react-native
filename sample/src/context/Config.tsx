@@ -9,8 +9,8 @@ import React, {
 import {
   ColorScheme,
   Configuration,
-  useShopifyCheckoutKit,
-} from '@shopify/react-native-checkout-kit';
+  useShopifyCheckoutSheet,
+} from '@shopify/checkout-sheet-kit';
 import {useTheme} from './Theme';
 
 interface Context {
@@ -27,7 +27,7 @@ const ConfigContext = createContext<Context>({
 });
 
 export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
-  const ShopifyCheckoutKit = useShopifyCheckoutKit();
+  const shopifyCheckout = useShopifyCheckoutSheet();
   const [config, setConfig] = useState<Context['config']>(undefined);
   const {setColorScheme} = useTheme();
 
@@ -35,7 +35,7 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
     async function init() {
       try {
         // Fetch the checkout configuration object
-        const config = await ShopifyCheckoutKit.getConfig();
+        const config = await shopifyCheckout.getConfig();
         // Store it in local state
         setConfig(config);
       } catch (error) {
@@ -45,16 +45,16 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
     }
 
     init();
-  }, [ShopifyCheckoutKit]);
+  }, [shopifyCheckout]);
 
   const configure = useCallback(
     async (config: Configuration) => {
       try {
         // Update the SDK configuration
-        ShopifyCheckoutKit.configure(config);
+        shopifyCheckout.configure(config);
 
         // Fetch the latest configuration object
-        const updatedConfig = await ShopifyCheckoutKit.getConfig();
+        const updatedConfig = await shopifyCheckout.getConfig();
 
         // Update local config state
         setConfig(updatedConfig);
@@ -71,7 +71,7 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
         return undefined;
       }
     },
-    [setColorScheme, ShopifyCheckoutKit],
+    [setColorScheme, shopifyCheckout],
   );
 
   const value = useMemo(

@@ -30,6 +30,6 @@ def copy_license(dir, text)
   end
 end
 
-copy_license('modules/react-native-checkout-kit/ios', license_text)
-copy_license('modules/react-native-checkout-kit/android', license_text)
-copy_license('modules/react-native-checkout-kit/src', license_text)
+copy_license('modules/checkout-sheet-kit/ios', license_text)
+copy_license('modules/checkout-sheet-kit/android', license_text)
+copy_license('modules/checkout-sheet-kit/src', license_text)
