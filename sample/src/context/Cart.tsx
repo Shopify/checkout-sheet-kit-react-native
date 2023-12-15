@@ -5,8 +5,8 @@ import React, {
   useEffect,
   useMemo,
   useReducer,
-  useState,
 } from 'react';
+import {atom, useAtom} from 'jotai';
 import {useShopifyCheckoutKit} from 'react-native-shopify-checkout-kit';
 import useShopify from '../hooks/useShopify';
 
@@ -34,15 +34,18 @@ type AddingToCartAction =
   | {type: 'add'; variantId: string}
   | {type: 'remove'; variantId: string};
 
+const checkoutURLState = atom<Context['checkoutURL']>(undefined);
+const cartIdState = atom<Context['cartId']>(defaultCartId);
+const totalQuantityState = atom<Context['totalQuantity']>(0);
+
 export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const ShopifyCheckoutKit = useShopifyCheckoutKit();
   // Reuse the same cart ID for the lifetime of the app
-  const [checkoutURL, setCheckoutURL] =
-    useState<Context['checkoutURL']>(undefined);
+  const [checkoutURL, setCheckoutURL] = useAtom(checkoutURLState);
   // Reuse the same cart ID for the lifetime of the app
-  const [cartId, setCartId] = useState<string | undefined>(defaultCartId);
+  const [cartId, setCartId] = useAtom(cartIdState);
   // Keep track of the number of items in the cart
-  const [totalQuantity, setTotalQuantity] = useState<number>(0);
+  const [totalQuantity, setTotalQuantity] = useAtom(totalQuantityState);
   // Maintain a loading state for items being added to the cart
   const addingToCartReducer = (
     state: Set<string>,
@@ -74,11 +77,12 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
         // Clear the cart ID and checkout URL when the checkout is completed
         setCartId(defaultCartId);
         setCheckoutURL(undefined);
+        setTotalQuantity(0);
       },
     );
 
     return subscription?.remove;
-  }, [ShopifyCheckoutKit]);
+  }, [ShopifyCheckoutKit, setCartId, setCheckoutURL, setTotalQuantity]);
 
   useEffect(() => {
     async function getCart() {
@@ -97,7 +101,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
     if (cartId) {
       getCart();
     }
-  }, [cartId, fetchCart]);
+  }, [cartId, fetchCart, setTotalQuantity]);
 
   const addToCart = useCallback(
     async (variantId: string) => {
@@ -140,13 +144,14 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
     },
     [
       cartId,
-      createCart,
-      fetchCart,
       addLineItems,
-      setCartId,
+      setCheckoutURL,
       setTotalQuantity,
       checkoutURL,
+      createCart,
+      setCartId,
       ShopifyCheckoutKit,
+      fetchCart,
     ],
   );
 
@@ -185,10 +190,11 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
     [
       cartId,
       removeLineItems,
-      fetchCart,
+      setCheckoutURL,
       setTotalQuantity,
       checkoutURL,
       ShopifyCheckoutKit,
+      fetchCart,
     ],
   );
 

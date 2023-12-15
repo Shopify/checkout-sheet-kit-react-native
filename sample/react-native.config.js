@@ -1,13 +1,17 @@
 const path = require('path');
-const pkg = require('../modules/react-native-shopify-checkout-kit/package.json');
 
 const root = path.resolve(__dirname, '..');
-const pod = path.resolve(root, 'modules', 'react-native-shopify-checkout-kit');
 
 module.exports = {
   dependencies: {
-    [pkg.name]: {
-      root: pod,
+    react: {
+      root: path.resolve(root, 'node_modules', 'react'),
+    },
+    'react-native': {
+      root: path.resolve(root, 'node_modules', 'react-native'),
+    },
+    'react-native-shopify-checkout-kit': {
+      root: path.resolve(root, 'modules', 'react-native-shopify-checkout-kit'),
     },
     ...(process.env.NO_FLIPPER
       ? {'react-native-flipper': {platforms: {ios: null}}}

@@ -101,7 +101,7 @@ function CartScreen(): JSX.Element {
     );
   }
 
-  if (!data || !data.cart || data.cart.lines.edges.length === 0) {
+  if (!data || !data.cart || data.cart.lines.edges.length === 0 || !cartId) {
     return (
       <View style={styles.loading}>
         <Icon name="shopping-bag" size={60} color="#bbc1d6" />

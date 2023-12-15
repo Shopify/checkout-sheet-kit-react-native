@@ -45,14 +45,14 @@ if (!('ShopifyCheckoutKit' in NativeModules)) {
 }
 
 class ShopifyCheckoutKit implements ShopifyCheckout {
-  private eventEmitter: NativeEventEmitter;
+  private static eventEmitter: NativeEventEmitter = new NativeEventEmitter(
+    RNShopifyCheckoutKit,
+  );
 
   constructor(configuration?: Configuration) {
     if (configuration != null) {
       this.setConfig(configuration);
     }
-
-    this.eventEmitter = new NativeEventEmitter(RNShopifyCheckoutKit);
   }
 
   public readonly version: string = RNShopifyCheckoutKit.version;
@@ -77,11 +77,11 @@ class ShopifyCheckoutKit implements ShopifyCheckout {
     eventName: CheckoutEvent,
     callback: CheckoutEventCallback,
   ): EmitterSubscription | undefined {
-    return this.eventEmitter.addListener(eventName, callback);
+    return ShopifyCheckoutKit.eventEmitter.addListener(eventName, callback);
   }
 
   public removeEventListeners(event: CheckoutEvent) {
-    this.eventEmitter.removeAllListeners(event);
+    ShopifyCheckoutKit.eventEmitter.removeAllListeners(event);
   }
 }
 
