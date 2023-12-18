@@ -77,9 +77,11 @@ export type RootStackParamList = {
 const Tab = createBottomTabNavigator<RootStackParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+export const cache = new InMemoryCache();
+
 const client = new ApolloClient({
   uri: `https://${STOREFRONT_DOMAIN}/api/2023-10/graphql.json`,
-  cache: new InMemoryCache(),
+  cache,
   headers: {
     'Content-Type': 'application/json',
     'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN,

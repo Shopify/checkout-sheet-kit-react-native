@@ -1,6 +1,8 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
 
+project.ext["REACT_NATIVE_NODE_MODULES_DIR"] = file("../../../node_modules/react-native")
+
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -8,11 +10,11 @@ apply plugin: "com.facebook.react"
 react {
     /* Folders */
     //   The root of your project, i.e. where "package.json" lives. Default is '..'
-    root = file("../")
+    root = file("../../")
     //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
-    reactNativeDir = file("../../node_modules/react-native")
+    reactNativeDir = file("../../../node_modules/react-native")
     //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
-    codegenDir = file("../../node_modules/@react-native/codegen")
+    codegenDir = file("../../../node_modules/@react-native/codegen")
     //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
     cliFile = file("../../node_modules/react-native/cli.js")
 
@@ -143,4 +145,4 @@ project.ext.vectoricons = [
 
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+apply from: file("../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
