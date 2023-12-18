@@ -9090,6 +9090,7 @@ __metadata:
     "@types/react-native": "*"
     react: "*"
     react-native: "*"
+    react-native-gesture-handler: "*"
   languageName: unknown
   linkType: soft
 
