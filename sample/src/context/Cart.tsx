@@ -130,8 +130,8 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setCheckoutURL(data.cartLinesAdd.cart.checkoutUrl);
       setTotalQuantity(data.cartLinesAdd.cart.totalQuantity);
 
-      if (checkoutURL) {
-        ShopifyCheckoutKit.preload(checkoutURL);
+      if (data.cartLinesAdd.cart.checkoutUrl) {
+        ShopifyCheckoutKit.preload(data.cartLinesAdd.cart.checkoutUrl);
       }
 
       if (id) {
@@ -147,7 +147,6 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       addLineItems,
       setCheckoutURL,
       setTotalQuantity,
-      checkoutURL,
       createCart,
       setCartId,
       ShopifyCheckoutKit,
