@@ -1,4 +1,4 @@
-package com.reactnative;
+package com.shopify.checkoutkitreactnative;
 
 import androidx.activity.ComponentActivity;
 
