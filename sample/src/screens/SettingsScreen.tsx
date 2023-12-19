@@ -45,6 +45,7 @@ import {
   lightColors,
   useTheme,
 } from '../context/Theme';
+import {useCart} from '../context/Cart';
 
 enum SectionType {
   Switch = 'switch',
@@ -91,7 +92,8 @@ interface SectionData {
 
 function SettingsScreen() {
   const ShopifyCheckoutKit = useShopifyCheckoutKit();
-  const {config, setConfig} = useConfig();
+  const {clearCart} = useCart();
+  const {config, appConfig, setConfig, setAppConfig} = useConfig();
   const {colors} = useTheme();
   const styles = createStyles(colors);
 
@@ -147,6 +149,13 @@ function SettingsScreen() {
     });
   }, [config?.preloading, setConfig]);
 
+  const handleTogglePrefill = useCallback(() => {
+    clearCart();
+    setAppConfig({
+      prefillBuyerInformation: !appConfig.prefillBuyerInformation,
+    });
+  }, [appConfig.prefillBuyerInformation, clearCart, setAppConfig]);
+
   const configurationOptions: readonly SwitchItem[] = useMemo(
     () => [
       {
@@ -155,8 +164,19 @@ function SettingsScreen() {
         value: config?.preloading ?? false,
         handler: handleTogglePreloading,
       },
+      {
+        title: 'Prefill buyer information',
+        type: SectionType.Switch,
+        value: appConfig.prefillBuyerInformation ?? false,
+        handler: handleTogglePrefill,
+      },
     ],
-    [config?.preloading, handleTogglePreloading],
+    [
+      appConfig.prefillBuyerInformation,
+      config?.preloading,
+      handleTogglePrefill,
+      handleTogglePreloading,
+    ],
   );
 
   const themeOptions: readonly SingleSelectItem[] = useMemo(
@@ -208,7 +228,7 @@ function SettingsScreen() {
   const sections: SectionData[] = useMemo(
     () => [
       {
-        title: 'Configuration',
+        title: 'Features',
         data: configurationOptions,
       },
       {
@@ -216,7 +236,7 @@ function SettingsScreen() {
         data: themeOptions,
       },
       {
-        title: 'About',
+        title: 'Versions',
         data: informationalItems,
       },
     ],
@@ -315,6 +335,10 @@ function TextItem({item, styles}: TextItemProps) {
 
 function createStyles(colors: Colors) {
   return StyleSheet.create({
+    list: {
+      borderColor: colors.border,
+      borderTopWidth: 1,
+    },
     listItem: {
       flex: 1,
       flexDirection: 'row',
@@ -326,8 +350,6 @@ function createStyles(colors: Colors) {
       backgroundColor: colors.backgroundSubdued,
       borderColor: colors.border,
       borderBottomWidth: 1,
-      borderTopWidth: 1,
-      marginBottom: -1,
     },
     listItemText: {
       flex: 1,
