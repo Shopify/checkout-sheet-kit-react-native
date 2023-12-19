@@ -319,7 +319,7 @@ PODS:
     - React-Core
   - react-native-shopify-checkout-kit (0.1.0):
     - React-Core
-    - ShopifyCheckoutKit (~> 0.7.0)
+    - ShopifyCheckoutKit (~> 0.8.0)
   - React-NativeModulesApple (0.72.7):
     - hermes-engine
     - React-callinvoker
@@ -467,7 +467,7 @@ PODS:
   - RNVectorIcons (10.0.2):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - ShopifyCheckoutKit (0.7.0)
+  - ShopifyCheckoutKit (0.8.0)
   - SocketRocket (0.6.1)
   - SwiftLint (0.54.0)
   - Yoga (1.14.0)
@@ -648,7 +648,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 8baadae51f01d867c3921213a25ab78ab4fbcd91
   React-logger: 8edc785c47c8686c7962199a307015e2ce9a0e4f
   react-native-safe-area-context: 2cd91d532de12acdb0a9cbc8d43ac72a8e4c897c
-  react-native-shopify-checkout-kit: b3afc2a24011d6e7f7e68fa1a9bf52afcf9b0cf7
+  react-native-shopify-checkout-kit: 1be7cb61bb6858c1d757d5f1360a2f914e327d3c
   React-NativeModulesApple: b6868ee904013a7923128892ee4a032498a1024a
   React-perflogger: 31ea61077185eb1428baf60c0db6e2886f141a5a
   React-RCTActionSheet: 392090a3abc8992eb269ef0eaa561750588fc39d
@@ -670,11 +670,11 @@ SPEC CHECKSUMS:
   RNReanimated: b3fe5092e7c7da790180e28c48f31e6b2bd3bfec
   RNScreens: 3c2d122f5e08c192e254c510b212306da97d2581
   RNVectorIcons: 23b6e11af4aaf104d169b1b0afa7e5cf96c676ce
-  ShopifyCheckoutKit: 6451baa4f635ad4cefed1a6b72d0698b62fed52a
+  ShopifyCheckoutKit: bc3965f57c8efb4436c38b919be144faca71d508
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   SwiftLint: c1de071d9d08c8aba837545f6254315bc900e211
   Yoga: 4c3aa327e4a6a23eeacd71f61c81df1bcdf677d5
 
-PODFILE CHECKSUM: 0e82d5cccf7ec17c1a1b27c8005c71326de66766
+PODFILE CHECKSUM: 2fac0a2970da51a4ec464974ea24d63658e85748
 
 COCOAPODS: 1.14.3

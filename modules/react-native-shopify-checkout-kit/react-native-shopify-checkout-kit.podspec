@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   s.source_files = "ios/*.{h,m,mm,swift}"
 
 	s.dependency "React-Core"
-	s.dependency "ShopifyCheckoutKit", "~> 0.7.0"
+	s.dependency "ShopifyCheckoutKit", "~> 0.8.0"
 
   if fabric_enabled
 		install_modules_dependencies(s)
