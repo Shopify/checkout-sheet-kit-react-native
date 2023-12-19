@@ -1,0 +1,16 @@
+ #!/usr/bin/env bash
+
+set -ex
+
+cd sample
+
+mkdir -p android/app/src/main/assets
+npx react-native bundle --platform android \
+  --dev false \
+  --entry-file index.js \
+  --bundle-output android/app/src/main/assets/index.android.bundle \
+
+npx react-native build-android --mode=release
+
+echo "Run \"cd sample && npx react-native run-android --variant=release\" to test the release build"
+echo "Output bundle location: sample/android/app/build/outputs/bundle/release/app-release.aab"
