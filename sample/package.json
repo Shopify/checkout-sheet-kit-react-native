@@ -16,7 +16,7 @@
     "test:android": "sh ./scripts/test_android"
   },
   "dependencies": {
-    "@apollo/client": "^3.8.6",
+    "@apollo/client": "^3.8.8",
     "@react-native-community/cli-platform-ios": "^12.3.0",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/bottom-tabs": "^6.5.11",
