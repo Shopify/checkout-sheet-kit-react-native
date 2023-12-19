@@ -70,7 +70,7 @@ jobs:
       - name: Run Android tests
         run: |
           yarn module build
-          yarn sample test:android
+          yarn sample test:android --no-daemon
 
   test-ios:
     name: Run iOS Tests
