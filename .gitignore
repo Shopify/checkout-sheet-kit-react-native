@@ -88,3 +88,6 @@ modules/react-native-shopify-checkout-kit/android/gradle/wrapper/gradle-wrapper.
 modules/react-native-shopify-checkout-kit/android/gradle/wrapper/gradle-wrapper.properties
 modules/react-native-shopify-checkout-kit/android/gradlew
 modules/react-native-shopify-checkout-kit/android/gradlew.bat
+
+# Sample bundle
+**/index.android.bundle
