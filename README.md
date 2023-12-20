@@ -84,19 +84,19 @@ requirements have been checked, you can begin by importing the library in your
 application code:
 
 ```tsx
-import {ShopifyCheckoutKitProvider} from '@shopify/checkout-sheet-kit';
+import {ShopifyCheckoutSheetProvider} from '@shopify/checkout-sheet-kit';
 
 function AppWithContext() {
   return (
-    <ShopifyCheckoutKitProvider>
+    <ShopifyCheckoutSheetProvider>
       <App />
-    </ShopifyCheckoutKitProvider>
+    </ShopifyCheckoutSheetProvider>
   );
 }
 ```
 
-Doing so will now allow you to access the ShopifyCheckoutKit Native Module
-anywhere in your application using React hooks:
+Doing so will now allow you to access the Native Module anywhere in your
+application using React hooks:
 
 ```tsx
 import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
@@ -113,20 +113,21 @@ See [Usage with the Storefront API](#usage-with-the-storefront-api) below on how
 to get a checkoutUrl to pass to the SDK.
 
 > Note: The recommended usage of the library is through a
-> `ShopifyCheckoutKitProvider` Context provider, but see
+> `ShopifyCheckoutSheetProvider` Context provider, but see
 > [Programmatic usage](#programamatic-usage) below for details on how to use the
 > library without React context.
 
 ### Programmatic Usage
 
-To use the library without React context, import the `ShopifyCheckoutKit` class
-from the package and instantiate it. We recommend to instantiating the class at
-a high level in your application, and exporting it for use throughout your app.
+To use the library without React context, import the `ShopifyCheckoutSheet`
+class from the package and instantiate it. We recommend to instantiating the
+class at a high level in your application, and exporting it for use throughout
+your app.
 
 ```tsx
-import {ShopifyCheckoutKit} from '@shopify/checkout-sheet-kit';
+import {ShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 
-export const shopifyCheckout = new ShopifyCheckoutKit({
+export const shopifyCheckout = new ShopifyCheckoutSheet({
   // optional configuration
 });
 ```
@@ -268,7 +269,7 @@ session in the background and ahead of time.
 
 The SDK provides a way to customize the presented checkout experience through a
 `configuration` object in the Context Provider or a `setConfig` method on an
-instance of the `ShopifyCheckoutKit` class.
+instance of the `ShopifyCheckoutSheet` class.
 
 | Name          | Required | Default     | Description                                                                                                                                                    |
 | ------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -282,7 +283,7 @@ Here's an example of how a fully customized configuration object might look:
 import {
   ColorScheme,
   Configuration,
-  ShopifyCheckoutKitProvider,
+  ShopifyCheckoutSheetProvider,
 } from '@shopify/checkout-sheet-kit';
 
 const config: Configuration = {
@@ -305,14 +306,14 @@ const config: Configuration = {
 // If using React Context
 function AppWithContext() {
   return (
-    <ShopifyCheckoutKitProvider configuration={config}>
+    <ShopifyCheckoutSheetProvider configuration={config}>
       <App />
-    </ShopifyCheckoutKitProvider>
+    </ShopifyCheckoutSheetProvider>
   );
 }
 
-// If using ShopifyCheckoutKit directly
-const shopifyCheckout = new ShopifyCheckoutKit(config);
+// If using ShopifyCheckoutSheet directly
+const shopifyCheckout = new ShopifyCheckoutSheet(config);
 ```
 
 #### `colorScheme`
@@ -359,7 +360,7 @@ slightly different, as you can specify different overrides for `light` and
 import {
   ColorScheme,
   Configuration,
-  ShopifyCheckoutKitProvider,
+  ShopifyCheckoutSheetProvider,
 } from '@shopify/checkout-sheet-kit';
 
 const config: Configuration = {
@@ -385,9 +386,9 @@ const config: Configuration = {
 
 function AppWithContext() {
   return (
-    <ShopifyCheckoutKitProvider configuration={config}>
+    <ShopifyCheckoutSheetProvider configuration={config}>
       <App />
-    </ShopifyCheckoutKitProvider>
+    </ShopifyCheckoutSheetProvider>
   );
 }
 ```
@@ -413,7 +414,7 @@ const shopifyCheckout = useShopifyCheckoutSheet();
 ShopifyCheckout.preload(checkoutUrl);
 
 // using a class instance
-const shopifyCheckout = new ShopifyCheckoutKit();
+const shopifyCheckout = new ShopifyCheckoutSheet();
 shopifyCheckout.preload(checkoutUrl);
 ```
 
