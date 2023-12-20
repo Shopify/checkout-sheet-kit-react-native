@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.shopify.reactnative.checkoutkit;
+package com.shopify.reactnative.checkoutsheetkit;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ShopifyCheckoutKitPackage implements ReactPackage {
+public class ShopifyCheckoutSheetKitPackage implements ReactPackage {
 
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
@@ -44,7 +44,7 @@ public class ShopifyCheckoutKitPackage implements ReactPackage {
       ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
 
-    modules.add(new ShopifyCheckoutKitModule(reactContext));
+    modules.add(new ShopifyCheckoutSheetKitModule(reactContext));
 
     return modules;
   }

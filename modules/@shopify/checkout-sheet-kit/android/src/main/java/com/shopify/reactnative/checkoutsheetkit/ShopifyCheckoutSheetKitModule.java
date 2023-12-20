@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.shopify.reactnative.checkoutkit;
+package com.shopify.reactnative.checkoutsheetkit;
 
 import android.app.Activity;
 import android.content.Context;
@@ -38,14 +38,14 @@ import com.shopify.checkoutkit.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
-  private static final String MODULE_NAME = "ShopifyCheckoutKit";
+public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
+  private static final String MODULE_NAME = "ShopifyCheckoutSheetKit";
 
   public static Configuration checkoutConfig = new Configuration();
 
   private final ReactApplicationContext reactContext;
 
-  public ShopifyCheckoutKitModule(ReactApplicationContext reactContext) {
+  public ShopifyCheckoutSheetKitModule(ReactApplicationContext reactContext) {
     super(reactContext);
 
     this.reactContext = reactContext;
@@ -119,7 +119,7 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
       return false;
     }
 
-    String[] colorKeys = {"backgroundColor", "spinnerColor", "headerTextColor", "headerBackgroundColor"};
+    String[] colorKeys = { "backgroundColor", "spinnerColor", "headerTextColor", "headerBackgroundColor" };
 
     for (String key : colorKeys) {
       if (!config.hasKey(key) || config.getString(key) == null || parseColor(config.getString(key)) == null) {
@@ -170,11 +170,10 @@ public class ShopifyCheckoutKitModule extends ReactContextBaseJavaModule {
 
     if (webViewBackground != null && spinnerColor != null && headerFont != null && headerBackground != null) {
       return new Colors(
-        webViewBackground,
-        headerBackground,
-        headerFont,
-        spinnerColor
-      );
+          webViewBackground,
+          headerBackground,
+          headerFont,
+          spinnerColor);
     }
 
     return null;

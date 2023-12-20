@@ -99,10 +99,10 @@ Doing so will now allow you to access the ShopifyCheckoutKit Native Module
 anywhere in your application using React hooks:
 
 ```tsx
-import {useShopifyCheckoutKit} from '@shopify/checkout-sheet-kit';
+import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 
 function App() {
-  const shopifyCheckout = useShopifyCheckoutKit();
+  const shopifyCheckout = useShopifyCheckoutSheet();
 
   // Present the checkout
   shopifyCheckout.present(checkoutUrl);
@@ -220,7 +220,7 @@ browser. To present a native checkout sheet in your application, provide the
 
 ```tsx
 function App() {
-  const shopifyCheckout = useShopifyCheckoutKit()
+  const shopifyCheckout = useShopifyCheckoutSheet()
   const checkoutUrl = useRef<string>(null)
   const [createCart] = useMutation(createCartMutation)
   const [addToCart] = useMutation(addToCartMutation)
@@ -409,7 +409,7 @@ Once enabled, preloading a checkout is as simple as calling
 
 ```tsx
 // using hooks
-const shopifyCheckout = useShopifyCheckoutKit();
+const shopifyCheckout = useShopifyCheckoutSheet();
 ShopifyCheckout.preload(checkoutUrl);
 
 // using a class instance
@@ -453,7 +453,7 @@ an event listener in a React `useEffect`, ensuring to remove it on unmount.
 
 ```tsx
 // Using hooks
-const shopifyCheckout = useShopifyCheckoutKit();
+const shopifyCheckout = useShopifyCheckoutSheet();
 
 useEffect(() => {
   const close = shopifyCheckout.addEventListener('close', () => {

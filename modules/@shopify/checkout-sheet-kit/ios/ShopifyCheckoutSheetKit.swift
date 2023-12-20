@@ -26,8 +26,8 @@ import ShopifyCheckoutKit
 import UIKit
 import React
 
-@objc(RCTShopifyCheckoutKit)
-class RCTShopifyCheckoutKit: RCTEventEmitter, CheckoutDelegate {
+@objc(RCTShopifyCheckoutSheetKit)
+class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	private var rootViewController: UIViewController?
 
 	private var hasListeners = false

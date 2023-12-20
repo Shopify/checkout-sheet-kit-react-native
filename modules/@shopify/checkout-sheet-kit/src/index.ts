@@ -26,25 +26,25 @@ import {
   NativeEventEmitter,
   EmitterSubscription,
 } from 'react-native';
-import {ShopifyCheckoutKitProvider, useShopifyCheckoutKit} from './context';
+import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
 import {
   ColorScheme,
   type CheckoutEvent,
   type CheckoutEventCallback,
   type Configuration,
-  type ShopifyCheckoutKit as ShopifyCheckout,
+  type ShopifyCheckoutSheetKit,
 } from './index.d';
 
-const RNShopifyCheckoutKit = NativeModules.ShopifyCheckoutKit;
+const RNShopifyCheckoutKit = NativeModules.ShopifyCheckoutSheetKit;
 
-if (!('ShopifyCheckoutKit' in NativeModules)) {
+if (!('ShopifyCheckoutSheetKit' in NativeModules)) {
   throw new Error(`
   "@shopify/checkout-sheet-kit" is not correctly linked.
 
   If you are building for iOS, make sure to run "pod install" first and restart the metro server.`);
 }
 
-class ShopifyCheckoutKit implements ShopifyCheckout {
+class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   private static eventEmitter: NativeEventEmitter = new NativeEventEmitter(
     RNShopifyCheckoutKit,
   );
@@ -77,19 +77,19 @@ class ShopifyCheckoutKit implements ShopifyCheckout {
     eventName: CheckoutEvent,
     callback: CheckoutEventCallback,
   ): EmitterSubscription | undefined {
-    return ShopifyCheckoutKit.eventEmitter.addListener(eventName, callback);
+    return ShopifyCheckoutSheet.eventEmitter.addListener(eventName, callback);
   }
 
   public removeEventListeners(event: CheckoutEvent) {
-    ShopifyCheckoutKit.eventEmitter.removeAllListeners(event);
+    ShopifyCheckoutSheet.eventEmitter.removeAllListeners(event);
   }
 }
 
 // API
 export {
-  ShopifyCheckoutKit,
-  ShopifyCheckoutKitProvider,
-  useShopifyCheckoutKit,
+  ShopifyCheckoutSheet,
+  ShopifyCheckoutSheetProvider,
+  useShopifyCheckoutSheet,
   ColorScheme,
 };
 

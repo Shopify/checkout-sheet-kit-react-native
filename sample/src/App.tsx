@@ -35,7 +35,7 @@ import SettingsScreen from './screens/SettingsScreen';
 import {
   ColorScheme,
   Configuration,
-  ShopifyCheckoutKitProvider,
+  ShopifyCheckoutSheetProvider,
 } from '@shopify/checkout-sheet-kit';
 import {ConfigProvider} from './context/Config';
 import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
@@ -180,13 +180,13 @@ function AppWithNavigation() {
 
 function App() {
   return (
-    <ShopifyCheckoutKitProvider configuration={config}>
+    <ShopifyCheckoutSheetProvider configuration={config}>
       <AppWithTheme>
         <AppWithContext>
           <AppWithNavigation />
         </AppWithContext>
       </AppWithTheme>
-    </ShopifyCheckoutKitProvider>
+    </ShopifyCheckoutSheetProvider>
   );
 }
 

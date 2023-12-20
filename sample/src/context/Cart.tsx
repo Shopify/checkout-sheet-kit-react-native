@@ -7,7 +7,7 @@ import React, {
   useReducer,
 } from 'react';
 import {atom, useAtom} from 'jotai';
-import {useShopifyCheckoutKit} from '@shopify/checkout-sheet-kit';
+import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
 import {useConfig} from './Config';
 import {createBuyerIdentityCartInput} from '../utils';
@@ -43,7 +43,7 @@ const cartIdState = atom<Context['cartId']>(defaultCartId);
 const totalQuantityState = atom<Context['totalQuantity']>(0);
 
 export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
-  const ShopifyCheckoutKit = useShopifyCheckoutKit();
+  const ShopifyCheckout = useShopifyCheckoutSheet();
   // Reuse the same cart ID for the lifetime of the app
   const [checkoutURL, setCheckoutURL] = useAtom(checkoutURLState);
   // Reuse the same cart ID for the lifetime of the app
@@ -82,22 +82,13 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   }, [setCartId, setCheckoutURL, setTotalQuantity]);
 
   useEffect(() => {
-    const subscription = ShopifyCheckoutKit.addEventListener(
-      'completed',
-      () => {
-        // Clear the cart ID and checkout URL when the checkout is completed
-        clearCart();
-      },
-    );
+    const subscription = ShopifyCheckout.addEventListener('completed', () => {
+      // Clear the cart ID and checkout URL when the checkout is completed
+      clearCart();
+    });
 
     return subscription?.remove;
-  }, [
-    ShopifyCheckoutKit,
-    clearCart,
-    setCartId,
-    setCheckoutURL,
-    setTotalQuantity,
-  ]);
+  }, [ShopifyCheckout, clearCart, setCartId, setCheckoutURL, setTotalQuantity]);
 
   useEffect(() => {
     async function getCart() {
@@ -147,7 +138,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setTotalQuantity(data.cartLinesAdd.cart.totalQuantity);
 
       if (data.cartLinesAdd.cart.checkoutUrl) {
-        ShopifyCheckoutKit.preload(data.cartLinesAdd.cart.checkoutUrl);
+        ShopifyCheckout.preload(data.cartLinesAdd.cart.checkoutUrl);
       }
 
       if (id) {
@@ -166,7 +157,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       appConfig,
       createCart,
       setCartId,
-      ShopifyCheckoutKit,
+      ShopifyCheckout,
       fetchCart,
     ],
   );
@@ -190,7 +181,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setTotalQuantity(data.cartLinesRemove.cart.totalQuantity);
 
       if (checkoutURL) {
-        ShopifyCheckoutKit.preload(checkoutURL);
+        ShopifyCheckout.preload(checkoutURL);
       }
 
       if (cartId) {
@@ -209,7 +200,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setCheckoutURL,
       setTotalQuantity,
       checkoutURL,
-      ShopifyCheckoutKit,
+      ShopifyCheckout,
       fetchCart,
     ],
   );

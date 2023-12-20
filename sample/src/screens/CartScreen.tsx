@@ -35,7 +35,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 
-import {useShopifyCheckoutKit} from '@shopify/checkout-sheet-kit';
+import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
 
 import type {CartItem} from '../../@types';
@@ -43,7 +43,7 @@ import {Colors, useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 
 function CartScreen(): JSX.Element {
-  const ShopifyCheckoutKit = useShopifyCheckoutKit();
+  const ShopifyCheckout = useShopifyCheckoutSheet();
   const [refreshing, setRefreshing] = React.useState(false);
   const {cartId, checkoutURL, totalQuantity, removeFromCart, addingToCart} =
     useCart();
@@ -75,7 +75,7 @@ function CartScreen(): JSX.Element {
 
   const presentCheckout = async () => {
     if (checkoutURL) {
-      ShopifyCheckoutKit.present(checkoutURL);
+      ShopifyCheckout.present(checkoutURL);
     }
   };
 

@@ -33,7 +33,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import {useShopifyCheckoutKit} from '@shopify/checkout-sheet-kit';
+import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
 
 import type {ShopifyProduct} from '../../@types';
@@ -45,7 +45,7 @@ import {RootStackParamList} from '../App';
 type Props = NativeStackScreenProps<RootStackParamList, 'CatalogScreen'>;
 
 function CatalogScreen({navigation}: Props) {
-  const ShopifyCheckoutKit = useShopifyCheckoutKit();
+  const ShopifyCheckout = useShopifyCheckoutSheet();
   const {checkoutURL, totalQuantity, addToCart, addingToCart} = useCart();
   const {colors} = useTheme();
   const styles = createStyles(colors);
@@ -59,7 +59,7 @@ function CatalogScreen({navigation}: Props) {
 
   const presentCheckout = async () => {
     if (checkoutURL) {
-      ShopifyCheckoutKit.present(checkoutURL);
+      ShopifyCheckout.present(checkoutURL);
     }
   };
 
