@@ -1,6 +1,6 @@
 [
   "LICENSE",
-  "README.md",
+  "RNShopifyCheckoutSheetKit.podspec",
   "android/build.gradle",
   "android/gradle.properties",
   "android/src/main/AndroidManifest.xml",
@@ -28,7 +28,6 @@
   "lib/typescript/src/index.d.ts",
   "lib/typescript/src/index.d.ts.map",
   "package.json",
-  "react-native-shopify-checkout-kit.podspec",
   "src/context.tsx",
   "src/index.d.ts",
   "src/index.ts"

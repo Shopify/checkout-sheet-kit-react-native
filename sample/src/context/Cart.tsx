@@ -7,7 +7,7 @@ import React, {
   useReducer,
 } from 'react';
 import {atom, useAtom} from 'jotai';
-import {useShopifyCheckoutKit} from 'react-native-shopify-checkout-kit';
+import {useShopifyCheckoutKit} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
 import {useConfig} from './Config';
 import {createBuyerIdentityCartInput} from '../utils';

@@ -35,7 +35,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 
-import {useShopifyCheckoutKit} from 'react-native-shopify-checkout-kit';
+import {useShopifyCheckoutKit} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
 
 import type {CartItem} from '../../@types';

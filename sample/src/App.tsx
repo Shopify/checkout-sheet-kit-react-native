@@ -36,7 +36,7 @@ import {
   ColorScheme,
   Configuration,
   ShopifyCheckoutKitProvider,
-} from 'react-native-shopify-checkout-kit';
+} from '@shopify/checkout-sheet-kit';
 import {ConfigProvider} from './context/Config';
 import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
 import {Appearance, StatusBar} from 'react-native';

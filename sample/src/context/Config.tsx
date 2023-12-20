@@ -10,7 +10,7 @@ import {
   ColorScheme,
   Configuration,
   useShopifyCheckoutKit,
-} from 'react-native-shopify-checkout-kit';
+} from '@shopify/checkout-sheet-kit';
 import {useTheme} from './Theme';
 
 export interface AppConfig {

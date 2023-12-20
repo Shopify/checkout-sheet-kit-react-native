@@ -4,14 +4,15 @@
 
 ![image](https://github.com/Shopify/checkout-kit-react-native/assets/2034704/107fbeb8-50be-43ac-8837-33d576cac9ab)
 
-
-**Shopify Checkout Kit** is a Native Module (currently in [Developer Preview](https://shopify.dev/docs/api/release-notes/developer-previews)) that enables React Native apps to
-provide the world’s highest converting, customizable, one-page checkout within
-the app. The presented experience is a fully-featured checkout that preserves
-all of the store customizations: Checkout UI extensions, Functions, branding,
-and more. It also provides platform idiomatic defaults such as support for light
-and dark mode, and convenient developer APIs to embed, customize, and follow the
-lifecycle of the checkout experience.
+**Shopify Checkout Kit** is a Native Module (currently in
+[Developer Preview](https://shopify.dev/docs/api/release-notes/developer-previews))
+that enables React Native apps to provide the world’s highest converting,
+customizable, one-page checkout within the app. The presented experience is a
+fully-featured checkout that preserves all of the store customizations: Checkout
+UI extensions, Functions, branding, and more. It also provides platform
+idiomatic defaults such as support for light and dark mode, and convenient
+developer APIs to embed, customize, and follow the lifecycle of the checkout
+experience.
 
 Check out our blog to
 [learn how and why we built Checkout Kit](https://www.shopify.com/partners/blog/mobile-checkout-sdks-for-ios-and-android).
@@ -40,10 +41,10 @@ started:
 Install the Shopify Checkout Kit package dependency:
 
 ```sh
-yarn add react-native-shopify-checkout-kit
+yarn add @shopify/checkout-sheet-kit
 
 # or using npm
-npm install react-native-shopify-checkout-kit
+npm install @shopify/checkout-sheet-kit
 ```
 
 #### 2. Ensure your app meets the minimum Android SDK version requirement
@@ -83,7 +84,7 @@ requirements have been checked, you can begin by importing the library in your
 application code:
 
 ```tsx
-import {ShopifyCheckoutKitProvider} from 'react-native-shopify-checkout-kit';
+import {ShopifyCheckoutKitProvider} from '@shopify/checkout-sheet-kit';
 
 function AppWithContext() {
   return (
@@ -98,7 +99,7 @@ Doing so will now allow you to access the ShopifyCheckoutKit Native Module
 anywhere in your application using React hooks:
 
 ```tsx
-import {useShopifyCheckoutKit} from 'react-native-shopify-checkout-kit';
+import {useShopifyCheckoutKit} from '@shopify/checkout-sheet-kit';
 
 function App() {
   const shopifyCheckout = useShopifyCheckoutKit();
@@ -123,7 +124,7 @@ from the package and instantiate it. We recommend to instantiating the class at
 a high level in your application, and exporting it for use throughout your app.
 
 ```tsx
-import {ShopifyCheckoutKit} from 'react-native-shopify-checkout-kit';
+import {ShopifyCheckoutKit} from '@shopify/checkout-sheet-kit';
 
 export const shopifyCheckout = new ShopifyCheckoutKit({
   // optional configuration
@@ -282,7 +283,7 @@ import {
   ColorScheme,
   Configuration,
   ShopifyCheckoutKitProvider,
-} from 'react-native-shopify-checkout-kit';
+} from '@shopify/checkout-sheet-kit';
 
 const config: Configuration = {
   colorScheme: ColorScheme.web,
@@ -359,7 +360,7 @@ import {
   ColorScheme,
   Configuration,
   ShopifyCheckoutKitProvider,
-} from 'react-native-shopify-checkout-kit';
+} from '@shopify/checkout-sheet-kit';
 
 const config: Configuration = {
   colorScheme: ColorScheme.automatic,

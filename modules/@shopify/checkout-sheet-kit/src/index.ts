@@ -26,20 +26,20 @@ import {
   NativeEventEmitter,
   EmitterSubscription,
 } from 'react-native';
-import type {ShopifyCheckoutKit as ShopifyCheckout} from '.';
-import {ColorScheme} from './index.d';
 import {ShopifyCheckoutKitProvider, useShopifyCheckoutKit} from './context';
-import type {
-  CheckoutEvent,
-  CheckoutEventCallback,
-  Configuration,
+import {
+  ColorScheme,
+  type CheckoutEvent,
+  type CheckoutEventCallback,
+  type Configuration,
+  type ShopifyCheckoutKit as ShopifyCheckout,
 } from './index.d';
 
 const RNShopifyCheckoutKit = NativeModules.ShopifyCheckoutKit;
 
 if (!('ShopifyCheckoutKit' in NativeModules)) {
   throw new Error(`
-  "react-native-shopify-checkout-kit" is not correctly linked.
+  "@shopify/checkout-sheet-kit" is not correctly linked.
 
   If you are building for iOS, make sure to run "pod install" first and restart the metro server.`);
 }

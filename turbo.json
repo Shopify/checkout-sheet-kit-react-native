@@ -2,7 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "build": {
-      "outputs": ["./modules/react-native-shopify-checkout-kit/lib/**"]
+      "outputs": ["./modules/@shopify/checkout-sheet-kit/lib/**"]
     },
     "lint": {},
     "build:android": {

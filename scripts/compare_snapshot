@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILENAME="modules/react-native-shopify-checkout-kit/package.snapshot.json"
+FILENAME="modules/@shopify/checkout-sheet-kit/package.snapshot.json"
 TMP_SNAPSHOT_FILENAME="snapshot.json"
 
 # Set up some colors to use later

@@ -10,8 +10,8 @@ module.exports = {
     'react-native': {
       root: path.resolve(root, 'node_modules', 'react-native'),
     },
-    'react-native-shopify-checkout-kit': {
-      root: path.resolve(root, 'modules', 'react-native-shopify-checkout-kit'),
+    '@shopify/checkout-sheet-kit': {
+      root: path.resolve(root, 'modules', '@shopify/checkout-sheet-kit'),
     },
     ...(process.env.NO_FLIPPER
       ? {'react-native-flipper': {platforms: {ios: null}}}
