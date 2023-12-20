@@ -26,7 +26,6 @@ import XCTest
 @testable import ShopifyCheckoutKit
 @testable import RNShopifyCheckoutSheetKit
 
-
 class ShopifyCheckoutKitTests: XCTestCase {
   private var shopifyCheckoutKit: RCTShopifyCheckoutSheetKit!
 
