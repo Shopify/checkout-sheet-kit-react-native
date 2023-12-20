@@ -13,22 +13,36 @@ import {
 } from 'react-native-shopify-checkout-kit';
 import {useTheme} from './Theme';
 
-interface Context {
-  config: Configuration | undefined;
-  setConfig: (config: Configuration) => void;
+export interface AppConfig {
+  prefillBuyerInformation: boolean;
 }
 
+interface Context {
+  appConfig: AppConfig;
+  config: Configuration | undefined;
+  setConfig: (config: Configuration) => void;
+  setAppConfig: (config: AppConfig) => void;
+}
+
+const defaultAppConfig: AppConfig = {
+  prefillBuyerInformation: false,
+};
+
 const ConfigContext = createContext<Context>({
+  appConfig: defaultAppConfig,
   config: {
     colorScheme: ColorScheme.automatic,
     preloading: false,
   },
   setConfig: () => undefined,
+  setAppConfig: () => undefined,
 });
 
 export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
   const ShopifyCheckoutKit = useShopifyCheckoutKit();
   const [config, setInternalConfig] = useState<Context['config']>(undefined);
+  const [appConfig, setInternalAppConfig] =
+    useState<AppConfig>(defaultAppConfig);
   const {setColorScheme} = useTheme();
 
   useEffect(() => {
@@ -74,12 +88,18 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
     [setColorScheme, ShopifyCheckoutKit],
   );
 
+  const setAppConfig = useCallback((config: AppConfig) => {
+    setInternalAppConfig(config);
+  }, []);
+
   const value = useMemo(
     () => ({
       config,
+      appConfig,
       setConfig,
+      setAppConfig,
     }),
-    [config, setConfig],
+    [appConfig, config, setAppConfig, setConfig],
   );
 
   return (

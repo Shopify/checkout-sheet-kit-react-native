@@ -134,8 +134,8 @@ const CART_QUERY = gql`
 `;
 
 const CREATE_CART_MUTATION = gql`
-  mutation CreateCart {
-    cartCreate(input: {}) {
+  mutation CreateCart($input: CartInput) {
+    cartCreate(input: $input) {
       cart {
         id
         checkoutUrl
