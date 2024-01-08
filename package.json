@@ -1,15 +1,15 @@
 {
-  "name": "checkout-kit-react-native",
+  "name": "checkout-sheet-kit-react-native",
   "description": "A React Native library for Shopify's Checkout Kit.",
   "private": true,
   "version": "0.0.1",
-  "repository": "https://github.com/Shopify/checkout-kit-react-native",
-  "author": "Shopify (https://github.com/Shopify/checkout-kit-react-native)",
+  "repository": "https://github.com/Shopify/checkout-sheet-kit-react-native",
+  "author": "Shopify (https://github.com/Shopify/checkout-sheet-kit-react-native)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Shopify/checkout-kit-react-native/issues"
+    "url": "https://github.com/Shopify/checkout-sheet-kit-react-native/issues"
   },
-  "homepage": "https://github.com/Shopify/checkout-kit-react-native",
+  "homepage": "https://github.com/Shopify/checkout-sheet-kit-react-native",
   "workspaces": [
     "sample",
     "modules/**/*"

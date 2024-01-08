@@ -8,7 +8,7 @@
   "module": "lib/module/index.js",
   "description": "A React Native library for Shopify's Checkout Kit.",
   "author": "Shopify",
-  "homepage": "https://github.com/shopify/checkout-kit-react-native",
+  "homepage": "https://github.com/shopify/checkout-sheet-kit-react-native",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

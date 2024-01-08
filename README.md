@@ -1,8 +1,8 @@
 # Shopify Checkout Kit - React Native (Developer Preview)
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/Shopify/checkout-kit-react-native/blob/main/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/LICENSE)
 
-![image](https://github.com/Shopify/checkout-kit-react-native/assets/2034704/107fbeb8-50be-43ac-8837-33d576cac9ab)
+![image](https://github.com/Shopify/checkout-sheet-kit-react-native/assets/2034704/107fbeb8-50be-43ac-8837-33d576cac9ab)
 
 **Shopify Checkout Kit** is a Native Module (currently in
 [Developer Preview](https://shopify.dev/docs/api/release-notes/developer-previews))
