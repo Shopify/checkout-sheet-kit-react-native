@@ -1,4 +1,4 @@
-# Shopify Checkout Kit - React Native (Developer Preview)
+# Shopify Checkout Sheet Kit - React Native (Developer Preview)
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/LICENSE)
 
@@ -15,7 +15,7 @@ developer APIs to embed, customize, and follow the lifecycle of the checkout
 experience.
 
 Check out our blog to
-[learn how and why we built Checkout Kit](https://www.shopify.com/partners/blog/mobile-checkout-sdks-for-ios-and-android).
+[learn how and why we built the Shopify Checkout Sheet Kit](https://www.shopify.com/partners/blog/mobile-checkout-sdks-for-ios-and-android).
 
 The React Native SDK is part of
 [Shopify's Mobile Kit](https://shopify.dev/docs/custom-storefronts/mobile-kit)
@@ -27,14 +27,14 @@ experiences.
 - **React Native** - Minimum version `0.70`
 - **iOS** - Minimum version iOS 13
 - **Android** - Minimum Java 11 & Android SDK version `23`
-- **Shopify** - The SDK is _**not**_ compatible with checkout.liquid. Your
+- **Shopify** - This package is _**not**_ compatible with checkout.liquid. Your
   Shopify Store must be migrated for extensibility.
 
 ### Getting Started
 
-The SDK is an open-source NPM package. View our
-[sample application](samples/README.md) or use the following steps to get
-started:
+Shopify Checkout Sheet Kit is an open-source NPM package. 
+
+Use the following steps to get started with adding it to your React Native application:
 
 #### 1. Install
 
