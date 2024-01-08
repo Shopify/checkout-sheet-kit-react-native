@@ -84,10 +84,10 @@ dist
 .turbo
 
 # Module
-modules/react-native-shopify-checkout-kit/android/gradle/wrapper/gradle-wrapper.jar
-modules/react-native-shopify-checkout-kit/android/gradle/wrapper/gradle-wrapper.properties
-modules/react-native-shopify-checkout-kit/android/gradlew
-modules/react-native-shopify-checkout-kit/android/gradlew.bat
+modules/@shopify/checkout-sheet-kit/android/gradle/wrapper/gradle-wrapper.jar
+modules/@shopify/checkout-sheet-kit/android/gradle/wrapper/gradle-wrapper.properties
+modules/@shopify/checkout-sheet-kit/android/gradlew
+modules/@shopify/checkout-sheet-kit/android/gradlew.bat
 
 # Sample bundle
 **/index.android.bundle

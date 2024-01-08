@@ -134,7 +134,7 @@ function removeEventListeners(event: CheckoutEvent): void;
 export type AddEventListener = typeof addEventListener;
 export type RemoveEventListeners = typeof removeEventListeners;
 
-export interface ShopifyCheckoutKit {
+export interface ShopifyCheckoutSheetKit {
   /**
    * The version number of the Shopify Checkout SDK.
    */

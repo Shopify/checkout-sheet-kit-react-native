@@ -9,8 +9,8 @@ import React, {
 import {
   ColorScheme,
   Configuration,
-  useShopifyCheckoutKit,
-} from 'react-native-shopify-checkout-kit';
+  useShopifyCheckoutSheet,
+} from '@shopify/checkout-sheet-kit';
 import {useTheme} from './Theme';
 
 export interface AppConfig {
@@ -39,7 +39,7 @@ const ConfigContext = createContext<Context>({
 });
 
 export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
-  const ShopifyCheckoutKit = useShopifyCheckoutKit();
+  const ShopifyCheckout = useShopifyCheckoutSheet();
   const [config, setInternalConfig] = useState<Context['config']>(undefined);
   const [appConfig, setInternalAppConfig] =
     useState<AppConfig>(defaultAppConfig);
@@ -49,7 +49,7 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
     async function init() {
       try {
         // Fetch the checkout configuration object
-        const config = await ShopifyCheckoutKit.getConfig();
+        const config = await ShopifyCheckout.getConfig();
         // Store it in local state
         setInternalConfig(config);
       } catch (error) {
@@ -59,16 +59,16 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
     }
 
     init();
-  }, [ShopifyCheckoutKit]);
+  }, [ShopifyCheckout]);
 
   const setConfig = useCallback(
     async (config: Configuration) => {
       try {
         // Update the SDK configuration
-        ShopifyCheckoutKit.setConfig(config);
+        ShopifyCheckout.setConfig(config);
 
         // Fetch the latest configuration object
-        const updatedConfig = await ShopifyCheckoutKit.getConfig();
+        const updatedConfig = await ShopifyCheckout.getConfig();
 
         // Update local config state
         setInternalConfig(updatedConfig);
@@ -85,7 +85,7 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
         return undefined;
       }
     },
-    [setColorScheme, ShopifyCheckoutKit],
+    [setColorScheme, ShopifyCheckout],
   );
 
   const setAppConfig = useCallback((config: AppConfig) => {

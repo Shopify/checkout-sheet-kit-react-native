@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import React, {PropsWithChildren, useCallback, useMemo, useRef} from 'react';
 import {EmitterSubscription} from 'react-native';
-import {ShopifyCheckoutKit} from './index';
+import {ShopifyCheckoutSheet} from './index';
 import type {
   AddEventListener,
   RemoveEventListeners,
@@ -45,7 +45,7 @@ interface Context {
 
 const noop = () => undefined;
 
-const ShopifyCheckoutKitContext = React.createContext<Context>({
+const ShopifyCheckoutSheetContext = React.createContext<Context>({
   addEventListener: noop,
   removeEventListeners: noop,
   setConfig: noop,
@@ -59,14 +59,14 @@ interface Props {
   configuration?: Configuration;
 }
 
-export function ShopifyCheckoutKitProvider({
+export function ShopifyCheckoutSheetProvider({
   configuration,
   children,
 }: PropsWithChildren<Props>) {
-  const instance = useRef<ShopifyCheckoutKit | null>(null);
+  const instance = useRef<ShopifyCheckoutSheet | null>(null);
 
   if (!instance.current) {
-    instance.current = new ShopifyCheckoutKit(configuration);
+    instance.current = new ShopifyCheckoutSheet(configuration);
   }
 
   const addEventListener: AddEventListener = useCallback(
@@ -120,14 +120,14 @@ export function ShopifyCheckoutKitProvider({
   ]);
 
   return (
-    <ShopifyCheckoutKitContext.Provider value={context}>
+    <ShopifyCheckoutSheetContext.Provider value={context}>
       {children}
-    </ShopifyCheckoutKitContext.Provider>
+    </ShopifyCheckoutSheetContext.Provider>
   );
 }
 
-export function useShopifyCheckoutKit() {
-  return React.useContext(ShopifyCheckoutKitContext);
+export function useShopifyCheckoutSheet() {
+  return React.useContext(ShopifyCheckoutSheetContext);
 }
 
-export default ShopifyCheckoutKitContext;
+export default ShopifyCheckoutSheetContext;

@@ -317,9 +317,6 @@ PODS:
     - glog
   - react-native-safe-area-context (4.7.4):
     - React-Core
-  - react-native-shopify-checkout-kit (0.1.0):
-    - React-Core
-    - ShopifyCheckoutKit (~> 0.8.0)
   - React-NativeModulesApple (0.72.7):
     - hermes-engine
     - React-callinvoker
@@ -464,6 +461,9 @@ PODS:
   - RNScreens (3.27.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+  - RNShopifyCheckoutSheetKit (0.1.0):
+    - React-Core
+    - ShopifyCheckoutKit (~> 0.8.0)
   - RNVectorIcons (10.0.2):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -497,7 +497,6 @@ DEPENDENCIES:
   - React-jsinspector (from `../../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../../node_modules/react-native/ReactCommon/logger`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
-  - react-native-shopify-checkout-kit (from `../../modules/react-native-shopify-checkout-kit`)
   - React-NativeModulesApple (from `../../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -518,6 +517,7 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - "RNShopifyCheckoutSheetKit (from `../../modules/@shopify/checkout-sheet-kit`)"
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - SwiftLint
   - Yoga (from `../../node_modules/react-native/ReactCommon/yoga`)
@@ -576,8 +576,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/react-native/ReactCommon/logger"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
-  react-native-shopify-checkout-kit:
-    :path: "../../modules/react-native-shopify-checkout-kit"
   React-NativeModulesApple:
     :path: "../../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
@@ -618,6 +616,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNShopifyCheckoutSheetKit:
+    :path: "../../modules/@shopify/checkout-sheet-kit"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
   Yoga:
@@ -648,7 +648,6 @@ SPEC CHECKSUMS:
   React-jsinspector: 8baadae51f01d867c3921213a25ab78ab4fbcd91
   React-logger: 8edc785c47c8686c7962199a307015e2ce9a0e4f
   react-native-safe-area-context: 2cd91d532de12acdb0a9cbc8d43ac72a8e4c897c
-  react-native-shopify-checkout-kit: 1be7cb61bb6858c1d757d5f1360a2f914e327d3c
   React-NativeModulesApple: b6868ee904013a7923128892ee4a032498a1024a
   React-perflogger: 31ea61077185eb1428baf60c0db6e2886f141a5a
   React-RCTActionSheet: 392090a3abc8992eb269ef0eaa561750588fc39d
@@ -669,12 +668,13 @@ SPEC CHECKSUMS:
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNReanimated: b3fe5092e7c7da790180e28c48f31e6b2bd3bfec
   RNScreens: 3c2d122f5e08c192e254c510b212306da97d2581
+  RNShopifyCheckoutSheetKit: 6cc2bc557b090de1e82f22f5df42c54dc93e0a8f
   RNVectorIcons: 23b6e11af4aaf104d169b1b0afa7e5cf96c676ce
   ShopifyCheckoutKit: bc3965f57c8efb4436c38b919be144faca71d508
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   SwiftLint: c1de071d9d08c8aba837545f6254315bc900e211
   Yoga: 4c3aa327e4a6a23eeacd71f61c81df1bcdf677d5
 
-PODFILE CHECKSUM: 2fac0a2970da51a4ec464974ea24d63658e85748
+PODFILE CHECKSUM: 501ff3bc049a7b8b50204bc9220ab4e2b9c6138b
 
 COCOAPODS: 1.14.3

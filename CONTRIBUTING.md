@@ -3,8 +3,7 @@
 This repo is subdivided into 3 parts using yarn workspaces:
 
 - The base repo (workspace name = `checkout-kit-react-native`)
-- The `react-native-shopify-checkout-kit` Native Module (workspace name =
-  `module`)
+- The `@shopify/checkout-sheet-kit` Native Module (workspace name = `module`)
 - The sample application (workspace name = `sample`)
 
 Each of the worksapces contains a separate `package.json` to manage tasks
@@ -43,10 +42,9 @@ open both the iOS and Android simulators/emulators respectively.
 ## Making changes to the Native Module
 
 If your intentions are to modify the TS code for the Native Module under
-`modules/react-native-shopify-checkout-kit`, note that you will not need to
-rebuild to observe your changes in the sample app. This is because the sample
-app is importing the TS files directly from the module directory (through
-symlinking).
+`modules/@shopify/checkout-sheet-kit`, note that you will not need to rebuild to
+observe your changes in the sample app. This is because the sample app is
+importing the TS files directly from the module directory (through symlinking).
 
 However, if you're running the iOS/Android tests against the module, you will
 first need to run `yarn module build` each time you change the TS code.
@@ -87,7 +85,7 @@ There are 3 types of tests in this repo: Typescript, Swift and Java - each for
 testing the Native Module.
 
 ```sh
-# Run Jest tests for "modules/react-native-shopify-checkout-kit/src/**/*.tsx"
+# Run Jest tests for "modules/@shopify/checkout-sheet-kit/src/**/*.tsx"
 yarn test
 
 # Run swift tests for the Native Module

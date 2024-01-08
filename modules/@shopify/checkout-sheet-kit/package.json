@@ -1,5 +1,5 @@
 {
-  "name": "react-native-shopify-checkout-kit",
+  "name": "@shopify/checkout-sheet-kit",
   "license": "MIT",
   "version": "0.1.0",
   "main": "lib/commonjs/index.js",
@@ -15,7 +15,7 @@
   "scripts": {
     "clean": "rm -rf lib",
     "build": "bob build",
-    "lint:swift": "./../../sample/ios/Pods/SwiftLint/swiftlint --strict --quiet ios",
+    "lint:swift": "./../../../sample/ios/Pods/SwiftLint/swiftlint --strict --quiet ios",
     "lint": "yarn typecheck && eslint src",
     "prepack": "yarn clean && yarn build",
     "typecheck": "tsc --noEmit"

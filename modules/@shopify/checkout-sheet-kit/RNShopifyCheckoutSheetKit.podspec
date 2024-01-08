@@ -7,7 +7,7 @@ folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
 Pod::Spec.new do |s|
-  s.name         = package["name"]
+  s.name         = "RNShopifyCheckoutSheetKit"
   s.version      = package["version"]
   s.summary      = package["description"]
   s.homepage     = package["homepage"]

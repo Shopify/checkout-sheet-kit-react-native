@@ -12,12 +12,12 @@
   "homepage": "https://github.com/Shopify/checkout-kit-react-native",
   "workspaces": [
     "sample",
-    "modules/*"
+    "modules/**/*"
   ],
   "scripts": {
     "clean": "watchman watch-del .",
     "sample": "yarn workspace sample",
-    "module": "yarn workspace react-native-shopify-checkout-kit",
+    "module": "yarn workspace @shopify/checkout-sheet-kit",
     "pod-install": "NO_FLIPPER=1 pod-install",
     "snapshot": "./scripts/create_snapshot",
     "turbo": "turbo",

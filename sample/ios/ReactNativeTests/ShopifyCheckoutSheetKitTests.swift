@@ -24,10 +24,10 @@
 import Foundation
 import XCTest
 @testable import ShopifyCheckoutKit
-@testable import react_native_shopify_checkout_kit
+@testable import RNShopifyCheckoutSheetKit
 
 class ShopifyCheckoutKitTests: XCTestCase {
-  private var shopifyCheckoutKit: RCTShopifyCheckoutKit!
+  private var shopifyCheckoutKit: RCTShopifyCheckoutSheetKit!
 
   override func setUp() {
     super.setUp()
@@ -45,8 +45,8 @@ class ShopifyCheckoutKitTests: XCTestCase {
     ShopifyCheckoutKit.configuration.colorScheme = .automatic
   }
 
-  private func getShopifyCheckoutKit() -> RCTShopifyCheckoutKit {
-    return RCTShopifyCheckoutKit()
+  private func getShopifyCheckoutKit() -> RCTShopifyCheckoutSheetKit {
+    return RCTShopifyCheckoutSheetKit()
   }
 
   /// getConfig
@@ -154,20 +154,20 @@ class ShopifyCheckoutKitTests: XCTestCase {
     }
   }
 
-  private func mockSendEvent(eventName: String) -> RCTShopifyCheckoutKitMock {
-    let mock = RCTShopifyCheckoutKitMock()
+  private func mockSendEvent(eventName: String) -> RCTShopifyCheckoutSheetKitMock {
+    let mock = RCTShopifyCheckoutSheetKitMock()
     mock.eventName = eventName
     return mock
   }
 
-  private func mockAsyncSendEvent(eventName: String) -> AsyncRCTShopifyCheckoutKitMock {
-    let mock = AsyncRCTShopifyCheckoutKitMock()
+  private func mockAsyncSendEvent(eventName: String) -> AsyncRCTShopifyCheckoutSheetKitMock {
+    let mock = AsyncRCTShopifyCheckoutSheetKitMock()
     mock.eventName = eventName
     return mock
   }
 }
 
-class RCTShopifyCheckoutKitMock: RCTShopifyCheckoutKit {
+class RCTShopifyCheckoutSheetKitMock: RCTShopifyCheckoutSheetKit {
   var didSendEvent = false
   var eventName: String?
   var eventBody: Any!
@@ -180,7 +180,7 @@ class RCTShopifyCheckoutKitMock: RCTShopifyCheckoutKit {
   }
 }
 
-class AsyncRCTShopifyCheckoutKitMock: RCTShopifyCheckoutKit {
+class AsyncRCTShopifyCheckoutSheetKitMock: RCTShopifyCheckoutSheetKit {
   var didSendEvent = false
   var eventName: String?
   var sendEventImplementation: ((String?, Any?) -> Void)?
