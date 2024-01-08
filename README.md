@@ -4,7 +4,7 @@
 
 ![image](https://github.com/Shopify/checkout-sheet-kit-react-native/assets/2034704/107fbeb8-50be-43ac-8837-33d576cac9ab)
 
-**Shopify Checkout Kit** is a Native Module (currently in
+**Shopify Checkout Sheet Kit** is a Native Module (currently in
 [Developer Preview](https://shopify.dev/docs/api/release-notes/developer-previews))
 that enables React Native apps to provide the world’s highest converting,
 customizable, one-page checkout within the app. The presented experience is a
@@ -38,7 +38,7 @@ Use the following steps to get started with adding it to your React Native appli
 
 #### 1. Install
 
-Install the Shopify Checkout Kit package dependency:
+Install the Shopify Checkout Sheet Kit package dependency:
 
 ```sh
 yarn add @shopify/checkout-sheet-kit
