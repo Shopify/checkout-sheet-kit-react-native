@@ -9,7 +9,7 @@ on:
 jobs:
   lint-swift:
     name: Lint Swift code
-    runs-on: shopify-ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -20,7 +20,7 @@ jobs:
 
   license:
     name: Verify license headers
-    runs-on: shopify-ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -28,7 +28,7 @@ jobs:
 
   check-packed-files:
     name: Check package files
-    runs-on: shopify-ubuntu-latest
+    runs-on: ubuntu-latest
     env:
       TERM: xterm
     steps:
@@ -41,7 +41,7 @@ jobs:
 
   test:
     name: Run jest tests
-    runs-on: shopify-ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -52,7 +52,7 @@ jobs:
 
   test-android:
     name: Run Android Tests
-    runs-on: shopify-ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
