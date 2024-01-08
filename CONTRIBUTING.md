@@ -2,7 +2,7 @@
 
 This repo is subdivided into 3 parts using yarn workspaces:
 
-- The base repo (workspace name = `checkout-kit-react-native`)
+- The base repo (workspace name = `checkout-sheet-kit-react-native`)
 - The `@shopify/checkout-sheet-kit` Native Module (workspace name = `module`)
 - The sample application (workspace name = `sample`)
 
