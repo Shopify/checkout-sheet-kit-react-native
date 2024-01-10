@@ -11,6 +11,7 @@ import {
   ZIP,
   PHONE,
 } from '@env';
+import {NativeModules, Platform} from 'react-native';
 import {AppConfig} from './context/Config';
 
 export function createBuyerIdentityCartInput(appConfig: AppConfig) {
@@ -37,4 +38,35 @@ export function createBuyerIdentityCartInput(appConfig: AppConfig) {
       },
     },
   };
+}
+
+export function getLocale(): string {
+  const fallbackLocale = 'en_CA';
+
+  return (
+    (Platform.OS === 'ios'
+      ? NativeModules.SettingsManager?.settings.AppleLocale ||
+        NativeModules.SettingsManager?.settings.AppleLanguages[0]
+      : NativeModules.I18nManager?.localeIdentifier) ?? fallbackLocale
+  );
+}
+
+export function currency(amount?: string, currency?: string): string {
+  if (typeof amount === 'undefined' && typeof currency === 'undefined') {
+    return '';
+  }
+
+  const currencyCode = currency ? ` ${currency}` : '';
+
+  try {
+    const locale = getLocale();
+    return (
+      new Intl.NumberFormat(locale.replace(/_/, '-'), {
+        style: 'currency',
+        currency: currency,
+      }).format(Number(amount ?? 0)) + currencyCode
+    );
+  } catch (error) {
+    return `${Number(amount ?? 0).toFixed(2)}` + currencyCode;
+  }
 }

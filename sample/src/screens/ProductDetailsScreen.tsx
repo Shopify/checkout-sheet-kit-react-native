@@ -38,6 +38,7 @@ import {Colors, useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../App';
+import {currency} from '../utils';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetails'>;
 
@@ -110,7 +111,8 @@ function ProductDetails({
               <ActivityIndicator size="small" color="white" />
             ) : (
               <Text style={styles.addToCartButtonText}>
-                Add to cart &bull; £{Number(variant?.price.amount).toFixed(2)}
+                Add to cart &bull;{' '}
+                {currency(variant?.price.amount, variant?.price.currencyCode)}
               </Text>
             )}
           </Pressable>

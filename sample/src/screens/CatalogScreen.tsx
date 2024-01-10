@@ -41,6 +41,7 @@ import {Colors, useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../App';
+import {currency} from '../utils';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CatalogScreen'>;
 
@@ -153,8 +154,7 @@ function Product({
         <View>
           <Text style={styles.productTitle}>{product.title}</Text>
           <Text style={styles.productPrice}>
-            £{Number(variant?.price.amount).toFixed(2)}{' '}
-            {variant?.price.currencyCode}
+            {currency(variant?.price.amount, variant?.price.currencyCode)}
           </Text>
         </View>
         <View style={styles.addToCartButtonContainer}>
