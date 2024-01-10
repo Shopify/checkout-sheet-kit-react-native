@@ -2,7 +2,7 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/LICENSE)
 
-![image](https://github.com/Shopify/checkout-sheet-kit-react-native/assets/2034704/107fbeb8-50be-43ac-8837-33d576cac9ab)
+![image](hero.png)
 
 **Shopify Checkout Sheet Kit** is a Native Module (currently in
 [Developer Preview](https://shopify.dev/docs/api/release-notes/developer-previews))
@@ -32,9 +32,10 @@ experiences.
 
 ### Getting Started
 
-Shopify Checkout Sheet Kit is an open-source NPM package. 
+Shopify Checkout Sheet Kit is an open-source NPM package.
 
-Use the following steps to get started with adding it to your React Native application:
+Use the following steps to get started with adding it to your React Native
+application:
 
 #### 1. Install
 
