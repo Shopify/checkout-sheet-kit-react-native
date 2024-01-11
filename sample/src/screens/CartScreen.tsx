@@ -38,9 +38,10 @@ import Icon from 'react-native-vector-icons/Entypo';
 import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
 
-import type {CartItem} from '../../@types';
+import type {CartItem, CartLineItem} from '../../@types';
 import {Colors, useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
+import {currency} from '../utils';
 
 function CartScreen(): JSX.Element {
   const ShopifyCheckout = useShopifyCheckoutSheet();
@@ -122,7 +123,7 @@ function CartScreen(): JSX.Element {
           {data?.cart.lines.edges.map(({node}) => (
             <CartItem
               key={node.merchandise.id}
-              item={node.merchandise}
+              item={node}
               quantity={node.quantity}
               loading={addingToCart.has(node.id)}
               onRemove={() => removeFromCart(node.id)}
@@ -175,8 +176,8 @@ function price(value: {amount: string; currencyCode: string}) {
     return '-';
   }
 
-  const {amount} = value;
-  return `£${Number(amount).toFixed(2)}`;
+  const {amount, currencyCode} = value;
+  return currency(amount, currencyCode);
 }
 
 function CartItem({
@@ -185,7 +186,7 @@ function CartItem({
   onRemove,
   loading,
 }: {
-  item: CartItem;
+  item: CartLineItem;
   quantity: number;
   loading?: boolean;
   onRemove: () => void;
@@ -204,16 +205,20 @@ function CartItem({
         resizeMethod="resize"
         resizeMode="cover"
         style={styles.productImage}
-        alt={item.image?.altText}
-        source={{uri: item.image?.url}}
+        alt={item.merchandise.image?.altText}
+        source={{uri: item.merchandise.image?.url}}
       />
       <View style={styles.productText}>
         <View style={styles.productTextContainer}>
-          <Text style={styles.productTitle}>{item.product.title}</Text>
+          <Text style={styles.productTitle}>
+            {item.merchandise.product.title}
+          </Text>
           <Text style={styles.productDescription}>Quantity: {quantity}</Text>
         </View>
         <View>
-          <Text style={styles.productPrice}>{price(item?.price)}</Text>
+          <Text style={styles.productPrice}>
+            {price(item.cost?.totalAmount)}
+          </Text>
           <Pressable style={styles.removeButton} onPress={onRemove}>
             {loading ? (
               <ActivityIndicator size="small" />

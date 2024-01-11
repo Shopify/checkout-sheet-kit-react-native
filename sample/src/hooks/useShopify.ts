@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import {gql, useLazyQuery, useMutation} from '@apollo/client';
 import type {Edges, ShopifyProduct, ShopifyCart} from '../../@types';
+import {getLocale} from '../utils';
 
 const moneyFragment = gql`
   fragment Price on MoneyV2 {
@@ -66,7 +67,8 @@ const cartCostFragment = gql`
 `;
 
 const PRODUCTS_QUERY = gql`
-  query FetchProducts {
+  query FetchProducts($country: CountryCode = CA)
+  @inContext(country: $country) {
     products(first: 10) {
       edges {
         node {
@@ -77,6 +79,9 @@ const PRODUCTS_QUERY = gql`
             edges {
               node {
                 id
+                unitPrice {
+                  ...Price
+                }
                 price {
                   ...Price
                 }
@@ -102,7 +107,8 @@ const PRODUCTS_QUERY = gql`
 `;
 
 const CART_QUERY = gql`
-  query FetchCart($cartId: ID!) {
+  query FetchCart($cartId: ID!, $country: CountryCode = CA)
+  @inContext(country: $country) {
     cart(id: $cartId) {
       id
       totalQuantity
@@ -134,7 +140,8 @@ const CART_QUERY = gql`
 `;
 
 const CREATE_CART_MUTATION = gql`
-  mutation CreateCart($input: CartInput) {
+  mutation CreateCart($input: CartInput, $country: CountryCode = CA)
+  @inContext(country: $country) {
     cartCreate(input: $input) {
       cart {
         id
@@ -145,7 +152,11 @@ const CREATE_CART_MUTATION = gql`
 `;
 
 const ADD_TO_CART_MUTATION = gql`
-  mutation AddToCart($cartId: ID!, $lines: [CartLineInput!]!) {
+  mutation AddToCart(
+    $cartId: ID!
+    $lines: [CartLineInput!]!
+    $country: CountryCode = CA
+  ) @inContext(country: $country) {
     cartLinesAdd(cartId: $cartId, lines: $lines) {
       cart {
         id
@@ -157,7 +168,11 @@ const ADD_TO_CART_MUTATION = gql`
 `;
 
 const REMOVE_FROM_CART_MUTATION = gql`
-  mutation RemoveFromCart($cartId: ID!, $lineIds: [ID!]!) {
+  mutation RemoveFromCart(
+    $cartId: ID!
+    $lineIds: [ID!]!
+    $country: CountryCode = CA
+  ) @inContext(country: $country) {
     cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
       cart {
         id
@@ -169,15 +184,26 @@ const REMOVE_FROM_CART_MUTATION = gql`
 `;
 
 function useShopify() {
+  const [, country] = getLocale().split('_');
+  const includeCountry = {
+    variables: {
+      country,
+    },
+  };
   const products = useLazyQuery<{products: Edges<ShopifyProduct>}>(
     PRODUCTS_QUERY,
+    includeCountry,
   );
   const cart = useLazyQuery<{cart: ShopifyCart}>(CART_QUERY, {
     fetchPolicy: 'network-only',
+    ...includeCountry,
   });
-  const cartCreate = useMutation(CREATE_CART_MUTATION);
-  const cartLinesAdd = useMutation(ADD_TO_CART_MUTATION);
-  const cartLinesRemove = useMutation(REMOVE_FROM_CART_MUTATION);
+  const cartCreate = useMutation(CREATE_CART_MUTATION, includeCountry);
+  const cartLinesAdd = useMutation(ADD_TO_CART_MUTATION, includeCountry);
+  const cartLinesRemove = useMutation(
+    REMOVE_FROM_CART_MUTATION,
+    includeCountry,
+  );
 
   return {
     queries: {

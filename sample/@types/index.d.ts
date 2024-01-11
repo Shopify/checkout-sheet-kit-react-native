@@ -45,12 +45,20 @@ export interface CartItem {
   };
 }
 
+export interface CartLineItem {
+  id: string;
+  merchandise: CartItem;
+  quantity: number;
+  cost: {
+    totalAmount: {
+      currencyCode: string;
+      amount: string;
+    };
+  };
+}
+
 export interface ShopifyCart {
   cost: CartCost;
-  lines: Edges<{
-    id: string;
-    merchandise: CartItem;
-    quantity: number;
-  }>;
+  lines: Edges<CartLineItem>;
   totalQuantity: number;
 }
