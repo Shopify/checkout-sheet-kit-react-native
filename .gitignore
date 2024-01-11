@@ -91,3 +91,7 @@ modules/@shopify/checkout-sheet-kit/android/gradlew.bat
 
 # Sample bundle
 **/index.android.bundle
+
+# Private binary files
+*.jks
+*.keystore
