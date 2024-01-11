@@ -1,6 +1,7 @@
  #!/usr/bin/env bash
 
-set -ex
+set -e
+set +x
 
 cd sample
 
@@ -12,5 +13,9 @@ npx react-native bundle --platform android \
 
 npx react-native build-android --mode=release
 
-echo "Run \"cd sample && npx react-native run-android --variant=release\" to test the release build"
-echo "Output bundle location: sample/android/app/build/outputs/bundle/release/app-release.aab"
+echo "\n\nTo test the production release build locally, run the following"
+echo "\tcd sample && npx react-native run-android --mode=release"
+echo "\n\nNote that you may need to first uninstall the previous version of the app."
+echo "\nTo do so, run:"
+echo "\tadb uninstall com.shopify.checkoutkitreactnative"
+echo "\nOutput bundle location: \"sample/android/app/build/outputs/bundle/release/app-release.aab\""
