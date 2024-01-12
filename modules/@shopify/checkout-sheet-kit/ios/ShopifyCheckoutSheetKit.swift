@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import Foundation
-import ShopifyCheckoutKit
+import ShopifyCheckoutSheetKit
 import UIKit
 import React
 
@@ -63,7 +63,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		}
 	}
 
-	func checkoutDidFail(error checkoutError: ShopifyCheckoutKit.CheckoutError) {
+	func checkoutDidFail(error checkoutError: ShopifyCheckoutSheetKit.CheckoutError) {
 		if hasListeners {
 			let errorInfo: [String: Any] = [
 				"message": checkoutError.localizedDescription
@@ -83,7 +83,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
 	@objc override func constantsToExport() -> [AnyHashable: Any]! {
 		return [
-			"version": ShopifyCheckoutKit.version
+			"version": ShopifyCheckoutSheetKit.version
 		]
 	}
 
@@ -92,7 +92,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 			let sharedDelegate = UIApplication.shared.delegate
 
 			if let url = URL(string: checkoutURL), let rootViewController = sharedDelegate?.window??.rootViewController {
-				ShopifyCheckoutKit.present(checkout: url, from: rootViewController, delegate: self)
+				ShopifyCheckoutSheetKit.present(checkout: url, from: rootViewController, delegate: self)
 			}
 		}
 	}
@@ -100,23 +100,23 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	@objc func preload(_ checkoutURL: String) {
 		DispatchQueue.main.async {
 			if let url = URL(string: checkoutURL) {
-				ShopifyCheckoutKit.preload(checkout: url)
+				ShopifyCheckoutSheetKit.preload(checkout: url)
 			}
 		}
 	}
 
-	private func getColorScheme(_ colorScheme: String) -> ShopifyCheckoutKit.Configuration.ColorScheme {
+	private func getColorScheme(_ colorScheme: String) -> ShopifyCheckoutSheetKit.Configuration.ColorScheme {
 		switch colorScheme {
 		case "web_default":
-			return ShopifyCheckoutKit.Configuration.ColorScheme.web
+			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.web
 		case "automatic":
-			return ShopifyCheckoutKit.Configuration.ColorScheme.automatic
+			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.automatic
 		case "light":
-			return ShopifyCheckoutKit.Configuration.ColorScheme.light
+			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.light
 		case "dark":
-			return ShopifyCheckoutKit.Configuration.ColorScheme.dark
+			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.dark
 		default:
-			return ShopifyCheckoutKit.Configuration.ColorScheme.automatic
+			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.automatic
 		}
 	}
 
@@ -125,26 +125,26 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		let iosConfig = colorConfig?["ios"] as? [String: String]
 
 		if let preloading = configuration["preloading"] as? Bool {
-			ShopifyCheckoutKit.configuration.preloading.enabled = preloading
+			ShopifyCheckoutSheetKit.configuration.preloading.enabled = preloading
 		}
 
 		if let colorScheme = configuration["colorScheme"] as? String {
-			ShopifyCheckoutKit.configuration.colorScheme = getColorScheme(colorScheme)
+			ShopifyCheckoutSheetKit.configuration.colorScheme = getColorScheme(colorScheme)
 		}
 
 		if let spinnerColorHex = iosConfig?["spinnerColor"] as? String {
-			ShopifyCheckoutKit.configuration.spinnerColor = UIColor(hex: spinnerColorHex)
+			ShopifyCheckoutSheetKit.configuration.spinnerColor = UIColor(hex: spinnerColorHex)
 		}
 
 		if let backgroundColorHex = iosConfig?["backgroundColor"] as? String {
-			ShopifyCheckoutKit.configuration.backgroundColor = UIColor(hex: backgroundColorHex)
+			ShopifyCheckoutSheetKit.configuration.backgroundColor = UIColor(hex: backgroundColorHex)
     }
 	}
 
 	@objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
 		let config: [String: Any] = [
-			"preloading": ShopifyCheckoutKit.configuration.preloading.enabled,
-			"colorScheme": ShopifyCheckoutKit.configuration.colorScheme.rawValue
+			"preloading": ShopifyCheckoutSheetKit.configuration.preloading.enabled,
+			"colorScheme": ShopifyCheckoutSheetKit.configuration.colorScheme.rawValue
 		]
 
 		resolve(config)

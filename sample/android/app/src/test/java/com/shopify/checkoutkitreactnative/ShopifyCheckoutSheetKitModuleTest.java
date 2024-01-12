@@ -4,7 +4,7 @@ import androidx.activity.ComponentActivity;
 
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.shopify.checkoutkit.ShopifyCheckoutKit;
+import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
 import com.shopify.reactnative.checkoutsheetkit.ShopifyCheckoutSheetKitModule;
 
 import org.junit.Before;
@@ -43,27 +43,29 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   @Test
   public void callsPresentWithCheckoutURL() {
-    try (MockedStatic<ShopifyCheckoutKit> mockedShopifyCheckoutKit = Mockito.mockStatic(ShopifyCheckoutKit.class)) {
+    try (MockedStatic<ShopifyCheckoutSheetKit> mockedShopifyCheckoutSheetKit = Mockito
+        .mockStatic(ShopifyCheckoutSheetKit.class)) {
       String checkoutUrl = "https://shopify.com";
       shopifyCheckoutSheetKitModule.present(checkoutUrl);
 
       verify(mockComponentActivity).runOnUiThread(runnableCaptor.capture());
       runnableCaptor.getValue().run();
 
-      mockedShopifyCheckoutKit.verify(() -> {
-        ShopifyCheckoutKit.present(eq(checkoutUrl), any(), any());
+      mockedShopifyCheckoutSheetKit.verify(() -> {
+        ShopifyCheckoutSheetKit.present(eq(checkoutUrl), any(), any());
       });
     }
   }
 
   @Test
   public void callsPreloadWithCheckoutURL() {
-    try (MockedStatic<ShopifyCheckoutKit> mockedShopifyCheckoutKit = Mockito.mockStatic(ShopifyCheckoutKit.class)) {
+    try (MockedStatic<ShopifyCheckoutSheetKit> mockedShopifyCheckoutSheetKit = Mockito
+        .mockStatic(ShopifyCheckoutSheetKit.class)) {
       String checkoutUrl = "https://shopify.com";
       shopifyCheckoutSheetKitModule.preload(checkoutUrl);
 
-      mockedShopifyCheckoutKit.verify(() -> {
-        ShopifyCheckoutKit.preload(eq(checkoutUrl), any());
+      mockedShopifyCheckoutSheetKit.verify(() -> {
+        ShopifyCheckoutSheetKit.preload(eq(checkoutUrl), any());
       });
     }
   }

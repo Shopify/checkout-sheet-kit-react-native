@@ -23,29 +23,29 @@
 
 import Foundation
 import XCTest
-@testable import ShopifyCheckoutKit
+@testable import ShopifyCheckoutSheetKit
 @testable import RNShopifyCheckoutSheetKit
 
-class ShopifyCheckoutKitTests: XCTestCase {
-  private var shopifyCheckoutKit: RCTShopifyCheckoutSheetKit!
+class ShopifyCheckoutSheetKitTests: XCTestCase {
+  private var shopifyCheckoutSheetKit: RCTShopifyCheckoutSheetKit!
 
   override func setUp() {
     super.setUp()
-    shopifyCheckoutKit = getShopifyCheckoutKit()
-    resetShopifyCheckoutKitDefaults()
+    shopifyCheckoutSheetKit = getShopifyCheckoutSheetKit()
+    resetShopifyCheckoutSheetKitDefaults()
   }
 
   override func tearDown() {
-    shopifyCheckoutKit = nil
+    shopifyCheckoutSheetKit = nil
     super.tearDown()
   }
 
-  private func resetShopifyCheckoutKitDefaults() {
-    ShopifyCheckoutKit.configuration.preloading = Configuration.Preloading(enabled: true)
-    ShopifyCheckoutKit.configuration.colorScheme = .automatic
+  private func resetShopifyCheckoutSheetKitDefaults() {
+    ShopifyCheckoutSheetKit.configuration.preloading = Configuration.Preloading(enabled: true)
+    ShopifyCheckoutSheetKit.configuration.colorScheme = .automatic
   }
 
-  private func getShopifyCheckoutKit() -> RCTShopifyCheckoutSheetKit {
+  private func getShopifyCheckoutSheetKit() -> RCTShopifyCheckoutSheetKit {
     return RCTShopifyCheckoutSheetKit()
   }
 
@@ -53,7 +53,7 @@ class ShopifyCheckoutKitTests: XCTestCase {
   func testReturnsDefaultConfig() {
     // Call getConfig and capture the result
     var result: [String: Any]?
-    shopifyCheckoutKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
 
     // Verify that getConfig returned the expected result
     XCTAssertEqual(result?["preloading"] as? Bool, true)
@@ -73,12 +73,12 @@ class ShopifyCheckoutKitTests: XCTestCase {
       ]
     ]
 
-    shopifyCheckoutKit.setConfig(configuration)
+    shopifyCheckoutSheetKit.setConfig(configuration)
 
-    XCTAssertTrue(ShopifyCheckoutKit.configuration.preloading.enabled)
-    XCTAssertEqual(ShopifyCheckoutKit.configuration.colorScheme, .dark)
-    XCTAssertEqual(ShopifyCheckoutKit.configuration.spinnerColor, UIColor(hex: "#FF0000"))
-    XCTAssertEqual(ShopifyCheckoutKit.configuration.backgroundColor, UIColor(hex: "#0000FF"))
+    XCTAssertTrue(ShopifyCheckoutSheetKit.configuration.preloading.enabled)
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.colorScheme, .dark)
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.spinnerColor, UIColor(hex: "#FF0000"))
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.backgroundColor, UIColor(hex: "#0000FF"))
   }
 
   func testConfigureWithPartialConfig() {
@@ -86,9 +86,9 @@ class ShopifyCheckoutKitTests: XCTestCase {
       "preloading": false
     ]
 
-    shopifyCheckoutKit.setConfig(configuration)
+    shopifyCheckoutSheetKit.setConfig(configuration)
 
-    XCTAssertFalse(ShopifyCheckoutKit.configuration.preloading.enabled)
+    XCTAssertFalse(ShopifyCheckoutSheetKit.configuration.preloading.enabled)
   }
 
   func testConfigureWithInvalidColors() {
@@ -101,9 +101,9 @@ class ShopifyCheckoutKitTests: XCTestCase {
     ]
 
     let defaultColorFallback = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
-    shopifyCheckoutKit.setConfig(configuration)
+    shopifyCheckoutSheetKit.setConfig(configuration)
 
-    XCTAssertEqual(ShopifyCheckoutKit.configuration.spinnerColor, defaultColorFallback)
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.spinnerColor, defaultColorFallback)
   }
 
   /// checkoutDidComplete

@@ -3875,7 +3875,7 @@ __metadata:
     pod-install: "npm:^0.1.39"
     prettier: "npm:^2.4.1"
     react: "npm:^18.2.0"
-    react-native: "npm:0.72.9"
+    react-native: "npm:0.72.8"
     react-native-dotenv: "npm:^3.4.9"
     react-native-gesture-handler: "npm:^2.14.0"
     react-native-gradle-plugin: "npm:^0.71.19"
@@ -8619,9 +8619,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native@npm:0.72.9":
-  version: 0.72.9
-  resolution: "react-native@npm:0.72.9"
+"react-native@npm:0.72.8":
+  version: 0.72.8
+  resolution: "react-native@npm:0.72.8"
   dependencies:
     "@jest/create-cache-key-function": "npm:^29.2.1"
     "@react-native-community/cli": "npm:11.3.10"
@@ -8664,7 +8664,7 @@ __metadata:
     react: 18.2.0
   bin:
     react-native: cli.js
-  checksum: 031fcb41ca02a75b65e3022d333f25450423357adb314676204e5c325a543b80e623b76fbe18703e08220e765f70bdbfeea4d8d9d9414f36c9185d22a1521eda
+  checksum: fae1ce6c806993e7413b2fc69115941b185c5b39b1223744c1fa3d396f340ec891864ab38f42f3a47a088e641058c9169d95711bd399befd3e7c64c83fd281be
   languageName: node
   linkType: hard
 

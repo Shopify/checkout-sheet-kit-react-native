@@ -91,7 +91,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:1.7.0"
-  implementation("com.shopify:checkout-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
-  debugImplementation("com.shopify:checkout-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
+  implementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
+  debugImplementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
 }
 
