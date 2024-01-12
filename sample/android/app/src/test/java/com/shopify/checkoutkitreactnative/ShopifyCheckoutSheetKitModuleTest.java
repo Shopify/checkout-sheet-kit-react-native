@@ -72,17 +72,17 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   @Test
   public void setsInternalConfig() {
-    assertFalse(ShopifyCheckoutSheetKitModule.checkoutConfig.getPreloading().getEnabled());
+    assertTrue(ShopifyCheckoutSheetKitModule.checkoutConfig.getPreloading().getEnabled());
 
     JavaOnlyMap updatedConfig = new JavaOnlyMap();
-    updatedConfig.putBoolean("preloading", true);
+    updatedConfig.putBoolean("preloading", false);
     updatedConfig.putString("colorScheme", "dark");
     shopifyCheckoutSheetKitModule.setConfig(updatedConfig);
 
     boolean preloadingEnabled = ShopifyCheckoutSheetKitModule.checkoutConfig.getPreloading().getEnabled();
     String colorScheme = ShopifyCheckoutSheetKitModule.checkoutConfig.getColorScheme().getId();
 
-    assertTrue(preloadingEnabled);
+    assertFalse(preloadingEnabled);
     assertEquals(colorScheme, "dark");
   }
 }
