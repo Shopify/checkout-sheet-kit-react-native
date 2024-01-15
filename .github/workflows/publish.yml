@@ -10,8 +10,6 @@ on:
   pull_request:
     types: [opened, synchronize]
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
-
 jobs:
   release:
     name: Release
@@ -25,5 +23,7 @@ jobs:
 
       - name: Prepare release
         run: |
+          yarn module clean
+          yarn module build
           cd modules/@shopify/checkout-sheet-kit
           npm pack --dry-run
