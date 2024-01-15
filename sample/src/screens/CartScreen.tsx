@@ -43,7 +43,7 @@ import {Colors, useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 import {currency} from '../utils';
 
-function CartScreen(): JSX.Element {
+function CartScreen(): React.JSX.Element {
   const ShopifyCheckout = useShopifyCheckoutSheet();
   const [refreshing, setRefreshing] = React.useState(false);
   const {cartId, checkoutURL, totalQuantity, removeFromCart, addingToCart} =
