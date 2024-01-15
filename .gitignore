@@ -76,6 +76,7 @@ sample/ios/Pods/
 .env.development.local
 .env.test.local
 .env.production.local
+**/.xcode.env.local
 
 # Build
 .build
@@ -91,7 +92,6 @@ modules/@shopify/checkout-sheet-kit/android/gradlew.bat
 
 # Sample bundle
 **/index.android.bundle
-.xcode.env.local
 
 # Local gems
 sample/vendor
