@@ -122,10 +122,11 @@ to get a checkoutUrl to pass to the SDK.
 
 To use the library without React context, import the `ShopifyCheckoutSheet`
 class from the package and instantiate it. We recommend to instantiating the
-class at a high level in your application, and exporting it for use throughout
+class at a relatively high level in your application, and exporting it for use throughout
 your app.
 
 ```tsx
+// shopify.ts
 import {ShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 
 export const shopifyCheckout = new ShopifyCheckoutSheet({
@@ -158,10 +159,11 @@ Here's an example of how to get started with Apollo:
 
 ```tsx
 import {ApolloClient, gql, ApolloProvider} from '@apollo/client';
+import {STOREFRONT_NAME, STOREFRONT_ACCESS_TOKEN} from '@env';
 
 // Create a new instance of the ApolloClient
 const client = new ApolloClient({
-  uri: `https://your-storefront.myshopify.com/api/2023-10/graphql.json`,
+  uri: `https://${STOREFRONT_NAME}.myshopify.com/api/2024-01/graphql.json`,
   headers: {
     'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN,
   },
@@ -327,7 +329,7 @@ behavior can be customized via the `colorScheme` property:
 | ----------- | ------- | ------------------------------------------------------------------------------------------------ |
 | `automatic` | ✔       | Alternates between an idiomatic light and dark theme - depending on the users device preference. |
 | `light`     |         | Force the idomatic light theme.                                                                  |
-| `dark`      |         | Force the idomatic light theme.                                                                  |
+| `dark`      |         | Force the idomatic dark theme.                                                                  |
 | `web`       |         | Force your storefront web theme, as rendered by a mobile browser.                                |
 
 #### `colors`
@@ -563,4 +565,4 @@ see [guidelines and instructions](.github/CONTRIBUTING.md). See
 
 ### License
 
-Checkout Kit is provided under an [MIT License](LICENSE).
+Shopify's Checkout Sheet Kit is provided under an [MIT License](LICENSE).
