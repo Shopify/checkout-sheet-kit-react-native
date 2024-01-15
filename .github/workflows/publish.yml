@@ -20,6 +20,7 @@ jobs:
       - name: Prepare release
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+          cp README.md modules/@shopify/checkout-sheet-kit
           yarn module clean
           yarn module build
           cd modules/@shopify/checkout-sheet-kit
