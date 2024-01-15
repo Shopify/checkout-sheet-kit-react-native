@@ -33,7 +33,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.shopify.checkoutkit.*;
+import com.shopify.checkoutsheetkit.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +60,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
-    constants.put("version", ShopifyCheckoutKit.version);
+    constants.put("version", ShopifyCheckoutSheetKit.version);
     return constants;
   }
 
@@ -81,7 +81,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
       Context appContext = getReactApplicationContext();
       CheckoutEventProcessor checkoutEventProcessor = new CustomCheckoutEventProcessor(appContext, this.reactContext);
       currentActivity.runOnUiThread(() -> {
-        ShopifyCheckoutKit.present(checkoutURL, (ComponentActivity) currentActivity,
+        ShopifyCheckoutSheetKit.present(checkoutURL, (ComponentActivity) currentActivity,
             checkoutEventProcessor);
       });
     }
@@ -92,7 +92,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     Activity currentActivity = getCurrentActivity();
 
     if (currentActivity instanceof ComponentActivity) {
-      ShopifyCheckoutKit.preload(checkoutURL, (ComponentActivity) currentActivity);
+      ShopifyCheckoutSheetKit.preload(checkoutURL, (ComponentActivity) currentActivity);
     }
   }
 
@@ -216,7 +216,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   public void setConfig(ReadableMap config) {
     Context context = getReactApplicationContext();
 
-    ShopifyCheckoutKit.configure(configuration -> {
+    ShopifyCheckoutSheetKit.configure(configuration -> {
       if (config.hasKey("preloading")) {
         configuration.setPreloading(new Preloading(config.getBoolean("preloading")));
       }

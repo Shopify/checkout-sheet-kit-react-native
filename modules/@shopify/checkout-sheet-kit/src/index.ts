@@ -35,7 +35,7 @@ import {
   type ShopifyCheckoutSheetKit,
 } from './index.d';
 
-const RNShopifyCheckoutKit = NativeModules.ShopifyCheckoutSheetKit;
+const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
 
 if (!('ShopifyCheckoutSheetKit' in NativeModules)) {
   throw new Error(`
@@ -46,7 +46,7 @@ if (!('ShopifyCheckoutSheetKit' in NativeModules)) {
 
 class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   private static eventEmitter: NativeEventEmitter = new NativeEventEmitter(
-    RNShopifyCheckoutKit,
+    RNShopifyCheckoutSheetKit,
   );
 
   constructor(configuration?: Configuration) {
@@ -55,22 +55,22 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     }
   }
 
-  public readonly version: string = RNShopifyCheckoutKit.version;
+  public readonly version: string = RNShopifyCheckoutSheetKit.version;
 
   public preload(checkoutUrl: string): void {
-    RNShopifyCheckoutKit.preload(checkoutUrl);
+    RNShopifyCheckoutSheetKit.preload(checkoutUrl);
   }
 
   public present(checkoutUrl: string): void {
-    RNShopifyCheckoutKit.present(checkoutUrl);
+    RNShopifyCheckoutSheetKit.present(checkoutUrl);
   }
 
   public async getConfig(): Promise<Configuration> {
-    return RNShopifyCheckoutKit.getConfig();
+    return RNShopifyCheckoutSheetKit.getConfig();
   }
 
   public setConfig(configuration: Configuration): void {
-    RNShopifyCheckoutKit.setConfig(configuration);
+    RNShopifyCheckoutSheetKit.setConfig(configuration);
   }
 
   public addEventListener(

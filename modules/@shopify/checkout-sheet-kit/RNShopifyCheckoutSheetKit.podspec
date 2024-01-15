@@ -15,12 +15,12 @@ Pod::Spec.new do |s|
   s.authors      = package["author"]
 
   s.platforms    = { :ios => "13.0" }
-  s.source       = { :git => "https://github.com/Shopify/checkout-kit-react-native.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/Shopify/checkout-sheet-kit-react-native.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/*.{h,m,mm,swift}"
 
 	s.dependency "React-Core"
-	s.dependency "ShopifyCheckoutKit", "~> 0.8.0"
+	s.dependency "ShopifyCheckoutSheetKit", "~> 0.9"
 
   if fabric_enabled
 		install_modules_dependencies(s)
