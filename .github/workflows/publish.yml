@@ -1,14 +1,10 @@
 name: Publish NPM Package
 
-# on:
-#   release:
-#     types:
-#       - published
-#   workflow_dispatch:
 on:
-  push:
-  pull_request:
-    types: [opened, synchronize]
+  release:
+    types:
+      - published
+  workflow_dispatch:
 
 jobs:
   release:
@@ -26,4 +22,6 @@ jobs:
           yarn module clean
           yarn module build
           cd modules/@shopify/checkout-sheet-kit
-          npm pack --dry-run
+          npm publish --access public
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
