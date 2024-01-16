@@ -21,32 +21,24 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.shopify.reactnative.checkoutsheetkit;
+package com.shopify.reactnative.checkoutsheetkit
 
-import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.ReactPackage
+import com.facebook.react.bridge.NativeModule
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.uimanager.ViewManager
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+class ShopifyCheckoutSheetKitPackage : ReactPackage {
 
-public class ShopifyCheckoutSheetKitPackage implements ReactPackage {
-
-  @Override
-  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Collections.emptyList();
+  override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
+    return emptyList()
   }
 
-  @Override
-  public List<NativeModule> createNativeModules(
-      ReactApplicationContext reactContext) {
-    List<NativeModule> modules = new ArrayList<>();
+  override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
+    val modules = mutableListOf<NativeModule>()
 
-    modules.add(new ShopifyCheckoutSheetKitModule(reactContext));
+    modules.add(ShopifyCheckoutSheetKitModule(reactContext))
 
-    return modules;
+    return modules
   }
-
 }
