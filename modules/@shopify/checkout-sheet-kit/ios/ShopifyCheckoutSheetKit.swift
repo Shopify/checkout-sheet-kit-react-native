@@ -46,7 +46,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	}
 
 	override func supportedEvents() -> [String]! {
-		return ["close", "completed", "error"]
+		return ["close", "completed", "error", "pixel"]
 	}
 
 	override func startObserving() {
@@ -69,6 +69,71 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 				"message": checkoutError.localizedDescription
 			]
 			self.sendEvent(withName: "error", body: errorInfo)
+		}
+	}
+
+	private func mapToGenericEvent(standardEvent: ShopifyCheckoutSheetKit.StandardEvent) -> [String: Any] {
+		let encoder = JSONEncoder()
+
+		do {
+			let jsonData = try encoder.encode(standardEvent)
+			if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+				return jsonObject
+			}
+		} catch {
+			print("Error encoding StandardEvent to JSON object: \(error)")
+		}
+		return [:]
+	}
+
+	private func mapToGenericEvent(customEvent: CustomEvent) -> [String: Any] {
+		guard let eventName = customEvent.name else {
+			print("Invalid custom event: \(customEvent)")
+			return [:]
+		}
+
+		do {
+			switch eventName {
+				case "custom_event":
+					return try decodeAndMap(event: customEvent)
+				default:
+					print("Unknown custom event \(customEvent)")
+			}
+		} catch {
+			print("Failed to map custom event: \(error)")
+		}
+
+		return [:]
+	}
+
+	private func decodeAndMap(event: CustomEvent, decoder: JSONDecoder = JSONDecoder()) throws -> [String: Any] {
+		guard let data = event.customData?.data(using: .utf8) else {
+			throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Invalid data"))
+		}
+		let decodedData = try decoder.decode(CustomEvent.self, from: data)
+
+		let dictionary: [String: Any] = [
+			"context": decodedData.context,
+			"customData": decodedData.customData,
+			"id": decodedData.id,
+			"name": decodedData.name,
+			"timestamp": decodedData.timestamp
+		]
+
+		return dictionary
+	}
+
+	func checkoutDidEmitWebPixelEvent(event: ShopifyCheckoutSheetKit.PixelEvent) {
+		if hasListeners {
+			var genericEvent: [String: Any]
+			switch(event) {
+				case .standardEvent(let standardEvent):
+					genericEvent = mapToGenericEvent(standardEvent: standardEvent)
+				case .customEvent(let customEvent):
+					genericEvent = mapToGenericEvent(customEvent: customEvent)
+			}
+			print("[pixel]", genericEvent)
+			self.sendEvent(withName: "pixel", body: genericEvent)
 		}
 	}
 

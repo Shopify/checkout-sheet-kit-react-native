@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import {EmitterSubscription} from 'react-native';
+import {PixelEvent} from './pixels';
 
 export type Maybe<T> = T | undefined;
 
@@ -113,11 +114,18 @@ export interface CheckoutException {
   message: string;
 }
 
-export type CheckoutEvent = 'close' | 'completed' | 'error';
+export interface Context {
+  document: WebPixelsDocument;
+  navigator: WebPixelsNavigator;
+  window: WebPixelsWindow;
+}
+
+export type CheckoutEvent = 'close' | 'completed' | 'error' | 'pixel';
 
 export type CheckoutEventCallback =
   | (() => void)
-  | ((error: CheckoutException) => void);
+  | ((error: CheckoutException) => void)
+  | ((event: PixelEvent) => void);
 
 function addEventListener(
   event: 'close' | 'completed',
@@ -127,6 +135,11 @@ function addEventListener(
 function addEventListener(
   event: 'error',
   callback: (error: CheckoutException) => void,
+): Maybe<EmitterSubscription>;
+
+function addEventListener(
+  event: 'pixel',
+  callback: (event: PixelEvent) => void,
 ): Maybe<EmitterSubscription>;
 
 function removeEventListeners(event: CheckoutEvent): void;
