@@ -72,57 +72,6 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		}
 	}
 
-	private func mapToGenericEvent(standardEvent: ShopifyCheckoutSheetKit.StandardEvent) -> [String: Any] {
-		let encoder = JSONEncoder()
-
-		do {
-			let jsonData = try encoder.encode(standardEvent)
-			if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
-				return jsonObject
-			}
-		} catch {
-			print("Error encoding StandardEvent to JSON object: \(error)")
-		}
-		return [:]
-	}
-
-	private func mapToGenericEvent(customEvent: CustomEvent) -> [String: Any] {
-		guard let eventName = customEvent.name else {
-			print("Invalid custom event: \(customEvent)")
-			return [:]
-		}
-
-		do {
-			switch eventName {
-				case "custom_event":
-					return try decodeAndMap(event: customEvent)
-				default:
-					print("Unknown custom event \(customEvent)")
-			}
-		} catch {
-			print("Failed to map custom event: \(error)")
-		}
-
-		return [:]
-	}
-
-	private func decodeAndMap(event: CustomEvent, decoder: JSONDecoder = JSONDecoder()) throws -> [String: Any] {
-		guard let data = event.customData?.data(using: .utf8) else {
-			throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Invalid data"))
-		}
-		let decodedData = try decoder.decode(CustomEvent.self, from: data)
-
-		let dictionary: [String: Any] = [
-			"context": decodedData.context,
-			"customData": decodedData.customData,
-			"id": decodedData.id,
-			"name": decodedData.name,
-			"timestamp": decodedData.timestamp
-		]
-
-		return dictionary
-	}
-
 	func checkoutDidEmitWebPixelEvent(event: ShopifyCheckoutSheetKit.PixelEvent) {
 		if hasListeners {
 			var genericEvent: [String: Any]
@@ -209,10 +158,65 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	@objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
 		let config: [String: Any] = [
 			"preloading": ShopifyCheckoutSheetKit.configuration.preloading.enabled,
-			"colorScheme": ShopifyCheckoutSheetKit.configuration.colorScheme.rawValue
+			"colorScheme": ShopifyCheckoutSheetKit.configuration.colorScheme.rawValue,
+			"spinnerColor": ShopifyCheckoutSheetKit.configuration.spinnerColor,
+			"backgroundColor": ShopifyCheckoutSheetKit.configuration.backgroundColor
 		]
 
 		resolve(config)
+	}
+
+	/// MARK - Private
+
+	private func stringToJSON(from value: String?) -> [String: Any]? {
+		guard let data = value?.data(using: .utf8, allowLossyConversion: false) else { return [:] }
+		do {
+			let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any]
+			return jsonObject
+		} catch {
+			print("Failed to convert string to JSON: \(error)", value)
+			return [:]
+		}
+	}
+
+	private func encodeToJSON(from value: Codable) -> [String: Any] {
+		let encoder = JSONEncoder()
+
+		do {
+			let jsonData = try encoder.encode(value)
+			if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+				return jsonObject
+			}
+		} catch {
+			print("Error encoding to JSON object: \(error)")
+		}
+		return [:]
+	}
+
+	private func mapToGenericEvent(standardEvent: ShopifyCheckoutSheetKit.StandardEvent) -> [String: Any] {
+		return encodeToJSON(from: standardEvent)
+	}
+
+	private func mapToGenericEvent(customEvent: CustomEvent) -> [String: Any] {
+		do {
+			return try decodeAndMap(event: customEvent)
+		} catch {
+			print("[debug] Failed to map custom event: \(error)")
+		}
+
+		return [:]
+	}
+
+	private func decodeAndMap(event: CustomEvent, decoder: JSONDecoder = JSONDecoder()) throws -> [String: Any] {
+		let dictionary: [String: Any] = [
+			"context": encodeToJSON(from: event.context),
+			"customData": stringToJSON(from: event.customData),
+			"id": event.id,
+			"name": event.name,
+			"timestamp": event.timestamp
+		]
+
+		return dictionary
 	}
 }
 

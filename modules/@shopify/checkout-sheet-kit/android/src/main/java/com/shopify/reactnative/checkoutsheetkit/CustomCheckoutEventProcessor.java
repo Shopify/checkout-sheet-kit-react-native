@@ -30,9 +30,19 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.JavaOnlyMap;
+import com.shopify.checkoutsheetkit.pixelevents.CustomPixelEvent;
+import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
+import com.shopify.checkoutsheetkit.pixelevents.StandardPixelEvent;
+import com.shopify.checkoutsheetkit.pixelevents.StandardPixelEventData;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.util.Map;
 
 public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
   private ReactContext reactContext;
@@ -49,8 +59,33 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   }
 
   @Override
+  public void onWebPixelEvent(PixelEvent event) {
+    WritableNativeMap eventMap = new WritableNativeMap();
+
+    eventMap.putString("name", event.getName());
+    eventMap.putString("id", event.getId());
+    eventMap.putString("timestamp", event.getTimestamp());
+
+    switch (event.getType()) {
+      case STANDARD:
+        StandardPixelEvent standardEvent = (StandardPixelEvent) event;
+        StandardPixelEventData data = standardEvent.getData();
+        eventMap.putMap("data", objectToWritableMap(standardEvent.getData()));
+        eventMap.putMap("context", objectToWritableMap(standardEvent.getContext()));
+        break;
+      case CUSTOM:
+        CustomPixelEvent customEvent = (CustomPixelEvent) event;
+        eventMap.putMap("data", objectToWritableMap(customEvent.getData()));
+        eventMap.putMap("context", objectToWritableMap(customEvent.getContext()));
+        break;
+    }
+
+    sendEvent(this.reactContext, "pixel", eventMap);
+  }
+
+  @Override
   public void onCheckoutFailed(CheckoutException checkoutError) {
-    JavaOnlyMap error = new JavaOnlyMap();
+    WritableNativeMap error = new WritableNativeMap();
 
     error.putString("message", checkoutError.getErrorDescription());
 
@@ -62,9 +97,21 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
     sendEvent(this.reactContext, "close", null);
   }
 
-  private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+  private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableNativeMap params) {
     reactContext
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit(eventName, params);
+  }
+
+  private WritableMap objectToWritableMap(Object object) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    try {
+      String jsonString = objectMapper.writeValueAsString(object);
+      Map<String, Object> map = objectMapper.readValue(jsonString, Map.class);
+      return new WritableNativeMap(map);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 }
