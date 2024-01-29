@@ -112,7 +112,7 @@ function AppWithContext({children}: PropsWithChildren) {
   useEffect(() => {
     const subscription = shopify.addEventListener('pixel', event => {
       // eslint-disable-next-line no-console
-      console.log('[PixelEvent]', event.name, event);
+      console.log('[PixelEvent]', event?.name, event);
     });
 
     return () => subscription?.remove();

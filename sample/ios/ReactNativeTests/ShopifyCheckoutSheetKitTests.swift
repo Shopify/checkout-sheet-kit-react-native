@@ -170,10 +170,10 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
       XCTAssertEqual(eventBody["id"] as? String, "test")
       XCTAssertEqual(eventBody["name"] as? String, "test")
       XCTAssertEqual(eventBody["timestamp"] as? String, "test")
-      XCTAssertEqual(eventBody["context"] as! [String : [String : String?]], [
+      XCTAssertEqual(eventBody["context"] as! [String: [String: String?]], [
         "document": [
           "characterSet": "utf8",
-          "referrer": "test",
+          "referrer": "test"
         ]
       ])
       XCTAssertNil(eventBody["data"])
@@ -198,13 +198,13 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
       XCTAssertEqual(eventBody["id"] as? String, "test")
       XCTAssertEqual(eventBody["name"] as? String, "test")
       XCTAssertEqual(eventBody["timestamp"] as? String, "test")
-      XCTAssertEqual(eventBody["context"] as! [String : [String : String?]], [
+      XCTAssertEqual(eventBody["context"] as! [String: [String: String?]], [
         "document": [
           "characterSet": "utf8",
-          "referrer": "test",
+          "referrer": "test"
         ]
       ])
-      XCTAssertEqual(eventBody["customData"] as! [String : [String : String]], [
+      XCTAssertEqual(eventBody["customData"] as! [String: [String: String]], [
         "nestedData": [
           "someAttribute": "456"
         ]

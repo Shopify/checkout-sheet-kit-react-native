@@ -75,7 +75,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	func checkoutDidEmitWebPixelEvent(event: ShopifyCheckoutSheetKit.PixelEvent) {
 		if hasListeners {
 			var genericEvent: [String: Any]
-			switch(event) {
+			switch event {
 				case .standardEvent(let standardEvent):
 					genericEvent = mapToGenericEvent(standardEvent: standardEvent)
 				case .customEvent(let customEvent):
@@ -166,13 +166,12 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		resolve(config)
 	}
 
-	/// MARK - Private
+	// MARK: - Private
 
 	private func stringToJSON(from value: String?) -> [String: Any]? {
 		guard let data = value?.data(using: .utf8, allowLossyConversion: false) else { return [:] }
 		do {
-			let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any]
-			return jsonObject
+			return try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any]
 		} catch {
 			print("Failed to convert string to JSON: \(error)", value)
 			return [:]
@@ -208,15 +207,13 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	}
 
 	private func decodeAndMap(event: CustomEvent, decoder: JSONDecoder = JSONDecoder()) throws -> [String: Any] {
-		let dictionary: [String: Any] = [
+		return [
 			"context": encodeToJSON(from: event.context),
 			"customData": stringToJSON(from: event.customData),
 			"id": event.id,
 			"name": event.name,
 			"timestamp": event.timestamp
-		]
-
-		return dictionary
+		] as [String: Any]
 	}
 }
 

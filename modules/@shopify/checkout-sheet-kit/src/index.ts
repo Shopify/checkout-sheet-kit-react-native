@@ -33,7 +33,6 @@ import {
   type CheckoutEventCallback,
   type Configuration,
   type ShopifyCheckoutSheetKit,
-  PixelEventCallback,
 } from './index.d';
 import {type PixelEvent} from './pixels';
 
@@ -80,18 +79,35 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     callback: CheckoutEventCallback,
   ): EmitterSubscription | undefined {
     if (event === 'pixel' && typeof callback === 'function') {
-      const eventHandler = callback as PixelEventCallback;
+      const eventHandler = callback as (data?: PixelEvent) => void;
 
+      /**
+       * Event data can be sent back as either a parsed Pixel Event object or a JSON string.
+       */
       const cb = (eventData: string | PixelEvent) => {
         try {
           if (typeof eventData === 'string') {
-            const parsed = JSON.parse(eventData);
-            eventHandler(parsed as PixelEvent);
+            try {
+              const parsed = JSON.parse(eventData);
+              eventHandler(parsed as PixelEvent);
+            } catch (error) {
+              throw new WebPixelsParseError(
+                'Failed to parse Web Pixel event data.',
+                {
+                  cause: 'Invalid JSON',
+                },
+              );
+            }
           } else if (eventData && typeof eventData === 'object') {
             eventHandler(eventData);
           }
         } catch (error) {
-          eventHandler(eventData);
+          throw new WebPixelsParseError(
+            'Failed to parse Web Pixel event data.',
+            {
+              cause: 'Unknown',
+            },
+          );
         }
       };
       return ShopifyCheckoutSheet.eventEmitter.addListener(event, cb);
@@ -102,6 +118,20 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   public removeEventListeners(event: CheckoutEvent) {
     ShopifyCheckoutSheet.eventEmitter.removeAllListeners(event);
+  }
+}
+
+export class WebPixelsParseError extends Error {
+  constructor(
+    message?: string | undefined,
+    options?: ErrorOptions | undefined,
+  ) {
+    super(message, options);
+    this.name = 'WebPixelsParseError';
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, WebPixelsParseError);
+    }
   }
 }
 
