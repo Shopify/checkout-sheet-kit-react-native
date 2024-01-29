@@ -1,19 +1,10 @@
-# Shopify Checkout Sheet Kit - React Native (Developer Preview)
+# Shopify Checkout Sheet Kit - React Native
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/LICENSE)
 
 ![image](https://github.com/Shopify/checkout-sheet-kit-react-native/assets/2034704/73246cc6-bd39-4130-a7df-69b06907b897)
 
-
-**Shopify Checkout Sheet Kit** is a Native Module (currently in
-[Developer Preview](https://shopify.dev/docs/api/release-notes/developer-previews))
-that enables React Native apps to provide the world’s highest converting,
-customizable, one-page checkout within the app. The presented experience is a
-fully-featured checkout that preserves all of the store customizations: Checkout
-UI extensions, Functions, branding, and more. It also provides platform
-idiomatic defaults such as support for light and dark mode, and convenient
-developer APIs to embed, customize, and follow the lifecycle of the checkout
-experience.
+**Shopify Checkout Sheet Kit** is a Native Module that enables React Native apps to provide the world’s highest converting, customizable, one-page checkout within the app. The presented experience is a fully-featured checkout that preserves all of the store customizations: Checkout UI extensions, Functions, branding, and more. It also provides platform idiomatic defaults such as support for light and dark mode, and convenient developer APIs to embed, customize, and follow the lifecycle of the checkout experience.
 
 Check out our blog to
 [learn how and why we built the Shopify Checkout Sheet Kit](https://www.shopify.com/partners/blog/mobile-checkout-sdks-for-ios-and-android).
