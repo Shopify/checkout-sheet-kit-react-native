@@ -72,7 +72,8 @@
     "extends": "@react-native",
     "rules": {
       "@typescript-eslint/no-shadow": "off",
-      "no-console": "error"
+      "no-console": "error",
+      "no-dupe-class-members": "off"
     }
   },
   "packageManager": "yarn@4.0.2",

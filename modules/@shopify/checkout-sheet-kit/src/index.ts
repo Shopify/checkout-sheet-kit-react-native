@@ -33,7 +33,9 @@ import {
   type CheckoutEventCallback,
   type Configuration,
   type ShopifyCheckoutSheetKit,
+  PixelEventCallback,
 } from './index.d';
+import {type PixelEvent} from './pixels';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
 
@@ -74,10 +76,28 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   }
 
   public addEventListener(
-    eventName: CheckoutEvent,
+    event: CheckoutEvent,
     callback: CheckoutEventCallback,
   ): EmitterSubscription | undefined {
-    return ShopifyCheckoutSheet.eventEmitter.addListener(eventName, callback);
+    if (event === 'pixel' && typeof callback === 'function') {
+      const eventHandler = callback as PixelEventCallback;
+
+      const cb = (eventData: string | PixelEvent) => {
+        try {
+          if (typeof eventData === 'string') {
+            const parsed = JSON.parse(eventData);
+            eventHandler(parsed as PixelEvent);
+          } else if (eventData && typeof eventData === 'object') {
+            eventHandler(eventData);
+          }
+        } catch (error) {
+          eventHandler(eventData);
+        }
+      };
+      return ShopifyCheckoutSheet.eventEmitter.addListener(event, cb);
+    } else {
+      return ShopifyCheckoutSheet.eventEmitter.addListener(event, callback);
+    }
   }
 
   public removeEventListeners(event: CheckoutEvent) {

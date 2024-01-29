@@ -122,10 +122,14 @@ export interface Context {
 
 export type CheckoutEvent = 'close' | 'completed' | 'error' | 'pixel';
 
+export type PixelEventCallback = (event: string | PixelEvent) => void;
+
+export type CheckoutExceptionCallback = (error: CheckoutException) => void;
+
 export type CheckoutEventCallback =
   | (() => void)
-  | ((error: CheckoutException) => void)
-  | ((event: PixelEvent) => void);
+  | CheckoutExceptionCallback
+  | PixelEventCallback;
 
 function addEventListener(
   event: 'close' | 'completed',
