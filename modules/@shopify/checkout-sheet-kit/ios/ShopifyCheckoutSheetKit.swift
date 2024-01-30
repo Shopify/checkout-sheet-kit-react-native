@@ -81,7 +81,6 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 				case .customEvent(let customEvent):
 					genericEvent = mapToGenericEvent(customEvent: customEvent)
 			}
-			print("[pixel]", genericEvent)
 			self.sendEvent(withName: "pixel", body: genericEvent)
 		}
 	}
