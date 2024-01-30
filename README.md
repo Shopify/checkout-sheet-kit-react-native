@@ -506,12 +506,14 @@ App developers can use
 [lifecycle events](#monitoring-the-lifecycle-of-a-checkout-session) to monitor
 and log the status of a checkout session.
 
-To safeguard user privacy, Web Pixel events will not be dispatched from within
-the Checkout webview. Instead, these events will be relayed back to your
-application through the checkoutDidEmitWebPixelEvent delegate hook. The
-responsibility then falls on the application developer to ensure adherence to
-Apple privacy protocols before disseminating these events to third-party
-providers.
+\*\*For behavioural monitoring,
+[standard](https://shopify.dev/docs/api/web-pixels-api/standard-events) and
+[custom](https://shopify.dev/docs/api/web-pixels-api#custom-web-pixels) Web
+Pixel events will be relayed back to your application through the `"pixel"`
+event listener. The responsibility then falls on the application developer to
+ensure adherence to Apple's privacy policy and local regulations like GDPR and
+ePrivacy directive before disseminating these events to first-party and
+third-party systems.
 
 _Note that you will likely need to augment these events with customer/session
 information derived from app state._
