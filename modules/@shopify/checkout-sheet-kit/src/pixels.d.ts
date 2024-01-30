@@ -45,11 +45,11 @@ export interface StandardEventData {
 export interface CustomEvent {
   context?: Context;
   customData?: string;
-  // The ID of the customer event
+  // The ID of the event
   id?: string;
-  // The name of the customer event
+  // The name of the event
   name?: string;
-  // The timestamp of when the customer event occurred, in [ISO
+  // The timestamp of when the event occurred, in [ISO
   // 8601](https://en.wikipedia.org/wiki/ISO_8601) format
   timestamp?: string;
 }

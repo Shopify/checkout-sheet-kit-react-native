@@ -114,12 +114,6 @@ export interface CheckoutException {
   message: string;
 }
 
-export interface Context {
-  document: WebPixelsDocument;
-  navigator: WebPixelsNavigator;
-  window: WebPixelsWindow;
-}
-
 export type CheckoutEvent = 'close' | 'completed' | 'error' | 'pixel';
 
 export type PixelEventCallback = (event: PixelEvent) => void;
