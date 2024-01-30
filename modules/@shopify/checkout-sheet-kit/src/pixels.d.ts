@@ -44,7 +44,7 @@ export interface StandardEventData {
 // the `publish` method
 export interface CustomEvent {
   context?: Context;
-  customData?: string;
+  customData?: any;
   // The ID of the event
   id?: string;
   // The name of the event

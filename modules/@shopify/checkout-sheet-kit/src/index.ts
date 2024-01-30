@@ -89,31 +89,47 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
           if (typeof eventData === 'string') {
             try {
               const parsed = JSON.parse(eventData);
+
+              if (
+                parsed.hasOwnProperty('customData') &&
+                typeof parsed.customData === 'string'
+              ) {
+                try {
+                  parsed.customData = JSON.parse(parsed.customData);
+                } catch {}
+              }
               eventHandler(parsed as PixelEvent);
             } catch (error) {
-              throw new WebPixelsParseError(
-                'Failed to parse Web Pixel event data.',
+              const parseError = new WebPixelsParseError(
+                'Failed to parse Web Pixel event data: Invalid JSON',
                 {
                   cause: 'Invalid JSON',
                 },
               );
+              // eslint-disable-next-line no-console
+              console.error(parseError);
             }
           } else if (eventData && typeof eventData === 'object') {
             eventHandler(eventData);
           }
         } catch (error) {
-          throw new WebPixelsParseError(
-            'Failed to parse Web Pixel event data.',
+          const parseError = new WebPixelsParseError(
+            'Failed to parse Web Pixel event data',
             {
               cause: 'Unknown',
             },
           );
+          // eslint-disable-next-line no-console
+          console.error(parseError);
         }
       };
+
+      // Web Pixel event specific handler
       return ShopifyCheckoutSheet.eventEmitter.addListener(event, cb);
-    } else {
-      return ShopifyCheckoutSheet.eventEmitter.addListener(event, callback);
     }
+
+    // Default handler for all non-pixel events
+    return ShopifyCheckoutSheet.eventEmitter.addListener(event, callback);
   }
 
   public removeEventListeners(event: CheckoutEvent) {

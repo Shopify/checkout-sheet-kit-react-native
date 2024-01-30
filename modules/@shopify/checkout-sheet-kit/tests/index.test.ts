@@ -53,6 +53,11 @@ jest.mock('react-native', () => {
   };
 });
 
+global.console = {
+  ...global.console,
+  error: jest.fn(),
+};
+
 describe('ShopifyCheckoutSheetKit', () => {
   // @ts-expect-error "eventEmitter is private"
   const eventEmitter = ShopifyCheckoutSheet.eventEmitter;
@@ -162,7 +167,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       expect(callback).toHaveBeenCalledWith({someAttribute: 123});
     });
 
-    it('throws if the web pixel event contains invalid JSON data', () => {
+    it('parses custom web pixel event data', () => {
       const instance = new ShopifyCheckoutSheet();
       const eventName = 'pixel';
       const callback = jest.fn();
@@ -175,9 +180,61 @@ describe('ShopifyCheckoutSheetKit', () => {
         'pixel',
         expect.any(Function),
       );
-      expect(() => eventEmitter.emit('pixel', '{"someAttribute": 123')).toThrow(
-        WebPixelsParseError,
+      eventEmitter.emit(
+        'pixel',
+        JSON.stringify({
+          someAttribute: 123,
+          customData: JSON.stringify({valid: true}),
+        }),
       );
+      expect(callback).toHaveBeenCalledWith({
+        someAttribute: 123,
+        customData: {valid: true},
+      });
+    });
+
+    it('fails gracefully if custom event data cannot be parsed', () => {
+      const instance = new ShopifyCheckoutSheet();
+      const eventName = 'pixel';
+      const callback = jest.fn();
+      instance.addEventListener(eventName, callback);
+      NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        eventName,
+        callback,
+      );
+      expect(eventEmitter.addListener).toHaveBeenCalledWith(
+        'pixel',
+        expect.any(Function),
+      );
+      eventEmitter.emit(
+        'pixel',
+        JSON.stringify({
+          someAttribute: 123,
+          customData: 'Invalid JSON',
+        }),
+      );
+      expect(callback).toHaveBeenCalledWith({
+        someAttribute: 123,
+        customData: 'Invalid JSON',
+      });
+    });
+
+    it('prints an error if the web pixel event data cannot be parsed', () => {
+      const mock = jest.spyOn(global.console, 'error');
+      const instance = new ShopifyCheckoutSheet();
+      const eventName = 'pixel';
+      const callback = jest.fn();
+      instance.addEventListener(eventName, callback);
+      NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        eventName,
+        callback,
+      );
+      expect(eventEmitter.addListener).toHaveBeenCalledWith(
+        'pixel',
+        expect.any(Function),
+      );
+      eventEmitter.emit('pixel', '{"someAttribute": 123');
+      expect(mock).toHaveBeenCalledWith(expect.any(WebPixelsParseError));
     });
   });
 
