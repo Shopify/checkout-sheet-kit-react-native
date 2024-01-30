@@ -24,24 +24,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 package com.shopify.reactnative.checkoutsheetkit;
 
 import android.content.Context;
-
+import android.util.Log;
 import androidx.annotation.NonNull;
-
 import com.shopify.checkoutsheetkit.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.bridge.WritableMap;
 import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
-
-import org.jetbrains.annotations.NotNull;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.jetbrains.annotations.Nullable;
-
 import java.io.IOException;
 
 public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
@@ -65,6 +56,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
       String data = mapper.writeValueAsString(event);
       sendPixelEvent(this.reactContext, data);
     } catch (IOException e) {
+      Log.e("ShopifyCheckoutSheetKit", "Error processing pixel event", e);
       e.printStackTrace();
     }
   }
