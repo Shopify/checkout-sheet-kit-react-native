@@ -158,7 +158,15 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
   func testCheckoutDidEmitStandardWebPixelEvent() {
     let mock = mockSendEvent(eventName: "pixel")
 
-    let context = Context(document: WebPixelsDocument(characterSet: "utf8", location: nil, referrer: "test", title: nil), navigator: nil, window: nil)
+    let context = Context(
+      document: WebPixelsDocument(
+        characterSet: "utf8",
+        location: nil,
+        referrer: "test",
+        title: nil),
+      navigator: nil,
+      window: nil
+    )
     let event = StandardEvent(context: context, id: "test", name: "test", timestamp: "test", data: nil)
     let pixelEvent = PixelEvent.standardEvent(event)
 
@@ -170,6 +178,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
       XCTAssertEqual(eventBody["id"] as? String, "test")
       XCTAssertEqual(eventBody["name"] as? String, "test")
       XCTAssertEqual(eventBody["timestamp"] as? String, "test")
+      // swiftlint:disable:next force_cast
       XCTAssertEqual(eventBody["context"] as! [String: [String: String?]], [
         "document": [
           "characterSet": "utf8",
@@ -185,7 +194,15 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
   func testCheckoutDidEmitCustomWebPixelEvent() {
     let mock = mockSendEvent(eventName: "pixel")
 
-    let context = Context(document: WebPixelsDocument(characterSet: "utf8", location: nil, referrer: "test", title: nil), navigator: nil, window: nil)
+    let context = Context(
+      document: WebPixelsDocument(
+        characterSet: "utf8",
+        location: nil,
+        referrer: "test",
+        title: nil),
+      navigator: nil,
+      window: nil
+    )
     let customData = "{\"nestedData\": {\"someAttribute\": \"456\"}}"
     let event = CustomEvent(context: context, customData: customData, id: "test", name: "test", timestamp: "test")
     let pixelEvent = PixelEvent.customEvent(event)
@@ -198,12 +215,14 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
       XCTAssertEqual(eventBody["id"] as? String, "test")
       XCTAssertEqual(eventBody["name"] as? String, "test")
       XCTAssertEqual(eventBody["timestamp"] as? String, "test")
+      // swiftlint:disable:next force_cast
       XCTAssertEqual(eventBody["context"] as! [String: [String: String?]], [
         "document": [
           "characterSet": "utf8",
           "referrer": "test"
         ]
       ])
+      // swiftlint:disable:next force_cast
       XCTAssertEqual(eventBody["customData"] as! [String: [String: String]], [
         "nestedData": [
           "someAttribute": "456"
