@@ -46,7 +46,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
   @Override
   public void onCheckoutCompleted() {
-    sendEvent(this.reactContext, "completed", null);
+    sendEvent("completed", null);
   }
 
   @Override
@@ -54,7 +54,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
     try {
       ObjectMapper mapper = new ObjectMapper();
       String data = mapper.writeValueAsString(event);
-      sendPixelEvent(this.reactContext, data);
+      sendPixelEvent(data);
     } catch (IOException e) {
       Log.e("ShopifyCheckoutSheetKit", "Error processing pixel event", e);
       e.printStackTrace();
@@ -67,21 +67,21 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
     error.putString("message", checkoutError.getErrorDescription());
 
-    sendEvent(this.reactContext, "error", error);
+    sendEvent("error", error);
   }
 
   @Override
   public void onCheckoutCanceled() {
-    sendEvent(this.reactContext, "close", null);
+    sendEvent("close", null);
   }
 
-  private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableNativeMap params) {
+  private void sendEvent(String eventName, @Nullable WritableNativeMap params) {
     reactContext
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit(eventName, params);
   }
 
-  private void sendPixelEvent(ReactContext reactContext, String data) {
+  private void sendPixelEvent(String data) {
     reactContext
       .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
       .emit("pixel", data);

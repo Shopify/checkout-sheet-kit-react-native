@@ -120,16 +120,16 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
 	private func getColorScheme(_ colorScheme: String) -> ShopifyCheckoutSheetKit.Configuration.ColorScheme {
 		switch colorScheme {
-		case "web_default":
-			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.web
-		case "automatic":
-			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.automatic
-		case "light":
-			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.light
-		case "dark":
-			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.dark
-		default:
-			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.automatic
+			case "web_default":
+				return ShopifyCheckoutSheetKit.Configuration.ColorScheme.web
+			case "automatic":
+				return ShopifyCheckoutSheetKit.Configuration.ColorScheme.automatic
+			case "light":
+				return ShopifyCheckoutSheetKit.Configuration.ColorScheme.light
+			case "dark":
+				return ShopifyCheckoutSheetKit.Configuration.ColorScheme.dark
+			default:
+				return ShopifyCheckoutSheetKit.Configuration.ColorScheme.automatic
 		}
 	}
 
@@ -151,7 +151,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
 		if let backgroundColorHex = iosConfig?["backgroundColor"] as? String {
 			ShopifyCheckoutSheetKit.configuration.backgroundColor = UIColor(hex: backgroundColorHex)
-    }
+		}
 	}
 
 	@objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
@@ -192,7 +192,15 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	}
 
 	private func mapToGenericEvent(standardEvent: ShopifyCheckoutSheetKit.StandardEvent) -> [String: Any] {
-		return encodeToJSON(from: standardEvent)
+		let encoded = encodeToJSON(from: standardEvent)
+		return [
+			"context": encoded["context"],
+			"data": encoded["data"],
+			"id": encoded["id"],
+			"name": encoded["name"],
+			"timestamp": encoded["timestamp"],
+			"type": "STANDARD"
+		] as [String: Any]
 	}
 
 	private func mapToGenericEvent(customEvent: CustomEvent) -> [String: Any] {
@@ -211,7 +219,8 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 			"customData": stringToJSON(from: event.customData),
 			"id": event.id,
 			"name": event.name,
-			"timestamp": event.timestamp
+			"timestamp": event.timestamp,
+			"type": "CUSTOM"
 		] as [String: Any]
 	}
 }
