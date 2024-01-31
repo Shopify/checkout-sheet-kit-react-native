@@ -1,6 +1,7 @@
 # Shopify Checkout Sheet Kit - React Native
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/LICENSE)
+[![GitHub Release](https://img.shields.io/github/release/shopify/checkout-sheet-kit-react-native.svg?style=flat)]()
 
 ![image](https://github.com/Shopify/checkout-sheet-kit-react-native/assets/2034704/73246cc6-bd39-4130-a7df-69b06907b897)
 
