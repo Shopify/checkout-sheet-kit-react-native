@@ -57,7 +57,6 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
       sendPixelEvent(data);
     } catch (IOException e) {
       Log.e("ShopifyCheckoutSheetKit", "Error processing pixel event", e);
-      e.printStackTrace();
     }
   }
 
