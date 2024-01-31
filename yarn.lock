@@ -3872,7 +3872,7 @@ __metadata:
     babel-jest: "npm:^29.7.0"
     eslint: "npm:^8.19.0"
     jest: "npm:^29.2.1"
-    pod-install: "npm:^0.1.39"
+    pod-install: "npm:^0.2.0"
     prettier: "npm:^2.4.1"
     react: "npm:^18.2.0"
     react-native: "npm:0.72.8"
@@ -8287,12 +8287,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pod-install@npm:^0.1.39":
-  version: 0.1.39
-  resolution: "pod-install@npm:0.1.39"
+"pod-install@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "pod-install@npm:0.2.0"
   bin:
     pod-install: build/index.js
-  checksum: fc5d88a13b6bd58cb9c6336ae0d068f5b7c54d8449f649dd080672583caf701f48bce49a878705ef166b879aaa0068f0a1782061f4cb85c67fff7008dd4ae5fd
+  checksum: 7519dc70ed583f1aaa4c64a26546c530b2f606f740acb1957382b0a35f0e7813a1c4c505b95ef031a53549ee052162c1a2a559fa82f5264808a628f6912fb485
   languageName: node
   linkType: hard
 

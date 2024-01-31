@@ -17,12 +17,16 @@
   "lib/commonjs/index.d.js.map",
   "lib/commonjs/index.js",
   "lib/commonjs/index.js.map",
+  "lib/commonjs/pixels.d.js",
+  "lib/commonjs/pixels.d.js.map",
   "lib/module/context.js",
   "lib/module/context.js.map",
   "lib/module/index.d.js",
   "lib/module/index.d.js.map",
   "lib/module/index.js",
   "lib/module/index.js.map",
+  "lib/module/pixels.d.js",
+  "lib/module/pixels.d.js.map",
   "lib/typescript/src/context.d.ts",
   "lib/typescript/src/context.d.ts.map",
   "lib/typescript/src/index.d.ts",
@@ -30,5 +34,6 @@
   "package.json",
   "src/context.tsx",
   "src/index.d.ts",
-  "src/index.ts"
+  "src/index.ts",
+  "src/pixels.d.ts"
 ]

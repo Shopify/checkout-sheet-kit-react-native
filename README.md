@@ -4,7 +4,13 @@
 
 ![image](https://github.com/Shopify/checkout-sheet-kit-react-native/assets/2034704/73246cc6-bd39-4130-a7df-69b06907b897)
 
-**Shopify Checkout Sheet Kit** is a Native Module that enables React Native apps to provide the world’s highest converting, customizable, one-page checkout within the app. The presented experience is a fully-featured checkout that preserves all of the store customizations: Checkout UI extensions, Functions, branding, and more. It also provides platform idiomatic defaults such as support for light and dark mode, and convenient developer APIs to embed, customize, and follow the lifecycle of the checkout experience.
+**Shopify Checkout Sheet Kit** is a Native Module that enables React Native apps
+to provide the world’s highest converting, customizable, one-page checkout
+within the app. The presented experience is a fully-featured checkout that
+preserves all of the store customizations: Checkout UI extensions, Functions,
+branding, and more. It also provides platform idiomatic defaults such as support
+for light and dark mode, and convenient developer APIs to embed, customize, and
+follow the lifecycle of the checkout experience.
 
 Check out our blog to
 [learn how and why we built the Shopify Checkout Sheet Kit](https://www.shopify.com/partners/blog/mobile-checkout-sdks-for-ios-and-android).
@@ -24,9 +30,10 @@ experiences.
 
 ### Getting Started
 
-Shopify Checkout Sheet Kit is an open-source NPM package. 
+Shopify Checkout Sheet Kit is an open-source NPM package.
 
-Use the following steps to get started with adding it to your React Native application:
+Use the following steps to get started with adding it to your React Native
+application:
 
 #### 1. Install
 
@@ -113,8 +120,8 @@ to get a checkoutUrl to pass to the SDK.
 
 To use the library without React context, import the `ShopifyCheckoutSheet`
 class from the package and instantiate it. We recommend to instantiating the
-class at a relatively high level in your application, and exporting it for use throughout
-your app.
+class at a relatively high level in your application, and exporting it for use
+throughout your app.
 
 ```tsx
 // shopify.ts
@@ -320,7 +327,7 @@ behavior can be customized via the `colorScheme` property:
 | ----------- | ------- | ------------------------------------------------------------------------------------------------ |
 | `automatic` | ✔       | Alternates between an idiomatic light and dark theme - depending on the users device preference. |
 | `light`     |         | Force the idomatic light theme.                                                                  |
-| `dark`      |         | Force the idomatic dark theme.                                                                  |
+| `dark`      |         | Force the idomatic dark theme.                                                                   |
 | `web`       |         | Force your storefront web theme, as rendered by a mobile browser.                                |
 
 #### `colors`
@@ -434,11 +441,12 @@ There are currently 3 checkout events exposed through the Native Module. You can
 subscribe to these events using `addEventListener` and `removeEventListeners`
 methods - available on both the context provider as well as the class instance.
 
-| Name        | Callback                             | Description                                              |
-| ----------- | ------------------------------------ | -------------------------------------------------------- |
-| `close`     | `() => void`                         | Fired when the checkout has been closed.                 |
-| `completed` | `() => void`                         | Fired when the checkout has been successfully completed. |
-| `error`     | `(error: {message: string}) => void` | Fired when a checkout exception has been raised.         |
+| Name        | Callback                             | Description                                                  |
+| ----------- | ------------------------------------ | ------------------------------------------------------------ |
+| `close`     | `() => void`                         | Fired when the checkout has been closed.                     |
+| `completed` | `() => void`                         | Fired when the checkout has been successfully completed.     |
+| `error`     | `(error: {message: string}) => void` | Fired when a checkout exception has been raised.             |
+| `pixel`     | `(event: PixelEvent) => void`        | Fired when a Web Pixel event has been relayed from checkout. |
 
 #### `addEventListener(eventName, callback)`
 
@@ -459,16 +467,30 @@ useEffect(() => {
     // Do something on checkout completion
   });
 
-  const error = shopifyCheckout.addEventListener('error', error => {
-    // Do something on checkout error
-    // console.log(error.message)
-  });
+  const error = shopifyCheckout.addEventListener(
+    'error',
+    (error: CheckoutError) => {
+      // Do something on checkout error
+      // console.log(error.message)
+    },
+  );
+
+  const pixel = shopifyCheckout.addEventListener(
+    'pixel',
+    (event: PixelEvent) => {
+      // Dispatch web pixel events to third-party services
+      if (hasPermissionToTrack) {
+        sendEventToAnalyticsProvider(event);
+      }
+    },
+  );
 
   return () => {
     // It is important to clear the subscription on unmount to prevent memory leaks
     close?.remove();
     completed?.remove();
     error?.remove();
+    pixel?.remove();
   };
 }, [shopifyCheckout]);
 ```
@@ -482,10 +504,24 @@ On the rare occasion that you want to remove all event listeners for a given
 
 App developers can use
 [lifecycle events](#monitoring-the-lifecycle-of-a-checkout-session) to monitor
-and log the status of a checkout session. Web Pixel events are currently not
-executed within rendered checkout. Support for customer events and behavioral
-analytics is under development and will be available prior to the general
-availability of SDK.
+and log the status of a checkout session.
+
+\*\*For behavioural monitoring,
+[standard](https://shopify.dev/docs/api/web-pixels-api/standard-events) and
+[custom](https://shopify.dev/docs/api/web-pixels-api#custom-web-pixels) Web
+Pixel events will be relayed back to your application through the `"pixel"`
+event listener. The responsibility then falls on the application developer to
+ensure adherence to Apple's privacy policy and local regulations like GDPR and
+ePrivacy directive before disseminating these events to first-party and
+third-party systems.
+
+_Note that you will likely need to augment these events with customer/session
+information derived from app state._
+
+_Also note that the customData attribute of CustomPixelEvent can take on any
+shape. As such, this attribute will be returned as a String. Client applications
+should define a custom data type and deserialize the customData string into that
+type._
 
 ### Integrating identity & customer accounts
 
@@ -517,8 +553,7 @@ external identity system and initialize a buyer-aware checkout session.
   "email": "<Customer's email address>",
   "created_at": "<Current timestamp in ISO8601 encoding>",
   "remote_ip": "<Client IP address>",
-  "return_to": "<Checkout URL obtained from Storefront API>",
-  ...
+  "return_to": "<Checkout URL obtained from Storefront API>"
 }
 ```
 

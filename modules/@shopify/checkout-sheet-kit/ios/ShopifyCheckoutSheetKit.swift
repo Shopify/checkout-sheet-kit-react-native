@@ -46,7 +46,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	}
 
 	override func supportedEvents() -> [String]! {
-		return ["close", "completed", "error"]
+		return ["close", "completed", "error", "pixel"]
 	}
 
 	override func startObserving() {
@@ -69,6 +69,19 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 				"message": checkoutError.localizedDescription
 			]
 			self.sendEvent(withName: "error", body: errorInfo)
+		}
+	}
+
+	func checkoutDidEmitWebPixelEvent(event: ShopifyCheckoutSheetKit.PixelEvent) {
+		if hasListeners {
+			var genericEvent: [String: Any]
+			switch event {
+				case .standardEvent(let standardEvent):
+					genericEvent = mapToGenericEvent(standardEvent: standardEvent)
+				case .customEvent(let customEvent):
+					genericEvent = mapToGenericEvent(customEvent: customEvent)
+			}
+			self.sendEvent(withName: "pixel", body: genericEvent)
 		}
 	}
 
@@ -107,16 +120,16 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
 	private func getColorScheme(_ colorScheme: String) -> ShopifyCheckoutSheetKit.Configuration.ColorScheme {
 		switch colorScheme {
-		case "web_default":
-			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.web
-		case "automatic":
-			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.automatic
-		case "light":
-			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.light
-		case "dark":
-			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.dark
-		default:
-			return ShopifyCheckoutSheetKit.Configuration.ColorScheme.automatic
+			case "web_default":
+				return ShopifyCheckoutSheetKit.Configuration.ColorScheme.web
+			case "automatic":
+				return ShopifyCheckoutSheetKit.Configuration.ColorScheme.automatic
+			case "light":
+				return ShopifyCheckoutSheetKit.Configuration.ColorScheme.light
+			case "dark":
+				return ShopifyCheckoutSheetKit.Configuration.ColorScheme.dark
+			default:
+				return ShopifyCheckoutSheetKit.Configuration.ColorScheme.automatic
 		}
 	}
 
@@ -138,16 +151,77 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
 		if let backgroundColorHex = iosConfig?["backgroundColor"] as? String {
 			ShopifyCheckoutSheetKit.configuration.backgroundColor = UIColor(hex: backgroundColorHex)
-    }
+		}
 	}
 
 	@objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
 		let config: [String: Any] = [
 			"preloading": ShopifyCheckoutSheetKit.configuration.preloading.enabled,
-			"colorScheme": ShopifyCheckoutSheetKit.configuration.colorScheme.rawValue
+			"colorScheme": ShopifyCheckoutSheetKit.configuration.colorScheme.rawValue,
+			"spinnerColor": ShopifyCheckoutSheetKit.configuration.spinnerColor,
+			"backgroundColor": ShopifyCheckoutSheetKit.configuration.backgroundColor
 		]
 
 		resolve(config)
+	}
+
+	// MARK: - Private
+
+	private func stringToJSON(from value: String?) -> [String: Any]? {
+		guard let data = value?.data(using: .utf8, allowLossyConversion: false) else { return [:] }
+		do {
+			return try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any]
+		} catch {
+			print("Failed to convert string to JSON: \(error)", value)
+			return [:]
+		}
+	}
+
+	private func encodeToJSON(from value: Codable) -> [String: Any] {
+		let encoder = JSONEncoder()
+
+		do {
+			let jsonData = try encoder.encode(value)
+			if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+				return jsonObject
+			}
+		} catch {
+			print("Error encoding to JSON object: \(error)")
+		}
+		return [:]
+	}
+
+	private func mapToGenericEvent(standardEvent: ShopifyCheckoutSheetKit.StandardEvent) -> [String: Any] {
+		let encoded = encodeToJSON(from: standardEvent)
+		return [
+			"context": encoded["context"],
+			"data": encoded["data"],
+			"id": encoded["id"],
+			"name": encoded["name"],
+			"timestamp": encoded["timestamp"],
+			"type": "STANDARD"
+		] as [String: Any]
+	}
+
+	private func mapToGenericEvent(customEvent: CustomEvent) -> [String: Any] {
+		do {
+			return try decodeAndMap(event: customEvent)
+		} catch {
+			print("[debug] Failed to map custom event: \(error)")
+		}
+
+		return [:]
+	}
+
+	private func decodeAndMap(event: CustomEvent, decoder: JSONDecoder = JSONDecoder()) throws -> [String: Any] {
+		return [
+			"context": encodeToJSON(from: event.context),
+			"customData": stringToJSON(from: event.customData),
+			"id": event.id,
+			"name": event.name,
+			"timestamp": event.timestamp,
+			"type": "CUSTOM"
+		] as [String: Any]
 	}
 }
 

@@ -24,18 +24,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 package com.shopify.reactnative.checkoutsheetkit;
 
 import android.content.Context;
+import android.util.Log;
+import androidx.annotation.NonNull;
 import com.shopify.checkoutsheetkit.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.JavaOnlyMap;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.Nullable;
+import java.io.IOException;
 
 public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
-  private ReactContext reactContext;
+  private final ReactContext reactContext;
 
   public CustomCheckoutEventProcessor(Context context, ReactContext reactContext) {
     super(context);
@@ -45,26 +46,43 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
   @Override
   public void onCheckoutCompleted() {
-    sendEvent(this.reactContext, "completed", null);
+    sendEvent("completed", null);
+  }
+
+  @Override
+  public void onWebPixelEvent(@NonNull PixelEvent event) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      String data = mapper.writeValueAsString(event);
+      sendPixelEvent(data);
+    } catch (IOException e) {
+      Log.e("ShopifyCheckoutSheetKit", "Error processing pixel event", e);
+    }
   }
 
   @Override
   public void onCheckoutFailed(CheckoutException checkoutError) {
-    JavaOnlyMap error = new JavaOnlyMap();
+    WritableNativeMap error = new WritableNativeMap();
 
     error.putString("message", checkoutError.getErrorDescription());
 
-    sendEvent(this.reactContext, "error", error);
+    sendEvent("error", error);
   }
 
   @Override
   public void onCheckoutCanceled() {
-    sendEvent(this.reactContext, "close", null);
+    sendEvent("close", null);
   }
 
-  private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+  private void sendEvent(String eventName, @Nullable WritableNativeMap params) {
     reactContext
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit(eventName, params);
+  }
+
+  private void sendPixelEvent(String data) {
+    reactContext
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+      .emit("pixel", data);
   }
 }

@@ -1,6 +1,6 @@
 /* eslint-disable no-new */
 
-import {ShopifyCheckoutSheet} from '../src';
+import {ShopifyCheckoutSheet, WebPixelsParseError} from '../src';
 import {ColorScheme, type Configuration} from '../src';
 import {NativeModules} from 'react-native';
 
@@ -10,9 +10,23 @@ const config: Configuration = {
 };
 
 jest.mock('react-native', () => {
+  let listeners: (typeof jest.fn)[] = [];
+
   const NativeEventEmitter = jest.fn(() => ({
-    addListener: jest.fn(),
-    removeAllListeners: jest.fn(),
+    addListener: jest.fn((_, callback) => {
+      listeners.push(callback);
+    }),
+    removeAllListeners: jest.fn(() => {
+      listeners = [];
+    }),
+    emit: jest.fn((_, data: any) => {
+      for (const listener of listeners) {
+        listener(data);
+      }
+
+      // clear listeners
+      listeners = [];
+    }),
   }));
 
   const exampleConfig = {
@@ -31,6 +45,7 @@ jest.mock('react-native', () => {
   };
 
   return {
+    _listeners: listeners,
     NativeEventEmitter,
     NativeModules: {
       ShopifyCheckoutSheetKit,
@@ -38,9 +53,22 @@ jest.mock('react-native', () => {
   };
 });
 
+global.console = {
+  ...global.console,
+  error: jest.fn(),
+};
+
 describe('ShopifyCheckoutSheetKit', () => {
+  // @ts-expect-error "eventEmitter is private"
+  const eventEmitter = ShopifyCheckoutSheet.eventEmitter;
+
   afterEach(() => {
     NativeModules.ShopifyCheckoutSheetKit.setConfig.mockReset();
+    NativeModules.ShopifyCheckoutSheetKit.eventEmitter.addListener.mockClear();
+    NativeModules.ShopifyCheckoutSheetKit.eventEmitter.removeAllListeners.mockClear();
+
+    // Clear mock listeners
+    NativeModules._listeners = [];
   });
 
   describe('instantiation', () => {
@@ -116,10 +144,97 @@ describe('ShopifyCheckoutSheetKit', () => {
       const eventName = 'close';
       const callback = jest.fn();
       instance.addEventListener(eventName, callback);
-      expect(
-        // @ts-expect-error
-        ShopifyCheckoutSheet.eventEmitter.addListener,
-      ).toHaveBeenCalledWith(eventName, callback);
+      expect(eventEmitter.addListener).toHaveBeenCalledWith(
+        eventName,
+        callback,
+      );
+    });
+
+    it('parses web pixel event JSON string data', () => {
+      const instance = new ShopifyCheckoutSheet();
+      const eventName = 'pixel';
+      const callback = jest.fn();
+      instance.addEventListener(eventName, callback);
+      NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        eventName,
+        callback,
+      );
+      expect(eventEmitter.addListener).toHaveBeenCalledWith(
+        'pixel',
+        expect.any(Function),
+      );
+      eventEmitter.emit('pixel', JSON.stringify({someAttribute: 123}));
+      expect(callback).toHaveBeenCalledWith({someAttribute: 123});
+    });
+
+    it('parses custom web pixel event data', () => {
+      const instance = new ShopifyCheckoutSheet();
+      const eventName = 'pixel';
+      const callback = jest.fn();
+      instance.addEventListener(eventName, callback);
+      NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        eventName,
+        callback,
+      );
+      expect(eventEmitter.addListener).toHaveBeenCalledWith(
+        'pixel',
+        expect.any(Function),
+      );
+      eventEmitter.emit(
+        'pixel',
+        JSON.stringify({
+          someAttribute: 123,
+          customData: JSON.stringify({valid: true}),
+        }),
+      );
+      expect(callback).toHaveBeenCalledWith({
+        someAttribute: 123,
+        customData: {valid: true},
+      });
+    });
+
+    it('fails gracefully if custom event data cannot be parsed', () => {
+      const instance = new ShopifyCheckoutSheet();
+      const eventName = 'pixel';
+      const callback = jest.fn();
+      instance.addEventListener(eventName, callback);
+      NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        eventName,
+        callback,
+      );
+      expect(eventEmitter.addListener).toHaveBeenCalledWith(
+        'pixel',
+        expect.any(Function),
+      );
+      eventEmitter.emit(
+        'pixel',
+        JSON.stringify({
+          someAttribute: 123,
+          customData: 'Invalid JSON',
+        }),
+      );
+      expect(callback).toHaveBeenCalledWith({
+        someAttribute: 123,
+        customData: 'Invalid JSON',
+      });
+    });
+
+    it('prints an error if the web pixel event data cannot be parsed', () => {
+      const mock = jest.spyOn(global.console, 'error');
+      const instance = new ShopifyCheckoutSheet();
+      const eventName = 'pixel';
+      const callback = jest.fn();
+      instance.addEventListener(eventName, callback);
+      NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        eventName,
+        callback,
+      );
+      expect(eventEmitter.addListener).toHaveBeenCalledWith(
+        'pixel',
+        expect.any(Function),
+      );
+      eventEmitter.emit('pixel', '{"someAttribute": 123');
+      expect(mock).toHaveBeenCalledWith(expect.any(WebPixelsParseError));
     });
   });
 
@@ -129,10 +244,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       instance.addEventListener('close', () => {});
       instance.addEventListener('close', () => {});
       instance.removeEventListeners('close');
-      expect(
-        // @ts-expect-error
-        ShopifyCheckoutSheet.eventEmitter.removeAllListeners,
-      ).toHaveBeenCalledWith('close');
+      expect(eventEmitter.removeAllListeners).toHaveBeenCalledWith('close');
     });
   });
 });

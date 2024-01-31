@@ -34,6 +34,7 @@ import {
   type Configuration,
   type ShopifyCheckoutSheetKit,
 } from './index.d';
+import {type PixelEvent} from './pixels';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
 
@@ -74,14 +75,79 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   }
 
   public addEventListener(
-    eventName: CheckoutEvent,
+    event: CheckoutEvent,
     callback: CheckoutEventCallback,
   ): EmitterSubscription | undefined {
-    return ShopifyCheckoutSheet.eventEmitter.addListener(eventName, callback);
+    if (event === 'pixel' && typeof callback === 'function') {
+      const eventHandler = callback as (data?: PixelEvent) => void;
+
+      /**
+       * Event data can be sent back as either a parsed Pixel Event object or a JSON string.
+       */
+      const cb = (eventData: string | PixelEvent) => {
+        try {
+          if (typeof eventData === 'string') {
+            try {
+              const parsed = JSON.parse(eventData);
+
+              if (
+                parsed.hasOwnProperty('customData') &&
+                typeof parsed.customData === 'string'
+              ) {
+                try {
+                  parsed.customData = JSON.parse(parsed.customData);
+                } catch {}
+              }
+              eventHandler(parsed as PixelEvent);
+            } catch (error) {
+              const parseError = new WebPixelsParseError(
+                'Failed to parse Web Pixel event data: Invalid JSON',
+                {
+                  cause: 'Invalid JSON',
+                },
+              );
+              // eslint-disable-next-line no-console
+              console.error(parseError);
+            }
+          } else if (eventData && typeof eventData === 'object') {
+            eventHandler(eventData);
+          }
+        } catch (error) {
+          const parseError = new WebPixelsParseError(
+            'Failed to parse Web Pixel event data',
+            {
+              cause: 'Unknown',
+            },
+          );
+          // eslint-disable-next-line no-console
+          console.error(parseError);
+        }
+      };
+
+      // Web Pixel event specific handler
+      return ShopifyCheckoutSheet.eventEmitter.addListener(event, cb);
+    }
+
+    // Default handler for all non-pixel events
+    return ShopifyCheckoutSheet.eventEmitter.addListener(event, callback);
   }
 
   public removeEventListeners(event: CheckoutEvent) {
     ShopifyCheckoutSheet.eventEmitter.removeAllListeners(event);
+  }
+}
+
+export class WebPixelsParseError extends Error {
+  constructor(
+    message?: string | undefined,
+    options?: ErrorOptions | undefined,
+  ) {
+    super(message, options);
+    this.name = 'WebPixelsParseError';
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, WebPixelsParseError);
+    }
   }
 }
 

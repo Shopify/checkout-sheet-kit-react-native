@@ -4,8 +4,11 @@ import androidx.activity.ComponentActivity;
 
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
+import com.shopify.checkoutsheetkit.pixelevents.*;
 import com.shopify.reactnative.checkoutsheetkit.ShopifyCheckoutSheetKitModule;
+import com.shopify.reactnative.checkoutsheetkit.CustomCheckoutEventProcessor;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,8 +25,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
+import android.content.Context;
+
 @RunWith(MockitoJUnitRunner.class)
 public class ShopifyCheckoutSheetKitModuleTest {
+  @Mock
+  private Context context;
+
   @Mock
   private ReactApplicationContext mockReactContext;
 
@@ -35,10 +43,24 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   private ShopifyCheckoutSheetKitModule shopifyCheckoutSheetKitModule;
 
+  @Mock
+  private DeviceEventManagerModule.RCTDeviceEventEmitter mockEventEmitter;
+
+  @Mock
+  private PixelEvent mockPixelEvent;
+
+  private CustomCheckoutEventProcessor customCheckoutEventProcessor;
+
+  @Captor
+  private ArgumentCaptor<String> stringCaptor;
+
+
   @Before
   public void setup() {
     when(mockReactContext.getCurrentActivity()).thenReturn(mockComponentActivity);
+    when(mockReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)).thenReturn(mockEventEmitter);
     shopifyCheckoutSheetKitModule = new ShopifyCheckoutSheetKitModule(mockReactContext);
+    customCheckoutEventProcessor = new CustomCheckoutEventProcessor(context, mockReactContext);
   }
 
   @Test
@@ -84,5 +106,43 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     assertFalse(preloadingEnabled);
     assertEquals(colorScheme, "dark");
+  }
+
+  @Test
+  public void sendsStandardPixelEventOnWebPixelEvent() {
+    PixelEvent event = new StandardPixelEvent(
+      "test",
+      "page_viewed",
+      "timestamp",
+      EventType.STANDARD,
+      null,
+      null
+    );
+
+    customCheckoutEventProcessor.onWebPixelEvent(event);
+
+    verify(mockEventEmitter).emit(eq("pixel"), stringCaptor.capture());
+
+    System.out.print(stringCaptor.getValue());
+    assertTrue(stringCaptor.getValue().contains("{\"id\":\"test\",\"name\":\"page_viewed\",\"timestamp\":\"timestamp\",\"type\":\"STANDARD\",\"context\":null,\"data\":null}"));
+  }
+
+  @Test
+  public void sendsCustomPixelEventOnWebPixelEvent() {
+    PixelEvent event = new CustomPixelEvent(
+      "test",
+      "custom",
+      "timestamp",
+      EventType.CUSTOM,
+      null,
+      "\\{\"customAttribute\":123\\}"
+    );
+
+    customCheckoutEventProcessor.onWebPixelEvent(event);
+
+    verify(mockEventEmitter).emit(eq("pixel"), stringCaptor.capture());
+
+    System.out.print(stringCaptor.getValue());
+    assertTrue(stringCaptor.getValue().contains("\"id\":\"test\",\"name\":\"custom\",\"timestamp\":\"timestamp\",\"type\":\"CUSTOM\",\"context\":null,\"customData\":\"\\\\{\\\"customAttribute\\\":123\\\\}\""));
   }
 }

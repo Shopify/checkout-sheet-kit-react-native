@@ -154,6 +154,85 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     }
   }
 
+  /// checkoutDidEmitWebPixelEvent
+  func testCheckoutDidEmitStandardWebPixelEvent() {
+    let mock = mockSendEvent(eventName: "pixel")
+
+    let context = Context(
+      document: WebPixelsDocument(
+        characterSet: "utf8",
+        location: nil,
+        referrer: "test",
+        title: nil),
+      navigator: nil,
+      window: nil
+    )
+    let event = StandardEvent(context: context, id: "test", name: "test", timestamp: "test", data: nil)
+    let pixelEvent = PixelEvent.standardEvent(event)
+
+    mock.startObserving()
+    mock.checkoutDidEmitWebPixelEvent(event: pixelEvent)
+
+    XCTAssertTrue(mock.didSendEvent)
+    if let eventBody = mock.eventBody as? [String: Any] {
+      XCTAssertEqual(eventBody["id"] as? String, "test")
+      XCTAssertEqual(eventBody["name"] as? String, "test")
+      XCTAssertEqual(eventBody["timestamp"] as? String, "test")
+      // swiftlint:disable:next force_cast
+      XCTAssertEqual(eventBody["context"] as! [String: [String: String?]], [
+        "document": [
+          "characterSet": "utf8",
+          "referrer": "test"
+        ]
+      ])
+      XCTAssertNil(eventBody["data"])
+    } else {
+      XCTFail("Failed to parse standard event")
+    }
+  }
+
+  func testCheckoutDidEmitCustomWebPixelEvent() {
+    let mock = mockSendEvent(eventName: "pixel")
+
+    let context = Context(
+      document: WebPixelsDocument(
+        characterSet: "utf8",
+        location: nil,
+        referrer: "test",
+        title: nil),
+      navigator: nil,
+      window: nil
+    )
+    let customData = "{\"nestedData\": {\"someAttribute\": \"456\"}}"
+    let event = CustomEvent(context: context, customData: customData, id: "test", name: "test", timestamp: "test")
+    let pixelEvent = PixelEvent.customEvent(event)
+
+    mock.startObserving()
+    mock.checkoutDidEmitWebPixelEvent(event: pixelEvent)
+
+    XCTAssertTrue(mock.didSendEvent)
+    if let eventBody = mock.eventBody as? [String: Any] {
+      XCTAssertEqual(eventBody["id"] as? String, "test")
+      XCTAssertEqual(eventBody["name"] as? String, "test")
+      XCTAssertEqual(eventBody["timestamp"] as? String, "test")
+      // swiftlint:disable:next force_cast
+      XCTAssertEqual(eventBody["context"] as! [String: [String: String?]], [
+        "document": [
+          "characterSet": "utf8",
+          "referrer": "test"
+        ]
+      ])
+      // swiftlint:disable:next force_cast
+      XCTAssertEqual(eventBody["customData"] as! [String: [String: String]], [
+        "nestedData": [
+          "someAttribute": "456"
+        ]
+      ])
+    } else {
+      XCTFail("Failed to parse custom event")
+    }
+  }
+
   private func mockSendEvent(eventName: String) -> RCTShopifyCheckoutSheetKitMock {
     let mock = RCTShopifyCheckoutSheetKitMock()
     mock.eventName = eventName

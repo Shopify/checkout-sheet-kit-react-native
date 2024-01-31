@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {PropsWithChildren, ReactNode} from 'react';
+import React, {PropsWithChildren, ReactNode, useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -36,6 +36,7 @@ import {
   ColorScheme,
   Configuration,
   ShopifyCheckoutSheetProvider,
+  useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
 import {ConfigProvider} from './context/Config';
 import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
@@ -106,6 +107,17 @@ const createNavigationIcon =
   };
 
 function AppWithContext({children}: PropsWithChildren) {
+  const shopify = useShopifyCheckoutSheet();
+
+  useEffect(() => {
+    const subscription = shopify.addEventListener('pixel', event => {
+      // eslint-disable-next-line no-console
+      console.log('[PixelEvent]', event?.name, event);
+    });
+
+    return () => subscription?.remove();
+  }, [shopify]);
+
   return (
     <ConfigProvider>
       <ApolloProvider client={client}>
