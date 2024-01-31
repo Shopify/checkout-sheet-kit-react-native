@@ -175,6 +175,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
 
     XCTAssertTrue(mock.didSendEvent)
     if let eventBody = mock.eventBody as? [String: Any] {
+      XCTAssertEqual(eventBody["type"] as? String, "STANDARD")
       XCTAssertEqual(eventBody["id"] as? String, "test")
       XCTAssertEqual(eventBody["name"] as? String, "test")
       XCTAssertEqual(eventBody["timestamp"] as? String, "test")
@@ -185,7 +186,6 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
           "referrer": "test"
         ]
       ])
-      XCTAssertNil(eventBody["data"])
     } else {
       XCTFail("Failed to parse standard event")
     }
@@ -212,6 +212,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
 
     XCTAssertTrue(mock.didSendEvent)
     if let eventBody = mock.eventBody as? [String: Any] {
+      XCTAssertEqual(eventBody["type"] as? String, "CUSTOM")
       XCTAssertEqual(eventBody["id"] as? String, "test")
       XCTAssertEqual(eventBody["name"] as? String, "test")
       XCTAssertEqual(eventBody["timestamp"] as? String, "test")
