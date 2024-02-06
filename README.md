@@ -590,6 +590,44 @@ We welcome code contributions, feature requests, and reporting of issues. Please
 see [guidelines and instructions](.github/CONTRIBUTING.md). See
 [Contributing](./CONTRIBUTING.md) for development contribution guidance.
 
+#### Running the sample app
+
+To run the sample app in this repo, first clone the repo and run the following commands at the root of the project directory.
+
+#### Install NPM dependencies
+
+```sh
+yarn
+```
+
+#### Install Cocoapods
+
+```sh
+yarn pod-install sample/ios
+```
+
+#### Build the local module
+
+```sh
+yarn module build
+```
+
+#### Update the dotenv file
+
+Replace the details in the `sample/.env.example` file and rename it to `sample/.env`
+
+```
+# Storefront Details
+STOREFRONT_DOMAIN="YOUR_STORE.myshopify.com"
+STOREFRONT_ACCESS_TOKEN="YOUR_PUBLIC_STOREFRONT_ACCESS_TOKEN"
+```
+
+#### Start the sample app
+
+```sh
+yarn sample start
+```
+
 ### License
 
 Shopify's Checkout Sheet Kit is provided under an [MIT License](LICENSE).
