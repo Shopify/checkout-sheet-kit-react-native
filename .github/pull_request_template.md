@@ -28,4 +28,4 @@
 </details>
 
 > [!TIP] 
-> See the [Contributing documentation](./CONTRIBUTING.md#releasing-a-new-version) for instructions on how to publish a new version of the library.
+> See the [Contributing documentation](https://github.com/shopify/checkout-sheet-kit-react-native/blob/main/.github/CONTRIBUTING.md#releasing-a-new-version) for instructions on how to publish a new version of the library.
