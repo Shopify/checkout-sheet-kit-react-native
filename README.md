@@ -112,7 +112,8 @@ function App() {
 See [Usage with the Storefront API](#usage-with-the-storefront-api) below on how
 to get a checkoutUrl to pass to the SDK.
 
-> Note: The recommended usage of the library is through a
+> [!NOTE]
+> The recommended usage of the library is through a
 > `ShopifyCheckoutSheetProvider` Context provider, but see
 > [Programmatic usage](#programamatic-usage) below for details on how to use the
 > library without React context.
@@ -263,9 +264,10 @@ function App() {
 }
 ```
 
-To help optimize and deliver the best experience the SDK also provides a
-[preloading API](#preloading) that can be used to initialize the checkout
-session in the background and ahead of time.
+> [!TIP]
+> To help optimize and deliver the best experience the SDK also provides a
+> [preloading API](#preloading) that can be used to initialize the checkout
+> session in the background and ahead of time.
 
 ### Configuration
 
@@ -563,9 +565,10 @@ external identity system and initialize a buyer-aware checkout session.
    `checkoutUrl`
 2. Provide the Multipass URL to `present(checkoutUrl)`
 
-_Note: the above JSON omits useful customer attributes that should be provided
-where possible and encryption and signing should be done server-side to ensure
-Multipass keys are kept secret._
+> [!IMPORTANT]
+> The above JSON omits useful customer attributes that should be provided
+> where possible and encryption and signing should be done server-side to ensure
+> Multipass keys are kept secret._
 
 #### Shop Pay
 
