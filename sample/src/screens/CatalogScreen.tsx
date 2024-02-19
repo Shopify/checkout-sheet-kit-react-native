@@ -31,6 +31,7 @@ import {
   Image,
   Pressable,
   ActivityIndicator,
+  Button,
 } from 'react-native';
 
 import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
@@ -42,6 +43,7 @@ import {useCart} from '../context/Cart';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../App';
 import {currency} from '../utils';
+import {Link} from '@react-navigation/native';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CatalogScreen'>;
 
@@ -86,6 +88,9 @@ function CatalogScreen({navigation}: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Pressable>
+        <Link to="/Cart">Open cart</Link>
+      </Pressable>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.scrollView}>

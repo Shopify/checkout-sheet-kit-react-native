@@ -25,6 +25,7 @@ import React, {PropsWithChildren, ReactNode, useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
 import {STOREFRONT_DOMAIN, STOREFRONT_ACCESS_TOKEN} from '@env';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -45,6 +46,7 @@ import {CartProvider, useCart} from './context/Cart';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import {ProductVariant, ShopifyProduct} from '../@types';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const colorScheme = ColorScheme.web;
 
@@ -77,6 +79,7 @@ export type RootStackParamList = {
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const AppStack = createStackNavigator<RootStackParamList>();
 
 export const cache = new InMemoryCache();
 
@@ -160,34 +163,51 @@ function AppWithNavigation() {
   const {totalQuantity} = useCart();
 
   return (
-    <NavigationContainer theme={getNavigationTheme(colorScheme, preference)}>
-      <Tab.Navigator>
-        <Tab.Screen
+    <NavigationContainer>
+      <AppStack.Navigator>
+        <AppStack.Screen
           name="Catalog"
+          options={{headerShown: false}}
           component={CatalogStack}
-          options={{
-            headerShown: false,
-            tabBarIcon: createNavigationIcon('shop'),
-          }}
         />
-        <Tab.Screen
+        <AppStack.Screen
           name="Cart"
           component={CartScreen}
-          options={{
-            tabBarIcon: createNavigationIcon('shopping-bag'),
-            tabBarBadge: totalQuantity > 0 ? totalQuantity : undefined,
-          }}
+          options={{presentation: 'modal'}}
         />
-        <Tab.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{
-            tabBarIcon: createNavigationIcon('cog'),
-          }}
-        />
-      </Tab.Navigator>
+      </AppStack.Navigator>
     </NavigationContainer>
   );
+
+  // return (
+  //   <NavigationContainer theme={getNavigationTheme(colorScheme, preference)}>
+  //     {/* <Tab.Navigator>
+  //       <Tab.Screen
+  //         name="Catalog"
+  //         component={CatalogStack}
+  //         options={{
+  //           headerShown: false,
+  //           tabBarIcon: createNavigationIcon('shop'),
+  //         }}
+  //       />
+  //       <Tab.Screen
+  //         name="Cart"
+  //         component={CartScreen}
+  //         options={{
+  //           tabBarIcon: createNavigationIcon('shopping-bag'),
+  //           tabBarBadge: totalQuantity > 0 ? totalQuantity : undefined,
+  //         }}
+  //       />
+  //       <Tab.Screen
+  //         name="Settings"
+  //         component={SettingsScreen}
+  //         options={{
+  //           tabBarIcon: createNavigationIcon('cog'),
+  //         }}
+  //       />
+  //     </Tab.Navigator> */}
+  //   </NavigationContainer>
+  // );
 }
 
 function App() {
