@@ -429,6 +429,9 @@ PODS:
     - React-perflogger (= 0.72.8)
   - RNCMaskedView (0.1.11):
     - React
+  - RNGestureHandler (2.15.0):
+    - RCT-Folly (= 2021.07.22.00)
+    - React-Core
   - RNReanimated (3.5.4):
     - DoubleConversion
     - FBLazyVector
@@ -515,6 +518,7 @@ DEPENDENCIES:
   - React-utils (from `../../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../../node_modules/react-native/ReactCommon`)
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
+  - RNGestureHandler (from `../../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNShopifyCheckoutSheetKit (from `../../modules/@shopify/checkout-sheet-kit`)"
@@ -612,6 +616,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/react-native/ReactCommon"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
+  RNGestureHandler:
+    :path: "../../node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -666,6 +672,7 @@ SPEC CHECKSUMS:
   React-utils: 96f4588532614099a6d67a2b7c5912e1a35d6403
   ReactCommon: c111aa0c8006650d77a651e155f4112f97761dfd
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
+  RNGestureHandler: 7909c50383a18f0cb10ce1db7262b9a6da504c03
   RNReanimated: b3fe5092e7c7da790180e28c48f31e6b2bd3bfec
   RNScreens: 3c2d122f5e08c192e254c510b212306da97d2581
   RNShopifyCheckoutSheetKit: 222ec9eafcf1bacd1c0e4f83eccc4d472ef27bd8
@@ -677,4 +684,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 501ff3bc049a7b8b50204bc9220ab4e2b9c6138b
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2

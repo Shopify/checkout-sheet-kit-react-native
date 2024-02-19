@@ -10,6 +10,9 @@ module.exports = {
     'react-native': {
       root: path.resolve(root, 'node_modules', 'react-native'),
     },
+    'react-native-gesture-handler': {
+      root: path.resolve(root, 'node_modules', 'react-native-gesture-handler'),
+    },
     '@shopify/checkout-sheet-kit': {
       root: path.resolve(root, 'modules', '@shopify/checkout-sheet-kit'),
     },

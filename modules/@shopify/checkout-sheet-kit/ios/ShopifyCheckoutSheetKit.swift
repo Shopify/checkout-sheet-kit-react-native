@@ -100,12 +100,34 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		]
 	}
 
+	static func getRootViewController() -> UIViewController? {
+		return (UIApplication.shared.connectedScenes
+			.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene)?.windows
+			.first(where: { $0.isKeyWindow })?.rootViewController
+	}
+
+	func getCurrentViewController(_ controller: UIViewController? = getRootViewController()) -> UIViewController? {
+		if let presentedViewController = controller?.presentedViewController {
+			return getCurrentViewController(presentedViewController)
+		}
+
+		if let navigationController = controller as? UINavigationController {
+			return getCurrentViewController(navigationController.visibleViewController)
+		}
+
+		if let tabBarController = controller as? UITabBarController {
+			if let selectedViewController = tabBarController.selectedViewController {
+				return getCurrentViewController(selectedViewController)
+			}
+		}
+
+		return controller
+	}
+
 	@objc func present(_ checkoutURL: String) {
 		DispatchQueue.main.async {
-			let sharedDelegate = UIApplication.shared.delegate
-
-			if let url = URL(string: checkoutURL), let rootViewController = sharedDelegate?.window??.rootViewController {
-				ShopifyCheckoutSheetKit.present(checkout: url, from: rootViewController, delegate: self)
+			if let url = URL(string: checkoutURL), let viewController = self.getCurrentViewController() {
+				ShopifyCheckoutSheetKit.present(checkout: url, from: viewController, delegate: self)
 			}
 		}
 	}
