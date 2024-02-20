@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2 - February 21, 2024
+
+- Improve "close" event logic by only dismissing the Checkout sheet.
+
 ## 1.0.1 - February 20, 2024
 
 - Adds support for view controllers other than the `rootViewController`. This
