@@ -10,7 +10,7 @@
     "build:ios": "sh ./scripts/build_ios",
     "lint": "yarn typecheck && eslint .",
     "ios": "react-native run-ios --simulator 'iPhone 15 Pro'",
-    "start": "react-native start --simulator 'iPhone 15 Pro'",
+    "start": "react-native start -- --simulator 'iPhone 15 Pro'",
     "typecheck": "tsc --noEmit",
     "test:ios": "sh ./scripts/test_ios",
     "test:android": "sh ./scripts/test_android"

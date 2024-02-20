@@ -24,6 +24,6 @@ runs:
         cd sample
         bundle install
         cd ios
-        NO_FLIPPER=1 bundle exec pod install --deployment
+        NO_FLIPPER=1 bundle exec pod install
         cd $ROOT
 
