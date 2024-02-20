@@ -12,5 +12,5 @@ runs:
         xcrun simctl list runtimes
         xcrun simctl list devicetypes
         xcrun simctl delete all
-        CURRENT_SIMULATOR_UUID=$(xcrun simctl create TestDevice "iPhone 14 Pro Max")
+        CURRENT_SIMULATOR_UUID=$(xcrun simctl create TestDevice "iPhone 15 Pro")
         echo "CURRENT_SIMULATOR_UUID=$CURRENT_SIMULATOR_UUID" >> $GITHUB_ENV

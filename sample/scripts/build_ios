@@ -6,7 +6,7 @@ set -eo pipefail
 if [[ -n $CURRENT_SIMULATOR_UUID ]]; then
     dest="id=$CURRENT_SIMULATOR_UUID"
 else
-    dest="platform=iOS Simulator,name=iPhone 14 Pro"
+    dest="platform=iOS Simulator,name=iPhone 15 Pro"
 fi
 
 cd ios

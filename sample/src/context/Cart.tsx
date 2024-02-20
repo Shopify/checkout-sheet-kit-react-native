@@ -23,6 +23,8 @@ interface Context {
 }
 
 const defaultCartId = undefined;
+const defaultCheckoutURL = undefined;
+const defaultTotalQuantity = 0;
 
 const CartContext = createContext<Context>({
   cartId: defaultCartId,
@@ -38,9 +40,9 @@ type AddingToCartAction =
   | {type: 'add'; variantId: string}
   | {type: 'remove'; variantId: string};
 
-const checkoutURLState = atom<Context['checkoutURL']>(undefined);
+const checkoutURLState = atom<Context['checkoutURL']>(defaultCheckoutURL);
 const cartIdState = atom<Context['cartId']>(defaultCartId);
-const totalQuantityState = atom<Context['totalQuantity']>(0);
+const totalQuantityState = atom<Context['totalQuantity']>(defaultTotalQuantity);
 
 export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const ShopifyCheckout = useShopifyCheckoutSheet();

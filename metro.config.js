@@ -31,6 +31,11 @@ const config = mergeConfig(getDefaultConfig(__dirname), {
     extraNodeModules: {
       react: path.resolve(sample, 'node_modules', 'react'),
       'react-native': path.resolve(sample, 'node_modules', 'react-native'),
+      'react-native-gesture-handler': path.resolve(
+        root,
+        'node_modules',
+        'react-native-gesture-handler',
+      ),
       '@shopify/checkout-sheet-kit': path.resolve(
         root,
         'modules',

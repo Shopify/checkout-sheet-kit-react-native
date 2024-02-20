@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 - February 20, 2024
+
+- Adds support for view controllers other than the `rootViewController`. This
+  allows triggering the Checkout Sheet from modals and formSheets etc.
+
 ## 1.0.0 - January 31, 2024
 
 ShopifyCheckoutSheetKit is now generally available for

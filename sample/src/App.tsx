@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import React, {PropsWithChildren, ReactNode, useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {Link, NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
@@ -45,6 +45,7 @@ import {CartProvider, useCart} from './context/Cart';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import {ProductVariant, ShopifyProduct} from '../@types';
+import ErrorBoundary from './ErrorBoundary';
 
 const colorScheme = ColorScheme.web;
 
@@ -72,6 +73,7 @@ export type RootStackParamList = {
   CatalogScreen: undefined;
   ProductDetails: {product: ShopifyProduct; variant?: ProductVariant};
   Cart: {userId: string};
+  CartModal: undefined;
   Settings: undefined;
 };
 
@@ -135,6 +137,7 @@ function CatalogStack() {
     <Stack.Navigator
       screenOptions={{
         headerBackTitleVisible: true,
+        headerRight: CartIcon,
       }}>
       <Stack.Screen
         name="CatalogScreen"
@@ -151,7 +154,24 @@ function CatalogStack() {
           headerBackTitle: 'Back',
         })}
       />
+      <Stack.Screen
+        name="CartModal"
+        component={CartScreen}
+        options={{
+          title: 'Cart',
+          presentation: 'modal',
+          headerRight: undefined,
+        }}
+      />
     </Stack.Navigator>
+  );
+}
+
+function CartIcon() {
+  return (
+    <Link to="/CartModal">
+      <Icon name="shopping-basket" size={20} />
+    </Link>
   );
 }
 
@@ -192,13 +212,15 @@ function AppWithNavigation() {
 
 function App() {
   return (
-    <ShopifyCheckoutSheetProvider configuration={config}>
-      <AppWithTheme>
-        <AppWithContext>
-          <AppWithNavigation />
-        </AppWithContext>
-      </AppWithTheme>
-    </ShopifyCheckoutSheetProvider>
+    <ErrorBoundary>
+      <ShopifyCheckoutSheetProvider configuration={config}>
+        <AppWithTheme>
+          <AppWithContext>
+            <AppWithNavigation />
+          </AppWithContext>
+        </AppWithTheme>
+      </ShopifyCheckoutSheetProvider>
+    </ErrorBoundary>
   );
 }
 
