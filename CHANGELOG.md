@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 - February 21, 2024
+
+- Fixes an issue where the checkout can remain in a frozen empty state after
+  being dismissed.
+
 ## 1.0.2 - February 21, 2024
 
 - Improve "close" event logic by only dismissing the Checkout sheet.
