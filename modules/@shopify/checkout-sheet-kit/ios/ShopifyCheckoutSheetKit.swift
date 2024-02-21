@@ -84,7 +84,9 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 				self.sendEvent(withName: "close", body: nil)
 			}
 
-			self.getCurrentViewController()?.dismiss(animated: true)
+			if let viewController = UIApplication.shared.delegate?.window??.rootViewController {
+				viewController.dismiss(animated: true)
+			}
 		}
 	}
 
