@@ -1,4 +1,8 @@
-import {
+import env from 'react-native-config';
+import {NativeModules, Platform} from 'react-native';
+import {AppConfig} from './context/Config';
+
+const {
   EMAIL,
   ADDRESS_1,
   ADDRESS_2,
@@ -10,9 +14,7 @@ import {
   PROVINCE,
   ZIP,
   PHONE,
-} from '@env';
-import {NativeModules, Platform} from 'react-native';
-import {AppConfig} from './context/Config';
+} = env;
 
 export function createBuyerIdentityCartInput(appConfig: AppConfig) {
   if (!appConfig.prefillBuyerInformation) {
