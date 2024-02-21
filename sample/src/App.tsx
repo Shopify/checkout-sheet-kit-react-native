@@ -26,7 +26,7 @@ import {Link, NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
-import {STOREFRONT_DOMAIN, STOREFRONT_ACCESS_TOKEN} from '@env';
+import env from 'react-native-config';
 import Icon from 'react-native-vector-icons/Entypo';
 
 import CatalogScreen from './screens/CatalogScreen';
@@ -83,11 +83,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const cache = new InMemoryCache();
 
 const client = new ApolloClient({
-  uri: `https://${STOREFRONT_DOMAIN}/api/2023-10/graphql.json`,
+  uri: `https://${env.STOREFRONT_DOMAIN}/api/2023-10/graphql.json`,
   cache,
   headers: {
     'Content-Type': 'application/json',
-    'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN,
+    'X-Shopify-Storefront-Access-Token': env.STOREFRONT_ACCESS_TOKEN ?? '',
   },
 });
 
@@ -168,9 +168,11 @@ function CatalogStack() {
 }
 
 function CartIcon() {
+  const theme = useTheme();
+
   return (
     <Link to="/CartModal">
-      <Icon name="shopping-basket" size={20} />
+      <Icon name="shopping-basket" size={24} color={theme.colors.secondary} />
     </Link>
   );
 }

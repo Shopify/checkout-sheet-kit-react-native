@@ -315,6 +315,10 @@ PODS:
   - React-jsinspector (0.72.8)
   - React-logger (0.72.8):
     - glog
+  - react-native-config (1.5.1):
+    - react-native-config/App (= 1.5.1)
+  - react-native-config/App (1.5.1):
+    - React-Core
   - react-native-safe-area-context (4.7.4):
     - React-Core
   - React-NativeModulesApple (0.72.8):
@@ -464,7 +468,7 @@ PODS:
   - RNScreens (3.27.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - RNShopifyCheckoutSheetKit (1.0.0):
+  - RNShopifyCheckoutSheetKit (1.0.2):
     - React-Core
     - ShopifyCheckoutSheetKit (~> 1.0.1)
   - RNVectorIcons (10.0.2):
@@ -499,6 +503,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../../node_modules/react-native/ReactCommon/logger`)
+  - react-native-config (from `../node_modules/react-native-config`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-NativeModulesApple (from `../../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -578,6 +583,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../../node_modules/react-native/ReactCommon/logger"
+  react-native-config:
+    :path: "../node_modules/react-native-config"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   React-NativeModulesApple:
@@ -653,6 +660,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 03baea362e7475543e7cd091cb4fcf2bd78e041e
   React-jsinspector: fdf0a09bddecf9ce8da830bcb89a9814230c04a4
   React-logger: c2e7bb772d6e9fc3d0109d1243b81546a9c93c0f
+  react-native-config: 86038147314e2e6d10ea9972022aa171e6b1d4d8
   react-native-safe-area-context: 2cd91d532de12acdb0a9cbc8d43ac72a8e4c897c
   React-NativeModulesApple: f6153767facad322a10b07fa2dbd747abbe10302
   React-perflogger: 2a7d221549cd5b69e95c5afa2e8d336f0465e1ec
@@ -675,7 +683,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 7909c50383a18f0cb10ce1db7262b9a6da504c03
   RNReanimated: b3fe5092e7c7da790180e28c48f31e6b2bd3bfec
   RNScreens: 3c2d122f5e08c192e254c510b212306da97d2581
-  RNShopifyCheckoutSheetKit: 222ec9eafcf1bacd1c0e4f83eccc4d472ef27bd8
+  RNShopifyCheckoutSheetKit: 80878bf51cf6fbc9466c312dc37102591b4fd65f
   RNVectorIcons: 23b6e11af4aaf104d169b1b0afa7e5cf96c676ce
   ShopifyCheckoutSheetKit: b5f689803c6ddf5793191d39ef2ae7db52e5936c
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
