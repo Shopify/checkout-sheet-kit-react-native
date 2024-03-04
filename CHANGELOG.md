@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.4 - March 4, 2024
+
+- Fixes an issue where the parent view controller is dismissed after the
+  checkout sheet is dismissed.
+
 ## 1.0.3 - February 21, 2024
 
 - Fixes an issue where the checkout can remain in a frozen empty state after
