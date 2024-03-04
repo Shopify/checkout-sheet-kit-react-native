@@ -129,6 +129,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
       }
     }
 
+    mock.checkoutSheet = MockCheckoutSheet()
     mock.startObserving()
     mock.checkoutDidCancel()
 
@@ -136,6 +137,9 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     waitForExpectations(timeout: 1, handler: nil)
 
     XCTAssertTrue(mock.didSendEvent)
+
+    // swiftlint:disable:next force_cast
+    XCTAssertTrue((mock.checkoutSheet as! MockCheckoutSheet).dismissWasCalled)
   }
 
   /// checkoutDidFail
@@ -267,5 +271,14 @@ class AsyncRCTShopifyCheckoutSheetKitMock: RCTShopifyCheckoutSheetKit {
 
   override func sendEvent(withName name: String!, body: Any!) {
     sendEventImplementation?(name, body)
+  }
+}
+
+class MockCheckoutSheet: UIViewController {
+  var dismissWasCalled = false
+
+  override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+    dismissWasCalled = true
+    super.dismiss(animated: flag, completion: completion)
   }
 }

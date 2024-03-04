@@ -30,6 +30,8 @@ import React
 class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	private var hasListeners = false
 
+	internal var checkoutSheet: UIViewController?
+
 	override var methodQueue: DispatchQueue! {
 		return DispatchQueue.main
 	}
@@ -84,9 +86,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 				self.sendEvent(withName: "close", body: nil)
 			}
 
-			if let viewController = UIApplication.shared.delegate?.window??.rootViewController {
-				viewController.dismiss(animated: true)
-			}
+			self.checkoutSheet?.dismiss(animated: true)
 		}
 	}
 
@@ -123,7 +123,9 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	@objc func present(_ checkoutURL: String) {
 		DispatchQueue.main.async {
 			if let url = URL(string: checkoutURL), let viewController = self.getCurrentViewController() {
-				ShopifyCheckoutSheetKit.present(checkout: url, from: viewController, delegate: self)
+				let view = CheckoutViewController(checkout: url, delegate: self)
+				viewController.present(view, animated: true)
+				self.checkoutSheet = view
 			}
 		}
 	}

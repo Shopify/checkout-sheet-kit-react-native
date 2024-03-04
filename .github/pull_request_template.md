@@ -16,7 +16,6 @@
 > - [ ] I have read and agree with the [Contribution Guidelines](https://github.com/shopify/checkout-sheet-kit-react-native/blob/main/.github/CONTRIBUTING.md).
 > - [ ] I have read and agree with the [Code of Conduct](https://github.com/shopify/checkout-sheet-kit-react-native/blob/main/.github/CODE_OF_CONDUCT.md).
 > - [ ] I've updated the [README](https://github.com/shopify/checkout-sheet-kit-react-native).
-> - [ ] I've updated any documentation related to these changes.
 
 ---
 
@@ -27,5 +26,5 @@
 - [ ] I have added a [Changelog](./CHANGELOG.md) entry.
 </details>
 
-> [!TIP] 
+> [!TIP]
 > See the [Contributing documentation](https://github.com/shopify/checkout-sheet-kit-react-native/blob/main/.github/CONTRIBUTING.md#releasing-a-new-version) for instructions on how to publish a new version of the library.
