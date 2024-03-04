@@ -30,7 +30,7 @@ import React
 class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	private var hasListeners = false
 
-	private var checkoutSheet: UIViewController?
+	internal var checkoutSheet: UIViewController?
 
 	override var methodQueue: DispatchQueue! {
 		return DispatchQueue.main
