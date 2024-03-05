@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.5 - March 5, 2024
+
+- Updates the underlying swift SDK from `1.0.1` to `1.0.2` to include
+  https://github.com/Shopify/checkout-sheet-kit-swift/pull/143
+
 ## 1.0.4 - March 4, 2024
 
 - Fixes an issue where the parent view controller is dismissed after the
