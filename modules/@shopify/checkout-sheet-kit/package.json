@@ -1,7 +1,7 @@
 {
   "name": "@shopify/checkout-sheet-kit",
   "license": "MIT",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "lib/commonjs/index.js",
   "types": "src/index.ts",
   "source": "src/index.ts",
