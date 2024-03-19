@@ -1,5 +1,28 @@
 # Changelog
 
+## 2.0.0 - March 21, 2024
+
+### New features
+
+1. The loading spinner has been replaced by a progress bar. This will results in
+   a faster perceived load time since the SDK will now no longer wait for full
+   page load to show the DOM content.
+2. The "title" of the sheet is now configurable.
+3. The `completed` event now returns details about the order, including the
+   order ID:
+
+```diff
+- const checkoutCompletedSubscription = shopify.addEventListener('completed', () => {
++ const checkoutCompletedSubscription = shopify.addEventListener('completed', event => {
++  console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
+});
+```
+
+### Breaking changes
+
+1. `spinnerColor` has been replaced by `tintColor` for iOS and
+   `progressIndicator` for android.
+
 ## 1.0.5 - March 5, 2024
 
 - Updates the underlying swift SDK from `1.0.1` to `1.0.2` to include

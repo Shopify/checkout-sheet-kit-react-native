@@ -106,18 +106,18 @@ function SettingsScreen() {
         colors: {
           ios: {
             backgroundColor: updatedColors.webviewBackgroundColor,
-            spinnerColor: updatedColors.webviewSpinnerColor,
+            tintColor: updatedColors.webViewProgressIndicator,
           },
           android: {
             light: {
               backgroundColor: lightColors.webviewBackgroundColor,
-              spinnerColor: lightColors.webviewSpinnerColor,
+              progressIndicator: lightColors.webViewProgressIndicator,
               headerBackgroundColor: lightColors.webviewBackgroundColor,
               headerTextColor: lightColors.webviewHeaderTextColor,
             },
             dark: {
               backgroundColor: darkColors.webviewBackgroundColor,
-              spinnerColor: darkColors.webviewSpinnerColor,
+              progressIndicator: darkColors.webViewProgressIndicator,
               headerBackgroundColor: darkColors.webviewBackgroundColor,
               headerTextColor: darkColors.webviewHeaderTextColor,
             },
@@ -130,11 +130,11 @@ function SettingsScreen() {
         colors: {
           ios: {
             backgroundColor: updatedColors.webviewBackgroundColor,
-            spinnerColor: updatedColors.webviewSpinnerColor,
+            tintColor: updatedColors.webViewProgressIndicator,
           },
           android: {
             backgroundColor: updatedColors.webviewBackgroundColor,
-            spinnerColor: updatedColors.webviewSpinnerColor,
+            progressIndicator: updatedColors.webViewProgressIndicator,
             headerBackgroundColor: updatedColors.webviewBackgroundColor,
             headerTextColor: updatedColors.webviewHeaderTextColor,
           },
