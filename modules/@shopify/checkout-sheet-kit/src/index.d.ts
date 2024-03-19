@@ -81,7 +81,17 @@ interface CommonConfiguration {
    */
   preloading?: boolean;
   /**
-   * The title of the Checkout sheet.
+   * Sets the title of the Checkout sheet.
+   *
+   * * Important: This will only modify the Checkout Sheet on iOS, not Android.
+   *
+   * To implement localization support for iOS:
+   *  1. Create a "Localizable.xcstrings" file under "ios/{YourApplication}"
+   *  2. Set a translated value for a "shopify_checkout_sheet_title" key
+   *
+   * To implement localization support for Android:
+   *  1. Open the "android/app/src/main/res/values/strings.xml" file
+   *  2. Add "<string name="checkout_web_view_title">Checkout</string>"
    */
   title?: string;
 }

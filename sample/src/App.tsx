@@ -52,7 +52,6 @@ const colorScheme = ColorScheme.web;
 const config: Configuration = {
   colorScheme,
   preloading: true,
-  title: 'Checkout with React Native',
   colors: {
     ios: {
       backgroundColor: '#f0f0e8',

@@ -33,8 +33,11 @@ import {
   type CheckoutEventCallback,
   type Configuration,
   type ShopifyCheckoutSheetKit,
+  PixelEventCallback,
+  CheckoutCompletedEventCallback,
 } from './index.d';
 import {type PixelEvent} from './pixels';
+import {CheckoutCompletedEvent} from './events';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
 
@@ -78,62 +81,124 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     event: CheckoutEvent,
     callback: CheckoutEventCallback,
   ): EmitterSubscription | undefined {
-    if (event === 'pixel' && typeof callback === 'function') {
-      const eventHandler = callback as (data?: PixelEvent) => void;
+    let eventCallback: CheckoutEventCallback = callback;
 
-      /**
-       * Event data can be sent back as either a parsed Pixel Event object or a JSON string.
-       */
-      const cb = (eventData: string | PixelEvent) => {
-        try {
-          if (typeof eventData === 'string') {
-            try {
-              const parsed = JSON.parse(eventData);
-
-              if (
-                parsed.hasOwnProperty('customData') &&
-                typeof parsed.customData === 'string'
-              ) {
-                try {
-                  parsed.customData = JSON.parse(parsed.customData);
-                } catch {}
-              }
-              eventHandler(parsed as PixelEvent);
-            } catch (error) {
-              const parseError = new WebPixelsParseError(
-                'Failed to parse Web Pixel event data: Invalid JSON',
-                {
-                  cause: 'Invalid JSON',
-                },
-              );
-              // eslint-disable-next-line no-console
-              console.error(parseError);
-            }
-          } else if (eventData && typeof eventData === 'object') {
-            eventHandler(eventData);
-          }
-        } catch (error) {
-          const parseError = new WebPixelsParseError(
-            'Failed to parse Web Pixel event data',
-            {
-              cause: 'Unknown',
-            },
-          );
-          // eslint-disable-next-line no-console
-          console.error(parseError);
-        }
-      };
-
-      // Web Pixel event specific handler
-      return ShopifyCheckoutSheet.eventEmitter.addListener(event, cb);
+    switch (event) {
+      case 'pixel':
+        eventCallback = this.handleWebPixelEvent(
+          callback,
+        ) as PixelEventCallback;
+        break;
+      case 'completed':
+        eventCallback = this.handleCompletedEvent(
+          callback,
+        ) as CheckoutCompletedEventCallback;
+        break;
+      default:
+        eventCallback = callback;
     }
 
     // Default handler for all non-pixel events
-    return ShopifyCheckoutSheet.eventEmitter.addListener(event, callback);
+    return ShopifyCheckoutSheet.eventEmitter.addListener(event, eventCallback);
   }
 
   public removeEventListeners(event: CheckoutEvent) {
     ShopifyCheckoutSheet.eventEmitter.removeAllListeners(event);
+  }
+
+  // ---
+
+  private handleWebPixelEvent(
+    callback: CheckoutEventCallback,
+  ): (eventData: string | PixelEvent) => void {
+    const eventHandler = callback as PixelEventCallback;
+
+    /**
+     * Event data can be sent back as either a parsed Pixel Event object or a JSON string.
+     */
+    const cb = (eventData: string | PixelEvent): void => {
+      try {
+        if (typeof eventData === 'string') {
+          try {
+            const parsed = JSON.parse(eventData);
+
+            if (
+              parsed.hasOwnProperty('customData') &&
+              typeof parsed.customData === 'string'
+            ) {
+              try {
+                parsed.customData = JSON.parse(parsed.customData);
+              } catch {}
+            }
+            eventHandler(parsed as PixelEvent);
+          } catch (error) {
+            const parseError = new WebPixelsParseError(
+              'Failed to parse Web Pixel event data: Invalid JSON',
+              {
+                cause: 'Invalid JSON',
+              },
+            );
+            // eslint-disable-next-line no-console
+            console.error(parseError);
+          }
+        } else if (eventData && typeof eventData === 'object') {
+          eventHandler(eventData);
+        }
+      } catch (error) {
+        const parseError = new WebPixelsParseError(
+          'Failed to parse Web Pixel event data',
+          {
+            cause: 'Unknown',
+          },
+        );
+        // eslint-disable-next-line no-console
+        console.error(parseError);
+      }
+    };
+
+    return cb;
+  }
+
+  private handleCompletedEvent(
+    callback: CheckoutEventCallback,
+  ): (eventData: string | CheckoutCompletedEvent) => void {
+    const eventHandler = callback as CheckoutCompletedEventCallback;
+
+    /**
+     * Event data can be sent back as either a parsed Event object or a JSON string.
+     */
+    const cb = (eventData: string | CheckoutCompletedEvent): void => {
+      try {
+        if (typeof eventData === 'string') {
+          try {
+            const parsed = JSON.parse(eventData);
+            eventHandler(parsed as CheckoutCompletedEvent);
+          } catch (error) {
+            const parseError = new LifecycleEventParseError(
+              'Failed to parse completed event data: Invalid JSON',
+              {
+                cause: 'Invalid JSON',
+              },
+            );
+            // eslint-disable-next-line no-console
+            console.error(parseError);
+          }
+        } else if (eventData && typeof eventData === 'object') {
+          eventHandler(eventData);
+        }
+      } catch (error) {
+        const parseError = new LifecycleEventParseError(
+          'Failed to parse completed event data',
+          {
+            cause: 'Unknown',
+          },
+        );
+        // eslint-disable-next-line no-console
+        console.error(parseError);
+      }
+    };
+
+    return cb;
   }
 }
 
@@ -147,6 +212,20 @@ export class WebPixelsParseError extends Error {
 
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, WebPixelsParseError);
+    }
+  }
+}
+
+export class LifecycleEventParseError extends Error {
+  constructor(
+    message?: string | undefined,
+    options?: ErrorOptions | undefined,
+  ) {
+    super(message, options);
+    this.name = 'LifecycleEventParseError';
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, LifecycleEventParseError);
     }
   }
 }
