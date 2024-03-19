@@ -16,8 +16,7 @@
    file on iOS, a `res/values/strings.xml` on Android or using the `title`
    attribute on the ShopifyCheckoutSheetKit configuration.
 
-> [!NOTE]
->
+> [!IMPORTANT] 
 > The `title` attribute on the configuration will configure iOS _only_.
 
 ```diff
@@ -26,7 +25,7 @@ ShopifyCheckoutSheetKit.setConfig({
 })
 ```
 
-3. The `completed` event now returns details about the order, including the
+1. The `completed` event now returns details about the order, including the
    order ID:
 
 ```diff
