@@ -52,14 +52,15 @@ const colorScheme = ColorScheme.web;
 const config: Configuration = {
   colorScheme,
   preloading: true,
+  title: 'Checkout with React Native',
   colors: {
     ios: {
       backgroundColor: '#f0f0e8',
-      spinnerColor: '#2d2a38',
+      tintColor: '#2d2a38',
     },
     android: {
       backgroundColor: '#f0f0e8',
-      spinnerColor: '#2d2a38',
+      progressIndicator: '#2d2a38',
       headerBackgroundColor: '#f0f0e8',
       headerTextColor: '#2d2a38',
     },
@@ -112,12 +113,28 @@ function AppWithContext({children}: PropsWithChildren) {
   const shopify = useShopifyCheckoutSheet();
 
   useEffect(() => {
-    const subscription = shopify.addEventListener('pixel', event => {
+    const pixelEventSubscription = shopify.addEventListener('pixel', event => {
       // eslint-disable-next-line no-console
       console.log('[PixelEvent]', event?.name, event);
     });
 
-    return () => subscription?.remove();
+    const checkoutCompletedSubscription = shopify.addEventListener(
+      'completed',
+      event => {
+        // eslint-disable-next-line no-console
+        console.log(
+          '[CheckoutCompletedEvent] Order ID:',
+          event.orderDetails.id,
+        );
+        // eslint-disable-next-line no-console
+        console.log('[CheckoutCompletedEvent]', event);
+      },
+    );
+
+    return () => {
+      pixelEventSubscription?.remove();
+      checkoutCompletedSubscription?.remove();
+    };
   }, [shopify]);
 
   return (

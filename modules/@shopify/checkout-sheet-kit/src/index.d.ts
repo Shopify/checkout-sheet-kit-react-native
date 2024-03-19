@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import {EmitterSubscription} from 'react-native';
 import {PixelEvent} from './pixels';
+import {CheckoutCompletedEvent} from './events';
 
 export type Maybe<T> = T | undefined;
 
@@ -35,9 +36,9 @@ export enum ColorScheme {
 
 export interface IosColors {
   /**
-   * A HEX color value for customizing the color of the loading spinner.
+   * A HEX color value for customizing the color of the progress bar.
    */
-  spinnerColor?: string;
+  tintColor?: string;
   /**
    * A HEX color value for customizing the background color of the webview.
    */
@@ -46,9 +47,9 @@ export interface IosColors {
 
 export interface AndroidColors {
   /**
-   * A HEX color value for customizing the color of the loading spinner.
+   * A HEX color value for customizing the color of the progress bar.
    */
-  spinnerColor: string;
+  progressIndicator: string;
   /**
    * A HEX color value for customizing the background color of the webview.
    */
@@ -74,41 +75,46 @@ export interface AndroidAutomaticColors {
   dark: AndroidColors;
 }
 
-export type Configuration =
-  | {
-      /**
-       * The selected color scheme for the checkout. See README.md for more details.
-       */
-      colorScheme?: ColorScheme.web | ColorScheme.light | ColorScheme.dark;
-      /**
-       * Enable/disable preloading for checkout. This option must be enabled for `.preload()` to work as expected.
-       */
-      preloading?: boolean;
-      /**
-       * Platform-specific color overrides
-       */
-      colors?: {
-        ios?: IosColors;
-        android?: AndroidColors;
-      };
-    }
-  | {
-      /**
-       * The selected color scheme for the checkout. See README.md for more details.
-       */
-      colorScheme?: ColorScheme.automatic;
-      /**
-       * Enable/disable preloading for checkout. This option must be enabled for `.preload()` to work as expected.
-       */
-      preloading?: boolean;
-      /**
-       * Platform-specific color overrides
-       */
-      colors?: {
-        ios?: IosColors;
-        android?: AndroidAutomaticColors;
-      };
-    };
+interface CommonConfiguration {
+  /**
+   * Enable/disable preloading for checkout. This option must be enabled for `.preload()` to work as expected.
+   */
+  preloading?: boolean;
+  /**
+   * The title of the Checkout sheet.
+   */
+  title?: string;
+}
+
+export type Configuration = CommonConfiguration &
+  (
+    | {
+        /**
+         * The selected color scheme for the checkout. See README.md for more details.
+         */
+        colorScheme?: ColorScheme.web | ColorScheme.light | ColorScheme.dark;
+        /**
+         * Platform-specific color overrides
+         */
+        colors?: {
+          ios?: IosColors;
+          android?: AndroidColors;
+        };
+      }
+    | {
+        /**
+         * The selected color scheme for the checkout. See README.md for more details.
+         */
+        colorScheme?: ColorScheme.automatic;
+        /**
+         * Platform-specific color overrides
+         */
+        colors?: {
+          ios?: IosColors;
+          android?: AndroidAutomaticColors;
+        };
+      }
+  );
 
 export interface CheckoutException {
   message: string;
@@ -116,28 +122,38 @@ export interface CheckoutException {
 
 export type CheckoutEvent = 'close' | 'completed' | 'error' | 'pixel';
 
-export type PixelEventCallback = (event: PixelEvent) => void;
+export type PixelEventCallback = (event?: PixelEvent) => void;
 
 export type CheckoutExceptionCallback = (error: CheckoutException) => void;
+
+export type CheckoutCompletedEventCallback = (
+  event: CheckoutCompletedEvent,
+) => void;
 
 export type CheckoutEventCallback =
   | (() => void)
   | CheckoutExceptionCallback
+  | CheckoutCompletedEventCallback
   | PixelEventCallback;
 
 function addEventListener(
-  event: 'close' | 'completed',
+  event: 'close',
   callback: () => void,
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(
+  event: 'completed',
+  callback: CheckoutCompletedEventCallback,
+): Maybe<EmitterSubscription>;
+
+function addEventListener(
   event: 'error',
-  callback: (error: CheckoutException) => void,
+  callback: CheckoutExceptionCallback,
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(
   event: 'pixel',
-  callback: (event?: PixelEvent) => void,
+  callback: PixelEventCallback,
 ): Maybe<EmitterSubscription>;
 
 function removeEventListeners(event: CheckoutEvent): void;

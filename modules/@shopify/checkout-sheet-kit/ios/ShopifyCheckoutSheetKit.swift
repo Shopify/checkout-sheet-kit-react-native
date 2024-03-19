@@ -52,9 +52,9 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		hasListeners = false
 	}
 
-	func checkoutDidComplete() {
+	func checkoutDidComplete(event: CheckoutCompletedEvent) {
 		if hasListeners {
-			self.sendEvent(withName: "completed", body: nil)
+			self.sendEvent(withName: "completed", body: encodeToJSON(from: event))
 		}
 	}
 
@@ -157,6 +157,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		let colorConfig = configuration["colors"] as? [AnyHashable: Any]
 		let iosConfig = colorConfig?["ios"] as? [String: String]
 
+		if let title = configuration["title"] as? String {
+			ShopifyCheckoutSheetKit.configuration.title = title
+		}
+
 		if let preloading = configuration["preloading"] as? Bool {
 			ShopifyCheckoutSheetKit.configuration.preloading.enabled = preloading
 		}
@@ -165,8 +169,8 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 			ShopifyCheckoutSheetKit.configuration.colorScheme = getColorScheme(colorScheme)
 		}
 
-		if let spinnerColorHex = iosConfig?["spinnerColor"] as? String {
-			ShopifyCheckoutSheetKit.configuration.spinnerColor = UIColor(hex: spinnerColorHex)
+		if let tintColorHex = iosConfig?["tintColor"] as? String {
+			ShopifyCheckoutSheetKit.configuration.tintColor = UIColor(hex: tintColorHex)
 		}
 
 		if let backgroundColorHex = iosConfig?["backgroundColor"] as? String {
@@ -176,9 +180,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
 	@objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
 		let config: [String: Any] = [
+			"title": ShopifyCheckoutSheetKit.configuration.title,
 			"preloading": ShopifyCheckoutSheetKit.configuration.preloading.enabled,
 			"colorScheme": ShopifyCheckoutSheetKit.configuration.colorScheme.rawValue,
-			"spinnerColor": ShopifyCheckoutSheetKit.configuration.spinnerColor,
+			"tintColor": ShopifyCheckoutSheetKit.configuration.tintColor,
 			"backgroundColor": ShopifyCheckoutSheetKit.configuration.backgroundColor
 		]
 
@@ -211,7 +216,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		return [:]
 	}
 
-	private func mapToGenericEvent(standardEvent: ShopifyCheckoutSheetKit.StandardEvent) -> [String: Any] {
+	private func mapToGenericEvent(standardEvent: StandardEvent) -> [String: Any] {
 		let encoded = encodeToJSON(from: standardEvent)
 		return [
 			"context": encoded["context"],
@@ -233,6 +238,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		return [:]
 	}
 
+	/// Decodes custom web pixel events
 	private func decodeAndMap(event: CustomEvent, decoder: JSONDecoder = JSONDecoder()) throws -> [String: Any] {
 		return [
 			"context": encodeToJSON(from: event.context),
