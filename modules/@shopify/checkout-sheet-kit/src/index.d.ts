@@ -132,7 +132,7 @@ export interface CheckoutException {
 
 export type CheckoutEvent = 'close' | 'completed' | 'error' | 'pixel';
 
-export type PixelEventCallback = (event?: PixelEvent) => void;
+export type PixelEventCallback = (event: PixelEvent) => void;
 
 export type CheckoutExceptionCallback = (error: CheckoutException) => void;
 
