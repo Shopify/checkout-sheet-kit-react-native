@@ -91,9 +91,8 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   // Uncomment to install dependencies for local development
-  // implementation("com.facebook.react:react-android:+")
+  //  implementation("com.facebook.react:react-android:+")
 
-  implementation "androidx.activity:activity:1.8.2"
   implementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
   implementation("com.fasterxml.jackson.core:jackson-databind:2.12.5")
   debugImplementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
