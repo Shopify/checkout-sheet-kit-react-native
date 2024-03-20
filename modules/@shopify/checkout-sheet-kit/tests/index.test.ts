@@ -1,10 +1,6 @@
 /* eslint-disable no-new */
 
-import {
-  LifecycleEventParseError,
-  ShopifyCheckoutSheet,
-  WebPixelsParseError,
-} from '../src';
+import {LifecycleEventParseError, ShopifyCheckoutSheet} from '../src';
 import {ColorScheme, type Configuration} from '../src';
 import {NativeModules} from 'react-native';
 
@@ -168,8 +164,14 @@ describe('ShopifyCheckoutSheetKit', () => {
           'pixel',
           expect.any(Function),
         );
-        eventEmitter.emit('pixel', JSON.stringify({someAttribute: 123}));
-        expect(callback).toHaveBeenCalledWith({someAttribute: 123});
+        eventEmitter.emit(
+          'pixel',
+          JSON.stringify({type: 'STANDARD', someAttribute: 123}),
+        );
+        expect(callback).toHaveBeenCalledWith({
+          type: 'STANDARD',
+          someAttribute: 123,
+        });
       });
 
       it('parses custom web pixel event data', () => {
@@ -188,11 +190,13 @@ describe('ShopifyCheckoutSheetKit', () => {
         eventEmitter.emit(
           'pixel',
           JSON.stringify({
+            type: 'CUSTOM',
             someAttribute: 123,
             customData: JSON.stringify({valid: true}),
           }),
         );
         expect(callback).toHaveBeenCalledWith({
+          type: 'CUSTOM',
           someAttribute: 123,
           customData: {valid: true},
         });
@@ -214,11 +218,13 @@ describe('ShopifyCheckoutSheetKit', () => {
         eventEmitter.emit(
           'pixel',
           JSON.stringify({
+            type: 'CUSTOM',
             someAttribute: 123,
             customData: 'Invalid JSON',
           }),
         );
         expect(callback).toHaveBeenCalledWith({
+          type: 'CUSTOM',
           someAttribute: 123,
           customData: 'Invalid JSON',
         });
@@ -239,7 +245,7 @@ describe('ShopifyCheckoutSheetKit', () => {
           expect.any(Function),
         );
         eventEmitter.emit('pixel', '{"someAttribute": 123');
-        expect(mock).toHaveBeenCalledWith(expect.any(WebPixelsParseError));
+        expect(mock).toHaveBeenCalledWith(expect.any(LifecycleEventParseError));
       });
     });
 

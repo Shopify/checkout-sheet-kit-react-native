@@ -32,12 +32,9 @@ import type {
   CheckoutEventCallback,
   Configuration,
   ShopifyCheckoutSheetKit,
-  PixelEventCallback,
-  CheckoutCompletedEventCallback,
   CheckoutException,
 } from './index.d';
-import {type PixelEvent} from './pixels';
-import {CheckoutCompletedEvent} from './events';
+import type {CustomEvent, PixelEvent} from './pixels';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
 
@@ -81,18 +78,17 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     event: CheckoutEvent,
     callback: CheckoutEventCallback,
   ): EmitterSubscription | undefined {
-    let eventCallback: CheckoutEventCallback;
+    let eventCallback;
 
     switch (event) {
       case 'pixel':
-        eventCallback = this.handleWebPixelEvent(
-          callback as PixelEventCallback,
+        eventCallback = this.interceptEventEmission(
+          callback,
+          this.parseCustomPixelData,
         );
         break;
       case 'completed':
-        eventCallback = this.handleCompletedEvent(
-          callback as CheckoutCompletedEventCallback,
-        );
+        eventCallback = this.interceptEventEmission(callback);
         break;
       default:
         eventCallback = callback;
@@ -108,68 +104,42 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   // ---
 
-  private handleWebPixelEvent(
-    callback: PixelEventCallback,
-  ): (eventData: string | PixelEvent) => void {
-    /**
-     * Event data can be sent back as either a parsed Pixel Event object or a JSON string.
-     */
-    return (eventData: string | PixelEvent): void => {
+  private parseCustomPixelData(eventData: PixelEvent): PixelEvent {
+    if (
+      isCustomPixelEvent(eventData) &&
+      eventData.hasOwnProperty('customData') &&
+      typeof eventData.customData === 'string'
+    ) {
       try {
-        if (typeof eventData === 'string') {
-          try {
-            const parsed = JSON.parse(eventData);
-
-            if (
-              parsed.hasOwnProperty('customData') &&
-              typeof parsed.customData === 'string'
-            ) {
-              try {
-                parsed.customData = JSON.parse(parsed.customData);
-              } catch {}
-            }
-            callback(parsed as PixelEvent);
-          } catch (error) {
-            const parseError = new WebPixelsParseError(
-              'Failed to parse Web Pixel event data: Invalid JSON',
-              {
-                cause: 'Invalid JSON',
-              },
-            );
-            // eslint-disable-next-line no-console
-            console.error(parseError);
-          }
-        } else if (eventData && typeof eventData === 'object') {
-          callback(eventData);
-        }
-      } catch (error) {
-        const parseError = new WebPixelsParseError(
-          'Failed to parse Web Pixel event data',
-          {
-            cause: 'Unknown',
-          },
-        );
-        // eslint-disable-next-line no-console
-        console.error(parseError);
+        return {
+          ...eventData,
+          customData: JSON.parse(eventData.customData),
+        };
+      } catch {
+        return eventData;
       }
-    };
+    }
+
+    return eventData;
   }
 
-  private handleCompletedEvent(
-    callback: CheckoutCompletedEventCallback,
-  ): (eventData: string | CheckoutCompletedEvent) => void {
+  private interceptEventEmission(
+    callback: CheckoutEventCallback,
+    transformData?: (...args: any[]) => void,
+  ): (eventData: string | typeof callback) => void {
     /**
      * Event data can be sent back as either a parsed Event object or a JSON string.
      */
-    return (eventData: string | CheckoutCompletedEvent): void => {
+    return (eventData: string | typeof callback): void => {
       try {
         if (typeof eventData === 'string') {
           try {
-            const parsed = JSON.parse(eventData);
-            callback(parsed as CheckoutCompletedEvent);
+            let parsed = JSON.parse(eventData);
+            parsed = transformData?.(parsed) ?? parsed;
+            callback(parsed);
           } catch (error) {
             const parseError = new LifecycleEventParseError(
-              'Failed to parse completed event data: Invalid JSON',
+              'Failed to parse event data: Invalid JSON',
               {
                 cause: 'Invalid JSON',
               },
@@ -182,7 +152,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
         }
       } catch (error) {
         const parseError = new LifecycleEventParseError(
-          'Failed to parse completed event data',
+          'Failed to parse event data',
           {
             cause: 'Unknown',
           },
@@ -194,15 +164,8 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   }
 }
 
-export class WebPixelsParseError extends Error {
-  constructor(message?: string, options?: ErrorOptions) {
-    super(message, options);
-    this.name = 'WebPixelsParseError';
-
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, WebPixelsParseError);
-    }
-  }
+function isCustomPixelEvent(event: PixelEvent): event is CustomEvent {
+  return event.type === 'CUSTOM';
 }
 
 export class LifecycleEventParseError extends Error {
