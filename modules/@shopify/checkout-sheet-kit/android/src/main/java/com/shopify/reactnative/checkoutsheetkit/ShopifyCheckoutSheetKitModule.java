@@ -265,7 +265,8 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
       if (colorStr.length() == 6) {
         // If alpha is not included, assume full opacity
-        color = color | 0xFF000000L;
+        // "L" is not needed here on the end of the hex value
+        color = color | 0xFF000000;
       }
 
       return new Color.SRGB((int) color);
