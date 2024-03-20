@@ -113,19 +113,13 @@ function AppWithContext({children}: PropsWithChildren) {
 
   useEffect(() => {
     const pixelEventSubscription = shopify.addEventListener('pixel', event => {
-      // eslint-disable-next-line no-console
-      console.log('[PixelEvent]', event?.name, event);
+      console.log('[PixelEvent]', event.name, event);
     });
 
     const checkoutCompletedSubscription = shopify.addEventListener(
       'completed',
       event => {
-        // eslint-disable-next-line no-console
-        console.log(
-          '[CheckoutCompletedEvent] Order ID:',
-          event.orderDetails.id,
-        );
-        // eslint-disable-next-line no-console
+        console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
         console.log('[CheckoutCompletedEvent]', event);
       },
     );

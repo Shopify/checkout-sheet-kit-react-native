@@ -86,13 +86,13 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     switch (event) {
       case 'pixel':
         eventCallback = this.handleWebPixelEvent(
-          callback,
-        ) as PixelEventCallback;
+          callback as PixelEventCallback,
+        );
         break;
       case 'completed':
         eventCallback = this.handleCompletedEvent(
-          callback,
-        ) as CheckoutCompletedEventCallback;
+          callback as CheckoutCompletedEventCallback,
+        );
         break;
       default:
         eventCallback = callback;
@@ -109,10 +109,8 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   // ---
 
   private handleWebPixelEvent(
-    callback: CheckoutEventCallback,
+    callback: PixelEventCallback,
   ): (eventData: string | PixelEvent) => void {
-    const eventHandler = callback as PixelEventCallback;
-
     /**
      * Event data can be sent back as either a parsed Pixel Event object or a JSON string.
      */
@@ -130,7 +128,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
                 parsed.customData = JSON.parse(parsed.customData);
               } catch {}
             }
-            eventHandler(parsed as PixelEvent);
+            callback(parsed as PixelEvent);
           } catch (error) {
             const parseError = new WebPixelsParseError(
               'Failed to parse Web Pixel event data: Invalid JSON',
@@ -142,7 +140,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
             console.error(parseError);
           }
         } else if (eventData && typeof eventData === 'object') {
-          eventHandler(eventData);
+          callback(eventData);
         }
       } catch (error) {
         const parseError = new WebPixelsParseError(
@@ -160,10 +158,8 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   }
 
   private handleCompletedEvent(
-    callback: CheckoutEventCallback,
+    callback: CheckoutCompletedEventCallback,
   ): (eventData: string | CheckoutCompletedEvent) => void {
-    const eventHandler = callback as CheckoutCompletedEventCallback;
-
     /**
      * Event data can be sent back as either a parsed Event object or a JSON string.
      */
@@ -172,7 +168,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
         if (typeof eventData === 'string') {
           try {
             const parsed = JSON.parse(eventData);
-            eventHandler(parsed as CheckoutCompletedEvent);
+            callback(parsed as CheckoutCompletedEvent);
           } catch (error) {
             const parseError = new LifecycleEventParseError(
               'Failed to parse completed event data: Invalid JSON',
@@ -184,7 +180,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
             console.error(parseError);
           }
         } else if (eventData && typeof eventData === 'object') {
-          eventHandler(eventData);
+          callback(eventData);
         }
       } catch (error) {
         const parseError = new LifecycleEventParseError(
@@ -203,10 +199,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 }
 
 export class WebPixelsParseError extends Error {
-  constructor(
-    message?: string | undefined,
-    options?: ErrorOptions | undefined,
-  ) {
+  constructor(message?: string, options?: ErrorOptions) {
     super(message, options);
     this.name = 'WebPixelsParseError';
 
@@ -217,10 +210,7 @@ export class WebPixelsParseError extends Error {
 }
 
 export class LifecycleEventParseError extends Error {
-  constructor(
-    message?: string | undefined,
-    options?: ErrorOptions | undefined,
-  ) {
+  constructor(message?: string, options?: ErrorOptions) {
     super(message, options);
     this.name = 'LifecycleEventParseError';
 
