@@ -46,6 +46,7 @@ import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import {ProductVariant, ShopifyProduct} from '../@types';
 import ErrorBoundary from './ErrorBoundary';
+import {CheckoutException} from '@shopify/checkout-sheet-kit';
 
 const colorScheme = ColorScheme.web;
 
@@ -112,21 +113,31 @@ function AppWithContext({children}: PropsWithChildren) {
   const shopify = useShopifyCheckoutSheet();
 
   useEffect(() => {
-    const pixelEventSubscription = shopify.addEventListener('pixel', event => {
-      console.log('[PixelEvent]', event.name, event);
+    const close = shopify.addEventListener('close', () => {
+      console.log('[CheckoutClose]');
     });
 
-    const checkoutCompletedSubscription = shopify.addEventListener(
-      'completed',
-      event => {
-        console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
-        console.log('[CheckoutCompletedEvent]', event);
+    const pixel = shopify.addEventListener('pixel', event => {
+      console.log('[CheckoutPixelEvent]', event.name, event);
+    });
+
+    const completed = shopify.addEventListener('completed', event => {
+      console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
+      console.log('[CheckoutCompletedEvent]', event);
+    });
+
+    const error = shopify.addEventListener(
+      'error',
+      (error: CheckoutException) => {
+        console.log('[CheckoutError]', error);
       },
     );
 
     return () => {
-      pixelEventSubscription?.remove();
-      checkoutCompletedSubscription?.remove();
+      pixel?.remove();
+      completed?.remove();
+      close?.remove();
+      error?.remove();
     };
   }, [shopify]);
 

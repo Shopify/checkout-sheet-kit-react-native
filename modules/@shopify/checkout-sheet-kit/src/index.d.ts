@@ -130,39 +130,44 @@ export interface CheckoutException {
   message: string;
 }
 
-export type CheckoutEvent = 'close' | 'completed' | 'error' | 'pixel';
+export enum CheckoutEvent {
+  Close = 'close',
+  Completed = 'completed',
+  Error = 'error',
+  Pixel = 'pixel',
+}
 
+export type CloseEventCallback = () => void;
 export type PixelEventCallback = (event: PixelEvent) => void;
-
 export type CheckoutExceptionCallback = (error: CheckoutException) => void;
-
 export type CheckoutCompletedEventCallback = (
   event: CheckoutCompletedEvent,
 ) => void;
 
-export type CheckoutEventCallback =
-  | (() => void)
-  | CheckoutExceptionCallback
-  | CheckoutCompletedEventCallback
-  | PixelEventCallback;
+export type CheckoutEventCallback = {
+  [CheckoutEvent.Close] = CloseEventCallback;
+  [CheckoutEvent.Error] = CheckoutExceptionCallback;
+  [CheckoutEvent.Completed] = CheckoutCompletedEventCallback;
+  [CheckoutEvent.Pixel] = PixelEventCallback;
+};
 
 function addEventListener(
-  event: 'close',
+  event: CheckoutEvent.Close,
   callback: () => void,
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(
-  event: 'completed',
+  event: CheckoutEvent.Completed,
   callback: CheckoutCompletedEventCallback,
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(
-  event: 'error',
+  event: CheckoutEvent.Error,
   callback: CheckoutExceptionCallback,
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(
-  event: 'pixel',
+  event: CheckoutEvent.Pixel,
   callback: PixelEventCallback,
 ): Maybe<EmitterSubscription>;
 

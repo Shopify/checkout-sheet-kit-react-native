@@ -27,14 +27,15 @@ import {
   EmitterSubscription,
 } from 'react-native';
 import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
-import {
+import {CheckoutEvent} from './index.d';
+import type {
   ColorScheme,
-  type CheckoutEvent,
-  type CheckoutEventCallback,
-  type Configuration,
-  type ShopifyCheckoutSheetKit,
+  CheckoutEventCallback,
+  Configuration,
+  ShopifyCheckoutSheetKit,
   PixelEventCallback,
   CheckoutCompletedEventCallback,
+  CheckoutException,
 } from './index.d';
 import {type PixelEvent} from './pixels';
 import {CheckoutCompletedEvent} from './events';
@@ -77,22 +78,18 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     RNShopifyCheckoutSheetKit.setConfig(configuration);
   }
 
-  public addEventListener(
-    event: CheckoutEvent,
-    callback: CheckoutEventCallback,
+  public addEventListener<T extends CheckoutEvent>(
+    event: T,
+    callback: CheckoutEventCallback[T],
   ): EmitterSubscription | undefined {
-    let eventCallback: CheckoutEventCallback = callback;
+    let eventCallback;
 
     switch (event) {
-      case 'pixel':
-        eventCallback = this.handleWebPixelEvent(
-          callback as PixelEventCallback,
-        );
+      case CheckoutEvent.Pixel:
+        eventCallback = this.handleWebPixelEvent(callback);
         break;
-      case 'completed':
-        eventCallback = this.handleCompletedEvent(
-          callback as CheckoutCompletedEventCallback,
-        );
+      case CheckoutEvent.Completed:
+        eventCallback = this.handleCompletedEvent(callback);
         break;
       default:
         eventCallback = callback;
@@ -229,4 +226,4 @@ export {
 };
 
 // Types
-export {CheckoutEvent, CheckoutEventCallback, Configuration};
+export {CheckoutEvent, CheckoutException, CheckoutEventCallback, Configuration};
