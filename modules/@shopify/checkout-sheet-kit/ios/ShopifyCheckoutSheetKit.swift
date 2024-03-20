@@ -238,7 +238,6 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		return [:]
 	}
 
-	/// Decodes custom web pixel events
 	private func decodeAndMap(event: CustomEvent, decoder: JSONDecoder = JSONDecoder()) throws -> [String: Any] {
 		return [
 			"context": encodeToJSON(from: event.context),
