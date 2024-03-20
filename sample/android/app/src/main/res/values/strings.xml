@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">ReactNative</string>
-    <string name="checkout_web_view_title">Checkout with React Native</string>
+    <string name="checkout_web_view_title">Checkout</string>
 </resources>
