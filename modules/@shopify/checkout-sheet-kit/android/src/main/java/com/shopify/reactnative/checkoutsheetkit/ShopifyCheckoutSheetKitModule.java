@@ -37,6 +37,7 @@ import com.shopify.checkoutsheetkit.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   private static final String MODULE_NAME = "ShopifyCheckoutSheetKit";
@@ -77,7 +78,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void present(String checkoutURL) {
     Activity currentActivity = getCurrentActivity();
-    if (currentActivity != null) {
+    if (currentActivity instanceof ComponentActivity) {
       Context appContext = getReactApplicationContext();
       DefaultCheckoutEventProcessor checkoutEventProcessor = new CustomCheckoutEventProcessor(appContext, this.reactContext);
       currentActivity.runOnUiThread(() -> {
@@ -91,7 +92,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   public void preload(String checkoutURL) {
     Activity currentActivity = getCurrentActivity();
 
-    if (currentActivity != null) {
+    if (currentActivity instanceof ComponentActivity) {
       ShopifyCheckoutSheetKit.preload(checkoutURL, (ComponentActivity) currentActivity);
     }
   }
@@ -222,7 +223,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
       }
 
       if (config.hasKey("colorScheme")) {
-        ColorScheme colorScheme = getColorScheme(config.getString("colorScheme"));
+        ColorScheme colorScheme = getColorScheme(Objects.requireNonNull(config.getString("colorScheme")));
         ReadableMap colorsConfig = config.hasKey("colors") ? config.getMap("colors") : null;
         ReadableMap androidConfig = null;
 

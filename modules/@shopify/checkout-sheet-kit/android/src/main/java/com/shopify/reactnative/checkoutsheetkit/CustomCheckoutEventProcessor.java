@@ -25,20 +25,21 @@ package com.shopify.reactnative.checkoutsheetkit;
 
 import android.content.Context;
 import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.shopify.checkoutsheetkit.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 
 public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
   private final ReactApplicationContext reactContext;
+
+  private final ObjectMapper mapper = new ObjectMapper();
 
   public CustomCheckoutEventProcessor(Context context, ReactApplicationContext reactContext) {
     super(context);
@@ -47,9 +48,8 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   }
 
   @Override
-  public void onCheckoutCompleted(@NotNull CheckoutCompletedEvent event) {
+  public void onCheckoutCompleted(@NonNull CheckoutCompletedEvent event) {
     try {
-      ObjectMapper mapper = new ObjectMapper();
       String data = mapper.writeValueAsString(event);
       sendEventWithStringData("completed", data);
     } catch (IOException e) {
@@ -58,9 +58,8 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   }
 
   @Override
-  public void onWebPixelEvent(@NotNull PixelEvent event) {
+  public void onWebPixelEvent(@NonNull PixelEvent event) {
     try {
-      ObjectMapper mapper = new ObjectMapper();
       String data = mapper.writeValueAsString(event);
       sendEventWithStringData("pixel", data);
     } catch (IOException e) {
