@@ -110,10 +110,9 @@ function App() {
 ```
 
 See [Usage with the Storefront API](#usage-with-the-storefront-api) below on how
-to get a checkoutUrl to pass to the SDK.
+to get a checkout URL to pass to the kit.
 
-> [!NOTE]
-> The recommended usage of the library is through a
+> [!NOTE] The recommended usage of the library is through a
 > `ShopifyCheckoutSheetProvider` Context provider, but see
 > [Programmatic usage](#programamatic-usage) below for details on how to use the
 > library without React context.
@@ -264,9 +263,8 @@ function App() {
 }
 ```
 
-> [!TIP]
-> To help optimize and deliver the best experience the SDK also provides a
-> [preloading API](#preloading) that can be used to initialize the checkout
+> [!TIP] To help optimize and deliver the best experience the SDK also provides
+> a [preloading API](#preloading) that can be used to initialize the checkout
 > session in the background and ahead of time.
 
 ### Configuration
@@ -296,11 +294,11 @@ const config: Configuration = {
   colors: {
     ios: {
       backgroundColor: '#f0f0e8',
-      spinnerColor: '#2d2a38',
+      tintColor: '#2d2a38',
     },
     android: {
       backgroundColor: '#f0f0e8',
-      spinnerColor: '#2d2a38',
+      progressIndicator: '#2d2a38',
       headerBackgroundColor: '#f0f0e8',
       headerTextColor: '#2d2a38',
     },
@@ -344,11 +342,11 @@ const config: Configuration = {
   colors: {
     ios: {
       backgroundColor: '#ffffff',
-      spinnerColor: '#000000',
+      tintColor: '#000000',
     },
     android: {
       backgroundColor: '#ffffff',
-      spinnerColor: '#2d2a38',
+      progressIndicator: '#2d2a38',
       headerBackgroundColor: '#ffffff',
       headerTextColor: '#000000',
     },
@@ -374,13 +372,13 @@ const config: Configuration = {
     android: {
       light: {
         backgroundColor: '#ffffff',
-        spinnerColor: '#2d2a38',
+        progressIndicator: '#2d2a38',
         headerBackgroundColor: '#ffffff',
         headerTextColor: '#000000',
       },
       dark: {
         backgroundColor: '#000000',
-        spinnerColor: '#0087ff',
+        progressIndicator: '#0087ff',
         headerBackgroundColor: '#000000',
         headerTextColor: '#ffffff',
       },
@@ -396,6 +394,83 @@ function AppWithContext() {
   );
 }
 ```
+
+### Localization
+
+#### Checkout Sheet title
+
+There are several ways to change the title of the Checkout Sheet.
+
+##### iOS
+
+On iOS, you can set a localized value on the `title` attribute of the
+configuration.
+
+Alternatively, use a Localizable.xcstrings file in your app by doing the
+following:
+
+1. Create a `Localizable.xcstrings` file under "ios/{YourApplicationName}"
+2. Add an entry for the key `"shopify_checkout_sheet_title"`
+
+##### Android
+
+On Android, you can add a string entry for the key `"checkout_web_view_title"`
+to the "android/app/src/res/values/strings.xml" file for your application.
+
+```diff
+<resources>
+    <string name="app_name">Your App Name</string>
++    <string name="checkout_web_view_title">Checkout</string>
+</resources>
+```
+
+> [!IMPORTANT] > `title` will only affect iOS. For Android you **must** use
+> `res/values/strings.xml`.
+
+#### Currency
+
+To set an appropriate currency for a given cart, the Storefront API offers an
+`@inContext(country)` directive which will ensure the correct currency is
+presented.
+
+```tsx
+const CREATE_CART_MUTATION = gql`
+  mutation CreateCart($input: CartInput, $country: CountryCode = CA)
+  @inContext(country: $country) {
+    cartCreate(input: $input) {
+      cart {
+        id
+        checkoutUrl
+      }
+    }
+  }
+`;
+```
+
+See [Storefront Directives](https://shopify.dev/docs/api/storefront#directives)
+for more information.
+
+#### Language
+
+Similarly to currency, you can use an `@inContext(language)` directive to set
+the language for your checkout.
+
+```tsx
+const CREATE_CART_MUTATION = gql`
+  mutation CreateCart($input: CartInput, $language: Language = EN)
+  @inContext(language: $language) {
+    cartCreate(input: $input) {
+      cart {
+        id
+        checkoutUrl
+      }
+    }
+  }
+`;
+```
+
+See [Storefront Directives](https://shopify.dev/docs/api/storefront#directives)
+for more information.
 
 ### Preloading
 
@@ -444,12 +519,12 @@ There are currently 3 checkout events exposed through the Native Module. You can
 subscribe to these events using `addEventListener` and `removeEventListeners`
 methods - available on both the context provider as well as the class instance.
 
-| Name        | Callback                             | Description                                                  |
-| ----------- | ------------------------------------ | ------------------------------------------------------------ |
-| `close`     | `() => void`                         | Fired when the checkout has been closed.                     |
-| `completed` | `() => void`                         | Fired when the checkout has been successfully completed.     |
-| `error`     | `(error: {message: string}) => void` | Fired when a checkout exception has been raised.             |
-| `pixel`     | `(event: PixelEvent) => void`        | Fired when a Web Pixel event has been relayed from checkout. |
+| Name        | Callback                                  | Description                                                  |
+| ----------- | ----------------------------------------- | ------------------------------------------------------------ |
+| `close`     | `() => void`                              | Fired when the checkout has been closed.                     |
+| `completed` | `(event: CheckoutCompletedEvent) => void` | Fired when the checkout has been successfully completed.     |
+| `error`     | `(error: {message: string}) => void`      | Fired when a checkout exception has been raised.             |
+| `pixel`     | `(event: PixelEvent) => void`             | Fired when a Web Pixel event has been relayed from checkout. |
 
 #### `addEventListener(eventName, callback)`
 
@@ -466,9 +541,13 @@ useEffect(() => {
     // Do something on checkout close
   });
 
-  const completed = shopifyCheckout.addEventListener('completed', () => {
-    // Do something on checkout completion
-  });
+  const completed = shopifyCheckout.addEventListener(
+    'completed',
+    (event: CheckoutCompletedEvent) => {
+      // Lookup order on checkout completion
+      const orderId = event.orderDetails.id;
+    },
+  );
 
   const error = shopifyCheckout.addEventListener(
     'error',
@@ -565,10 +644,9 @@ external identity system and initialize a buyer-aware checkout session.
    `checkoutUrl`
 2. Provide the Multipass URL to `present(checkoutUrl)`
 
-> [!IMPORTANT]
-> The above JSON omits useful customer attributes that should be provided
-> where possible and encryption and signing should be done server-side to ensure
-> Multipass keys are kept secret._
+> [!IMPORTANT] The above JSON omits useful customer attributes that should be
+> provided where possible and encryption and signing should be done server-side
+> to ensure Multipass keys are kept secret.\_
 
 #### Shop Pay
 
@@ -595,7 +673,8 @@ see [guidelines and instructions](.github/CONTRIBUTING.md). See
 
 #### Running the sample app
 
-To run the sample app in this repo, first clone the repo and run the following commands at the root of the project directory.
+To run the sample app in this repo, first clone the repo and run the following
+commands at the root of the project directory.
 
 #### Install NPM dependencies
 
@@ -617,7 +696,8 @@ yarn module build
 
 #### Update the dotenv file
 
-Replace the details in the `sample/.env.example` file and rename it to `sample/.env`
+Replace the details in the `sample/.env.example` file and rename it to
+`sample/.env`
 
 ```
 # Storefront Details
