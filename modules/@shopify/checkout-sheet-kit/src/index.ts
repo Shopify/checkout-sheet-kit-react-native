@@ -27,9 +27,8 @@ import {
   EmitterSubscription,
 } from 'react-native';
 import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
-import {CheckoutEvent} from './index.d';
+import {CheckoutEvent, ColorScheme} from './index.d';
 import type {
-  ColorScheme,
   CheckoutEventCallback,
   Configuration,
   ShopifyCheckoutSheetKit,
@@ -78,18 +77,22 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     RNShopifyCheckoutSheetKit.setConfig(configuration);
   }
 
-  public addEventListener<T extends CheckoutEvent>(
-    event: T,
-    callback: CheckoutEventCallback[T],
+  public addEventListener(
+    event: CheckoutEvent,
+    callback: CheckoutEventCallback,
   ): EmitterSubscription | undefined {
-    let eventCallback;
+    let eventCallback: CheckoutEventCallback;
 
     switch (event) {
-      case CheckoutEvent.Pixel:
-        eventCallback = this.handleWebPixelEvent(callback);
+      case 'pixel':
+        eventCallback = this.handleWebPixelEvent(
+          callback as PixelEventCallback,
+        );
         break;
-      case CheckoutEvent.Completed:
-        eventCallback = this.handleCompletedEvent(callback);
+      case 'completed':
+        eventCallback = this.handleCompletedEvent(
+          callback as CheckoutCompletedEventCallback,
+        );
         break;
       default:
         eventCallback = callback;
@@ -111,7 +114,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     /**
      * Event data can be sent back as either a parsed Pixel Event object or a JSON string.
      */
-    const cb = (eventData: string | PixelEvent): void => {
+    return (eventData: string | PixelEvent): void => {
       try {
         if (typeof eventData === 'string') {
           try {
@@ -150,8 +153,6 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
         console.error(parseError);
       }
     };
-
-    return cb;
   }
 
   private handleCompletedEvent(
@@ -160,7 +161,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     /**
      * Event data can be sent back as either a parsed Event object or a JSON string.
      */
-    const cb = (eventData: string | CheckoutCompletedEvent): void => {
+    return (eventData: string | CheckoutCompletedEvent): void => {
       try {
         if (typeof eventData === 'string') {
           try {
@@ -190,8 +191,6 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
         console.error(parseError);
       }
     };
-
-    return cb;
   }
 }
 

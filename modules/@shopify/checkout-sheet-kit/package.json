@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "react-native-builder-bob": "^0.23.1",
-    "typescript": "^5.3.2"
+    "typescript": "^5.4.2"
   },
   "react-native-builder-bob": {
     "source": "src",
