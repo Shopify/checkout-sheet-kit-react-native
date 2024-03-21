@@ -27,12 +27,13 @@ import {
   EmitterSubscription,
 } from 'react-native';
 import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
-import {CheckoutEvent, ColorScheme} from './index.d';
+import {ColorScheme} from './index.d';
 import type {
+  CheckoutEvent,
   CheckoutEventCallback,
+  CheckoutException,
   Configuration,
   ShopifyCheckoutSheetKit,
-  CheckoutException,
 } from './index.d';
 import type {CustomEvent, PixelEvent} from './pixels';
 
@@ -123,13 +124,13 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     return eventData;
   }
 
+  /**
+   * Event data can be sent back as either a parsed Event object or a JSON string.
+   */
   private interceptEventEmission(
     callback: CheckoutEventCallback,
-    transformData?: (...args: any[]) => void,
+    transformData?: (data: any) => any,
   ): (eventData: string | typeof callback) => void {
-    /**
-     * Event data can be sent back as either a parsed Event object or a JSON string.
-     */
     return (eventData: string | typeof callback): void => {
       try {
         if (typeof eventData === 'string') {
