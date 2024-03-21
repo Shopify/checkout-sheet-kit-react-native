@@ -112,10 +112,15 @@ function App() {
 See [Usage with the Storefront API](#usage-with-the-storefront-api) below on how
 to get a checkout URL to pass to the kit.
 
-> [!NOTE] The recommended usage of the library is through a
+<!-- prettier-ignore-start -->
+
+> [!NOTE]
+> The recommended usage of the library is through a
 > `ShopifyCheckoutSheetProvider` Context provider, but see
 > [Programmatic usage](#programamatic-usage) below for details on how to use the
 > library without React context.
+
+<!-- prettier-ignore-end -->
 
 ### Programmatic Usage
 
@@ -263,9 +268,14 @@ function App() {
 }
 ```
 
-> [!TIP] To help optimize and deliver the best experience the SDK also provides
+<!-- prettier-ignore-start -->
+
+> [!TIP]
+> To help optimize and deliver the best experience the SDK also provides
 > a [preloading API](#preloading) that can be used to initialize the checkout
 > session in the background and ahead of time.
+
+<!-- prettier-ignore-end -->
 
 ### Configuration
 
@@ -424,8 +434,13 @@ to the "android/app/src/res/values/strings.xml" file for your application.
 </resources>
 ```
 
-> [!IMPORTANT] > `title` will only affect iOS. For Android you **must** use
+<!-- prettier-ignore-start -->
+
+> [!IMPORTANT]
+> The `title` configuration attribute will only affect iOS. For Android you **must** use
 > `res/values/strings.xml`.
+
+<!-- prettier-ignore-end -->
 
 #### Currency
 
@@ -644,9 +659,14 @@ external identity system and initialize a buyer-aware checkout session.
    `checkoutUrl`
 2. Provide the Multipass URL to `present(checkoutUrl)`
 
-> [!IMPORTANT] The above JSON omits useful customer attributes that should be
+<!-- prettier-ignore-start -->
+
+> [!IMPORTANT]
+> The above JSON omits useful customer attributes that should be
 > provided where possible and encryption and signing should be done server-side
-> to ensure Multipass keys are kept secret.\_
+> to ensure Multipass keys are kept secret.
+
+<!-- prettier-ignore-end -->
 
 #### Shop Pay
 
