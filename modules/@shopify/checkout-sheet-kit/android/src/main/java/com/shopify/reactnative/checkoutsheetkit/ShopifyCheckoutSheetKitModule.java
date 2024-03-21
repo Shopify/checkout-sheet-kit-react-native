@@ -37,6 +37,7 @@ import com.shopify.checkoutsheetkit.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   private static final String MODULE_NAME = "ShopifyCheckoutSheetKit";
@@ -79,10 +80,10 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     Activity currentActivity = getCurrentActivity();
     if (currentActivity instanceof ComponentActivity) {
       Context appContext = getReactApplicationContext();
-      CheckoutEventProcessor checkoutEventProcessor = new CustomCheckoutEventProcessor(appContext, this.reactContext);
+      DefaultCheckoutEventProcessor checkoutEventProcessor = new CustomCheckoutEventProcessor(appContext, this.reactContext);
       currentActivity.runOnUiThread(() -> {
         ShopifyCheckoutSheetKit.present(checkoutURL, (ComponentActivity) currentActivity,
-            checkoutEventProcessor);
+          checkoutEventProcessor);
       });
     }
   }
@@ -119,7 +120,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
       return false;
     }
 
-    String[] colorKeys = { "backgroundColor", "spinnerColor", "headerTextColor", "headerBackgroundColor" };
+    String[] colorKeys = { "backgroundColor", "progressIndicator", "headerTextColor", "headerBackgroundColor" };
 
     for (String key : colorKeys) {
       if (!config.hasKey(key) || config.getString(key) == null || parseColor(config.getString(key)) == null) {
@@ -166,14 +167,14 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     Color webViewBackground = parseColorFromConfig(config, "backgroundColor");
     Color headerBackground = parseColorFromConfig(config, "headerBackgroundColor");
     Color headerFont = parseColorFromConfig(config, "headerTextColor");
-    Color spinnerColor = parseColorFromConfig(config, "spinnerColor");
+    Color progressIndicator = parseColorFromConfig(config, "progressIndicator");
 
-    if (webViewBackground != null && spinnerColor != null && headerFont != null && headerBackground != null) {
+    if (webViewBackground != null && progressIndicator != null && headerFont != null && headerBackground != null) {
       return new Colors(
           webViewBackground,
           headerBackground,
           headerFont,
-          spinnerColor);
+        progressIndicator);
     }
 
     return null;
@@ -222,7 +223,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
       }
 
       if (config.hasKey("colorScheme")) {
-        ColorScheme colorScheme = getColorScheme(config.getString("colorScheme"));
+        ColorScheme colorScheme = getColorScheme(Objects.requireNonNull(config.getString("colorScheme")));
         ReadableMap colorsConfig = config.hasKey("colors") ? config.getMap("colors") : null;
         ReadableMap androidConfig = null;
 
@@ -230,7 +231,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
           androidConfig = colorsConfig.getMap("android");
         }
 
-        if (androidConfig != null && this.isValidColorConfig(androidConfig)) {
+        if (this.isValidColorConfig(androidConfig)) {
           ColorScheme colorSchemeWithOverrides = getColors(colorScheme, androidConfig);
           if (colorSchemeWithOverrides != null) {
             configuration.setColorScheme(colorSchemeWithOverrides);
@@ -264,6 +265,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
       if (colorStr.length() == 6) {
         // If alpha is not included, assume full opacity
+        // "L" is not needed here on the end of the hex value
         color = color | 0xFF000000;
       }
 

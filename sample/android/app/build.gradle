@@ -123,6 +123,7 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    implementation project(":react-native-config")
 
     // Test dependencies
     testImplementation "junit:junit:4.13.2"
@@ -152,3 +153,5 @@ project.ext.vectoricons = [
 apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 
 apply from: file("../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"

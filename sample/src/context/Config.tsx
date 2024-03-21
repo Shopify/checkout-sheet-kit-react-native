@@ -53,7 +53,6 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
         // Store it in local state
         setInternalConfig(config);
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error('Failed to fetch Shopify checkout configuration', error);
       }
     }
@@ -80,7 +79,6 @@ export const ConfigProvider: React.FC<PropsWithChildren> = ({children}) => {
 
         return updatedConfig;
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error('Failed to configure Shopify checkout', error);
         return undefined;
       }

@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
 import com.shopify.checkoutsheetkit.pixelevents.*;
+import com.shopify.checkoutsheetkit.lifecycleevents.*;
 import com.shopify.reactnative.checkoutsheetkit.ShopifyCheckoutSheetKitModule;
 import com.shopify.reactnative.checkoutsheetkit.CustomCheckoutEventProcessor;
 
@@ -26,6 +27,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 import android.content.Context;
+
+import java.util.ArrayList;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ShopifyCheckoutSheetKitModuleTest {
@@ -142,7 +145,27 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     verify(mockEventEmitter).emit(eq("pixel"), stringCaptor.capture());
 
-    System.out.print(stringCaptor.getValue());
     assertTrue(stringCaptor.getValue().contains("\"id\":\"test\",\"name\":\"custom\",\"timestamp\":\"timestamp\",\"type\":\"CUSTOM\",\"context\":null,\"customData\":\"\\\\{\\\"customAttribute\\\":123\\\\}\""));
+  }
+
+  @Test
+  public void sendsCompletedEvent() {
+    CheckoutCompletedEvent event = new CheckoutCompletedEvent(
+        new OrderDetails(
+          null,
+          new CartInfo(new ArrayList<>(), new Price(), ""),
+          new ArrayList<>(),
+          null,
+          "test",
+          new ArrayList<>(),
+          null
+        )
+      );
+
+    customCheckoutEventProcessor.onCheckoutCompleted(event);
+
+    verify(mockEventEmitter).emit(eq("completed"), stringCaptor.capture());
+
+    assertTrue(stringCaptor.getValue().contains("{\"orderDetails\":{\"billingAddress\":null,\"cart\":{\"lines\":[],\"price\":{\"discounts\":[],\"shipping\":null,\"subtotal\":null,\"taxes\":null,\"total\":null},\"token\":\"\"},\"deliveries\":[],\"email\":null,\"id\":\"test\",\"paymentMethods\":[],\"phone\":null}}"));
   }
 }

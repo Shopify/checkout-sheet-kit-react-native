@@ -1,6 +1,6 @@
 /* eslint-disable no-new */
 
-import {ShopifyCheckoutSheet, WebPixelsParseError} from '../src';
+import {LifecycleEventParseError, ShopifyCheckoutSheet} from '../src';
 import {ColorScheme, type Configuration} from '../src';
 import {NativeModules} from 'react-native';
 
@@ -150,91 +150,160 @@ describe('ShopifyCheckoutSheetKit', () => {
       );
     });
 
-    it('parses web pixel event JSON string data', () => {
-      const instance = new ShopifyCheckoutSheet();
-      const eventName = 'pixel';
-      const callback = jest.fn();
-      instance.addEventListener(eventName, callback);
-      NativeModules.ShopifyCheckoutSheetKit.addEventListener(
-        eventName,
-        callback,
-      );
-      expect(eventEmitter.addListener).toHaveBeenCalledWith(
-        'pixel',
-        expect.any(Function),
-      );
-      eventEmitter.emit('pixel', JSON.stringify({someAttribute: 123}));
-      expect(callback).toHaveBeenCalledWith({someAttribute: 123});
-    });
-
-    it('parses custom web pixel event data', () => {
-      const instance = new ShopifyCheckoutSheet();
-      const eventName = 'pixel';
-      const callback = jest.fn();
-      instance.addEventListener(eventName, callback);
-      NativeModules.ShopifyCheckoutSheetKit.addEventListener(
-        eventName,
-        callback,
-      );
-      expect(eventEmitter.addListener).toHaveBeenCalledWith(
-        'pixel',
-        expect.any(Function),
-      );
-      eventEmitter.emit(
-        'pixel',
-        JSON.stringify({
+    describe('Pixel Events', () => {
+      it('parses web pixel event JSON string data', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'pixel';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          eventName,
+          callback,
+        );
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'pixel',
+          expect.any(Function),
+        );
+        eventEmitter.emit(
+          'pixel',
+          JSON.stringify({type: 'STANDARD', someAttribute: 123}),
+        );
+        expect(callback).toHaveBeenCalledWith({
+          type: 'STANDARD',
           someAttribute: 123,
-          customData: JSON.stringify({valid: true}),
-        }),
-      );
-      expect(callback).toHaveBeenCalledWith({
-        someAttribute: 123,
-        customData: {valid: true},
+        });
       });
-    });
 
-    it('fails gracefully if custom event data cannot be parsed', () => {
-      const instance = new ShopifyCheckoutSheet();
-      const eventName = 'pixel';
-      const callback = jest.fn();
-      instance.addEventListener(eventName, callback);
-      NativeModules.ShopifyCheckoutSheetKit.addEventListener(
-        eventName,
-        callback,
-      );
-      expect(eventEmitter.addListener).toHaveBeenCalledWith(
-        'pixel',
-        expect.any(Function),
-      );
-      eventEmitter.emit(
-        'pixel',
-        JSON.stringify({
+      it('parses custom web pixel event data', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'pixel';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          eventName,
+          callback,
+        );
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'pixel',
+          expect.any(Function),
+        );
+        eventEmitter.emit(
+          'pixel',
+          JSON.stringify({
+            type: 'CUSTOM',
+            someAttribute: 123,
+            customData: JSON.stringify({valid: true}),
+          }),
+        );
+        expect(callback).toHaveBeenCalledWith({
+          type: 'CUSTOM',
+          someAttribute: 123,
+          customData: {valid: true},
+        });
+      });
+
+      it('fails gracefully if custom event data cannot be parsed', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'pixel';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          eventName,
+          callback,
+        );
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'pixel',
+          expect.any(Function),
+        );
+        eventEmitter.emit(
+          'pixel',
+          JSON.stringify({
+            type: 'CUSTOM',
+            someAttribute: 123,
+            customData: 'Invalid JSON',
+          }),
+        );
+        expect(callback).toHaveBeenCalledWith({
+          type: 'CUSTOM',
           someAttribute: 123,
           customData: 'Invalid JSON',
-        }),
-      );
-      expect(callback).toHaveBeenCalledWith({
-        someAttribute: 123,
-        customData: 'Invalid JSON',
+        });
+      });
+
+      it('prints an error if the web pixel event data cannot be parsed', () => {
+        const mock = jest.spyOn(global.console, 'error');
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'pixel';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          eventName,
+          callback,
+        );
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'pixel',
+          expect.any(Function),
+        );
+        eventEmitter.emit('pixel', '{"someAttribute": 123');
+        expect(mock).toHaveBeenCalledWith(expect.any(LifecycleEventParseError));
       });
     });
 
-    it('prints an error if the web pixel event data cannot be parsed', () => {
-      const mock = jest.spyOn(global.console, 'error');
-      const instance = new ShopifyCheckoutSheet();
-      const eventName = 'pixel';
-      const callback = jest.fn();
-      instance.addEventListener(eventName, callback);
-      NativeModules.ShopifyCheckoutSheetKit.addEventListener(
-        eventName,
-        callback,
-      );
-      expect(eventEmitter.addListener).toHaveBeenCalledWith(
-        'pixel',
-        expect.any(Function),
-      );
-      eventEmitter.emit('pixel', '{"someAttribute": 123');
-      expect(mock).toHaveBeenCalledWith(expect.any(WebPixelsParseError));
+    describe('Completed Event', () => {
+      it('parses completed event string data as JSON', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'completed';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          eventName,
+          callback,
+        );
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'completed',
+          expect.any(Function),
+        );
+        eventEmitter.emit(
+          'completed',
+          JSON.stringify({orderDetails: {id: 'test-id'}}),
+        );
+        expect(callback).toHaveBeenCalledWith({orderDetails: {id: 'test-id'}});
+      });
+
+      it('parses completed event JSON data', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'completed';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          eventName,
+          callback,
+        );
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'completed',
+          expect.any(Function),
+        );
+        eventEmitter.emit('completed', {orderDetails: {id: 'test-id'}});
+        expect(callback).toHaveBeenCalledWith({orderDetails: {id: 'test-id'}});
+      });
+
+      it('prints an error if the completed event data cannot be parsed', () => {
+        const mock = jest.spyOn(global.console, 'error');
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'completed';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          eventName,
+          callback,
+        );
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'completed',
+          expect.any(Function),
+        );
+        eventEmitter.emit('completed', 'INVALID JSON');
+        expect(mock).toHaveBeenCalledWith(expect.any(LifecycleEventParseError));
+      });
     });
   });
 

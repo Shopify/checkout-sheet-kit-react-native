@@ -26,35 +26,42 @@ package com.shopify.reactnative.checkoutsheetkit;
 import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.shopify.checkoutsheetkit.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 
 public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
-  private final ReactContext reactContext;
+  private final ReactApplicationContext reactContext;
 
-  public CustomCheckoutEventProcessor(Context context, ReactContext reactContext) {
+  private final ObjectMapper mapper = new ObjectMapper();
+
+  public CustomCheckoutEventProcessor(Context context, ReactApplicationContext reactContext) {
     super(context);
 
     this.reactContext = reactContext;
   }
 
   @Override
-  public void onCheckoutCompleted() {
-    sendEvent("completed", null);
+  public void onCheckoutCompleted(@NonNull CheckoutCompletedEvent event) {
+    try {
+      String data = mapper.writeValueAsString(event);
+      sendEventWithStringData("completed", data);
+    } catch (IOException e) {
+      Log.e("ShopifyCheckoutSheetKit", "Error processing completed event", e);
+    }
   }
 
   @Override
   public void onWebPixelEvent(@NonNull PixelEvent event) {
     try {
-      ObjectMapper mapper = new ObjectMapper();
       String data = mapper.writeValueAsString(event);
-      sendPixelEvent(data);
+      sendEventWithStringData("pixel", data);
     } catch (IOException e) {
       Log.e("ShopifyCheckoutSheetKit", "Error processing pixel event", e);
     }
@@ -80,9 +87,9 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
         .emit(eventName, params);
   }
 
-  private void sendPixelEvent(String data) {
+  private void sendEventWithStringData(String name, String data) {
     reactContext
       .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-      .emit("pixel", data);
+      .emit(name, data);
   }
 }

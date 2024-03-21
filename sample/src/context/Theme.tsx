@@ -28,7 +28,7 @@ export const darkColors: Colors = {
   secondaryText: '#fff',
 
   webviewBackgroundColor: '#1D1D1F',
-  webviewSpinnerColor: '#0B96F1',
+  webViewProgressIndicator: '#0B96F1',
   webviewHeaderBackgroundColor: '#1D1D1F',
   webviewHeaderTextColor: '#ffffff',
 };
@@ -45,7 +45,7 @@ export const lightColors: Colors = {
   secondaryText: '#fff',
 
   webviewBackgroundColor: '#ffffff',
-  webviewSpinnerColor: '#0087ff',
+  webViewProgressIndicator: '#0087ff',
   webviewHeaderBackgroundColor: '#ffffff',
   webviewHeaderTextColor: '#000000',
 };
@@ -62,7 +62,7 @@ export const webColors: Colors = {
   secondaryText: '#fff',
 
   webviewBackgroundColor: '#f0f0e8',
-  webviewSpinnerColor: '#2c2a38',
+  webViewProgressIndicator: '#2c2a38',
   webviewHeaderBackgroundColor: '#f0f0e8',
   webviewHeaderTextColor: '#2c2a38',
 };
@@ -85,7 +85,7 @@ export interface Colors {
   secondary: string;
   secondaryText: string;
   webviewBackgroundColor: string;
-  webviewSpinnerColor: string;
+  webViewProgressIndicator: string;
   webviewHeaderBackgroundColor: string;
   webviewHeaderTextColor: string;
 }

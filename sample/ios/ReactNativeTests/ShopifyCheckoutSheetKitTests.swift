@@ -67,7 +67,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
       "colorScheme": "dark",
       "colors": [
         "ios": [
-          "spinnerColor": "#FF0000",
+          "tintColor": "#FF0000",
           "backgroundColor": "#0000FF"
         ]
       ]
@@ -77,7 +77,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
 
     XCTAssertTrue(ShopifyCheckoutSheetKit.configuration.preloading.enabled)
     XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.colorScheme, .dark)
-    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.spinnerColor, UIColor(hex: "#FF0000"))
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.tintColor, UIColor(hex: "#FF0000"))
     XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.backgroundColor, UIColor(hex: "#0000FF"))
   }
 
@@ -95,7 +95,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     let configuration: [AnyHashable: Any] = [
       "colors": [
         "ios": [
-          "spinnerColor": "invalid"
+          "tintColor": "invalid"
         ]
       ]
     ]
@@ -103,17 +103,57 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     let defaultColorFallback = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
     shopifyCheckoutSheetKit.setConfig(configuration)
 
-    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.spinnerColor, defaultColorFallback)
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.tintColor, defaultColorFallback)
   }
 
   /// checkoutDidComplete
   func testCheckoutDidCompleteSendsEvent() {
+    let event = CheckoutCompletedEvent(
+      orderDetails: CheckoutCompletedEvent.OrderDetails(
+        billingAddress: CheckoutCompletedEvent.Address(
+          address1: "650 King Street",
+          address2: nil,
+          city: "Toronto",
+          countryCode: "CA",
+          firstName: "Evelyn",
+          lastName: "Hartley",
+          name: "Shopify",
+          phone: nil,
+          postalCode: nil,
+          referenceId: nil,
+          zoneCode: "ON"
+        ),
+        cart: CheckoutCompletedEvent.CartInfo(
+          lines: [],
+          price: CheckoutCompletedEvent.Price(
+            discounts: nil,
+            shipping: CheckoutCompletedEvent.Money(amount: nil, currencyCode: nil),
+            subtotal: CheckoutCompletedEvent.Money(amount: nil, currencyCode: nil),
+            taxes: CheckoutCompletedEvent.Money(amount: nil, currencyCode: nil),
+            total: CheckoutCompletedEvent.Money(amount: nil, currencyCode: nil)
+          ),
+          token: "token"
+        ),
+        deliveries: nil,
+        email: "test@shopify.com",
+        id: "test-order-id",
+        paymentMethods: nil,
+        phone: nil
+      )
+    )
     let mock = mockSendEvent(eventName: "completed")
 
     mock.startObserving()
-    mock.checkoutDidComplete()
+    mock.checkoutDidComplete(event: event)
 
     XCTAssertTrue(mock.didSendEvent)
+    if let eventBody = mock.eventBody as? CheckoutCompletedEvent {
+      XCTAssertEqual(eventBody.orderDetails.id, "test-order-id")
+      XCTAssertEqual(eventBody.orderDetails.billingAddress?.address1, "650 King Street")
+      XCTAssertEqual(eventBody.orderDetails.billingAddress?.name, "Shopify")
+      XCTAssertEqual(eventBody.orderDetails.email, "test@shopify.com")
+      XCTAssertEqual(eventBody.orderDetails.cart.token, "token")
+    }
   }
 
   /// checkoutDidCancel

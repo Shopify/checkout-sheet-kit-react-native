@@ -39,6 +39,19 @@ jobs:
 
       - run: ./scripts/compare_snapshot
 
+  lint:
+    name: Lint module + sample
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - run: |
+          yarn module lint
+          yarn sample lint
+
   test:
     name: Run jest tests
     runs-on: ubuntu-latest
@@ -53,6 +66,7 @@ jobs:
   test-android:
     name: Run Android Tests
     runs-on: ubuntu-latest
+    needs: [lint, test]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -75,6 +89,7 @@ jobs:
   test-ios:
     name: Run iOS Tests
     runs-on: macos-13
+    needs: [lint, lint-swift, test]
     steps:
       - name: Checkout
         uses: actions/checkout@v3

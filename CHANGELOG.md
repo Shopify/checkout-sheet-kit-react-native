@@ -1,5 +1,45 @@
 # Changelog
 
+## 2.0.0 - March 21, 2024
+
+### Updated dependencies
+
+- [`checkout-sheet-kit-swift@2.0.1`](https://github.com/Shopify/checkout-sheet-kit-swift/releases)
+- [`checkout-sheet-kit-android@2.0.1`](https://github.com/Shopify/checkout-sheet-kit-android/releases)
+
+### New features
+
+1. The loading spinner has been replaced by a progress bar. This will result in
+   a faster perceived load time since the SDK will now no longer wait for full
+   page load to show the DOM content.
+2. The "title" of the webview is now configurable via a `Localizable.xcstrings`
+   file on iOS, a `res/values/strings.xml` on Android or using the `title`
+   attribute on the ShopifyCheckoutSheetKit configuration.
+
+> [!IMPORTANT] 
+> The `title` attribute on the configuration will configure iOS _only_.
+
+```diff
+ShopifyCheckoutSheetKit.setConfig({
++ title: "Localized value"
+})
+```
+
+1. The `completed` event now returns details about the order, including the
+   order ID:
+
+```diff
+- const checkoutCompletedSubscription = shopify.addEventListener('completed', () => {
++ const checkoutCompletedSubscription = shopify.addEventListener('completed', event => {
++  console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
+});
+```
+
+### Breaking changes
+
+1. `spinnerColor` has been replaced by `tintColor` for iOS and
+   `progressIndicator` for android.
+
 ## 1.0.5 - March 5, 2024
 
 - Updates the underlying swift SDK from `1.0.1` to `1.0.2` to include
