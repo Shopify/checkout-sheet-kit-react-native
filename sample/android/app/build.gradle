@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
 project.ext["REACT_NATIVE_NODE_MODULES_DIR"] = file("../../../node_modules/react-native")
