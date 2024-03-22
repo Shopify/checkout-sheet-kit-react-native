@@ -184,7 +184,7 @@ function createStyles(colors: Colors) {
     },
     loading: {
       flex: 1,
-      p: 2,
+      padding: 2,
       justifyContent: 'center',
       alignItems: 'center',
     },
