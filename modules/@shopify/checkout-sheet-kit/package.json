@@ -65,5 +65,18 @@
         }
       ]
     ]
+  },
+  "codegenConfig": {
+    "name": "ShopifyCheckoutSheetKit",
+    "type": "all",
+    "jsSrcsDir": "src",
+    "outputDir": {
+      "ios": "./lib/ios",
+      "android": "./lib/android"
+    },
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "com.shopify.reactnative.checkoutsheetkit"
+    }
   }
 }
