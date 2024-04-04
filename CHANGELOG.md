@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1 - April 4, 2024
+
+- Fixes an issue where opening `mailto` links externally causes the application
+  to crash.
+
 ## 2.0.0 - March 21, 2024
 
 ### Updated dependencies
@@ -16,7 +21,8 @@
    file on iOS, a `res/values/strings.xml` on Android or using the `title`
    attribute on the ShopifyCheckoutSheetKit configuration.
 
-> [!IMPORTANT] 
+<!-- prettier-ignore -->
+> [!IMPORTANT]
 > The `title` attribute on the configuration will configure iOS _only_.
 
 ```diff
