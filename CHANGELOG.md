@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1 - April 17, 2024
+
+- Adds Expo [config plugin](https://docs.expo.io/guides/config-plugins/) to be
+  able to change Android Webview title in a managed Expo project.
+
 ## 2.0.1 - April 4, 2024
 
 - Fixes an issue where opening `mailto` links externally causes the application
