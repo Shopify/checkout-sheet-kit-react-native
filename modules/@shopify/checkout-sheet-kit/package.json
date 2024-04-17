@@ -25,6 +25,7 @@
     "README.md",
     "package.json",
     "src",
+    "app.plugin.js",
     "ios",
     "android",
     "lib",
@@ -49,6 +50,7 @@
     "react-native": "*"
   },
   "devDependencies": {
+    "@expo/config-plugins": "^7.9.1",
     "react-native-builder-bob": "^0.23.1",
     "typescript": "^5.4.2"
   },

@@ -336,7 +336,7 @@ behavior can be customized via the `colorScheme` property:
 
 | Name        | Default | Description                                                                                      |
 | ----------- | ------- | ------------------------------------------------------------------------------------------------ |
-| `automatic` | ✔       | Alternates between an idiomatic light and dark theme - depending on the users device preference. |
+| `automatic` | ✔      | Alternates between an idiomatic light and dark theme - depending on the users device preference. |
 | `light`     |         | Force the idomatic light theme.                                                                  |
 | `dark`      |         | Force the idomatic dark theme.                                                                   |
 | `web`       |         | Force your storefront web theme, as rendered by a mobile browser.                                |
@@ -425,13 +425,34 @@ following:
 ##### Android
 
 On Android, you can add a string entry for the key `"checkout_web_view_title"`
-to the "android/app/src/res/values/strings.xml" file for your application.
+to the "android/app/src/main/res/values/strings.xml" file for your application.
 
 ```diff
 <resources>
     <string name="app_name">Your App Name</string>
 +    <string name="checkout_web_view_title">Checkout</string>
 </resources>
+```
+
+If you use [Expo](https://expo.dev/), you can add the
+`@shopify/checkout-sheet-kit`
+[config plugin](https://docs.expo.io/guides/config-plugins/) to the
+[`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of
+your `app.json` or `app.config.js`:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "@shopify/checkout-sheet-kit",
+        {
+          "androidTitle": "My custom title"
+        }
+      ]
+    ]
+  }
+}
 ```
 
 <!-- prettier-ignore-start -->
