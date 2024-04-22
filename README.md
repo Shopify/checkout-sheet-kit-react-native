@@ -447,7 +447,11 @@ your `app.json` or `app.config.js`:
       [
         "@shopify/checkout-sheet-kit",
         {
-          "androidTitle": "My custom title"
+          "androidTitle": {
+            "default": "Checkout",
+            "fr": "Commander",
+            "es": "Comprar"
+          }
         }
       ]
     ]
