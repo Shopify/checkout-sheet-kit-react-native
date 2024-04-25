@@ -1,0 +1,72 @@
+name: 🐛 Bug Report
+description: Something is wrong with the Checkout Sheet Kit.
+labels:
+  - 'Bug'
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Hi there!
+
+        If your issue is **not** related to the Checkout Sheet Kit itself, but rather an internal checkout or storefront problem, please reach out to Shopify support directly where the issue will be triaged correctly.
+
+  - type: dropdown
+    attributes:
+      label: What area is the issue related to?
+      options:
+        - Checkout Sheet Kit
+        - Storefront API
+        - Multipass
+        - Lifecycle methods
+        - Web Pixels
+        - Other / I don't know
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: What version of `@shopify/checkout-sheet-kit` are you using?
+      description: Please list the package version and device you are testing with.
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Do you have a minimum reproducible example?
+      description: (Optional) This will help us debug the issue more quickly.
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Steps to Reproduce
+      description: A list of steps to reproduce the behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: A concise description of what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Actual Behavior
+      description: A concise description of what you're experiencing.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Screenshots/Videos/Log output
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Storefront domain
+      description: (Optional) This will expedite our search for any errors that occurred.
+    validations:
+      required: false
