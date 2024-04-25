@@ -30,7 +30,7 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: textarea
     attributes:
       label: Do you have a minimum reproducible example?
       description: (Optional) This will help us debug the issue more quickly.
