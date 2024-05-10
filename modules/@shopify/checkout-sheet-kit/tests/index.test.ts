@@ -1,7 +1,19 @@
 /* eslint-disable no-new */
 
-import {LifecycleEventParseError, ShopifyCheckoutSheet} from '../src';
-import {ColorScheme, type Configuration} from '../src';
+import {
+  LifecycleEventParseError,
+  ShopifyCheckoutSheet,
+  CheckoutErrorCode,
+  SDKError,
+  ConfigurationError,
+  CheckoutUnavailableError,
+  CheckoutExpiredError,
+} from '../src';
+import {
+  ColorScheme,
+  type Configuration,
+  type AuthenticationError,
+} from '../src';
 import {NativeModules} from 'react-native';
 
 const checkoutUrl = 'https://shopify.com/checkout';
@@ -303,6 +315,68 @@ describe('ShopifyCheckoutSheetKit', () => {
         );
         eventEmitter.emit('completed', 'INVALID JSON');
         expect(mock).toHaveBeenCalledWith(expect.any(LifecycleEventParseError));
+      });
+    });
+
+    describe('Error Event', () => {
+      const authError: AuthenticationError = {
+        __typename: 'AuthenticationError',
+        message: 'Customer Account Required',
+        code: CheckoutErrorCode.customerAccountRequired,
+        recoverable: false,
+      };
+
+      const internalError: SDKError = {
+        __typename: 'SDKError',
+        message: 'Something went wrong',
+        recoverable: true,
+      };
+
+      const configError: ConfigurationError = {
+        __typename: 'ConfigurationError',
+        message: 'Customer Account Required',
+        code: CheckoutErrorCode.customerAccountRequired,
+        recoverable: false,
+      };
+
+      const unavailableError: CheckoutUnavailableError = {
+        __typename: 'CheckoutUnavailableError',
+        message: 'Customer Account Required',
+        code: {
+          __typename: 'ClientError',
+          code: CheckoutErrorCode.customerAccountRequired,
+        },
+        recoverable: false,
+      };
+
+      const expiredError: CheckoutExpiredError = {
+        __typename: 'CheckoutExpiredError',
+        message: 'Customer Account Required',
+        code: CheckoutErrorCode.customerAccountRequired,
+        recoverable: false,
+      };
+
+      it.each([
+        authError,
+        internalError,
+        configError,
+        unavailableError,
+        expiredError,
+      ])('correctly parses error event data', error => {
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'error';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          eventName,
+          callback,
+        );
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'error',
+          expect.any(Function),
+        );
+        eventEmitter.emit('error', JSON.stringify(error));
+        expect(callback).toHaveBeenCalledWith(error);
       });
     });
   });

@@ -129,7 +129,11 @@ function AppWithContext({children}: PropsWithChildren) {
     const error = shopify.addEventListener(
       'error',
       (error: CheckoutException) => {
-        console.log('[CheckoutError]', error);
+        console.log('[CheckoutError]', {
+          message: error.message,
+          recoverable: error.recoverable,
+          code: 'code' in error ? error.code : undefined,
+        });
       },
     );
 

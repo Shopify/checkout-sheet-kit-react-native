@@ -31,10 +31,18 @@ import {ColorScheme} from './index.d';
 import type {
   CheckoutEvent,
   CheckoutEventCallback,
-  CheckoutException,
   Configuration,
   ShopifyCheckoutSheetKit,
 } from './index.d';
+import type {
+  AuthenticationError,
+  CheckoutException,
+  CheckoutExpiredError,
+  CheckoutUnavailableError,
+  ConfigurationError,
+  SDKError,
+} from './errors.d';
+import {CheckoutErrorCode} from './errors.d';
 import type {CustomEvent, PixelEvent} from './pixels';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
@@ -91,6 +99,12 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
       case 'completed':
         eventCallback = this.interceptEventEmission(callback);
         break;
+      case 'error':
+        eventCallback = this.interceptEventEmission(
+          callback,
+          this.parseCheckoutError,
+        );
+        break;
       default:
         eventCallback = callback;
     }
@@ -122,6 +136,23 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     }
 
     return eventData;
+  }
+
+  private parseCheckoutError(exception: CheckoutException): CheckoutException {
+    switch (exception.__typename) {
+      case 'AuthenticationError':
+        return exception as AuthenticationError;
+      case 'SDKError':
+        return exception as SDKError;
+      case 'ConfigurationError':
+        return exception as ConfigurationError;
+      case 'CheckoutUnavailableError':
+        return exception as CheckoutUnavailableError;
+      case 'CheckoutExpiredError':
+        return exception as CheckoutExpiredError;
+      default:
+        return exception;
+    }
   }
 
   /**
@@ -186,7 +217,18 @@ export {
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
   ColorScheme,
+  CheckoutErrorCode,
 };
 
 // Types
-export {CheckoutEvent, CheckoutException, CheckoutEventCallback, Configuration};
+export type {
+  CheckoutEvent,
+  CheckoutException,
+  CheckoutEventCallback,
+  Configuration,
+  AuthenticationError,
+  CheckoutExpiredError,
+  CheckoutUnavailableError,
+  ConfigurationError,
+  SDKError,
+};
