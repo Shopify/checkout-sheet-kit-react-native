@@ -31,48 +31,81 @@ export enum CheckoutErrorCode {
   unknown = 'unknown',
 }
 
-export interface ClientError {
-  __typename: 'ClientError';
-  code: CheckoutErrorCode;
+export enum CheckoutNativeErrorType {
+  AuthenticationError = 'AuthenticationError',
+  InternalError = 'InternalError',
+  ConfigurationError = 'ConfigurationError',
+  CheckoutClientError = 'CheckoutClientError',
+  CheckoutHTTPError = 'CheckoutHTTPError',
+  CheckoutExpiredError = 'CheckoutExpiredError',
+  UnknownError = 'UnknownError',
 }
 
-export interface HTTPError {
-  __typename: 'HTTPError';
-  statusCode: number;
-}
+export type CheckoutNativeError =
+  | {
+      __typename: CheckoutNativeErrorType;
+      message: string;
+      recoverable: boolean;
+    }
+  | {
+      __typename: CheckoutNativeErrorType;
+      code: string;
+      message: string;
+      recoverable: boolean;
+    }
+  | {
+      __typename: CheckoutNativeErrorType;
+      message: string;
+      recoverable: boolean;
+      statusCode: number;
+    };
 
-export interface GenericCheckoutError {
+class GenericErrorWithCode {
   message: string;
   recoverable: boolean;
+  code: string;
+
+  constructor(exception: CheckoutNativeError) {
+    this.code = exception.code;
+    this.message = exception.message;
+    this.recoverable = exception.recoverable;
+    this.name = this.constructor.name;
+  }
 }
 
-export interface AuthenticationError extends GenericCheckoutError {
-  __typename: 'AuthenticationError';
-  code: CheckoutErrorCode;
+class GenericNetworkError {
+  message: string;
+  recoverable: boolean;
+  statusCode: number;
+
+  constructor(exception: CheckoutNativeError) {
+    this.statusCode = exception.statusCode;
+    this.message = exception.message;
+    this.recoverable = exception.recoverable;
+    this.name = this.constructor.name;
+  }
 }
 
-export interface SDKError extends GenericCheckoutError {
-  __typename: 'SDKError';
-}
+export class AuthenticationError extends GenericErrorWithCode {}
+export class ConfigurationError extends GenericErrorWithCode {}
+export class CheckoutClientError extends GenericErrorWithCode {}
+export class CheckoutExpiredError extends GenericErrorWithCode {}
+export class CheckoutHTTPError extends GenericNetworkError {}
 
-export interface ConfigurationError extends GenericCheckoutError {
-  __typename: 'ConfigurationError';
-  code: CheckoutErrorCode;
-}
+export class InternalError {
+  message: string;
+  recoverable: boolean;
 
-export interface CheckoutUnavailableError extends GenericCheckoutError {
-  __typename: 'CheckoutUnavailableError';
-  code: ClientError | HTTPError;
-}
-
-export interface CheckoutExpiredError extends GenericCheckoutError {
-  __typename: 'CheckoutExpiredError';
-  code: CheckoutErrorCode;
+  constructor(exception: CheckoutNativeError) {
+    this.message = exception.message;
+    this.recoverable = exception.recoverable;
+  }
 }
 
 export type CheckoutException =
   | AuthenticationError
-  | SDKError
+  | InternalError
   | ConfigurationError
-  | CheckoutUnavailableError
+  | CheckoutClientError
+  | CheckoutHTTPError
   | CheckoutExpiredError;

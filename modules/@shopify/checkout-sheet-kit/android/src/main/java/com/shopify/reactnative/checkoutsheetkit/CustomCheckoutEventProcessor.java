@@ -69,11 +69,42 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
   @Override
   public void onCheckoutFailed(CheckoutException checkoutError) {
-    WritableNativeMap error = new WritableNativeMap();
+    sendEvent("error", populateErrorDetails(checkoutError));
+  }
 
-    error.putString("message", checkoutError.getErrorDescription());
+  private WritableNativeMap populateErrorDetails(CheckoutException checkoutError) {
+    WritableNativeMap errorMap = new WritableNativeMap();
+    errorMap.putString("__typename", getErrorTypeName(checkoutError));
+    errorMap.putString("message", checkoutError.getErrorDescription());
+    errorMap.putBoolean("recoverable", checkoutError.isRecoverable());
 
-    sendEvent("error", error);
+    if (!(checkoutError instanceof HttpException) && !(checkoutError instanceof CheckoutSheetKitException)) {
+      errorMap.putString("code", checkoutError.getErrorCode());
+    }
+
+    if (checkoutError instanceof HttpException) {
+      errorMap.putDouble("statusCode", ((HttpException) checkoutError).getStatusCode());
+    }
+
+    return errorMap;
+  }
+
+  private String getErrorTypeName(CheckoutException error) {
+    if (error instanceof AuthenticationException) {
+      return "AuthenticationError";
+    } else if (error instanceof CheckoutExpiredException) {
+      return "CheckoutExpiredError";
+    } else if (error instanceof ClientException) {
+      return "CheckoutClientError";
+    } else if (error instanceof HttpException) {
+      return "CheckoutHTTPError";
+    } else if (error instanceof ConfigurationException) {
+      return "ConfigurationError";
+    } else if (error instanceof CheckoutSheetKitException) {
+      return "InternalError";
+    } else {
+      return "UnknownError";
+    }
   }
 
   @Override

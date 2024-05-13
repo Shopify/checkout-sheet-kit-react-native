@@ -34,13 +34,16 @@ import type {
   Configuration,
   ShopifyCheckoutSheetKit,
 } from './index.d';
-import type {
+import {
   AuthenticationError,
   CheckoutException,
   CheckoutExpiredError,
-  CheckoutUnavailableError,
+  CheckoutClientError,
+  CheckoutHTTPError,
   ConfigurationError,
-  SDKError,
+  InternalError,
+  CheckoutNativeError,
+  CheckoutNativeErrorType,
 } from './errors.d';
 import {CheckoutErrorCode} from './errors.d';
 import type {CustomEvent, PixelEvent} from './pixels';
@@ -138,18 +141,22 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     return eventData;
   }
 
-  private parseCheckoutError(exception: CheckoutException): CheckoutException {
-    switch (exception.__typename) {
-      case 'AuthenticationError':
-        return exception as AuthenticationError;
-      case 'SDKError':
-        return exception as SDKError;
-      case 'ConfigurationError':
-        return exception as ConfigurationError;
-      case 'CheckoutUnavailableError':
-        return exception as CheckoutUnavailableError;
-      case 'CheckoutExpiredError':
-        return exception as CheckoutExpiredError;
+  private parseCheckoutError(
+    exception: CheckoutNativeError,
+  ): CheckoutException {
+    switch (exception?.__typename) {
+      case CheckoutNativeErrorType.AuthenticationError:
+        return new AuthenticationError(exception);
+      case CheckoutNativeErrorType.InternalError:
+        return new InternalError(exception);
+      case CheckoutNativeErrorType.ConfigurationError:
+        return new ConfigurationError(exception);
+      case CheckoutNativeErrorType.CheckoutClientError:
+        return new CheckoutClientError(exception);
+      case CheckoutNativeErrorType.CheckoutHTTPError:
+        return new CheckoutHTTPError(exception);
+      case CheckoutNativeErrorType.CheckoutExpiredError:
+        return new CheckoutExpiredError(exception);
       default:
         return exception;
     }
@@ -180,7 +187,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
             console.error(parseError);
           }
         } else if (eventData && typeof eventData === 'object') {
-          callback(eventData);
+          callback(transformData?.(eventData) ?? eventData);
         }
       } catch (error) {
         const parseError = new LifecycleEventParseError(
@@ -213,22 +220,28 @@ export class LifecycleEventParseError extends Error {
 
 // API
 export {
+  ColorScheme,
   ShopifyCheckoutSheet,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
-  ColorScheme,
+};
+
+// Error types
+export {
+  AuthenticationError,
+  CheckoutClientError,
   CheckoutErrorCode,
+  CheckoutExpiredError,
+  CheckoutHTTPError,
+  CheckoutNativeErrorType,
+  ConfigurationError,
+  InternalError,
 };
 
 // Types
 export type {
   CheckoutEvent,
-  CheckoutException,
   CheckoutEventCallback,
+  CheckoutException,
   Configuration,
-  AuthenticationError,
-  CheckoutExpiredError,
-  CheckoutUnavailableError,
-  ConfigurationError,
-  SDKError,
 };

@@ -4,16 +4,14 @@ import {
   LifecycleEventParseError,
   ShopifyCheckoutSheet,
   CheckoutErrorCode,
-  SDKError,
+  AuthenticationError,
+  InternalError,
   ConfigurationError,
-  CheckoutUnavailableError,
+  CheckoutHTTPError,
+  CheckoutClientError,
   CheckoutExpiredError,
 } from '../src';
-import {
-  ColorScheme,
-  type Configuration,
-  type AuthenticationError,
-} from '../src';
+import {ColorScheme, CheckoutNativeErrorType, type Configuration} from '../src';
 import {NativeModules} from 'react-native';
 
 const checkoutUrl = 'https://shopify.com/checkout';
@@ -319,50 +317,55 @@ describe('ShopifyCheckoutSheetKit', () => {
     });
 
     describe('Error Event', () => {
-      const authError: AuthenticationError = {
-        __typename: 'AuthenticationError',
+      const authError = new AuthenticationError({
+        __typename: CheckoutNativeErrorType.AuthenticationError,
         message: 'Customer Account Required',
         code: CheckoutErrorCode.customerAccountRequired,
         recoverable: false,
-      };
+      });
 
-      const internalError: SDKError = {
-        __typename: 'SDKError',
+      const internalError = new InternalError({
+        __typename: CheckoutNativeErrorType.InternalError,
         message: 'Something went wrong',
         recoverable: true,
-      };
+      });
 
-      const configError: ConfigurationError = {
-        __typename: 'ConfigurationError',
+      const configError = new ConfigurationError({
+        __typename: CheckoutNativeErrorType.ConfigurationError,
         message: 'Customer Account Required',
         code: CheckoutErrorCode.customerAccountRequired,
         recoverable: false,
-      };
+      });
 
-      const unavailableError: CheckoutUnavailableError = {
-        __typename: 'CheckoutUnavailableError',
-        message: 'Customer Account Required',
-        code: {
-          __typename: 'ClientError',
-          code: CheckoutErrorCode.customerAccountRequired,
-        },
-        recoverable: false,
-      };
-
-      const expiredError: CheckoutExpiredError = {
-        __typename: 'CheckoutExpiredError',
+      const clientError = new CheckoutClientError({
+        __typename: CheckoutNativeErrorType.CheckoutClientError,
         message: 'Customer Account Required',
         code: CheckoutErrorCode.customerAccountRequired,
         recoverable: false,
-      };
+      });
+
+      const networkError = new CheckoutHTTPError({
+        __typename: CheckoutNativeErrorType.CheckoutHTTPError,
+        message: 'Checkout not found',
+        statusCode: 400,
+        recoverable: false,
+      });
+
+      const expiredError = new CheckoutExpiredError({
+        __typename: CheckoutNativeErrorType.CheckoutExpiredError,
+        message: 'Customer Account Required',
+        code: CheckoutErrorCode.customerAccountRequired,
+        recoverable: false,
+      });
 
       it.each([
         authError,
         internalError,
         configError,
-        unavailableError,
+        clientError,
+        networkError,
         expiredError,
-      ])('correctly parses error event data', error => {
+      ])(`correctly parses error %p`, error => {
         const instance = new ShopifyCheckoutSheet();
         const eventName = 'error';
         const callback = jest.fn();

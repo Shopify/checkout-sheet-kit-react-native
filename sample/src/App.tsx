@@ -84,7 +84,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const cache = new InMemoryCache();
 
 const client = new ApolloClient({
-  uri: `https://${env.STOREFRONT_DOMAIN}/api/2023-10/graphql.json`,
+  uri: `https://${env.STOREFRONT_DOMAIN}/api/${env.STOREFRONT_VERSION}/graphql.json`,
   cache,
   headers: {
     'Content-Type': 'application/json',
@@ -129,11 +129,7 @@ function AppWithContext({children}: PropsWithChildren) {
     const error = shopify.addEventListener(
       'error',
       (error: CheckoutException) => {
-        console.log('[CheckoutError]', {
-          message: error.message,
-          recoverable: error.recoverable,
-          code: 'code' in error ? error.code : undefined,
-        });
+        console.log(error.constructor.name, error);
       },
     );
 

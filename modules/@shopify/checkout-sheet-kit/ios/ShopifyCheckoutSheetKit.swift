@@ -70,7 +70,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 			self.sendEvent(withName: "error", body: [
 				"__typename": "AuthenticationError",
 				"message": message,
-				"code": code,
+				"code": code.rawValue,
 				"recoverable": recoverable
 			])
 		}
@@ -80,19 +80,29 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 			self.sendEvent(withName: "error", body: [
 				"__typename": "CheckoutExpiredError",
 				"message": message,
-				"code": code,
+				"code": code.rawValue,
 				"recoverable": recoverable
 			])
 		}
 
 		/// Checkout unavailable error
 		if case .checkoutUnavailable(let message, let code, let recoverable) = error {
-			self.sendEvent(withName: "error", body: [
-				"__typename": "CheckoutUnavailableError",
-				"message": message,
-				"code": code,
-				"recoverable": recoverable
-			])
+			switch code {
+			case .clientError(let clientErrorCode):
+				self.sendEvent(withName: "error", body: [
+					"__typename": "CheckoutClientError",
+					"message": message,
+					"code": clientErrorCode.rawValue,
+					"recoverable": recoverable
+				])
+			case .httpError(let statusCode):
+				self.sendEvent(withName: "error", body: [
+					"__typename": "CheckoutHTTPError",
+					"message": message,
+					"statusCode": statusCode,
+					"recoverable": recoverable
+				])
+			}
 		}
 
 		/// Storefront configuration error
@@ -100,7 +110,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 			self.sendEvent(withName: "error", body: [
 				"__typename": "ConfigurationError",
 				"message": message,
-				"code": code,
+				"code": code.rawValue,
 				"recoverable": recoverable
 			])
 		}
@@ -109,19 +119,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		if case .sdkError(let underlying, let recoverable) = error {
 			var errorMessage = "\(underlying.localizedDescription)"
 			self.sendEvent(withName: "error", body: [
-				"__typename": "SDKError",
+				"__typename": "InternalError",
 				"message": errorMessage,
 				"recoverable": recoverable
 			])
-		}
-	}
-
-	private func handleCheckoutUnavailable(_ message: String, _ code: CheckoutUnavailable) {
-		switch code {
-		case .clientError(let clientErrorCode):
-			print("[CheckoutUnavailable] (checkoutError)", message, clientErrorCode)
-		case .httpError(let statusCode):
-			print("[CheckoutUnavailable] (httpError)", statusCode)
 		}
 	}
 
