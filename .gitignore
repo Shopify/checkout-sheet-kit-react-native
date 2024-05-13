@@ -60,8 +60,7 @@ yarn-error.log
 *.jsbundle
 
 # Ruby / CocoaPods
-/ios/Pods/
-sample/ios/Pods/
+/**/Pods/
 /vendor/bundle/
 
 # Temporary files created by Metro to check the health of the file watcher
@@ -95,3 +94,11 @@ modules/@shopify/checkout-sheet-kit/android/gradlew.bat
 
 # Local gems
 sample/vendor
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
