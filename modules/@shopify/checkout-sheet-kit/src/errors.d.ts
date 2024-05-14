@@ -95,7 +95,7 @@ export class CheckoutHTTPError extends GenericNetworkError {}
 export class GenericError {
   code?: string;
   message?: string;
-  recoverable?: boolean;
+  recoverable: boolean;
   statusCode?: number;
   name: string;
 
@@ -103,7 +103,7 @@ export class GenericError {
     this.code = exception?.code;
     this.message = exception?.message;
     this.name = this.constructor.name;
-    this.recoverable = exception?.recoverable;
+    this.recoverable = exception?.recoverable ?? false;
     this.statusCode = exception?.statusCode;
   }
 }
@@ -120,9 +120,9 @@ export class InternalError {
 
 export type CheckoutException =
   | AuthenticationError
-  | InternalError
-  | ConfigurationError
   | CheckoutClientError
-  | CheckoutHTTPError
   | CheckoutExpiredError
-  | GenericError;
+  | CheckoutHTTPError
+  | ConfigurationError
+  | GenericError
+  | InternalError;

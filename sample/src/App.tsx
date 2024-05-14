@@ -131,10 +131,6 @@ function AppWithContext({children}: PropsWithChildren) {
       'error',
       (error: CheckoutException) => {
         console.log(error.constructor.name, error);
-
-        if (!error.recoverable) {
-          shopify.dismiss();
-        }
       },
     );
 

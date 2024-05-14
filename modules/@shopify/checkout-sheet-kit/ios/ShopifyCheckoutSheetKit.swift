@@ -40,6 +40,14 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		return true
 	}
 
+	override init() {
+		ShopifyCheckoutSheetKit.configure {
+			$0.platform = ShopifyCheckoutSheetKit.Platform.reactNative
+		}
+
+		super.init()
+	}
+
 	override func supportedEvents() -> [String]! {
 		return ["close", "completed", "error", "pixel"]
 	}

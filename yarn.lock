@@ -2905,7 +2905,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/checkout-sheet-kit@npm:*, @shopify/checkout-sheet-kit@workspace:modules/@shopify/checkout-sheet-kit":
+"@shopify/checkout-sheet-kit@npm:*":
+  version: 2.0.1
+  resolution: "@shopify/checkout-sheet-kit@npm:2.0.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 721d1ff274b3ea2b733d933416976c5b64c3430ede0ce716b12ea205184db3609821814640efbb272c3f4005a550266eb45c85b2a1ddfae2eb188637a85f495b
+  languageName: node
+  linkType: hard
+
+"@shopify/checkout-sheet-kit@workspace:modules/@shopify/checkout-sheet-kit":
   version: 0.0.0-use.local
   resolution: "@shopify/checkout-sheet-kit@workspace:modules/@shopify/checkout-sheet-kit"
   dependencies:

@@ -28,7 +28,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.shopify.checkoutsheetkit.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
