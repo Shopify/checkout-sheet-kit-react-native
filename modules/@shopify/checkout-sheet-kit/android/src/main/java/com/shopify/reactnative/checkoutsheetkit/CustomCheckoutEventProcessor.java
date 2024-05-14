@@ -29,10 +29,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.JavaOnlyMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.shopify.checkoutsheetkit.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -74,8 +74,8 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
     sendEvent("error", populateErrorDetails(checkoutError));
   }
 
-  private JavaOnlyMap populateErrorDetails(CheckoutException checkoutError) {
-    JavaOnlyMap errorMap = new JavaOnlyMap();
+  private WritableNativeMap populateErrorDetails(CheckoutException checkoutError) {
+    WritableNativeMap errorMap = new WritableNativeMap();
     errorMap.putString("__typename", getErrorTypeName(checkoutError));
     errorMap.putString("message", checkoutError.getErrorDescription());
     errorMap.putBoolean("recoverable", checkoutError.isRecoverable());
@@ -114,7 +114,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
     sendEvent("close", null);
   }
 
-  private void sendEvent(String eventName, @Nullable JavaOnlyMap params) {
+  private void sendEvent(String eventName, @Nullable WritableNativeMap params) {
     reactContext
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit(eventName, params);

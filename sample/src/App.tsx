@@ -83,8 +83,6 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const cache = new InMemoryCache();
 
-console.log(env);
-
 const client = new ApolloClient({
   uri: `https://${env.STOREFRONT_DOMAIN}/api/${env.STOREFRONT_VERSION}/graphql.json`,
   cache,
@@ -92,6 +90,7 @@ const client = new ApolloClient({
     'Content-Type': 'application/json',
     'X-Shopify-Storefront-Access-Token': env.STOREFRONT_ACCESS_TOKEN ?? '',
   },
+  connectToDevTools: true,
 });
 
 function AppWithTheme({children}: PropsWithChildren) {

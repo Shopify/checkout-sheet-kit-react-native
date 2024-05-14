@@ -89,6 +89,11 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void dismiss() {
+    // TODO
+  }
+
+  @ReactMethod
   public void preload(String checkoutURL) {
     Activity currentActivity = getCurrentActivity();
 

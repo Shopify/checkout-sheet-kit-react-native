@@ -90,13 +90,15 @@ function ProductDetails({
 
   return (
     <View key={product.id} style={styles.productItem}>
-      <Image
-        resizeMethod="resize"
-        resizeMode="cover"
-        style={styles.productImage}
-        alt={image?.altText}
-        source={{uri: image?.url}}
-      />
+      {image?.url && (
+        <Image
+          resizeMethod="resize"
+          resizeMode="cover"
+          style={styles.productImage}
+          alt={image?.altText}
+          source={{uri: image?.url}}
+        />
+      )}
       <View style={styles.productText}>
         <View>
           <Text style={styles.productTitle}>{product.title}</Text>
