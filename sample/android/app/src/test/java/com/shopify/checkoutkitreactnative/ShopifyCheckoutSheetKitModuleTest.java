@@ -5,6 +5,13 @@ import androidx.activity.ComponentActivity;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.shopify.checkoutsheetkit.AuthenticationException;
+import com.shopify.checkoutsheetkit.CheckoutException;
+import com.shopify.checkoutsheetkit.CheckoutExpiredException;
+import com.shopify.checkoutsheetkit.CheckoutSheetKitException;
+import com.shopify.checkoutsheetkit.ClientException;
+import com.shopify.checkoutsheetkit.ConfigurationException;
+import com.shopify.checkoutsheetkit.HttpException;
 import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
 import com.shopify.checkoutsheetkit.pixelevents.*;
 import com.shopify.checkoutsheetkit.lifecycleevents.*;
@@ -57,6 +64,23 @@ public class ShopifyCheckoutSheetKitModuleTest {
   @Captor
   private ArgumentCaptor<String> stringCaptor;
 
+  @Captor
+  private ArgumentCaptor<JavaOnlyMap> mapCaptor;
+
+  @Mock
+  private AuthenticationException mockAuthenticationException;
+  @Mock
+  private CheckoutExpiredException mockCheckoutExpiredException;
+  @Mock
+  private ClientException mockClientException;
+  @Mock
+  private HttpException mockHttpException;
+  @Mock
+  private ConfigurationException mockConfigurationException;
+  @Mock
+  private CheckoutSheetKitException mockCheckoutSheetKitException;
+  @Mock
+  private CheckoutException mockCheckoutException;
 
   @Before
   public void setup() {
@@ -167,5 +191,113 @@ public class ShopifyCheckoutSheetKitModuleTest {
     verify(mockEventEmitter).emit(eq("completed"), stringCaptor.capture());
 
     assertTrue(stringCaptor.getValue().contains("{\"orderDetails\":{\"billingAddress\":null,\"cart\":{\"lines\":[],\"price\":{\"discounts\":[],\"shipping\":null,\"subtotal\":null,\"taxes\":null,\"total\":null},\"token\":\"\"},\"deliveries\":[],\"email\":null,\"id\":\"test\",\"paymentMethods\":[],\"phone\":null}}"));
+  }
+
+  @Test
+  public void sendsAuthenticationErrorEventOnCheckoutFailed() {
+    when(mockAuthenticationException.getErrorDescription()).thenReturn("Unauthorized");
+    when(mockAuthenticationException.isRecoverable()).thenReturn(false);
+    when(mockAuthenticationException.getErrorCode()).thenReturn("customer_account_required");
+
+    customCheckoutEventProcessor.onCheckoutFailed(mockAuthenticationException);
+
+    verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
+    JavaOnlyMap capturedMap = mapCaptor.getValue();
+    assertEquals("AuthenticationError", capturedMap.getString("__typename"));
+    assertEquals("Unauthorized", capturedMap.getString("message"));
+    assertFalse(capturedMap.getBoolean("recoverable"));
+    assertEquals("customer_account_required", capturedMap.getString("code"));
+  }
+
+  @Test
+  public void sendsCheckoutExpiredErrorEventOnCheckoutFailed() {
+    when(mockCheckoutExpiredException.getErrorDescription()).thenReturn("Cart expired");
+    when(mockClientException.getErrorCode()).thenReturn("cart_expired");
+    when(mockCheckoutExpiredException.isRecoverable()).thenReturn(false);
+
+    customCheckoutEventProcessor.onCheckoutFailed(mockCheckoutExpiredException);
+
+    verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
+    JavaOnlyMap capturedMap = mapCaptor.getValue();
+    assertEquals("CheckoutExpiredError", capturedMap.getString("__typename"));
+    assertEquals("Cart expired", capturedMap.getString("message"));
+    assertEquals("cart_expired", capturedMap.getString("code"));
+    assertFalse(capturedMap.getBoolean("recoverable"));
+  }
+
+  @Test
+  public void sendsClientErrorEventOnCheckoutFailed() {
+    when(mockClientException.getErrorDescription()).thenReturn("Client Error occurred");
+    when(mockClientException.getErrorCode()).thenReturn("customer_account_required");
+    when(mockClientException.isRecoverable()).thenReturn(true);
+
+    customCheckoutEventProcessor.onCheckoutFailed(mockClientException);
+
+    verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
+    JavaOnlyMap capturedMap = mapCaptor.getValue();
+    assertEquals("CheckoutClientError", capturedMap.getString("__typename"));
+    assertEquals("Client Error occurred", capturedMap.getString("message"));
+    assertEquals("customer_account_required", capturedMap.getString("code"));
+    assertTrue(capturedMap.getBoolean("recoverable"));
+  }
+
+  @Test
+  public void sendsHttpErrorEventOnCheckoutFailed() {
+    when(mockHttpException.getErrorDescription()).thenReturn("Not Found");
+    when(mockHttpException.isRecoverable()).thenReturn(false);
+    when(mockHttpException.getStatusCode()).thenReturn(404);
+
+    customCheckoutEventProcessor.onCheckoutFailed(mockHttpException);
+
+    verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
+    JavaOnlyMap capturedMap = mapCaptor.getValue();
+    assertEquals("CheckoutHTTPError", capturedMap.getString("__typename"));
+    assertEquals("Not Found", capturedMap.getString("message"));
+    assertFalse(capturedMap.getBoolean("recoverable"));
+    assertEquals(404, capturedMap.getInt("statusCode"));
+  }
+
+  @Test
+  public void sendsConfigurationErrorEventOnCheckoutFailed() {
+    when(mockConfigurationException.getErrorDescription()).thenReturn("Invalid Configuration");
+    when(mockConfigurationException.getErrorCode()).thenReturn("storefront_password_required");
+    when(mockConfigurationException.isRecoverable()).thenReturn(false);
+
+    customCheckoutEventProcessor.onCheckoutFailed(mockConfigurationException);
+
+    verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
+    JavaOnlyMap capturedMap = mapCaptor.getValue();
+    assertEquals("ConfigurationError", capturedMap.getString("__typename"));
+    assertEquals("Invalid Configuration", capturedMap.getString("message"));
+    assertEquals("storefront_password_required", capturedMap.getString("code"));
+    assertFalse(capturedMap.getBoolean("recoverable"));
+  }
+
+  @Test
+  public void sendsInternalErrorEventOnCheckoutFailed() {
+    when(mockCheckoutSheetKitException.getErrorDescription()).thenReturn("Internal SDK Error");
+    when(mockCheckoutSheetKitException.isRecoverable()).thenReturn(true);
+
+    customCheckoutEventProcessor.onCheckoutFailed(mockCheckoutSheetKitException);
+
+    verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
+    JavaOnlyMap capturedMap = mapCaptor.getValue();
+    assertEquals("InternalError", capturedMap.getString("__typename"));
+    assertEquals("Internal SDK Error", capturedMap.getString("message"));
+    assertTrue(capturedMap.getBoolean("recoverable"));
+  }
+
+  @Test
+  public void sendsGeneralErrorEventOnCheckoutFailed() {
+    when(mockCheckoutException.getErrorDescription()).thenReturn("General Checkout Error");
+    when(mockCheckoutException.isRecoverable()).thenReturn(true);
+
+    customCheckoutEventProcessor.onCheckoutFailed(mockCheckoutException);
+
+    verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
+    JavaOnlyMap capturedMap = mapCaptor.getValue();
+    assertEquals("UnknownError", capturedMap.getString("__typename"));
+    assertEquals("General Checkout Error", capturedMap.getString("message"));
+    assertTrue(capturedMap.getBoolean("recoverable"));
   }
 }
