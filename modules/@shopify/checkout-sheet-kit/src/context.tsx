@@ -40,6 +40,7 @@ interface Context {
   removeEventListeners: RemoveEventListeners;
   preload: (checkoutUrl: string) => void;
   present: (checkoutUrl: string) => void;
+  dismiss: () => void;
   version: Maybe<string>;
 }
 
@@ -52,6 +53,7 @@ const ShopifyCheckoutSheetContext = React.createContext<Context>({
   getConfig: async () => undefined,
   preload: noop,
   present: noop,
+  dismiss: noop,
   version: undefined,
 });
 
@@ -92,6 +94,10 @@ export function ShopifyCheckoutSheetProvider({
     }
   }, []);
 
+  const dismiss = useCallback(() => {
+    instance.current?.dismiss();
+  }, []);
+
   const setConfig = useCallback((config: Configuration) => {
     instance.current?.setConfig(config);
   }, []);
@@ -103,6 +109,7 @@ export function ShopifyCheckoutSheetProvider({
   const context = useMemo((): Context => {
     return {
       addEventListener,
+      dismiss,
       setConfig,
       getConfig,
       preload,
@@ -112,6 +119,7 @@ export function ShopifyCheckoutSheetProvider({
     };
   }, [
     addEventListener,
+    dismiss,
     removeEventListeners,
     getConfig,
     setConfig,

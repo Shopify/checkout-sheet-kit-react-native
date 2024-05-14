@@ -83,6 +83,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const cache = new InMemoryCache();
 
+console.log(env);
+
 const client = new ApolloClient({
   uri: `https://${env.STOREFRONT_DOMAIN}/api/${env.STOREFRONT_VERSION}/graphql.json`,
   cache,
@@ -130,6 +132,10 @@ function AppWithContext({children}: PropsWithChildren) {
       'error',
       (error: CheckoutException) => {
         console.log(error.constructor.name, error);
+
+        if (!error.recoverable) {
+          shopify.dismiss();
+        }
       },
     );
 

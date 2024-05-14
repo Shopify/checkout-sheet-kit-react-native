@@ -71,6 +71,10 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   public readonly version: string = RNShopifyCheckoutSheetKit.version;
 
+  public dismiss(): void {
+    RNShopifyCheckoutSheetKit.dismiss();
+  }
+
   public preload(checkoutUrl: string): void {
     RNShopifyCheckoutSheetKit.preload(checkoutUrl);
   }

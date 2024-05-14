@@ -73,20 +73,14 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 				"code": code.rawValue,
 				"recoverable": recoverable
 			])
-		}
-
-		/// Checkout has expired, re-create cart to fetch a new checkout URL
-		if case .checkoutExpired(let message, let code, let recoverable) = error {
+		} else if case .checkoutExpired(let message, let code, let recoverable) = error {
 			self.sendEvent(withName: "error", body: [
 				"__typename": "CheckoutExpiredError",
 				"message": message,
 				"code": code.rawValue,
 				"recoverable": recoverable
 			])
-		}
-
-		/// Checkout unavailable error
-		if case .checkoutUnavailable(let message, let code, let recoverable) = error {
+		} else if case .checkoutUnavailable(let message, let code, let recoverable) = error {
 			switch code {
 			case .clientError(let clientErrorCode):
 				self.sendEvent(withName: "error", body: [
@@ -103,25 +97,25 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 					"recoverable": recoverable
 				])
 			}
-		}
-
-		/// Storefront configuration error
-		if case .configurationError(let message, let code, let recoverable) = error {
+		} else if case .configurationError(let message, let code, let recoverable) = error {
 			self.sendEvent(withName: "error", body: [
 				"__typename": "ConfigurationError",
 				"message": message,
 				"code": code.rawValue,
 				"recoverable": recoverable
 			])
-		}
-
-		/// Internal Checkout SDK error
-		if case .sdkError(let underlying, let recoverable) = error {
+		} else if case .sdkError(let underlying, let recoverable) = error {
 			var errorMessage = "\(underlying.localizedDescription)"
 			self.sendEvent(withName: "error", body: [
 				"__typename": "InternalError",
 				"message": errorMessage,
 				"recoverable": recoverable
+			])
+		} else {
+			self.sendEvent(withName: "error", body: [
+				"__typename": "UnknownError",
+				"message": error.localizedDescription,
+				"recoverable": error.isRecoverable
 			])
 		}
 	}
@@ -177,6 +171,12 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		}
 
 		return controller
+	}
+
+	@objc func dismiss() {
+		DispatchQueue.main.async {
+			self.checkoutSheet?.dismiss(animated: true)
+		}
 	}
 
 	@objc func present(_ checkoutURL: String) {
