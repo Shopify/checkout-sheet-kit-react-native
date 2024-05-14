@@ -44,6 +44,7 @@ import {
   InternalError,
   CheckoutNativeError,
   CheckoutNativeErrorType,
+  GenericError,
 } from './errors.d';
 import {CheckoutErrorCode} from './errors.d';
 import type {CustomEvent, PixelEvent} from './pixels';
@@ -158,7 +159,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
       case CheckoutNativeErrorType.CheckoutExpiredError:
         return new CheckoutExpiredError(exception);
       default:
-        return exception;
+        return new GenericError(exception);
     }
   }
 
@@ -226,7 +227,7 @@ export {
   useShopifyCheckoutSheet,
 };
 
-// Error types
+// Error classes
 export {
   AuthenticationError,
   CheckoutClientError,
@@ -235,6 +236,7 @@ export {
   CheckoutHTTPError,
   CheckoutNativeErrorType,
   ConfigurationError,
+  GenericError,
   InternalError,
 };
 

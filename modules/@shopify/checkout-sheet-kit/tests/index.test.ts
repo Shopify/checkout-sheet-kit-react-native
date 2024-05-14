@@ -10,6 +10,7 @@ import {
   CheckoutHTTPError,
   CheckoutClientError,
   CheckoutExpiredError,
+  GenericError,
 } from '../src';
 import {ColorScheme, CheckoutNativeErrorType, type Configuration} from '../src';
 import {NativeModules} from 'react-native';
@@ -317,55 +318,55 @@ describe('ShopifyCheckoutSheetKit', () => {
     });
 
     describe('Error Event', () => {
-      const authError = new AuthenticationError({
+      const authError = {
         __typename: CheckoutNativeErrorType.AuthenticationError,
         message: 'Customer Account Required',
         code: CheckoutErrorCode.customerAccountRequired,
         recoverable: false,
-      });
+      };
 
-      const internalError = new InternalError({
+      const internalError = {
         __typename: CheckoutNativeErrorType.InternalError,
         message: 'Something went wrong',
         recoverable: true,
-      });
+      };
 
-      const configError = new ConfigurationError({
+      const configError = {
         __typename: CheckoutNativeErrorType.ConfigurationError,
         message: 'Customer Account Required',
         code: CheckoutErrorCode.customerAccountRequired,
         recoverable: false,
-      });
+      };
 
-      const clientError = new CheckoutClientError({
+      const clientError = {
         __typename: CheckoutNativeErrorType.CheckoutClientError,
         message: 'Customer Account Required',
         code: CheckoutErrorCode.customerAccountRequired,
         recoverable: false,
-      });
+      };
 
-      const networkError = new CheckoutHTTPError({
+      const networkError = {
         __typename: CheckoutNativeErrorType.CheckoutHTTPError,
         message: 'Checkout not found',
         statusCode: 400,
         recoverable: false,
-      });
+      };
 
-      const expiredError = new CheckoutExpiredError({
+      const expiredError = {
         __typename: CheckoutNativeErrorType.CheckoutExpiredError,
         message: 'Customer Account Required',
         code: CheckoutErrorCode.customerAccountRequired,
         recoverable: false,
-      });
+      };
 
       it.each([
-        authError,
-        internalError,
-        configError,
-        clientError,
-        networkError,
-        expiredError,
-      ])(`correctly parses error %p`, error => {
+        {error: authError, constructor: AuthenticationError},
+        {error: internalError, constructor: InternalError},
+        {error: configError, constructor: ConfigurationError},
+        {error: clientError, constructor: CheckoutClientError},
+        {error: networkError, constructor: CheckoutHTTPError},
+        {error: expiredError, constructor: CheckoutExpiredError},
+      ])(`correctly parses error $error`, ({error, constructor}) => {
         const instance = new ShopifyCheckoutSheet();
         const eventName = 'error';
         const callback = jest.fn();
@@ -378,8 +379,32 @@ describe('ShopifyCheckoutSheetKit', () => {
           'error',
           expect.any(Function),
         );
-        eventEmitter.emit('error', JSON.stringify(error));
-        expect(callback).toHaveBeenCalledWith(error);
+        eventEmitter.emit('error', error);
+        const calledWith = callback.mock.calls[0][0];
+        expect(calledWith).toBeInstanceOf(constructor);
+      });
+
+      it('returns an unknown generic error if the error cannot be parsed', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'error';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          eventName,
+          callback,
+        );
+        const error = {
+          __typename: 'UnknownError',
+          message: 'Something went wrong',
+        };
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'error',
+          expect.any(Function),
+        );
+        eventEmitter.emit('error', error);
+        const calledWith = callback.mock.calls[0][0];
+        expect(calledWith).toBeInstanceOf(GenericError);
+        expect(callback).toHaveBeenCalledWith(new GenericError(error as any));
       });
     });
   });
