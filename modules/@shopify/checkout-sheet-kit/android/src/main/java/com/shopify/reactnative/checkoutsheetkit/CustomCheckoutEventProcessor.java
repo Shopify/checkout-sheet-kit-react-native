@@ -91,9 +91,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   }
 
   private String getErrorTypeName(CheckoutException error) {
-    if (error instanceof AuthenticationException) {
-      return "AuthenticationError";
-    } else if (error instanceof CheckoutExpiredException) {
+    if (error instanceof CheckoutExpiredException) {
       return "CheckoutExpiredError";
     } else if (error instanceof ClientException) {
       return "CheckoutClientError";

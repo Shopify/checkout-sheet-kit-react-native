@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.shopify.checkoutsheetkit.AuthenticationException;
 import com.shopify.checkoutsheetkit.CheckoutException;
 import com.shopify.checkoutsheetkit.CheckoutExpiredException;
 import com.shopify.checkoutsheetkit.CheckoutSheetKitException;
@@ -67,8 +66,6 @@ public class ShopifyCheckoutSheetKitModuleTest {
   @Captor
   private ArgumentCaptor<JavaOnlyMap> mapCaptor;
 
-  @Mock
-  private AuthenticationException mockAuthenticationException;
   @Mock
   private CheckoutExpiredException mockCheckoutExpiredException;
   @Mock
@@ -191,22 +188,6 @@ public class ShopifyCheckoutSheetKitModuleTest {
     verify(mockEventEmitter).emit(eq("completed"), stringCaptor.capture());
 
     assertTrue(stringCaptor.getValue().contains("{\"orderDetails\":{\"billingAddress\":null,\"cart\":{\"lines\":[],\"price\":{\"discounts\":[],\"shipping\":null,\"subtotal\":null,\"taxes\":null,\"total\":null},\"token\":\"\"},\"deliveries\":[],\"email\":null,\"id\":\"test\",\"paymentMethods\":[],\"phone\":null}}"));
-  }
-
-  @Test
-  public void sendsAuthenticationErrorEventOnCheckoutFailed() {
-    when(mockAuthenticationException.getErrorDescription()).thenReturn("Unauthorized");
-    when(mockAuthenticationException.isRecoverable()).thenReturn(false);
-    when(mockAuthenticationException.getErrorCode()).thenReturn("customer_account_required");
-
-    customCheckoutEventProcessor.onCheckoutFailed(mockAuthenticationException);
-
-    verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
-    JavaOnlyMap capturedMap = mapCaptor.getValue();
-    assertEquals("AuthenticationError", capturedMap.getString("__typename"));
-    assertEquals("Unauthorized", capturedMap.getString("message"));
-    assertFalse(capturedMap.getBoolean("recoverable"));
-    assertEquals("customer_account_required", capturedMap.getString("code"));
   }
 
   @Test
