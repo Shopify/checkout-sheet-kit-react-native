@@ -37,6 +37,9 @@ import {
   Configuration,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
+  type CheckoutCompletedEvent,
+  type CheckoutException,
+  type PixelEvent,
 } from '@shopify/checkout-sheet-kit';
 import {ConfigProvider} from './context/Config';
 import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
@@ -46,7 +49,6 @@ import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import {ProductVariant, ShopifyProduct} from '../@types';
 import ErrorBoundary from './ErrorBoundary';
-import {CheckoutException} from '@shopify/checkout-sheet-kit';
 
 const colorScheme = ColorScheme.web;
 
@@ -118,14 +120,17 @@ function AppWithContext({children}: PropsWithChildren) {
       console.log('[CheckoutClose]');
     });
 
-    const pixel = shopify.addEventListener('pixel', event => {
+    const pixel = shopify.addEventListener('pixel', (event: PixelEvent) => {
       console.log('[CheckoutPixelEvent]', event.name, event);
     });
 
-    const completed = shopify.addEventListener('completed', event => {
-      console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
-      console.log('[CheckoutCompletedEvent]', event);
-    });
+    const completed = shopify.addEventListener(
+      'completed',
+      (event: CheckoutCompletedEvent) => {
+        console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
+        console.log('[CheckoutCompletedEvent]', event);
+      },
+    );
 
     const error = shopify.addEventListener(
       'error',

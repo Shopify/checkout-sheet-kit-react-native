@@ -250,4 +250,6 @@ export type {
   CheckoutEventCallback,
   CheckoutException,
   Configuration,
+  CustomEvent,
+  PixelEvent,
 };

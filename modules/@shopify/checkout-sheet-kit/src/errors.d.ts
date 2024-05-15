@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 export enum CheckoutErrorCode {
-  customerAccountRequired = 'customer_account_required',
   storefrontPasswordRequired = 'storefront_password_required',
   checkoutLiquidNotMigrated = 'checkout_liquid_not_migrated',
   cartExpired = 'cart_expired',

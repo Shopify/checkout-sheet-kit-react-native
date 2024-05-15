@@ -319,10 +319,10 @@ describe('ShopifyCheckoutSheetKit', () => {
 
     describe('Error Event', () => {
       const authError = {
-        __typename: CheckoutNativeErrorType.AuthenticationError,
-        message: 'Customer Account Required',
-        code: CheckoutErrorCode.customerAccountRequired,
-        recoverable: false,
+        __typename: CheckoutNativeErrorType.CheckoutHTTPError,
+        message: 'Something went wrong',
+        statusCode: 401,
+        recoverable: true,
       };
 
       const internalError = {
@@ -333,15 +333,15 @@ describe('ShopifyCheckoutSheetKit', () => {
 
       const configError = {
         __typename: CheckoutNativeErrorType.ConfigurationError,
-        message: 'Customer Account Required',
-        code: CheckoutErrorCode.customerAccountRequired,
+        message: 'Storefront Password Required',
+        code: CheckoutErrorCode.storefrontPasswordRequired,
         recoverable: false,
       };
 
       const clientError = {
         __typename: CheckoutNativeErrorType.CheckoutClientError,
-        message: 'Customer Account Required',
-        code: CheckoutErrorCode.customerAccountRequired,
+        message: 'Storefront Password Required',
+        code: CheckoutErrorCode.storefrontPasswordRequired,
         recoverable: false,
       };
 
@@ -355,7 +355,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       const expiredError = {
         __typename: CheckoutNativeErrorType.CheckoutExpiredError,
         message: 'Customer Account Required',
-        code: CheckoutErrorCode.customerAccountRequired,
+        code: CheckoutErrorCode.cartExpired,
         recoverable: false,
       };
 

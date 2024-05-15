@@ -55,7 +55,7 @@ class CheckoutDidFailTests: XCTestCase {
 
     let error = CheckoutError.authenticationError(
         message: "unauthorized",
-        code: CheckoutErrorCode.customerAccountRequired,
+        code: CheckoutErrorCode.storefrontPasswordRequired,
         recoverable: false
     )
 
@@ -70,10 +70,10 @@ class CheckoutDidFailTests: XCTestCase {
     if case .authenticationError(let message, let code, let recoverable) = error {
       XCTAssertEqual(eventBody["__typename"] as? String, "AuthenticationError")
       XCTAssertEqual(eventBody["message"] as? String, "unauthorized")
-      XCTAssertEqual(eventBody["code"] as? String, CheckoutErrorCode.customerAccountRequired.rawValue)
+      XCTAssertEqual(eventBody["code"] as? String, CheckoutErrorCode.storefrontPasswordRequired.rawValue)
       XCTAssertEqual(eventBody["recoverable"] as? Bool, false)
     } else {
-        XCTFail("Expected authenticationError but found different error")
+        XCTFail("Expected AuthenticationError but found different error")
     }
 }
 
