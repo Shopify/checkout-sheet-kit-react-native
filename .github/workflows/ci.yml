@@ -40,7 +40,7 @@ jobs:
       - run: |
           yarn module clean
           yarn module build
-          ./scripts/compare_snapshot
+          yarn compare-snapshot
 
   lint:
     name: Lint module + sample

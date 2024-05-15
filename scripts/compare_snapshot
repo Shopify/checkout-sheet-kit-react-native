@@ -10,6 +10,11 @@ reset=$(tput sgr0)
 
 ./scripts/create_snapshot $TMP_SNAPSHOT_FILENAME
 
+if [ $? -ne 0 ]; then
+  echo "${red}Failed to create snapshot.${reset}"
+  exit 1
+fi
+
 diff $FILENAME $TMP_SNAPSHOT_FILENAME &>/dev/null
 
 if [ $? -eq 0 ]

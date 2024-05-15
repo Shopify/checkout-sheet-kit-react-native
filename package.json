@@ -20,6 +20,7 @@
     "module": "yarn workspace @shopify/checkout-sheet-kit",
     "pod-install": "pod repo update && (cd sample/ios && NO_FLIPPER=1 bundle exec pod install --repo-update)",
     "snapshot": "./scripts/create_snapshot",
+    "compare-snapshot": "./scripts/compare_snapshot",
     "turbo": "turbo",
     "test": "jest"
   },
