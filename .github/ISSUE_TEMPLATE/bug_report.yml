@@ -23,6 +23,16 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    attributes:
+      label: What platform does the issue affect?
+      options:
+        - All platforms
+        - iOS
+        - Android
+    validations:
+      required: true
+
   - type: input
     attributes:
       label: What version of `@shopify/checkout-sheet-kit` are you using?
@@ -32,8 +42,8 @@ body:
 
   - type: textarea
     attributes:
-      label: Do you have a minimum reproducible example?
-      description: (Optional) This will help us debug the issue more quickly.
+      label: Do you have reproducible example code?
+      description: (Optional) Please demonstrate how you're encountering this error by sharing the mutation you are using to create the Checkout URL as well as the code to present the checkout. This will help us debug the issue more quickly.
     validations:
       required: false
 
@@ -60,13 +70,13 @@ body:
 
   - type: textarea
     attributes:
-      label: Screenshots/Videos/Log output
+      label: Storefront domain
+      description: This will expedite our search for any errors that occurred.
     validations:
-      required: false
+      required: true
 
   - type: textarea
     attributes:
-      label: Storefront domain
-      description: (Optional) This will expedite our search for any errors that occurred.
+      label: Screenshots/Videos/Log output
     validations:
       required: false
