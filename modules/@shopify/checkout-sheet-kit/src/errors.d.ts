@@ -45,9 +45,11 @@ export enum CheckoutNativeErrorType {
 }
 
 function getCheckoutErrorCode(code: string | undefined): CheckoutErrorCode {
-  return code in CheckoutErrorCode
-    ? (code as CheckoutErrorCode)
-    : CheckoutErrorCode.unknown;
+  const codeKey = Object.keys(CheckoutErrorCode).find(
+    key => CheckoutErrorCode[key as keyof typeof CheckoutErrorCode] === code,
+  );
+
+  return codeKey ? CheckoutErrorCode[codeKey] : CheckoutErrorCode.unknown;
 }
 
 type BridgeError = {

@@ -46,7 +46,8 @@ import {
   GenericError,
 } from './errors.d';
 import {CheckoutErrorCode} from './errors.d';
-import type {CustomEvent, PixelEvent} from './pixels';
+import {CheckoutCompletedEvent} from './events.d';
+import type {CustomEvent, PixelEvent, StandardEvent} from './pixels.d';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
 
@@ -242,10 +243,12 @@ export {
 
 // Types
 export type {
+  CheckoutCompletedEvent,
   CheckoutEvent,
   CheckoutEventCallback,
   CheckoutException,
   Configuration,
   CustomEvent,
   PixelEvent,
+  StandardEvent,
 };

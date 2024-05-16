@@ -375,6 +375,10 @@ describe('ShopifyCheckoutSheetKit', () => {
         eventEmitter.emit('error', error);
         const calledWith = callback.mock.calls[0][0];
         expect(calledWith).toBeInstanceOf(constructor);
+        expect(calledWith).not.toHaveProperty('__typename');
+        expect(calledWith).toHaveProperty('code');
+        expect(calledWith).toHaveProperty('message');
+        expect(calledWith).toHaveProperty('recoverable');
       });
 
       it('returns an unknown generic error if the error cannot be parsed', () => {

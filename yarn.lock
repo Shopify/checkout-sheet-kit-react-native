@@ -2905,15 +2905,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/checkout-sheet-kit@npm:*":
-  version: 2.0.1
-  resolution: "@shopify/checkout-sheet-kit@npm:2.0.1"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 721d1ff274b3ea2b733d933416976c5b64c3430ede0ce716b12ea205184db3609821814640efbb272c3f4005a550266eb45c85b2a1ddfae2eb188637a85f495b
+"@shopify/checkout-sheet-kit@link:../modules/@shopify/checkout-sheet-kit::locator=sample%40workspace%3Asample":
+  version: 0.0.0-use.local
+  resolution: "@shopify/checkout-sheet-kit@link:../modules/@shopify/checkout-sheet-kit::locator=sample%40workspace%3Asample"
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@shopify/checkout-sheet-kit@workspace:modules/@shopify/checkout-sheet-kit":
   version: 0.0.0-use.local
@@ -9325,7 +9321,7 @@ __metadata:
     "@react-navigation/native": "npm:^6.1.10"
     "@react-navigation/native-stack": "npm:^6.9.17"
     "@react-navigation/stack": "npm:^6.3.21"
-    "@shopify/checkout-sheet-kit": "npm:*"
+    "@shopify/checkout-sheet-kit": "link:../modules/@shopify/checkout-sheet-kit"
     "@types/react-native-vector-icons": "npm:^6.4.18"
     babel-plugin-module-resolver: "npm:^5.0.0"
     graphql: "npm:^16.8.1"

@@ -52,6 +52,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - run: |
+          yarn module build
           yarn module lint
           yarn sample lint
 
