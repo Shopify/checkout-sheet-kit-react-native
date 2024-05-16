@@ -148,6 +148,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 			}
 
 			self.checkoutSheet?.dismiss(animated: true)
+			self.checkoutSheet = nil
 		}
 	}
 
@@ -184,6 +185,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	@objc func dismiss() {
 		DispatchQueue.main.async {
 			self.checkoutSheet?.dismiss(animated: true)
+			self.checkoutSheet = nil
 		}
 	}
 

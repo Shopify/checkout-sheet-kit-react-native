@@ -99,6 +99,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   public void dismiss() {
     if (checkoutSheet != null) {
       checkoutSheet.dismiss();
+      checkoutSheet = null;
     }
   }
 
