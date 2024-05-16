@@ -35,7 +35,6 @@ import type {
   ShopifyCheckoutSheetKit,
 } from './index.d';
 import {
-  AuthenticationError,
   CheckoutException,
   CheckoutExpiredError,
   CheckoutClientError,
@@ -150,8 +149,6 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     exception: CheckoutNativeError,
   ): CheckoutException {
     switch (exception?.__typename) {
-      case CheckoutNativeErrorType.AuthenticationError:
-        return new AuthenticationError(exception);
       case CheckoutNativeErrorType.InternalError:
         return new InternalError(exception);
       case CheckoutNativeErrorType.ConfigurationError:
@@ -233,7 +230,6 @@ export {
 
 // Error classes
 export {
-  AuthenticationError,
   CheckoutClientError,
   CheckoutErrorCode,
   CheckoutExpiredError,

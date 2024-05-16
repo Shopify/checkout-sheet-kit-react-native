@@ -27,11 +27,15 @@ export enum CheckoutErrorCode {
   cartExpired = 'cart_expired',
   cartCompleted = 'cart_completed',
   invalidCart = 'invalid_cart',
+  clientError = 'client_error',
+  httpError = 'http_error',
+  sendingBridgeEventError = 'error_sending_message',
+  receivingBridgeEventError = 'error_receiving_message',
+  renderProcessGone = 'render_process_gone',
   unknown = 'unknown',
 }
 
 export enum CheckoutNativeErrorType {
-  AuthenticationError = 'AuthenticationError',
   InternalError = 'InternalError',
   ConfigurationError = 'ConfigurationError',
   CheckoutClientError = 'CheckoutClientError',
@@ -40,32 +44,30 @@ export enum CheckoutNativeErrorType {
   UnknownError = 'UnknownError',
 }
 
+function getCheckoutErrorCode(code: string | undefined): CheckoutErrorCode {
+  return code in CheckoutErrorCode
+    ? (code as CheckoutErrorCode)
+    : CheckoutErrorCode.unknown;
+}
+
+type BridgeError = {
+  __typename: CheckoutNativeErrorType;
+  code: CheckoutErrorCode;
+  message: string;
+  recoverable: boolean;
+};
+
 export type CheckoutNativeError =
-  | {
-      __typename: CheckoutNativeErrorType;
-      message: string;
-      recoverable: boolean;
-    }
-  | {
-      __typename: CheckoutNativeErrorType;
-      code: string;
-      message: string;
-      recoverable: boolean;
-    }
-  | {
-      __typename: CheckoutNativeErrorType;
-      message: string;
-      recoverable: boolean;
-      statusCode: number;
-    };
+  | BridgeError
+  | (BridgeError & {statusCode: number});
 
 class GenericErrorWithCode {
   message: string;
   recoverable: boolean;
-  code: string;
+  code: CheckoutErrorCode;
 
   constructor(exception: CheckoutNativeError) {
-    this.code = exception.code;
+    this.code = getCheckoutErrorCode(exception.code);
     this.message = exception.message;
     this.recoverable = exception.recoverable;
     this.name = this.constructor.name;
@@ -73,11 +75,13 @@ class GenericErrorWithCode {
 }
 
 class GenericNetworkError {
+  code: CheckoutErrorCode;
   message: string;
   recoverable: boolean;
   statusCode: number;
 
   constructor(exception: CheckoutNativeError) {
+    this.code = getCheckoutErrorCode(exception.code);
     this.statusCode = exception.statusCode;
     this.message = exception.message;
     this.recoverable = exception.recoverable;
@@ -85,21 +89,20 @@ class GenericNetworkError {
   }
 }
 
-export class AuthenticationError extends GenericErrorWithCode {}
 export class ConfigurationError extends GenericErrorWithCode {}
 export class CheckoutClientError extends GenericErrorWithCode {}
 export class CheckoutExpiredError extends GenericErrorWithCode {}
 export class CheckoutHTTPError extends GenericNetworkError {}
 
 export class GenericError {
-  code?: string;
+  code: CheckoutErrorCode;
   message?: string;
   recoverable: boolean;
   statusCode?: number;
   name: string;
 
   constructor(exception?: CheckoutNativeError) {
-    this.code = exception?.code;
+    this.code = getCheckoutErrorCode(exception?.code);
     this.message = exception?.message;
     this.name = this.constructor.name;
     this.recoverable = exception?.recoverable ?? false;
@@ -108,17 +111,18 @@ export class GenericError {
 }
 
 export class InternalError {
+  code: CheckoutErrorCode;
   message: string;
   recoverable: boolean;
 
   constructor(exception: CheckoutNativeError) {
+    this.code = getCheckoutErrorCode(exception.code);
     this.message = exception.message;
     this.recoverable = exception.recoverable;
   }
 }
 
 export type CheckoutException =
-  | AuthenticationError
   | CheckoutClientError
   | CheckoutExpiredError
   | CheckoutHTTPError

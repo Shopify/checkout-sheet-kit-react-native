@@ -73,15 +73,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	func checkoutDidFail(error: ShopifyCheckoutSheetKit.CheckoutError) {
 		guard hasListeners else { return }
 
-		/// Unauthorized checkout
-		if case .authenticationError(let message, let code, let recoverable) = error {
-			self.sendEvent(withName: "error", body: [
-				"__typename": "AuthenticationError",
-				"message": message,
-				"code": code.rawValue,
-				"recoverable": recoverable
-			])
-		} else if case .checkoutExpired(let message, let code, let recoverable) = error {
+		if case .checkoutExpired(let message, let code, let recoverable) = error {
 			self.sendEvent(withName: "error", body: [
 				"__typename": "CheckoutExpiredError",
 				"message": message,
@@ -101,6 +93,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 				self.sendEvent(withName: "error", body: [
 					"__typename": "CheckoutHTTPError",
 					"message": message,
+					"code": "http_error",
 					"statusCode": statusCode,
 					"recoverable": recoverable
 				])
@@ -116,12 +109,14 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 			var errorMessage = "\(underlying.localizedDescription)"
 			self.sendEvent(withName: "error", body: [
 				"__typename": "InternalError",
+				"code": "unknown",
 				"message": errorMessage,
 				"recoverable": recoverable
 			])
 		} else {
 			self.sendEvent(withName: "error", body: [
 				"__typename": "UnknownError",
+				"code": "unknown",
 				"message": error.localizedDescription,
 				"recoverable": error.isRecoverable
 			])
@@ -148,7 +143,6 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 			}
 
 			self.checkoutSheet?.dismiss(animated: true)
-			self.checkoutSheet = nil
 		}
 	}
 
@@ -185,7 +179,6 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	@objc func dismiss() {
 		DispatchQueue.main.async {
 			self.checkoutSheet?.dismiss(animated: true)
-			self.checkoutSheet = nil
 		}
 	}
 

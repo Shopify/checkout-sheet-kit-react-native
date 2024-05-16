@@ -4,7 +4,6 @@ import {
   LifecycleEventParseError,
   ShopifyCheckoutSheet,
   CheckoutErrorCode,
-  AuthenticationError,
   InternalError,
   ConfigurationError,
   CheckoutHTTPError,
@@ -318,16 +317,10 @@ describe('ShopifyCheckoutSheetKit', () => {
     });
 
     describe('Error Event', () => {
-      const authError = {
-        __typename: CheckoutNativeErrorType.CheckoutHTTPError,
-        message: 'Something went wrong',
-        statusCode: 401,
-        recoverable: true,
-      };
-
       const internalError = {
         __typename: CheckoutNativeErrorType.InternalError,
         message: 'Something went wrong',
+        code: CheckoutErrorCode.unknown,
         recoverable: true,
       };
 
@@ -348,6 +341,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       const networkError = {
         __typename: CheckoutNativeErrorType.CheckoutHTTPError,
         message: 'Checkout not found',
+        code: CheckoutErrorCode.httpError,
         statusCode: 400,
         recoverable: false,
       };
@@ -360,7 +354,6 @@ describe('ShopifyCheckoutSheetKit', () => {
       };
 
       it.each([
-        {error: authError, constructor: AuthenticationError},
         {error: internalError, constructor: InternalError},
         {error: configError, constructor: ConfigurationError},
         {error: clientError, constructor: CheckoutClientError},

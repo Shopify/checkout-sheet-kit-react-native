@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity;
 
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.shopify.checkoutsheetkit.CheckoutException;
 import com.shopify.checkoutsheetkit.CheckoutExpiredException;
@@ -64,7 +65,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
   private ArgumentCaptor<String> stringCaptor;
 
   @Captor
-  private ArgumentCaptor<JavaOnlyMap> mapCaptor;
+  private ArgumentCaptor<WritableNativeMap> mapCaptor;
 
   @Mock
   private CheckoutExpiredException mockCheckoutExpiredException;
@@ -199,7 +200,8 @@ public class ShopifyCheckoutSheetKitModuleTest {
     customCheckoutEventProcessor.onCheckoutFailed(mockCheckoutExpiredException);
 
     verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
-    JavaOnlyMap capturedMap = mapCaptor.getValue();
+
+    WritableNativeMap capturedMap = mapCaptor.getValue();
     assertEquals("CheckoutExpiredError", capturedMap.getString("__typename"));
     assertEquals("Cart expired", capturedMap.getString("message"));
     assertEquals("cart_expired", capturedMap.getString("code"));
@@ -215,7 +217,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
     customCheckoutEventProcessor.onCheckoutFailed(mockClientException);
 
     verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
-    JavaOnlyMap capturedMap = mapCaptor.getValue();
+    WritableNativeMap capturedMap = mapCaptor.getValue();
     assertEquals("CheckoutClientError", capturedMap.getString("__typename"));
     assertEquals("Client Error occurred", capturedMap.getString("message"));
     assertEquals("customer_account_required", capturedMap.getString("code"));
@@ -231,7 +233,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
     customCheckoutEventProcessor.onCheckoutFailed(mockHttpException);
 
     verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
-    JavaOnlyMap capturedMap = mapCaptor.getValue();
+    WritableNativeMap capturedMap = mapCaptor.getValue();
     assertEquals("CheckoutHTTPError", capturedMap.getString("__typename"));
     assertEquals("Not Found", capturedMap.getString("message"));
     assertFalse(capturedMap.getBoolean("recoverable"));
@@ -247,7 +249,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
     customCheckoutEventProcessor.onCheckoutFailed(mockConfigurationException);
 
     verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
-    JavaOnlyMap capturedMap = mapCaptor.getValue();
+    WritableNativeMap capturedMap = mapCaptor.getValue();
     assertEquals("ConfigurationError", capturedMap.getString("__typename"));
     assertEquals("Invalid Configuration", capturedMap.getString("message"));
     assertEquals("storefront_password_required", capturedMap.getString("code"));
@@ -262,7 +264,8 @@ public class ShopifyCheckoutSheetKitModuleTest {
     customCheckoutEventProcessor.onCheckoutFailed(mockCheckoutSheetKitException);
 
     verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
-    JavaOnlyMap capturedMap = mapCaptor.getValue();
+
+    WritableNativeMap capturedMap = mapCaptor.getValue();
     assertEquals("InternalError", capturedMap.getString("__typename"));
     assertEquals("Internal SDK Error", capturedMap.getString("message"));
     assertTrue(capturedMap.getBoolean("recoverable"));
@@ -276,7 +279,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
     customCheckoutEventProcessor.onCheckoutFailed(mockCheckoutException);
 
     verify(mockEventEmitter).emit(eq("error"), mapCaptor.capture());
-    JavaOnlyMap capturedMap = mapCaptor.getValue();
+    WritableNativeMap capturedMap = mapCaptor.getValue();
     assertEquals("UnknownError", capturedMap.getString("__typename"));
     assertEquals("General Checkout Error", capturedMap.getString("message"));
     assertTrue(capturedMap.getBoolean("recoverable"));

@@ -78,10 +78,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
     errorMap.putString("__typename", getErrorTypeName(checkoutError));
     errorMap.putString("message", checkoutError.getErrorDescription());
     errorMap.putBoolean("recoverable", checkoutError.isRecoverable());
-
-    if (!(checkoutError instanceof HttpException) && !(checkoutError instanceof CheckoutSheetKitException)) {
-      errorMap.putString("code", checkoutError.getErrorCode());
-    }
+    errorMap.putString("code", checkoutError.getErrorCode());
 
     if (checkoutError instanceof HttpException) {
       errorMap.putDouble("statusCode", ((HttpException) checkoutError).getStatusCode());
@@ -119,7 +116,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
   private void sendEventWithStringData(String name, String data) {
     reactContext
-      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-      .emit(name, data);
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        .emit(name, data);
   }
 }

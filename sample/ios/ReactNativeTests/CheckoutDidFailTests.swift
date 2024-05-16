@@ -49,34 +49,6 @@ class CheckoutDidFailTests: XCTestCase {
     return RCTShopifyCheckoutSheetKit()
   }
 
-  func testCheckoutDidFailEmitsAuthenticationError() {
-    let mock = mockSendEvent(eventName: "error")
-    mock.startObserving()
-
-    let error = CheckoutError.authenticationError(
-        message: "unauthorized",
-        code: CheckoutErrorCode.storefrontPasswordRequired,
-        recoverable: false
-    )
-
-    mock.checkoutDidFail(error: error)
-
-    XCTAssertTrue(mock.didSendEvent, "Event should have been sent when checkout fails")
-
-    guard let eventBody = mock.eventBody as? [String: Any] else {
-        return XCTFail("Event body was not available or not in the correct format")
-    }
-
-    if case .authenticationError(let message, let code, let recoverable) = error {
-      XCTAssertEqual(eventBody["__typename"] as? String, "AuthenticationError")
-      XCTAssertEqual(eventBody["message"] as? String, "unauthorized")
-      XCTAssertEqual(eventBody["code"] as? String, CheckoutErrorCode.storefrontPasswordRequired.rawValue)
-      XCTAssertEqual(eventBody["recoverable"] as? Bool, false)
-    } else {
-        XCTFail("Expected AuthenticationError but found different error")
-    }
-}
-
   func testCheckoutDidFailEmitsCheckoutExpiredError() {
     let mock = mockSendEvent(eventName: "error")
     mock.startObserving()
