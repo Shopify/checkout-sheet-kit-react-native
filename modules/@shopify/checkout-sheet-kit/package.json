@@ -1,7 +1,7 @@
 {
   "name": "@shopify/checkout-sheet-kit",
   "license": "MIT",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "main": "lib/commonjs/index.js",
   "types": "src/index.ts",
   "source": "src/index.ts",
@@ -24,6 +24,7 @@
     "README.md",
     "package.json",
     "src",
+    "app.plugin.js",
     "ios",
     "android",
     "lib",
@@ -48,6 +49,7 @@
     "react-native": "*"
   },
   "devDependencies": {
+    "@expo/config-plugins": "^7.9.1",
     "react-native-builder-bob": "^0.23.1",
     "typescript": "^5.4.2"
   },
