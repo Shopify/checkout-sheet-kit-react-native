@@ -1,6 +1,7 @@
 declare module '@env' {
   export const STOREFRONT_DOMAIN: string;
   export const STOREFRONT_ACCESS_TOKEN: string;
+  export const STOREFRONT_VERSION: string;
 
   export const EMAIL: string;
   export const ADDRESS_1: string;

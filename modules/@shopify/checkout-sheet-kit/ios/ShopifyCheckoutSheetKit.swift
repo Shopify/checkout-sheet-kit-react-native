@@ -40,6 +40,14 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		return true
 	}
 
+	override init() {
+		ShopifyCheckoutSheetKit.configure {
+			$0.platform = ShopifyCheckoutSheetKit.Platform.reactNative
+		}
+
+		super.init()
+	}
+
 	override func supportedEvents() -> [String]! {
 		return ["close", "completed", "error", "pixel"]
 	}
@@ -58,12 +66,60 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		}
 	}
 
-	func checkoutDidFail(error checkoutError: ShopifyCheckoutSheetKit.CheckoutError) {
-		if hasListeners {
-			let errorInfo: [String: Any] = [
-				"message": checkoutError.localizedDescription
-			]
-			self.sendEvent(withName: "error", body: errorInfo)
+	func shouldRecoverFromError(error: CheckoutError) -> Bool {
+		return error.isRecoverable
+	}
+
+	func checkoutDidFail(error: ShopifyCheckoutSheetKit.CheckoutError) {
+		guard hasListeners else { return }
+
+		if case .checkoutExpired(let message, let code, let recoverable) = error {
+			self.sendEvent(withName: "error", body: [
+				"__typename": "CheckoutExpiredError",
+				"message": message,
+				"code": code.rawValue,
+				"recoverable": recoverable
+			])
+		} else if case .checkoutUnavailable(let message, let code, let recoverable) = error {
+			switch code {
+			case .clientError(let clientErrorCode):
+				self.sendEvent(withName: "error", body: [
+					"__typename": "CheckoutClientError",
+					"message": message,
+					"code": clientErrorCode.rawValue,
+					"recoverable": recoverable
+				])
+			case .httpError(let statusCode):
+				self.sendEvent(withName: "error", body: [
+					"__typename": "CheckoutHTTPError",
+					"message": message,
+					"code": "http_error",
+					"statusCode": statusCode,
+					"recoverable": recoverable
+				])
+			}
+		} else if case .configurationError(let message, let code, let recoverable) = error {
+			self.sendEvent(withName: "error", body: [
+				"__typename": "ConfigurationError",
+				"message": message,
+				"code": code.rawValue,
+				"recoverable": recoverable
+			])
+		} else if case .sdkError(let underlying, let recoverable) = error {
+			var errorMessage = "\(underlying.localizedDescription)"
+			self.sendEvent(withName: "error", body: [
+				"__typename": "InternalError",
+				"code": "unknown",
+				"message": errorMessage,
+				"recoverable": recoverable
+			])
+		} else {
+			self.sendEvent(withName: "error", body: [
+				"__typename": "UnknownError",
+				"code": "unknown",
+				"message": error.localizedDescription,
+				"recoverable": error.isRecoverable
+			])
 		}
 	}
 
@@ -118,6 +174,12 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		}
 
 		return controller
+	}
+
+	@objc func dismiss() {
+		DispatchQueue.main.async {
+			self.checkoutSheet?.dismiss(animated: true)
+		}
 	}
 
 	@objc func present(_ checkoutURL: String) {

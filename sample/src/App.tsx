@@ -37,6 +37,9 @@ import {
   Configuration,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
+  type CheckoutCompletedEvent,
+  type CheckoutException,
+  type PixelEvent,
 } from '@shopify/checkout-sheet-kit';
 import {ConfigProvider} from './context/Config';
 import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
@@ -46,7 +49,6 @@ import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import {ProductVariant, ShopifyProduct} from '../@types';
 import ErrorBoundary from './ErrorBoundary';
-import {CheckoutException} from '@shopify/checkout-sheet-kit';
 
 const colorScheme = ColorScheme.web;
 
@@ -84,12 +86,13 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const cache = new InMemoryCache();
 
 const client = new ApolloClient({
-  uri: `https://${env.STOREFRONT_DOMAIN}/api/2023-10/graphql.json`,
+  uri: `https://${env.STOREFRONT_DOMAIN}/api/${env.STOREFRONT_VERSION}/graphql.json`,
   cache,
   headers: {
     'Content-Type': 'application/json',
     'X-Shopify-Storefront-Access-Token': env.STOREFRONT_ACCESS_TOKEN ?? '',
   },
+  connectToDevTools: true,
 });
 
 function AppWithTheme({children}: PropsWithChildren) {
@@ -117,19 +120,22 @@ function AppWithContext({children}: PropsWithChildren) {
       console.log('[CheckoutClose]');
     });
 
-    const pixel = shopify.addEventListener('pixel', event => {
+    const pixel = shopify.addEventListener('pixel', (event: PixelEvent) => {
       console.log('[CheckoutPixelEvent]', event.name, event);
     });
 
-    const completed = shopify.addEventListener('completed', event => {
-      console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
-      console.log('[CheckoutCompletedEvent]', event);
-    });
+    const completed = shopify.addEventListener(
+      'completed',
+      (event: CheckoutCompletedEvent) => {
+        console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
+        console.log('[CheckoutCompletedEvent]', event);
+      },
+    );
 
     const error = shopify.addEventListener(
       'error',
       (error: CheckoutException) => {
-        console.log('[CheckoutError]', error);
+        console.log(error.constructor.name, error);
       },
     );
 

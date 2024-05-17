@@ -27,14 +27,17 @@ import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.shopify.checkoutsheetkit.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
   private final ReactApplicationContext reactContext;
@@ -69,11 +72,42 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
   @Override
   public void onCheckoutFailed(CheckoutException checkoutError) {
-    WritableNativeMap error = new WritableNativeMap();
+    try {
+      String data = mapper.writeValueAsString(populateErrorDetails(checkoutError));
+      sendEventWithStringData("error", data);
+    } catch (IOException e) {
+      Log.e("ShopifyCheckoutSheetKit", "Error processing checkout failed event", e);
+    }
+  }
 
-    error.putString("message", checkoutError.getErrorDescription());
+  private Map<String, Object> populateErrorDetails(CheckoutException checkoutError) {
+    Map<String, Object> errorMap = new HashMap();
+    errorMap.put("__typename", getErrorTypeName(checkoutError));
+    errorMap.put("message", checkoutError.getErrorDescription());
+    errorMap.put("recoverable", checkoutError.isRecoverable());
+    errorMap.put("code", checkoutError.getErrorCode());
 
-    sendEvent("error", error);
+    if (checkoutError instanceof HttpException) {
+      errorMap.put("statusCode", ((HttpException) checkoutError).getStatusCode());
+    }
+
+    return errorMap;
+  }
+
+  private String getErrorTypeName(CheckoutException error) {
+    if (error instanceof CheckoutExpiredException) {
+      return "CheckoutExpiredError";
+    } else if (error instanceof ClientException) {
+      return "CheckoutClientError";
+    } else if (error instanceof HttpException) {
+      return "CheckoutHTTPError";
+    } else if (error instanceof ConfigurationException) {
+      return "ConfigurationError";
+    } else if (error instanceof CheckoutSheetKitException) {
+      return "InternalError";
+    } else {
+      return "UnknownError";
+    }
   }
 
   @Override
@@ -89,7 +123,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
   private void sendEventWithStringData(String name, String data) {
     reactContext
-      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-      .emit(name, data);
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        .emit(name, data);
   }
 }

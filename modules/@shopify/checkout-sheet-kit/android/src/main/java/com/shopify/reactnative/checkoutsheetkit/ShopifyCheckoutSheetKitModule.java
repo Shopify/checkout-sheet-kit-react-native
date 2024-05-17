@@ -46,10 +46,17 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
   private final ReactApplicationContext reactContext;
 
+  private CheckoutSheetKitDialog checkoutSheet;
+
   public ShopifyCheckoutSheetKitModule(ReactApplicationContext reactContext) {
     super(reactContext);
 
     this.reactContext = reactContext;
+
+    ShopifyCheckoutSheetKit.configure(configuration -> {
+      configuration.setPlatform(Platform.REACT_NATIVE);
+      checkoutConfig = configuration;
+    });
   }
 
   @NonNull
@@ -82,9 +89,17 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
       DefaultCheckoutEventProcessor checkoutEventProcessor = new CustomCheckoutEventProcessor(currentActivity,
           this.reactContext);
       currentActivity.runOnUiThread(() -> {
-        ShopifyCheckoutSheetKit.present(checkoutURL, (ComponentActivity) currentActivity,
+        checkoutSheet = ShopifyCheckoutSheetKit.present(checkoutURL, (ComponentActivity) currentActivity,
             checkoutEventProcessor);
       });
+    }
+  }
+
+  @ReactMethod
+  public void dismiss() {
+    if (checkoutSheet != null) {
+      checkoutSheet.dismiss();
+      checkoutSheet = null;
     }
   }
 

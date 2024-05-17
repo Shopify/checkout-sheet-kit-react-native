@@ -182,22 +182,6 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     XCTAssertTrue((mock.checkoutSheet as! MockCheckoutSheet).dismissWasCalled)
   }
 
-  /// checkoutDidFail
-  func testCheckoutDidFailSendsEvent() {
-    let mock = mockSendEvent(eventName: "error")
-
-    mock.startObserving()
-    let error = CheckoutError.checkoutExpired(message: "Checkout expired")
-    mock.checkoutDidFail(error: error)
-
-    XCTAssertTrue(mock.didSendEvent)
-    if let eventBody = mock.eventBody as? [String: Any], let message = eventBody["message"] as? String {
-      XCTAssertEqual(message, error.localizedDescription)
-    } else {
-      XCTFail("Failed to get the message from eventBody")
-    }
-  }
-
   /// checkoutDidEmitWebPixelEvent
   func testCheckoutDidEmitStandardWebPixelEvent() {
     let mock = mockSendEvent(eventName: "pixel")

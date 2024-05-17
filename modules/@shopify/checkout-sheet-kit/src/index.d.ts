@@ -24,6 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 import {EmitterSubscription} from 'react-native';
 import {PixelEvent} from './pixels';
 import {CheckoutCompletedEvent} from './events';
+import {CheckoutException} from './errors';
 
 export type Maybe<T> = T | undefined;
 
@@ -125,10 +126,6 @@ export type Configuration = CommonConfiguration &
         };
       }
   );
-
-export interface CheckoutException {
-  message: string;
-}
 
 export type CheckoutEvent = 'close' | 'completed' | 'error' | 'pixel';
 

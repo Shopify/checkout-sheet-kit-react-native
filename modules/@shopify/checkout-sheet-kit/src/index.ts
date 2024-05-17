@@ -31,11 +31,23 @@ import {ColorScheme} from './index.d';
 import type {
   CheckoutEvent,
   CheckoutEventCallback,
-  CheckoutException,
   Configuration,
   ShopifyCheckoutSheetKit,
 } from './index.d';
-import type {CustomEvent, PixelEvent} from './pixels';
+import {
+  CheckoutException,
+  CheckoutExpiredError,
+  CheckoutClientError,
+  CheckoutHTTPError,
+  ConfigurationError,
+  InternalError,
+  CheckoutNativeError,
+  CheckoutNativeErrorType,
+  GenericError,
+} from './errors.d';
+import {CheckoutErrorCode} from './errors.d';
+import {CheckoutCompletedEvent} from './events.d';
+import type {CustomEvent, PixelEvent, StandardEvent} from './pixels.d';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
 
@@ -58,6 +70,10 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   }
 
   public readonly version: string = RNShopifyCheckoutSheetKit.version;
+
+  public dismiss(): void {
+    RNShopifyCheckoutSheetKit.dismiss();
+  }
 
   public preload(checkoutUrl: string): void {
     RNShopifyCheckoutSheetKit.preload(checkoutUrl);
@@ -90,6 +106,12 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
         break;
       case 'completed':
         eventCallback = this.interceptEventEmission(callback);
+        break;
+      case 'error':
+        eventCallback = this.interceptEventEmission(
+          callback,
+          this.parseCheckoutError,
+        );
         break;
       default:
         eventCallback = callback;
@@ -124,6 +146,25 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     return eventData;
   }
 
+  private parseCheckoutError(
+    exception: CheckoutNativeError,
+  ): CheckoutException {
+    switch (exception?.__typename) {
+      case CheckoutNativeErrorType.InternalError:
+        return new InternalError(exception);
+      case CheckoutNativeErrorType.ConfigurationError:
+        return new ConfigurationError(exception);
+      case CheckoutNativeErrorType.CheckoutClientError:
+        return new CheckoutClientError(exception);
+      case CheckoutNativeErrorType.CheckoutHTTPError:
+        return new CheckoutHTTPError(exception);
+      case CheckoutNativeErrorType.CheckoutExpiredError:
+        return new CheckoutExpiredError(exception);
+      default:
+        return new GenericError(exception);
+    }
+  }
+
   /**
    * Event data can be sent back as either a parsed Event object or a JSON string.
    */
@@ -149,7 +190,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
             console.error(parseError);
           }
         } else if (eventData && typeof eventData === 'object') {
-          callback(eventData);
+          callback(transformData?.(eventData) ?? eventData);
         }
       } catch (error) {
         const parseError = new LifecycleEventParseError(
@@ -182,11 +223,32 @@ export class LifecycleEventParseError extends Error {
 
 // API
 export {
+  ColorScheme,
   ShopifyCheckoutSheet,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
-  ColorScheme,
+};
+
+// Error classes
+export {
+  CheckoutClientError,
+  CheckoutErrorCode,
+  CheckoutExpiredError,
+  CheckoutHTTPError,
+  CheckoutNativeErrorType,
+  ConfigurationError,
+  GenericError,
+  InternalError,
 };
 
 // Types
-export {CheckoutEvent, CheckoutException, CheckoutEventCallback, Configuration};
+export type {
+  CheckoutCompletedEvent,
+  CheckoutEvent,
+  CheckoutEventCallback,
+  CheckoutException,
+  Configuration,
+  CustomEvent,
+  PixelEvent,
+  StandardEvent,
+};

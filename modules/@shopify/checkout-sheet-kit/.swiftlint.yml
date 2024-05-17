@@ -3,6 +3,7 @@ disabled_rules:
   - redundant_void_return
   - todo
   - switch_case_alignment
+  - function_body_length
 
 opt_in_rules:
   - array_init

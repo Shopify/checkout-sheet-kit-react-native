@@ -5,6 +5,12 @@ import androidx.activity.ComponentActivity;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.shopify.checkoutsheetkit.CheckoutException;
+import com.shopify.checkoutsheetkit.CheckoutExpiredException;
+import com.shopify.checkoutsheetkit.CheckoutSheetKitException;
+import com.shopify.checkoutsheetkit.ClientException;
+import com.shopify.checkoutsheetkit.ConfigurationException;
+import com.shopify.checkoutsheetkit.HttpException;
 import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
 import com.shopify.checkoutsheetkit.pixelevents.*;
 import com.shopify.checkoutsheetkit.lifecycleevents.*;
@@ -57,6 +63,18 @@ public class ShopifyCheckoutSheetKitModuleTest {
   @Captor
   private ArgumentCaptor<String> stringCaptor;
 
+  @Mock
+  private CheckoutExpiredException mockCheckoutExpiredException;
+  @Mock
+  private ClientException mockClientException;
+  @Mock
+  private HttpException mockHttpException;
+  @Mock
+  private ConfigurationException mockConfigurationException;
+  @Mock
+  private CheckoutSheetKitException mockCheckoutSheetKitException;
+  @Mock
+  private CheckoutException mockCheckoutException;
 
   @Before
   public void setup() {
@@ -126,7 +144,6 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     verify(mockEventEmitter).emit(eq("pixel"), stringCaptor.capture());
 
-    System.out.print(stringCaptor.getValue());
     assertTrue(stringCaptor.getValue().contains("{\"id\":\"test\",\"name\":\"page_viewed\",\"timestamp\":\"timestamp\",\"type\":\"STANDARD\",\"context\":null,\"data\":null}"));
   }
 
@@ -167,5 +184,115 @@ public class ShopifyCheckoutSheetKitModuleTest {
     verify(mockEventEmitter).emit(eq("completed"), stringCaptor.capture());
 
     assertTrue(stringCaptor.getValue().contains("{\"orderDetails\":{\"billingAddress\":null,\"cart\":{\"lines\":[],\"price\":{\"discounts\":[],\"shipping\":null,\"subtotal\":null,\"taxes\":null,\"total\":null},\"token\":\"\"},\"deliveries\":[],\"email\":null,\"id\":\"test\",\"paymentMethods\":[],\"phone\":null}}"));
+  }
+
+  @Test
+  public void sendsCheckoutExpiredErrorEventOnCheckoutFailed() {
+    when(mockCheckoutExpiredException.getErrorDescription()).thenReturn("Cart expired");
+    when(mockCheckoutExpiredException.getErrorCode()).thenReturn("cart_expired");
+    when(mockCheckoutExpiredException.isRecoverable()).thenReturn(false);
+
+    customCheckoutEventProcessor.onCheckoutFailed(mockCheckoutExpiredException);
+
+    verify(mockEventEmitter).emit(eq("error"), stringCaptor.capture());
+
+    String capturedString = stringCaptor.getValue();
+
+    assertTrue(capturedString.contains("\"__typename\":\"CheckoutExpiredError\""));
+    assertTrue(capturedString.contains("\"message\":\"Cart expired\""));
+    assertTrue(capturedString.contains("\"code\":\"cart_expired\""));
+    assertTrue(capturedString.contains("\"recoverable\":false"));
+  }
+
+  @Test
+  public void sendsClientErrorEventOnCheckoutFailed() {
+    when(mockClientException.getErrorDescription()).thenReturn("Client Error");
+    when(mockClientException.getErrorCode()).thenReturn("customer_account_required");
+    when(mockClientException.isRecoverable()).thenReturn(true);
+
+    customCheckoutEventProcessor.onCheckoutFailed(mockClientException);
+
+    verify(mockEventEmitter).emit(eq("error"), stringCaptor.capture());
+    String capturedString = stringCaptor.getValue();
+    assertTrue(capturedString.contains("\"__typename\":\"CheckoutClientError\""));
+    assertTrue(capturedString.contains("\"message\":\"Client Error\""));
+    assertTrue(capturedString.contains("\"code\":\"customer_account_required\""));
+    assertTrue(capturedString.contains("\"recoverable\":true"));
+  }
+
+  @Test
+  public void sendsHttpErrorEventOnCheckoutFailed() {
+    when(mockHttpException.getErrorDescription()).thenReturn("Not Found");
+    when(mockHttpException.isRecoverable()).thenReturn(false);
+    when(mockHttpException.getStatusCode()).thenReturn(404);
+    when(mockHttpException.getErrorCode()).thenReturn("http_error");
+
+    customCheckoutEventProcessor.onCheckoutFailed(mockHttpException);
+
+    verify(mockEventEmitter).emit(eq("error"), stringCaptor.capture());
+
+    String capturedString = stringCaptor.getValue();
+
+    System.out.println(capturedString);
+
+    assertTrue(capturedString.contains("\"__typename\":\"CheckoutHTTPError\""));
+    assertTrue(capturedString.contains("\"message\":\"Not Found\""));
+    assertTrue(capturedString.contains("\"code\":\"http_error\""));
+    assertTrue(capturedString.contains("\"statusCode\":404"));
+    assertTrue(capturedString.contains("\"recoverable\":false"));
+  }
+
+  @Test
+  public void sendsConfigurationErrorEventOnCheckoutFailed() {
+    when(mockConfigurationException.getErrorDescription()).thenReturn("Invalid Configuration");
+    when(mockConfigurationException.getErrorCode()).thenReturn("storefront_password_required");
+    when(mockConfigurationException.isRecoverable()).thenReturn(false);
+
+    customCheckoutEventProcessor.onCheckoutFailed(mockConfigurationException);
+
+    verify(mockEventEmitter).emit(eq("error"), stringCaptor.capture());
+
+    String capturedString = stringCaptor.getValue();
+
+    assertTrue(capturedString.contains("\"__typename\":\"ConfigurationError\""));
+    assertTrue(capturedString.contains("\"message\":\"Invalid Configuration\""));
+    assertTrue(capturedString.contains("\"code\":\"storefront_password_required\""));
+    assertTrue(capturedString.contains("\"recoverable\":false"));
+  }
+
+  @Test
+  public void sendsInternalErrorEventOnCheckoutFailed() {
+    when(mockCheckoutSheetKitException.getErrorDescription()).thenReturn("Internal SDK Error");
+    when(mockCheckoutSheetKitException.getErrorCode()).thenReturn("render_process_gone");
+    when(mockCheckoutSheetKitException.isRecoverable()).thenReturn(true);
+
+    customCheckoutEventProcessor.onCheckoutFailed(mockCheckoutSheetKitException);
+
+    verify(mockEventEmitter).emit(eq("error"), stringCaptor.capture());
+
+    String capturedString = stringCaptor.getValue();
+
+    assertTrue(capturedString.contains("\"__typename\":\"InternalError\""));
+    assertTrue(capturedString.contains("\"message\":\"Internal SDK Error\""));
+    assertTrue(capturedString.contains("\"code\":\"render_process_gone\""));
+    assertTrue(capturedString.contains("\"recoverable\":true"));
+  }
+
+  @Test
+  public void sendsGeneralErrorEventOnCheckoutFailed() {
+    when(mockCheckoutException.getErrorDescription()).thenReturn("General Checkout Error");
+    when(mockCheckoutException.getErrorCode()).thenReturn("unknown");
+    when(mockCheckoutException.isRecoverable()).thenReturn(true);
+
+    customCheckoutEventProcessor.onCheckoutFailed(mockCheckoutException);
+
+    verify(mockEventEmitter).emit(eq("error"), stringCaptor.capture());
+
+    String capturedString = stringCaptor.getValue();
+
+    assertTrue(capturedString.contains("\"__typename\":\"UnknownError\""));
+    assertTrue(capturedString.contains("\"message\":\"General Checkout Error\""));
+    assertTrue(capturedString.contains("\"code\":\"unknown\""));
+    assertTrue(capturedString.contains("\"recoverable\":true"));
   }
 }

@@ -201,13 +201,15 @@ function CartItem({
         ...styles.productItem,
         ...(loading ? styles.productItemLoading : {}),
       }}>
-      <Image
-        resizeMethod="resize"
-        resizeMode="cover"
-        style={styles.productImage}
-        alt={item.merchandise.image?.altText}
-        source={{uri: item.merchandise.image?.url}}
-      />
+      {item.merchandise.image?.url && (
+        <Image
+          resizeMethod="resize"
+          resizeMode="cover"
+          style={styles.productImage}
+          alt={item.merchandise.image?.altText}
+          source={{uri: item.merchandise.image?.url}}
+        />
+      )}
       <View style={styles.productText}>
         <View style={styles.productTextContainer}>
           <Text style={styles.productTitle}>
