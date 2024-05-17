@@ -1,6 +1,9 @@
 name: Publish NPM Package
 
 on:
+  release:
+    types:
+      - published
   workflow_dispatch:
 
 jobs:
@@ -21,7 +24,6 @@ jobs:
           yarn module clean
           yarn module build
           cd modules/@shopify/checkout-sheet-kit
-          npm dist-tag add @shopify/checkout-sheet-kit@2.0.1 latest
-          npm dist-tag add @shopify/checkout-sheet-kit@3.0.0-beta.1 beta
+          npm publish --access public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
