@@ -1,5 +1,24 @@
 # Changelog
 
+## 3.0.0 - May 20, 2024
+
+This version of the Checkout Sheet Kit ships with improvements to error handling. Error messages will now contain `message`, `code` and `recoverable` attributes.
+
+In the event of a HTTP error, internal SDK error or mid-experience crash, the Checkout Sheet Kit will now automatically invoke a recovery mechanism in an effort to degrade gracefully.
+
+Offering a world-class user experience is paramount, so please note that when the recovery state occurs, there are caveats to the developer experience:
+
+1. Checkout theming may fallback to the default checkout theme.
+2. **Web pixels lifecycle events will not fire.**
+3. `completed` events will contain an `orderId` _only_.
+
+### Updated dependencies
+
+- [`checkout-sheet-kit-swift@3.0.0`](https://github.com/Shopify/checkout-sheet-kit-swift/releases)
+- [`checkout-sheet-kit-android@3.0.0`](https://github.com/Shopify/checkout-sheet-kit-android/releases)
+
+
+
 ## 2.0.1 - April 4, 2024
 
 - Fixes an issue where opening `mailto` links externally causes the application
