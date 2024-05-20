@@ -1,0 +1,23 @@
+name: Deprecate old versions
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Deprecate old versions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Deprecate
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+          npm deprecate @shopify/checkout-sheet-kit@"${{ env.VERSIONS }}" "This version is deprecated. Please upgrade to the latest version of @shopify/checkout-sheet-kit."
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          VERSIONS: '< 2.0.1'
