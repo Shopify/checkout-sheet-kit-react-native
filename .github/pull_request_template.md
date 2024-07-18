@@ -23,7 +23,8 @@
 <summary>Checklist for releasing a new version</summary>
 
 - [ ] I have bumped the version number in the [`package.json` file](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/modules/%40shopify/checkout-sheet-kit/package.json#L4).
-- [ ] I have added a [Changelog](./CHANGELOG.md) entry.
+- [ ] I have added a [Changelog](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/CHANGELOG.md) entry.
+
 </details>
 
 > [!TIP]
