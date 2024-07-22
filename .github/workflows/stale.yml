@@ -32,4 +32,4 @@ jobs:
             This issue has been automatically closed because it has not had
             recent activity. Please re-open it if it is still relevant.
           stale-pr-message: 'Stale pull request message'
-          stale-pr-label: 'no-pr-activity'
+          stale-pr-label: 'stale'
