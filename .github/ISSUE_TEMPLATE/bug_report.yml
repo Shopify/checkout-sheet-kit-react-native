@@ -1,7 +1,6 @@
 name: 🐛 Bug Report
 description: Something is wrong with the Checkout Sheet Kit.
-labels:
-  - 'Bug'
+labels: ['Bug', 'untriaged']
 body:
   - type: markdown
     attributes:
@@ -36,14 +35,19 @@ body:
   - type: input
     attributes:
       label: What version of `@shopify/checkout-sheet-kit` are you using?
-      description: Please list the package version and device you are testing with.
+      description:
+        Please list the package version and device you are testing with.
     validations:
       required: true
 
   - type: textarea
     attributes:
       label: Do you have reproducible example code?
-      description: (Optional) Please demonstrate how you're encountering this error by sharing the mutation you are using to create the Checkout URL as well as the code to present the checkout. This will help us debug the issue more quickly.
+      description:
+        (Optional) Please demonstrate how you're encountering this error by
+        sharing the mutation you are using to create the Checkout URL as well as
+        the code to present the checkout. This will help us debug the issue more
+        quickly.
     validations:
       required: false
 
