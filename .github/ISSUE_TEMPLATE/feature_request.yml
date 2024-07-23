@@ -1,5 +1,5 @@
 name: 💡 Feature Request
-about:
+description:
   An idea or suggestion for a new feature or enhancement to the Checkout Sheet
   Kit
 labels: ['Feature-Request', 'untriaged']
