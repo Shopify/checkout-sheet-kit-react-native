@@ -92,7 +92,7 @@ jobs:
 
   test-ios:
     name: Run iOS Tests
-    runs-on: macos-13
+    runs-on: macos-13-xlarge
     needs: [lint, lint-swift, test]
     steps:
       - name: Checkout
