@@ -2,7 +2,7 @@
 
 ## 3.0.2 - August 6, 2024
 
-- Upgrades Swift dependency to `3.0.3`
+- Upgrades Swift and Android dependencies to `3.0.3`
 
 ## 3.0.1 - June 19, 2024
 
