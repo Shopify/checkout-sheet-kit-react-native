@@ -11,10 +11,10 @@ jobs:
     name: Lint Swift code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
 
       - name: Run SwiftLint
-        uses: norio-nomura/action-swiftlint@3.2.1
+        uses: norio-nomura/action-swiftlint@b3fcfb2c5a82d46c48495dda0bcb4c0e981bfc54 # 3.2.1
         with:
           args: --strict
 
@@ -22,7 +22,7 @@ jobs:
     name: Verify license headers
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
 
       - run: ./scripts/copy_license && git diff --name-only --exit-code
 
@@ -32,7 +32,7 @@ jobs:
     env:
       TERM: xterm
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -46,7 +46,7 @@ jobs:
     name: Lint module + sample
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -60,7 +60,7 @@ jobs:
     name: Run jest tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -73,14 +73,14 @@ jobs:
     needs: [lint, test]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
 
       - name: Setup
         uses: ./.github/actions/setup
 
       - name: Install JDK
         # if: env.turbo_cache_hit != 1
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@0ab4596768b603586c0de567f2430c30f5b0d2b0 # v3.13.0
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -96,7 +96,7 @@ jobs:
     needs: [lint, lint-swift, test]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
 
       - name: Setup iOS Simulator
         uses: ./.github/actions/setup-simulator
