@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.2 - August 6, 2024
+
+- Upgrades Swift and Android dependencies to `3.0.3`
+
 ## 3.0.1 - June 19, 2024
 
 - Upgrades the underlying Swift dependency, fixing an issue where pixel events
