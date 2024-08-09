@@ -336,7 +336,7 @@ behavior can be customized via the `colorScheme` property:
 
 | Name        | Default | Description                                                                                      |
 | ----------- | ------- | ------------------------------------------------------------------------------------------------ |
-| `automatic` | ✔       | Alternates between an idiomatic light and dark theme - depending on the users device preference. |
+| `automatic` | ✔      | Alternates between an idiomatic light and dark theme - depending on the users device preference. |
 | `light`     |         | Force the idomatic light theme.                                                                  |
 | `dark`      |         | Force the idomatic dark theme.                                                                   |
 | `web`       |         | Force your storefront web theme, as rendered by a mobile browser.                                |
@@ -723,6 +723,7 @@ Replace the details in the `sample/.env.example` file and rename it to
 # Storefront Details
 STOREFRONT_DOMAIN="YOUR_STORE.myshopify.com"
 STOREFRONT_ACCESS_TOKEN="YOUR_PUBLIC_STOREFRONT_ACCESS_TOKEN"
+STOREFRONT_VERSION="2024-04"
 ```
 
 #### Start the sample app
