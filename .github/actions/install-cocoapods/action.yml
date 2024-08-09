@@ -6,7 +6,7 @@ runs:
   steps:
     - name: Cache cocoapods
       id: cache-cocoapods
-      uses: actions/cache@v3
+      uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3.3.3
       with:
         path: |
           **/ios/Pods
@@ -26,4 +26,3 @@ runs:
         cd ios
         NO_FLIPPER=1 bundle exec pod install
         cd $ROOT
-

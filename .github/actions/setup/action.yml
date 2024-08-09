@@ -5,12 +5,12 @@ runs:
   using: composite
   steps:
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3.8.2
       with:
         node-version: 20
 
     - name: Cache turbo build setup
-      uses: actions/cache@v3
+      uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3.3.3
       with:
         path: .turbo
         key: ${{ runner.os }}-turbo-${{ github.sha }}
@@ -19,7 +19,7 @@ runs:
 
     - name: Cache dependencies
       id: yarn-cache
-      uses: actions/cache@v3
+      uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c # v3.3.3
       with:
         path: |
           **/node_modules
