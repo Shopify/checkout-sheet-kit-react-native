@@ -2,7 +2,8 @@
 
 ## 3.0.3 - August 9, 2024
 
-- Upgrades dependencies to get updates related to web pixel event schema
+- Upgrades Swift and Android dependencies to `3.0.4`
+- Updates Web Pixel schema
 
 ## 3.0.2 - August 6, 2024
 
