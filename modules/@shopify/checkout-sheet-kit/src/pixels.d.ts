@@ -331,6 +331,33 @@ interface Attribute {
   value?: string;
 }
 
+/* A single line item in the checkout, grouped by variant and attributes. */
+interface CheckoutLineItem {
+  /* The discounts that have been applied to the checkout line item by a */
+  /* discount application. */
+  discountAllocations?: DiscountAllocation[];
+  /* The combined price of all of the items in the line item after line-level discounts have been applied. */
+  finalLinePrice?: MoneyV2;
+  /* A globally unique identifier. */
+  id?: string;
+  /** The properties of the line item. A shop may add, or enable customers to add custom information to a line item.
+   * Line item properties consist of a key and value pair.
+   */
+  properties?: Property[];
+  /* The quantity of the line item. */
+  quantity?: number;
+  /* The title of the line item. Defaults to the product's title. */
+  sellingPlanAllocation?: SellingPlanAllocation;
+  title?: string;
+  /* Product variant of the line item. */
+  variant?: ProductVariant;
+}
+
+interface Country {
+  /* The ISO-3166-1 code for this country, for example, "US". */
+  isoCode?: string;
+}
+
 interface Delivery {
   selectedDeliveryOptions?: DeliveryOption[];
 }
@@ -350,60 +377,12 @@ interface DeliveryOption {
   type?: string;
 }
 
-interface Localization {
-  /* The country of the active localized experience. */
-  country?: Country;
-  /* The language of the active localized experience. */
-  language?: Language;
-  /* The market including the country of the active localized experience. */
-  market?: Market;
-}
-
-interface Country {
-  /* The ISO-3166-1 code for this country, for example, "US". */
-  isoCode?: string;
-}
-
-interface Language {
-  /* The BCP-47 language tag. It may contain a dash followed by an ISO 3166-1 alpha-2 region code, for example, "en-US". */
-  isoCode?: string;
-}
-
-interface Market {
-  /* A human-readable, shop-scoped identifier. */
-  handle?: string;
-  /* A globally unique identifier. */
-  id?: string;
-}
-
-/* A mailing address for customers and shipping. */
-interface MailingAddress {
-  /* The first line of the address. This is usually the street address or a P.O. */
-  /* Box number. */
-  address1?: string;
-  /* The second line of the address. This is usually an apartment, suite, or */
-  /* unit number. */
-  address2?: string;
-  /* The name of the city, district, village, or town. */
-  city?: string;
-  /* The name of the country. */
-  country?: string;
-  /* The two-letter code that represents the country, for example, US. */
-  /* The country codes generally follows ISO 3166-1 alpha-2 guidelines. */
-  countryCode?: string;
-  /* The customer’s first name. */
-  firstName?: string;
-  /* The customer’s last name. */
-  lastName?: string;
-  /* The phone number for this mailing address as entered by the customer. */
-  phone?: string;
-  /* The region of the address, such as the province, state, or district. */
-  province?: string;
-  /* The two-letter code for the region. */
-  /* For example, ON. */
-  provinceCode?: string;
-  /* The ZIP or postal code of the address. */
-  zip?: string;
+/* The discount that has been applied to the checkout line item. */
+interface DiscountAllocation {
+  /* The monetary value with currency allocated to the discount. */
+  amount?: MoneyV2;
+  /* The information about the intent of the discount. */
+  discountApplication?: DiscountApplication;
 }
 
 /* The information about the intent of the discount. */
@@ -446,70 +425,55 @@ interface DiscountApplication {
   value?: Value;
 }
 
-/* A value given to a customer when a discount is applied to an order. The */
-/* application of a discount with this value gives the customer the specified */
-/* percentage off a specified item. */
-interface Value {
-  /* The decimal money amount. */
-  amount?: number;
-  /* The three-letter code that represents the currency, for example, USD. */
-  /* Supported codes include standard ISO 4217 codes, legacy codes, and non- */
-  /* standard codes. */
-  currencyCode?: string;
-  /* The percentage value of the object. */
-  percentage?: number;
+interface Language {
+  /* The BCP-47 language tag. It may contain a dash followed by an ISO 3166-1 alpha-2 region code, for example, "en-US". */
+  isoCode?: string;
 }
 
-/* A single line item in the checkout, grouped by variant and attributes. */
-interface CheckoutLineItem {
-  /* The discounts that have been applied to the checkout line item by a */
-  /* discount application. */
-  discountAllocations?: DiscountAllocation[];
-  /* The combined price of all of the items in the line item after line-level discounts have been applied. */
-  finalLinePrice?: MoneyV2;
+interface Localization {
+  /* The country of the active localized experience. */
+  country?: Country;
+  /* The language of the active localized experience. */
+  language?: Language;
+  /* The market including the country of the active localized experience. */
+  market?: Market;
+}
+
+/* A mailing address for customers and shipping. */
+interface MailingAddress {
+  /* The first line of the address. This is usually the street address or a P.O. */
+  /* Box number. */
+  address1?: string;
+  /* The second line of the address. This is usually an apartment, suite, or */
+  /* unit number. */
+  address2?: string;
+  /* The name of the city, district, village, or town. */
+  city?: string;
+  /* The name of the country. */
+  country?: string;
+  /* The two-letter code that represents the country, for example, US. */
+  /* The country codes generally follows ISO 3166-1 alpha-2 guidelines. */
+  countryCode?: string;
+  /* The customer’s first name. */
+  firstName?: string;
+  /* The customer’s last name. */
+  lastName?: string;
+  /* The phone number for this mailing address as entered by the customer. */
+  phone?: string;
+  /* The region of the address, such as the province, state, or district. */
+  province?: string;
+  /* The two-letter code for the region. */
+  /* For example, ON. */
+  provinceCode?: string;
+  /* The ZIP or postal code of the address. */
+  zip?: string;
+}
+
+interface Market {
+  /* A human-readable, shop-scoped identifier. */
+  handle?: string;
   /* A globally unique identifier. */
   id?: string;
-  /** The properties of the line item. A shop may add, or enable customers to add custom information to a line item.
-   * Line item properties consist of a key and value pair.
-   */
-  properties?: Property[];
-  /* The quantity of the line item. */
-  quantity?: number;
-  /* The title of the line item. Defaults to the product's title. */
-  sellingPlanAllocation?: SellingPlanAllocation;
-  title?: string;
-  /* Product variant of the line item. */
-  variant?: ProductVariant;
-}
-
-interface SellingPlanAllocation {
-  /**
-   * A representation of how products and variants can be sold and purchased. For example, an individual selling plan could be
-   * '6 weeks of prepaid granola, delivered weekly'.
-   */
-  sellingPlan?: SellingPlan;
-}
-
-interface SellingPlan {
-  /* A globally unique identifier. */
-  id?: string;
-  /* The name of the selling plan. For example, '6 weeks of prepaid granola, delivered weekly'. */
-  name?: string;
-}
-
-interface Property {
-  /* The key for the property. */
-  key?: string;
-  /* The value for the property. */
-  value?: string;
-}
-
-/* The discount that has been applied to the checkout line item. */
-interface DiscountAllocation {
-  /* The monetary value with currency allocated to the discount. */
-  amount?: MoneyV2;
-  /* The information about the intent of the discount. */
-  discountApplication?: DiscountApplication;
 }
 
 /**
@@ -527,6 +491,38 @@ interface Order {
 interface OrderCustomer {
   /* The ID of the customer. */
   id?: string;
+}
+
+/**
+ * A value given to a customer when a discount is applied to an order. The
+ * application of a discount with this value gives the customer the specified
+ * percentage off a specified item.
+ */
+interface PricingPercentageValue {
+  /* The percentage value of the object. */
+  percentage?: number;
+}
+
+interface Property {
+  /* The key for the property. */
+  key?: string;
+  /* The value for the property. */
+  value?: string;
+}
+
+interface SellingPlan {
+  /* A globally unique identifier. */
+  id?: string;
+  /* The name of the selling plan. For example, '6 weeks of prepaid granola, delivered weekly'. */
+  name?: string;
+}
+
+interface SellingPlanAllocation {
+  /**
+   * A representation of how products and variants can be sold and purchased. For example, an individual selling plan could be
+   * '6 weeks of prepaid granola, delivered weekly'.
+   */
+  sellingPlan?: SellingPlan;
 }
 
 /* A shipping rate to be applied to a checkout. */
@@ -565,12 +561,16 @@ interface TransactionPaymentMethod {
   type?: string;
 }
 
-/**
- * A value given to a customer when a discount is applied to an order. The
- * application of a discount with this value gives the customer the specified
- * percentage off a specified item.
- */
-interface PricingPercentageValue {
+/* A value given to a customer when a discount is applied to an order. The */
+/* application of a discount with this value gives the customer the specified */
+/* percentage off a specified item. */
+interface Value {
+  /* The decimal money amount. */
+  amount?: number;
+  /* The three-letter code that represents the currency, for example, USD. */
+  /* Supported codes include standard ISO 4217 codes, legacy codes, and non- */
+  /* standard codes. */
+  currencyCode?: string;
   /* The percentage value of the object. */
   percentage?: number;
 }
