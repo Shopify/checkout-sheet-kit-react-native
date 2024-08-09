@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.3 - August 9, 2024
+
+- Upgrades dependencies to get updates related to web pixel event schema
+
 ## 3.0.2 - August 6, 2024
 
 - Upgrades Swift and Android dependencies to `3.0.3`
@@ -80,7 +84,7 @@ ShopifyCheckoutSheetKit.setConfig({
 ## 1.0.5 - March 5, 2024
 
 - Updates the underlying swift SDK from `1.0.1` to `1.0.2` to include
-  https://github.com/Shopify/checkout-sheet-kit-swift/pull/143
+  <https://github.com/Shopify/checkout-sheet-kit-swift/pull/143>
 
 ## 1.0.4 - March 4, 2024
 
