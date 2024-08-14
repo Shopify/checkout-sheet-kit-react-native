@@ -11,7 +11,7 @@ jobs:
     name: Lint Swift code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Run SwiftLint
         uses: norio-nomura/action-swiftlint@b3fcfb2c5a82d46c48495dda0bcb4c0e981bfc54 # 3.2.1
@@ -22,7 +22,7 @@ jobs:
     name: Verify license headers
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - run: ./scripts/copy_license && git diff --name-only --exit-code
 
@@ -32,7 +32,7 @@ jobs:
     env:
       TERM: xterm
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -46,7 +46,7 @@ jobs:
     name: Lint module + sample
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -60,7 +60,7 @@ jobs:
     name: Run jest tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -73,7 +73,7 @@ jobs:
     needs: [lint, test]
     steps:
       - name: Checkout
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -96,7 +96,7 @@ jobs:
     needs: [lint, lint-swift, test]
     steps:
       - name: Checkout
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Setup iOS Simulator
         uses: ./.github/actions/setup-simulator
