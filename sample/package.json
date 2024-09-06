@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "clean": "rm -rf node_modules ios/build ios/pods",
+    "clean": "rm -rf node_modules ios/build ios/pods vendor",
     "clean:android": "(cd android && ./gradlew clean)",
     "build:android": "sh ./scripts/build_android",
     "build:ios": "sh ./scripts/build_ios",
