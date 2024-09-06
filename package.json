@@ -18,7 +18,7 @@
     "clean": "watchman watch-del .",
     "sample": "yarn workspace sample",
     "module": "yarn workspace @shopify/checkout-sheet-kit",
-    "pod-install": "pod repo update && (cd sample/ios && NO_FLIPPER=1 bundle exec pod install --repo-update)",
+    "pod-install": "(cd sample/ios && bundle exec pod repo update && NO_FLIPPER=1 bundle exec pod install --repo-update)",
     "snapshot": "./scripts/create_snapshot",
     "compare-snapshot": "./scripts/compare_snapshot",
     "turbo": "turbo",
@@ -78,5 +78,5 @@
       "no-console": "error"
     }
   },
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.4.1"
 }

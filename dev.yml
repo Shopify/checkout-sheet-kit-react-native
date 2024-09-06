@@ -1,0 +1,49 @@
+name: checkout-sheet-kit-react-native
+
+type: node
+
+up:
+  - ruby
+  - node:
+      version: v20.11.1
+      yarn: 1.22.22
+  - custom:
+      name: Install gems
+      met?: (cd sample/ios && bundle check)
+      meet: |
+        (cd sample/ios && bundle install)
+  - custom:
+      name: Install pods
+      met?: (cd sample/ios && bundle exec pod check --ignore-dev-pods)
+      meet: |
+        yarn pod-install
+  - custom:
+      name: Build node module
+      met?: (cd modules/@shopify/checkout-sheet-kit && ls -l | grep lib)
+      meet: |
+        yarn module build
+
+packages:
+  - xcode
+
+commands:
+
+  server:
+    desc: 'Start development server'
+    run: yarn sample start --reset-cache
+
+  ios:
+    desc: 'Run iOS simulator'
+    run: yarn sample ios
+
+  android:
+    desc: 'Run Android emulator'
+    run: yarn sample android
+
+  clean:
+    desc: 'rm -rf all generated directories'
+    run: |
+      yarn clean
+      yarn module clean
+      yarn sample clean
+      echo "✅ Cleaned root, module and sample workspaces"
