@@ -632,7 +632,7 @@ experience.
 
 In addition to specifying the line items, the Cart can include buyer identity
 (name, email, address, etc.), and delivery and payment preferences: see
-[guide](<[url](https://shopify.dev/docs/custom-storefronts/building-with-the-storefront-api/cart/manage)>).
+[guide](https://shopify.dev/docs/custom-storefronts/building-with-the-storefront-api/cart/manage).
 Included information will be used to present pre-filled and pre-selected choices
 to the buyer within checkout.
 
