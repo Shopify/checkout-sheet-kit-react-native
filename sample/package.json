@@ -24,6 +24,8 @@
     "@react-navigation/stack": "^6.3.21",
     "@shopify/checkout-sheet-kit": "link:../modules/@shopify/checkout-sheet-kit",
     "graphql": "^16.8.1",
+    "i18next": "^23.15.2",
+    "intl-pluralrules": "^2.0.1",
     "jotai": "^2.6.0",
     "react-native-config": "^1.5.1",
     "react-native-reanimated": "^3.11.0",

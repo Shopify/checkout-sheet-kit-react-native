@@ -50,9 +50,30 @@ import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import {ProductVariant, ShopifyProduct} from '../@types';
 import ErrorBoundary from './ErrorBoundary';
 
+// i18n
+import 'intl-pluralrules';
+import i18next from 'i18next';
+
 const colorScheme = ColorScheme.web;
 
+i18next.init({
+  lng: 'en',
+  resources: {
+    en: {
+      translation: {
+        checkoutTitle: 'Checkout',
+      },
+    },
+    fr: {
+      translation: {
+        checkoutTitle: 'Commander',
+      },
+    },
+  },
+});
+
 const config: Configuration = {
+  title: i18next.t('checkoutTitle'),
   colorScheme,
   preloading: true,
   colors: {
