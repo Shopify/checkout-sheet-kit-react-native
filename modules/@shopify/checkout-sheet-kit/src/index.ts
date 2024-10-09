@@ -24,7 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 import {
   NativeModules,
   NativeEventEmitter,
-  EmitterSubscription,
+  type EmitterSubscription,
 } from 'react-native';
 import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
 import {ColorScheme} from './index.d';
@@ -35,18 +35,18 @@ import type {
   ShopifyCheckoutSheetKit,
 } from './index.d';
 import {
-  CheckoutException,
+  type CheckoutException,
   CheckoutExpiredError,
   CheckoutClientError,
   CheckoutHTTPError,
   ConfigurationError,
   InternalError,
-  CheckoutNativeError,
+  type CheckoutNativeError,
   CheckoutNativeErrorType,
   GenericError,
 } from './errors.d';
 import {CheckoutErrorCode} from './errors.d';
-import {CheckoutCompletedEvent} from './events.d';
+import type {CheckoutCompletedEvent} from './events.d';
 import type {CustomEvent, PixelEvent, StandardEvent} from './pixels.d';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
