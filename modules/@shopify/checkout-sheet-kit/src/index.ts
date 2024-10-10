@@ -21,11 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import {
-  NativeModules,
-  NativeEventEmitter,
-  EmitterSubscription,
-} from 'react-native';
+import {NativeModules, NativeEventEmitter} from 'react-native';
+import type {EmitterSubscription} from 'react-native';
 import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
 import {ColorScheme} from './index.d';
 import type {
@@ -34,19 +31,18 @@ import type {
   Configuration,
   ShopifyCheckoutSheetKit,
 } from './index.d';
+import type {CheckoutException, CheckoutNativeError} from './errors.d';
 import {
-  CheckoutException,
   CheckoutExpiredError,
   CheckoutClientError,
   CheckoutHTTPError,
   ConfigurationError,
   InternalError,
-  CheckoutNativeError,
   CheckoutNativeErrorType,
   GenericError,
 } from './errors.d';
 import {CheckoutErrorCode} from './errors.d';
-import {CheckoutCompletedEvent} from './events.d';
+import type {CheckoutCompletedEvent} from './events.d';
 import type {CustomEvent, PixelEvent, StandardEvent} from './pixels.d';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;

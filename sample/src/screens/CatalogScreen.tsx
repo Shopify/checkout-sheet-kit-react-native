@@ -37,10 +37,11 @@ import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
 
 import type {ShopifyProduct} from '../../@types';
-import {Colors, useTheme} from '../context/Theme';
+import type {Colors} from '../context/Theme';
+import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../App';
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import type {RootStackParamList} from '../App';
 import {currency} from '../utils';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CatalogScreen'>;

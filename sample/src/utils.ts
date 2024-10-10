@@ -1,6 +1,6 @@
 import env from 'react-native-config';
 import {NativeModules, Platform} from 'react-native';
-import {AppConfig} from './context/Config';
+import type {AppConfig} from './context/Config';
 
 const {
   EMAIL,

@@ -1,11 +1,7 @@
-import React, {
-  PropsWithChildren,
-  createContext,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react';
-import {Appearance, ColorSchemeName, useColorScheme} from 'react-native';
+import type {PropsWithChildren} from 'react';
+import React, {createContext, useCallback, useMemo, useState} from 'react';
+import type {ColorSchemeName} from 'react-native';
+import {Appearance, useColorScheme} from 'react-native';
 import {DarkTheme, DefaultTheme} from '@react-navigation/native';
 import {ColorScheme} from '@shopify/checkout-sheet-kit';
 

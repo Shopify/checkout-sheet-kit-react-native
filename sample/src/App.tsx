@@ -21,7 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {PropsWithChildren, ReactNode, useEffect} from 'react';
+import type {PropsWithChildren, ReactNode} from 'react';
+import React, {useEffect} from 'react';
 import {Link, NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -32,14 +33,16 @@ import Icon from 'react-native-vector-icons/Entypo';
 import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
+import type {Configuration} from '@shopify/checkout-sheet-kit';
 import {
   ColorScheme,
-  Configuration,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
-  type CheckoutCompletedEvent,
-  type CheckoutException,
-  type PixelEvent,
+} from '@shopify/checkout-sheet-kit';
+import type {
+  CheckoutCompletedEvent,
+  CheckoutException,
+  PixelEvent,
 } from '@shopify/checkout-sheet-kit';
 import {ConfigProvider} from './context/Config';
 import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
@@ -47,7 +50,7 @@ import {Appearance, StatusBar} from 'react-native';
 import {CartProvider, useCart} from './context/Cart';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
-import {ProductVariant, ShopifyProduct} from '../@types';
+import type {ProductVariant, ShopifyProduct} from '../@types';
 import ErrorBoundary from './ErrorBoundary';
 
 const colorScheme = ColorScheme.web;
