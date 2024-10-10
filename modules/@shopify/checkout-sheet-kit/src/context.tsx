@@ -21,12 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {
-  type PropsWithChildren,
-  useCallback,
-  useMemo,
-  useRef,
-} from 'react';
+import React, {useCallback, useMemo, useRef} from 'react';
+import type {PropsWithChildren} from 'react';
 import type {EmitterSubscription} from 'react-native';
 import {ShopifyCheckoutSheet} from './index';
 import type {
