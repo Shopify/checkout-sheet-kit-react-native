@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.4 - October 14, 2024
+
+- Fixes type imports/exports when `verbatimModuleSyntax` TS rule is enabled
+
 ## 3.0.3 - August 9, 2024
 
 - Upgrades Swift and Android dependencies to `3.0.4`
