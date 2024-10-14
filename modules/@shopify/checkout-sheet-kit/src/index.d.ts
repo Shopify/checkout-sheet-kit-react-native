@@ -21,10 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import {EmitterSubscription} from 'react-native';
-import {PixelEvent} from './pixels';
-import {CheckoutCompletedEvent} from './events';
-import {CheckoutException} from './errors';
+import type {EmitterSubscription} from 'react-native';
+import type {PixelEvent} from './pixels';
+import type {CheckoutCompletedEvent} from './events';
+import type {CheckoutException} from './errors';
 
 export type Maybe<T> = T | undefined;
 

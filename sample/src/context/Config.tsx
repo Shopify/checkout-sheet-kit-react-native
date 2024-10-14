@@ -1,14 +1,14 @@
+import type {PropsWithChildren} from 'react';
 import React, {
-  PropsWithChildren,
   createContext,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from 'react';
+import type {Configuration} from '@shopify/checkout-sheet-kit';
 import {
   ColorScheme,
-  Configuration,
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
 import {useTheme} from './Theme';

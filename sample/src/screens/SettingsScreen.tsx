@@ -38,13 +38,8 @@ import {
   ColorScheme,
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
-import {
-  Colors,
-  darkColors,
-  getColors,
-  lightColors,
-  useTheme,
-} from '../context/Theme';
+import type {Colors} from '../context/Theme';
+import {darkColors, getColors, lightColors, useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 
 enum SectionType {
