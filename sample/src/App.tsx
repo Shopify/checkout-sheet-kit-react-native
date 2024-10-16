@@ -172,7 +172,10 @@ function CatalogStack() {
       <Stack.Screen
         name="CatalogScreen"
         component={CatalogScreen}
-        options={{headerShown: true, headerTitle: 'Catalog'}}
+        options={{
+          headerShown: true,
+          headerTitle: __DEV__ ? 'Development' : 'Production',
+        }}
       />
       <Stack.Screen
         name="ProductDetails"

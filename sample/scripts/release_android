@@ -1,8 +1,12 @@
  #!/usr/bin/env bash
 
-set -ex
+# Working directory is "sample" when running "yarn sample release:android" from root.
 
-cd sample
+# Exit immediately if a command exits with a non-zero status
+set -e
+
+# Print each command as it is executed
+set -x
 
 mkdir -p android/app/src/main/assets
 npx react-native bundle --platform android \
@@ -10,7 +14,30 @@ npx react-native bundle --platform android \
   --entry-file index.js \
   --bundle-output android/app/src/main/assets/index.android.bundle \
 
+# Generate release build (.aab file)
 npx react-native build-android --mode=release
 
-echo "Run \"cd sample && npx react-native run-android --variant=release\" to test the release build"
-echo "Output bundle location: sample/android/app/build/outputs/bundle/release/app-release.aab"
+# Generate APK (for testing)
+cd android
+./gradlew clean assembleRelease
+
+# Stop printing commands
+set +x
+
+cat << EOF
+
+
+Run "cd sample && npx react-native run-android --mode release" to test the release build.
+
+Output files:
+  - sample/android/app/build/outputs/bundle/release/app-release.aab (Upload to Play Store)
+  - sample/android/app/build/outputs/apk/release/app-release.apk (For testing)
+
+To install the release build:
+  - Ensure an emulator or device is connected
+  - Uninstall existing version: adb uninstall com.shopify.checkoutkitreactnative
+  - Install new version: adb install android/app/build/outputs/apk/release/app-release.apk
+
+To observe the production logs for your emulator/device:
+  - Run "adb logcat"
+EOF
