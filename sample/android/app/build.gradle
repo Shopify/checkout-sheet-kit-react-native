@@ -80,7 +80,7 @@ android {
     checkDependencies false
   }
   tasks.whenTaskAdded { task ->
-    if (task.name == 'lintAnalyzeDebug') {
+    if (task.name == 'lintAnalyzeDebug' || task.name == 'generateReleaseLintVitalReportModel') {
       task.dependsOn 'copyReactNativeVectorIconFonts'
     }
   }
