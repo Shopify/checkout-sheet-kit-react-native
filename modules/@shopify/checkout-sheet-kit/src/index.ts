@@ -71,6 +71,10 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     RNShopifyCheckoutSheetKit.dismiss();
   }
 
+  public invalidate(): void {
+    RNShopifyCheckoutSheetKit.invalidateCache();
+  }
+
   public preload(checkoutUrl: string): void {
     RNShopifyCheckoutSheetKit.preload(checkoutUrl);
   }

@@ -176,6 +176,11 @@ export interface ShopifyCheckoutSheetKit {
    * Preload the checkout for faster presentation.
    */
   preload(checkoutURL: string): void;
+
+  /**
+   * Invalidate preload cache.
+   */
+  invalidate(): void;
   /**
    * Present the checkout.
    */

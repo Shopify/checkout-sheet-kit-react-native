@@ -182,6 +182,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		}
 	}
 
+  @objc func invalidateCache() {
+		ShopifyCheckoutSheetKit.invalidate()
+	}
+
 	@objc func present(_ checkoutURL: String) {
 		DispatchQueue.main.async {
 			if let url = URL(string: checkoutURL), let viewController = self.getCurrentViewController() {
