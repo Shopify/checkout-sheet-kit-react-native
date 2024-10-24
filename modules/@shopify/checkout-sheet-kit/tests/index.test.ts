@@ -48,6 +48,7 @@ jest.mock('react-native', () => {
     version: '0.7.0',
     preload: jest.fn(),
     present: jest.fn(),
+    invalidateCache: jest.fn(),
     getConfig: jest.fn(async () => exampleConfig),
     setConfig: jest.fn(),
     addEventListener: jest.fn(),
@@ -120,6 +121,16 @@ describe('ShopifyCheckoutSheetKit', () => {
       expect(
         NativeModules.ShopifyCheckoutSheetKit.preload,
       ).toHaveBeenCalledWith(checkoutUrl);
+    });
+  });
+
+  describe('invalidate', () => {
+    it('calls `invalidateCache`', () => {
+      const instance = new ShopifyCheckoutSheet();
+      instance.invalidate();
+      expect(
+        NativeModules.ShopifyCheckoutSheetKit.invalidateCache,
+      ).toHaveBeenCalledTimes(1);
     });
   });
 

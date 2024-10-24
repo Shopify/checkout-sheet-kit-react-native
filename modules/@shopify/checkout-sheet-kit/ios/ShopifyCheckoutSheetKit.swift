@@ -182,9 +182,9 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		}
 	}
 
-  @objc func invalidateCache() {
-		ShopifyCheckoutSheetKit.invalidate()
-	}
+    @objc func invalidateCache() {
+        ShopifyCheckoutSheetKit.invalidate()
+    }
 
 	@objc func present(_ checkoutURL: String) {
 		DispatchQueue.main.async {
