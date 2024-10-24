@@ -112,6 +112,11 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     }
   }
 
+  @ReactMethod
+  public void invalidateCache() {
+    ShopifyCheckoutSheetKit.invalidate();
+  }
+
   private ColorScheme getColorScheme(String colorScheme) {
     switch (colorScheme) {
       case "web_default":

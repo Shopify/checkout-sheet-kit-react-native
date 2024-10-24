@@ -34,6 +34,9 @@ RCT_EXTERN_METHOD(preload:(NSString *)checkoutURLString);
 /// Dismiss checkout
 RCT_EXTERN_METHOD(dismiss);
 
+/// Invalidate preload cache
+RCT_EXTERN_METHOD(invalidateCache);
+
 /// Set configuration for checkout
 RCT_EXTERN_METHOD(setConfig:(NSDictionary *)configuration);
 

@@ -42,6 +42,7 @@ interface Context {
   preload: (checkoutUrl: string) => void;
   present: (checkoutUrl: string) => void;
   dismiss: () => void;
+  invalidate: () => void;
   version: Maybe<string>;
 }
 
@@ -54,6 +55,7 @@ const ShopifyCheckoutSheetContext = React.createContext<Context>({
   getConfig: async () => undefined,
   preload: noop,
   present: noop,
+  invalidate: noop,
   dismiss: noop,
   version: undefined,
 });
@@ -95,6 +97,10 @@ export function ShopifyCheckoutSheetProvider({
     }
   }, []);
 
+  const invalidate = useCallback(() => {
+    instance.current?.invalidate();
+  }, []);
+
   const dismiss = useCallback(() => {
     instance.current?.dismiss();
   }, []);
@@ -115,6 +121,7 @@ export function ShopifyCheckoutSheetProvider({
       getConfig,
       preload,
       present,
+      invalidate,
       removeEventListeners,
       version: instance.current?.version,
     };
@@ -126,6 +133,7 @@ export function ShopifyCheckoutSheetProvider({
     setConfig,
     preload,
     present,
+    invalidate,
   ]);
 
   return (

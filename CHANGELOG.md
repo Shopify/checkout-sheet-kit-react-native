@@ -1,5 +1,29 @@
 # Changelog
 
+## 3.1.0 - October 25, 2024
+
+Upgrades Swift dependency to
+[3.1.1](https://github.com/Shopify/checkout-sheet-kit-swift/releases/tag/3.1.1)
+and Android to
+[3.2.0](https://github.com/Shopify/checkout-sheet-kit-android/releases/tag/3.2.0).
+
+### Updates
+
+#### Both platforms
+
+- New `invalidate()` function to manually clear the preload cache
+- Prevent recovery flow for multipass URLs containing one-time tokens
+- Open deep links externally
+
+#### iOS
+
+- Ignore cancelled redirects, add OS debug logging
+
+### Android
+
+- Implement `onShowFileChooser`, calling delegate
+- Ensure no existing parent is present before adding to container
+
 ## 3.0.4 - October 14, 2024
 
 - Fixes type imports/exports when `verbatimModuleSyntax` TS rule is enabled
