@@ -78,7 +78,6 @@ function CartScreen(): React.JSX.Element {
 
   const presentCheckout = async () => {
     if (checkoutURL) {
-      ShopifyCheckout.invalidate();
       ShopifyCheckout.present(checkoutURL);
     }
   };
