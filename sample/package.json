@@ -55,10 +55,5 @@
   },
   "engines": {
     "node": ">= 18"
-  },
-  "eslintConfig": {
-    "rules": {
-      "no-console": "off"
-    }
   }
 }

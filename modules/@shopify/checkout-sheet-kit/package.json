@@ -1,7 +1,7 @@
 {
   "name": "@shopify/checkout-sheet-kit",
   "license": "MIT",
-  "version": "3.2.0",
+  "version": "3.1.0",
   "main": "lib/commonjs/index.js",
   "types": "src/index.ts",
   "source": "src/index.ts",
@@ -16,7 +16,7 @@
     "clean": "rm -rf lib",
     "build": "bob build",
     "lint:swift": "./../../../sample/ios/Pods/SwiftLint/swiftlint --strict --quiet ios",
-    "lint": "yarn typecheck && eslint src",
+    "lint": "yarn typecheck && eslint .",
     "typecheck": "tsc --noEmit"
   },
   "files": [
@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "react-native-builder-bob": "^0.23.1",
-    "typescript": "^5.6.3"
+    "typescript": "5.5.2"
   },
   "react-native-builder-bob": {
     "source": "src",
