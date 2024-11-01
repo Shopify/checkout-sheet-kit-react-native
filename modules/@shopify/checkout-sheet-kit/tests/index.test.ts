@@ -265,8 +265,12 @@ describe('ShopifyCheckoutSheetKit', () => {
           'pixel',
           expect.any(Function),
         );
-        eventEmitter.emit('pixel', '{"someAttribute": 123');
-        expect(mock).toHaveBeenCalledWith(expect.any(LifecycleEventParseError));
+        const invalidData = '{"someAttribute": 123';
+        eventEmitter.emit('pixel', invalidData);
+        expect(mock).toHaveBeenCalledWith(
+          expect.any(LifecycleEventParseError),
+          invalidData,
+        );
       });
     });
 
@@ -322,8 +326,12 @@ describe('ShopifyCheckoutSheetKit', () => {
           'completed',
           expect.any(Function),
         );
-        eventEmitter.emit('completed', 'INVALID JSON');
-        expect(mock).toHaveBeenCalledWith(expect.any(LifecycleEventParseError));
+        const invalidData = 'INVALID JSON';
+        eventEmitter.emit('completed', invalidData);
+        expect(mock).toHaveBeenCalledWith(
+          expect.any(LifecycleEventParseError),
+          invalidData,
+        );
       });
     });
 

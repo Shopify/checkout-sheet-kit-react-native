@@ -100,15 +100,17 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     switch (event) {
       case 'pixel':
         eventCallback = this.interceptEventEmission(
+          'pixel',
           callback,
           this.parseCustomPixelData,
         );
         break;
       case 'completed':
-        eventCallback = this.interceptEventEmission(callback);
+        eventCallback = this.interceptEventEmission('completed', callback);
         break;
       case 'error':
         eventCallback = this.interceptEventEmission(
+          'error',
           callback,
           this.parseCheckoutError,
         );
@@ -169,6 +171,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * Event data can be sent back as either a parsed Event object or a JSON string.
    */
   private interceptEventEmission(
+    event: CheckoutEvent,
     callback: CheckoutEventCallback,
     transformData?: (data: any) => any,
   ): (eventData: string | typeof callback) => void {
@@ -181,20 +184,20 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
             callback(parsed);
           } catch (error) {
             const parseError = new LifecycleEventParseError(
-              'Failed to parse event data: Invalid JSON',
+              `Failed to parse "${event}" event data: Invalid JSON`,
               {
                 cause: 'Invalid JSON',
               },
             );
             // eslint-disable-next-line no-console
-            console.error(parseError);
+            console.error(parseError, eventData);
           }
         } else if (eventData && typeof eventData === 'object') {
           callback(transformData?.(eventData) ?? eventData);
         }
       } catch (error) {
         const parseError = new LifecycleEventParseError(
-          'Failed to parse event data',
+          `Failed to parse "${event}" event data`,
           {
             cause: 'Unknown',
           },

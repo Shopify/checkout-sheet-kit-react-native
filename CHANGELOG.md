@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.1 - November 1, 2024
+
+- Logs invalid JSON for lifecycle events
+
 ## 3.1.0 - October 25, 2024
 
 Upgrades Swift dependency to
