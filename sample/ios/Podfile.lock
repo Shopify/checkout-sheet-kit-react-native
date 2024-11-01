@@ -1261,6 +1261,7 @@ PODS:
     - Yoga
   - ShopifyCheckoutSheetKit (3.1.1)
   - SocketRocket (0.7.0)
+  - SwiftLint (0.57.0)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1327,12 +1328,14 @@ DEPENDENCIES:
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNShopifyCheckoutSheetKit (from `../../modules/@shopify/checkout-sheet-kit`)"
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
+  - SwiftLint
   - Yoga (from `../../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   trunk:
     - ShopifyCheckoutSheetKit
     - SocketRocket
+    - SwiftLint
 
 EXTERNAL SOURCES:
   boost:
@@ -1525,8 +1528,9 @@ SPEC CHECKSUMS:
   RNVectorIcons: 50ea777efffdd991a22e968aa312d75da7ff46c3
   ShopifyCheckoutSheetKit: fe309799b18b8d554f28c3f075d6d57d4811c9ab
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
+  SwiftLint: eb47480d47c982481592c195c221d11013a679cc
   Yoga: 348f8b538c3ed4423eb58a8e5730feec50bce372
 
-PODFILE CHECKSUM: 4a9ceecdcfb54884b51163a7e4438cd49c73c8d9
+PODFILE CHECKSUM: 9efd19a381198fb46f36acf3d269233039fb9dc5
 
 COCOAPODS: 1.15.2
