@@ -60,8 +60,15 @@ android {
   }
 
   buildTypes {
-    release {
+    debug {
       minifyEnabled false
+    }
+
+    release {
+      minifyEnabled true
+
+      // Rules in consumerProguardFiles are automatically included in the ProGuard configuration of any application that uses the library
+      consumerProguardFiles 'proguard-rules.pro'
     }
   }
 

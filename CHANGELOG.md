@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.1.2 - November 4, 2024
+
+- Add `consumerProguardRules` build.gradle option to prevent minification of
+  classes in release builds.
+
 ## 3.1.1 - November 1, 2024
 
 - Logs invalid JSON for lifecycle events
