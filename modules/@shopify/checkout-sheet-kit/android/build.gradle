@@ -65,7 +65,7 @@ android {
     }
 
     release {
-      minifyEnabled true
+      minifyEnabled false
 
       // Rules in consumerProguardFiles are automatically included in the ProGuard configuration of any application that uses the library
       consumerProguardFiles 'proguard-rules.pro'
