@@ -21,6 +21,33 @@ The React Native SDK is part of
 which enables developers to delivery best-in-class iOS and Android commerce
 experiences.
 
+## Table of contents
+
+1. [Platform Requirements](#platform-requirements)
+   - [React Native](#react-native)
+   - [iOS](#ios)
+   - [Android](#android)
+   - [Shopify](#shopify)
+2. [Getting Started](#getting-started)
+   - [1. Install](#1-install)
+   - [2. Ensure your app meets the minimum Android SDK version requirement](#2-ensure-your-app-meets-the-minimum-android-sdk-version-requirement)
+   - [3. Ensure your app meets the minimum iOS version requirement](#3-ensure-your-app-meets-the-minimum-ios-version-requirement)
+3. [Basic Usage](#basic-usage)
+4. [Programmatic Usage](#programmatic-usage)
+5. [Usage with the Storefront API](#usage-with-the-storefront-api)
+6. [Configuration](#configuration)
+   - [colorScheme](#colorscheme)
+   - [colors](#colors)
+7. [Localization](#localization)
+   - [Checkout Sheet title](#checkout-sheet-title)
+   - [Currency](#currency)
+   - [Language](#language)
+8. [Preloading](#preloading)
+9. [Monitoring the lifecycle of a checkout session](#monitoring-the-lifecycle-of-a-checkout-session)
+10. [Integrating identity & customer accounts](#integrating-identity--customer-accounts)
+11. [Contributing](#contributing)
+12. [License](#license)
+
 ## Platform Requirements
 
 - **React Native** - Minimum version `0.70`
