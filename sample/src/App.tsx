@@ -22,8 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import type {PropsWithChildren, ReactNode} from 'react';
-import React, {useEffect} from 'react';
-import {Link, NavigationContainer} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {Appearance, Linking, StatusBar} from 'react-native';
+import {
+  Link,
+  NavigationContainer,
+  useNavigation,
+  type NavigationProp,
+} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
@@ -46,7 +52,6 @@ import type {
 } from '@shopify/checkout-sheet-kit';
 import {ConfigProvider} from './context/Config';
 import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
-import {Appearance, StatusBar} from 'react-native';
 import {CartProvider, useCart} from './context/Cart';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
@@ -78,7 +83,7 @@ export type RootStackParamList = {
   Catalog: undefined;
   CatalogScreen: undefined;
   ProductDetails: {product: ShopifyProduct; variant?: ProductVariant};
-  Cart: {userId: string};
+  Cart: undefined;
   CartModal: undefined;
   Settings: undefined;
 };
@@ -114,6 +119,49 @@ const createNavigationIcon =
   }): ReactNode => {
     return <Icon name={name} color={color} size={size} />;
   };
+
+// See https://reactnative.dev/docs/linking#get-the-deep-link for more information
+const useInitialURL = (): {url: string | null} => {
+  const [url, setUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getUrlAsync = async () => {
+      // Get the deep link used to open the app
+      const initialUrl = await Linking.getInitialURL();
+
+      if (initialUrl !== url) {
+        setUrl(initialUrl);
+      }
+    };
+
+    getUrlAsync();
+  }, [url]);
+
+  return {
+    url,
+  };
+};
+
+// This code is meant as example only.
+class StorefrontURL {
+  readonly url: string;
+
+  constructor(url: string) {
+    this.url = url;
+  }
+
+  isThankYouPage(): boolean {
+    return /thank[-_]you/i.test(this.url);
+  }
+
+  isCheckout(): boolean {
+    return this.url.includes('/checkout');
+  }
+
+  isCart() {
+    return this.url.includes('/cart');
+  }
+}
 
 function AppWithContext({children}: PropsWithChildren) {
   const shopify = useShopifyCheckoutSheet();
@@ -210,38 +258,84 @@ function CartIcon() {
   );
 }
 
-function AppWithNavigation() {
+function AppWithNavigation({children}: PropsWithChildren) {
   const {colorScheme, preference} = useTheme();
-  const {totalQuantity} = useCart();
-
   return (
     <NavigationContainer theme={getNavigationTheme(colorScheme, preference)}>
-      <Tab.Navigator>
-        <Tab.Screen
-          name="Catalog"
-          component={CatalogStack}
-          options={{
-            headerShown: false,
-            tabBarIcon: createNavigationIcon('shop'),
-          }}
-        />
-        <Tab.Screen
-          name="Cart"
-          component={CartScreen}
-          options={{
-            tabBarIcon: createNavigationIcon('shopping-bag'),
-            tabBarBadge: totalQuantity > 0 ? totalQuantity : undefined,
-          }}
-        />
-        <Tab.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{
-            tabBarIcon: createNavigationIcon('cog'),
-          }}
-        />
-      </Tab.Navigator>
+      {children}
     </NavigationContainer>
+  );
+}
+
+function Routes() {
+  const {totalQuantity} = useCart();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const {url: initialUrl} = useInitialURL();
+  const shopify = useShopifyCheckoutSheet();
+
+  useEffect(() => {
+    async function handleUniversalLink(url: string) {
+      const storefrontUrl = new StorefrontURL(url);
+
+      switch (true) {
+        // Checkout URLs
+        case storefrontUrl.isCheckout() && !storefrontUrl.isThankYouPage():
+          shopify.present(url);
+          return;
+        // Cart URLs
+        case storefrontUrl.isCart():
+          navigation.navigate('Cart');
+          return;
+      }
+
+      // Open everything else in a mobile browser
+      const canOpenUrl = await Linking.canOpenURL(url);
+
+      if (canOpenUrl) {
+        await Linking.openURL(url);
+      }
+    }
+
+    if (initialUrl) {
+      handleUniversalLink(initialUrl);
+    }
+
+    // Subscribe to universal links
+    const subscription = Linking.addEventListener('url', ({url}) => {
+      handleUniversalLink(url);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [initialUrl, shopify, navigation]);
+
+  return (
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Catalog"
+        component={CatalogStack}
+        options={{
+          headerShown: false,
+          tabBarIcon: createNavigationIcon('shop'),
+        }}
+      />
+      <Tab.Screen
+        name="Cart"
+        component={CartScreen}
+        options={{
+          tabBarIcon: createNavigationIcon('shopping-bag'),
+          tabBarBadge: totalQuantity > 0 ? totalQuantity : undefined,
+        }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarIcon: createNavigationIcon('cog'),
+        }}
+      />
+    </Tab.Navigator>
   );
 }
 
@@ -251,7 +345,9 @@ function App() {
       <ShopifyCheckoutSheetProvider configuration={config}>
         <AppWithTheme>
           <AppWithContext>
-            <AppWithNavigation />
+            <AppWithNavigation>
+              <Routes />
+            </AppWithNavigation>
           </AppWithContext>
         </AppWithTheme>
       </ShopifyCheckoutSheetProvider>
