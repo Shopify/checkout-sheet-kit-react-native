@@ -1,17 +1,16 @@
 # Universal Links
 
-- [Universal Links](#universal-links)
-  - [What are Universal Links?](#what-are-universal-links)
-  - [Setting Up an Entitlements File for Universal Links](#setting-up-an-entitlements-file-for-universal-links)
-    - [Steps to Configure the Entitlements File](#steps-to-configure-the-entitlements-file)
-    - [Points to Consider](#points-to-consider)
-  - [Configuring Universal Links for your Storefront](#configuring-universal-links-for-your-storefront)
-  - [Important: The catch-all route `*`](#important-the-catch-all-route-)
-  - [Handling Universal Links in your app](#handling-universal-links-in-your-app)
-  - [Security Considerations](#security-considerations)
-  - [Testing](#testing)
-  - [Troubleshooting](#troubleshooting)
-  - [Further Reading and Resources](#further-reading-and-resources)
+- [What are Universal Links?](#what-are-universal-links)
+- [Setting Up an Entitlements File for Universal Links](#setting-up-an-entitlements-file-for-universal-links)
+  - [Steps to Configure the Entitlements File](#steps-to-configure-the-entitlements-file)
+  - [Points to Consider](#points-to-consider)
+- [Configuring Universal Links for your Storefront](#configuring-universal-links-for-your-storefront)
+- [Important: The catch-all route `*`](#important-the-catch-all-route-)
+- [Handling Universal Links in your app](#handling-universal-links-in-your-app)
+- [Security Considerations](#security-considerations)
+- [Testing](#testing)
+- [Troubleshooting](#troubleshooting)
+- [Further Reading and Resources](#further-reading-and-resources)
 
 ## What are Universal Links?
 
@@ -141,121 +140,7 @@ by "NOT" rules.
 
 ## Handling Universal Links in your app
 
-```swift
-func handleUniversalLink(url: URL) {
-  let storefrontUrl = StorefrontURL(from: url)
-
-  switch true {
-  /// Checkout URLs
-  case storefrontUrl.isCheckout() && !storefrontUrl.isThankYouPage():
-      presentCheckout(url)
-  /// Cart URLs
-  case storefrontUrl.isCart():
-      navigateToCart()
-  /// Open everything else in Safari
-  default:
-      if UIApplication.shared.canOpenURL(url) {
-        UIApplication.shared.open(url)
-      }
-  }
-}
-
-// This code is meant as example only.
-public struct StorefrontURL {
-    public let url: URL
-
-    init(from url: URL) {
-        self.url = url
-    }
-
-    public func isThankYouPage() -> Bool {
-        return url.path.range(of: "/thank[-_]you", options: .regularExpression) != nil
-    }
-
-    public func isCheckout() -> Bool {
-        return url.path.contains("/checkout")
-    }
-
-    public func isCart() -> Bool {
-        return url.path.contains("/cart")
-    }
-}
-```
-
-<details>
-<summary><strong>Handling Universal Links in SwiftUI</strong></summary>
-
-To handle universal links in a SwiftUI application, you can use the `onOpenURL`
-modifier provided by SwiftUI. This will allow you to specify an action to
-perform when a URL is opened by your app.
-
-```swift
-// App.swift
-import SwiftUI
-
-@main
-struct MyApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .onOpenURL { url in
-                    handleUniversalLink(url: url)
-                }
-        }
-    }
-
-    private func handleUniversalLink(url: URL) {
-        // Handle the incoming universal link URL
-        print("Universal link opened: \(url)")
-
-        // Use the URL to navigate within your app, update state, etc.
-    }
-}
-```
-
-</details>
-
-<details>
-<summary><strong>Handling Universal Links in a UIViewController-based App</strong></summary>
-
-In an app using UIViewController, handling universal links can be done by
-implementing the application`(_:continue:restorationHandler:)` method in your
-`AppDelegate`. This method gets triggered when a universal link is opened.
-
-```swift
-// AppDelegate.swift
-import UIKit
-
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-
-    var window: UIWindow?
-
-    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
-           let url = userActivity.webpageURL {
-            handleUniversalLink(url: url)
-            return true
-        }
-        return false
-    }
-
-    private func handleUniversalLink(url: URL) {
-        // Handle the incoming universal link URL
-        print("Universal link opened: \(url)")
-
-        // You can use the URL to navigate within your app or perform relevant actions
-        let rootViewController = window?.rootViewController as? UINavigationController
-
-        // Replace the following content with relevant actions for your app
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let viewController = storyboard.instantiateViewController(withIdentifier: "DetailViewController")
-        rootViewController?.pushViewController(viewController, animated: true)
-    }
-}
-```
-
-</details>
+See https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/sample/src/App.tsx for sample code to implement Universal Links in your app.
 
 ## Security Considerations
 
