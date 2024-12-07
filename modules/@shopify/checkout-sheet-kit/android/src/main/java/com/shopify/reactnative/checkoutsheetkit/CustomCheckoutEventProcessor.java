@@ -25,6 +25,8 @@ package com.shopify.reactnative.checkoutsheetkit;
 
 import android.content.Context;
 import android.util.Log;
+import android.webkit.GeolocationPermissions;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -48,6 +50,21 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
     super(context);
 
     this.reactContext = reactContext;
+  }
+
+  @Override
+  public void onGeolocationPermissionsShowPrompt(@NonNull String origin, @NonNull GeolocationPermissions.Callback callback) {
+    try {
+      String data = mapper.writeValueAsString(origin);
+      sendEventWithStringData("geolocation_permissions_prompt", data);
+    } catch (IOException e) {
+      Log.e("ShopifyCheckoutSheetKit", "Error processing onGeolocationPermissionsShowPrompt", e);
+    }
+  }
+
+  @Override
+  public void onGeolocationPermissionsHidePrompt() {
+    super.onGeolocationPermissionsHidePrompt();
   }
 
   @Override
