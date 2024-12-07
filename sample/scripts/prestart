@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -e
+
+./scripts/generate_manifest
