@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -e
+
+DIR=android/app/src/main
+MANIFEST=AndroidManifest.xml
+
+# Ensure env exists
+if [ ! -f .env ]; then
+    echo "sample/.env file not found!" >&2
+    exit 1
+fi
+
+# Read env file
+source .env
+
+# Ensure STOREFRONT_DOMAIN is set
+if [ -z "$STOREFRONT_DOMAIN" ]; then
+    echo "Error: STOREFRONT_DOMAIN is missing from .env" >&2
+    exit 1
+fi
+
+# Check if manifest already exists
+if [ -f "$DIR/$MANIFEST" ]; then
+    echo "✅ \"$MANIFEST\" already exists. Skipping template replacement."
+    exit 0
+else
+    cp "$DIR/$MANIFEST.template" "$DIR/$MANIFEST" || { echo "Failed to copy manifest template" >&2; exit 1; }
+
+    # Replace STOREFRONT_DOMAIN value with the value from .env
+    sed -i '' "s|{STOREFRONT_DOMAIN}|$STOREFRONT_DOMAIN|g" "$DIR/$MANIFEST" || { echo "Failed to generate $MANIFEST from template" >&2; exit 1; }
+    echo "✅ Generated \"$DIR/$MANIFEST\""
+fi
