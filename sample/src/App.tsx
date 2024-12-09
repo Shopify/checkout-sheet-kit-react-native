@@ -142,7 +142,6 @@ const useInitialURL = (): {url: string | null} => {
   };
 };
 
-// This code is meant as example only.
 class StorefrontURL {
   readonly url: string;
 
