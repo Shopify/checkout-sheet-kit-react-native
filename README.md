@@ -21,32 +21,40 @@ The React Native SDK is part of
 which enables developers to delivery best-in-class iOS and Android commerce
 experiences.
 
-## Table of contents
-
-1. [Platform Requirements](#platform-requirements)
-   - [React Native](#react-native)
-   - [iOS](#ios)
-   - [Android](#android)
-   - [Shopify](#shopify)
-2. [Getting Started](#getting-started)
-   - [1. Install](#1-install)
-   - [2. Ensure your app meets the minimum Android SDK version requirement](#2-ensure-your-app-meets-the-minimum-android-sdk-version-requirement)
-   - [3. Ensure your app meets the minimum iOS version requirement](#3-ensure-your-app-meets-the-minimum-ios-version-requirement)
-3. [Basic Usage](#basic-usage)
-4. [Programmatic Usage](#programmatic-usage)
-5. [Usage with the Storefront API](#usage-with-the-storefront-api)
-6. [Configuration](#configuration)
-   - [colorScheme](#colorscheme)
-   - [colors](#colors)
-7. [Localization](#localization)
-   - [Checkout Sheet title](#checkout-sheet-title)
-   - [Currency](#currency)
-   - [Language](#language)
-8. [Preloading](#preloading)
-9. [Monitoring the lifecycle of a checkout session](#monitoring-the-lifecycle-of-a-checkout-session)
-10. [Integrating identity & customer accounts](#integrating-identity--customer-accounts)
-11. [Contributing](#contributing)
-12. [License](#license)
+- [Platform Requirements](#platform-requirements)
+- [Getting Started](#getting-started)
+  - [1. Installation](#1-installation)
+  - [2. Minimum Android requirements](#2-minimum-android-requirements)
+  - [3. Minimum iOS requirements](#3-minimum-ios-requirements)
+- [Basic Usage](#basic-usage)
+- [Programmatic Usage](#programmatic-usage)
+- [Usage with the Shopify Storefront API](#usage-with-the-shopify-storefront-api)
+- [Configuration](#configuration)
+  - [Colors](#colors)
+  - [Localization](#localization)
+    - [Checkout Sheet title](#checkout-sheet-title)
+      - [iOS](#ios)
+      - [Android](#android)
+    - [Currency](#currency)
+    - [Language](#language)
+- [Preloading](#preloading)
+  - [Important considerations](#important-considerations)
+  - [Flash Sales](#flash-sales)
+  - [When to preload](#when-to-preload)
+  - [Cache invalidation](#cache-invalidation)
+- [Checkout lifecycle](#checkout-lifecycle)
+  - [`addEventListener(eventName, callback)`](#addeventlistenereventname-callback)
+  - [`removeEventListeners(eventName)`](#removeeventlistenerseventname)
+- [Behavioral data - Web pixels](#behavioral-data---web-pixels)
+- [Identity \& customer accounts](#identity--customer-accounts)
+  - [Cart: buyer bag, identity, and preferences](#cart-buyer-bag-identity-and-preferences)
+    - [Multipass](#multipass)
+    - [Shop Pay](#shop-pay)
+    - [Customer Account API](#customer-account-api)
+- [Offsite Payments](#offsite-payments)
+  - [Universal Links - iOS](#universal-links---ios)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Platform Requirements
 
@@ -56,14 +64,14 @@ experiences.
 - **Shopify** - This package is _**not**_ compatible with checkout.liquid. Your
   Shopify Store must be migrated for extensibility.
 
-### Getting Started
+## Getting Started
 
 Shopify Checkout Sheet Kit is an open-source NPM package.
 
 Use the following steps to get started with adding it to your React Native
 application:
 
-#### 1. Install
+### 1. Installation
 
 Install the Shopify Checkout Sheet Kit package dependency:
 
@@ -74,7 +82,7 @@ yarn add @shopify/checkout-sheet-kit
 npm install @shopify/checkout-sheet-kit
 ```
 
-#### 2. Ensure your app meets the minimum Android SDK version requirement
+### 2. Minimum Android requirements
 
 Check the `minSdkVersion` property in your `android/build.gradle` file is at
 least `23`.
@@ -93,7 +101,7 @@ buildscript {
 }
 ```
 
-#### 3. Ensure your app meets the minimum iOS version requirement
+### 3. Minimum iOS requirements
 
 Check the `platform :ios` property of your `ios/Podfile` to ensure that the
 minimum version number is at least `13`.
@@ -104,7 +112,7 @@ minimum version number is at least `13`.
 + platform :ios, 13
 ```
 
-### Basic Usage
+## Basic Usage
 
 Once the SDK has been added as a package dependency and the minimum platform
 requirements have been checked, you can begin by importing the library in your
@@ -139,17 +147,13 @@ function App() {
 See [Usage with the Storefront API](#usage-with-the-storefront-api) below on how
 to get a checkout URL to pass to the kit.
 
-<!-- prettier-ignore-start -->
-
 > [!NOTE]
 > The recommended usage of the library is through a
 > `ShopifyCheckoutSheetProvider` Context provider, but see
 > [Programmatic usage](#programamatic-usage) below for details on how to use the
 > library without React context.
 
-<!-- prettier-ignore-end -->
-
-### Programmatic Usage
+## Programmatic Usage
 
 To use the library without React context, import the `ShopifyCheckoutSheet`
 class from the package and instantiate it. We recommend to instantiating the
@@ -174,7 +178,7 @@ import {shopifyCheckout} from './shopify.ts';
 shopifyCheckout.present(checkoutUrl);
 ```
 
-### Usage with the Storefront API
+## Usage with the Shopify Storefront API
 
 To present a checkout to the buyer, your application must first obtain a
 checkout URL. The most common way is to use the
@@ -295,16 +299,12 @@ function App() {
 }
 ```
 
-<!-- prettier-ignore-start -->
-
 > [!TIP]
 > To help optimize and deliver the best experience the SDK also provides
 > a [preloading API](#preloading) that can be used to initialize the checkout
 > session in the background and ahead of time.
 
-<!-- prettier-ignore-end -->
-
-### Configuration
+## Configuration
 
 The SDK provides a way to customize the presented checkout experience through a
 `configuration` object in the Context Provider or a `setConfig` method on an
@@ -355,7 +355,7 @@ function AppWithContext() {
 const shopifyCheckout = new ShopifyCheckoutSheet(config);
 ```
 
-#### `colorScheme`
+### Colors
 
 The SDK defaults to the `automatic` color scheme option, will switches between
 idiomatic `light` and `dark` themes depending on the users preference. This
@@ -367,8 +367,6 @@ behavior can be customized via the `colorScheme` property:
 | `light`     |         | Force the idomatic light theme.                                                                  |
 | `dark`      |         | Force the idomatic dark theme.                                                                   |
 | `web`       |         | Force your storefront web theme, as rendered by a mobile browser.                                |
-
-#### `colors`
 
 The `colors` configuration property can be used to provide overrides for iOS and
 Android applications separately.
@@ -461,13 +459,9 @@ to the "android/app/src/res/values/strings.xml" file for your application.
 </resources>
 ```
 
-<!-- prettier-ignore-start -->
-
 > [!IMPORTANT]
 > The `title` configuration attribute will only affect iOS. For Android you **must** use
 > `res/values/strings.xml`.
-
-<!-- prettier-ignore-end -->
 
 #### Currency
 
@@ -514,7 +508,7 @@ const CREATE_CART_MUTATION = gql`
 See [Storefront Directives](https://shopify.dev/docs/api/storefront#directives)
 for more information.
 
-### Preloading
+## Preloading
 
 Initializing a checkout session requires communicating with Shopify servers,
 thus depending on the network quality and bandwidth available to the buyer can
@@ -539,7 +533,7 @@ const shopifyCheckout = new ShopifyCheckoutSheet();
 shopifyCheckout.preload(checkoutUrl);
 ```
 
-**Important considerations:**
+### Important considerations
 
 1. Initiating preload results in background network requests and additional
    CPU/memory utilization for the client, and should be used when there is a
@@ -555,7 +549,23 @@ shopifyCheckout.preload(checkoutUrl);
    case the buyer may still see a spinner while the checkout session is
    finalized.
 
-### Monitoring the lifecycle of a checkout session
+### Flash Sales
+
+It is important to note that during Flash Sales or periods of high amounts of traffic, buyers may be entered into a queue system.
+
+**Calls to preload which result in a buyer being enqueued will be rejected.** This means that a buyer will never enter the queue without their knowledge.
+
+### When to preload
+
+Calling `preload()` each time an item is added to a buyer's cart can put significant strain on Shopify systems, which in return can result in rejected requests. Rejected requests will not result in a visual error shown to users, but will degrade the experience since they will need to load checkout from scratch.
+
+Instead, a better approach is to call `preload()` when you have a strong enough signal that the buyer intends to check out. In some cases this might mean a buyer has navigated to a "cart" screen.
+
+### Cache invalidation
+
+Should you wish to manually clear the preload cache, there is a `ShopifyCheckoutSheetKit.invalidate()` helper function to do so.
+
+## Checkout lifecycle
 
 There are currently 3 checkout events exposed through the Native Module. You can
 subscribe to these events using `addEventListener` and `removeEventListeners`
@@ -568,7 +578,7 @@ methods - available on both the context provider as well as the class instance.
 | `error`     | `(error: {message: string}) => void`      | Fired when a checkout exception has been raised.             |
 | `pixel`     | `(event: PixelEvent) => void`             | Fired when a Web Pixel event has been relayed from checkout. |
 
-#### `addEventListener(eventName, callback)`
+### `addEventListener(eventName, callback)`
 
 Subscribing to an event returns an `EmitterSubscription` object, which contains
 a `remove()` function to unsubscribe. Here's an example of how you might create
@@ -619,35 +629,33 @@ useEffect(() => {
 }, [shopifyCheckout]);
 ```
 
-#### `removeEventListeners(eventName)`
+### `removeEventListeners(eventName)`
 
 On the rare occasion that you want to remove all event listeners for a given
 `eventName`, you can use the `removeEventListeners(eventName)` method.
 
-#### Integrating with Web Pixels, monitoring behavioral data
+## Behavioral data - Web pixels
 
 App developers can use
-[lifecycle events](#monitoring-the-lifecycle-of-a-checkout-session) to monitor
+[lifecycle events](#checkout-lifecycle) to monitor
 and log the status of a checkout session.
 
-\*\*For behavioural monitoring,
-[standard](https://shopify.dev/docs/api/web-pixels-api/standard-events) and
-[custom](https://shopify.dev/docs/api/web-pixels-api#custom-web-pixels) Web
+For behavioural monitoring,
+["standard"](https://shopify.dev/docs/api/web-pixels-api/standard-events) and
+["custom"](https://shopify.dev/docs/api/web-pixels-api#custom-web-pixels) Web
 Pixel events will be relayed back to your application through the `"pixel"`
 event listener. The responsibility then falls on the application developer to
 ensure adherence to Apple's privacy policy and local regulations like GDPR and
 ePrivacy directive before disseminating these events to first-party and
 third-party systems.
 
-_Note that you will likely need to augment these events with customer/session
-information derived from app state._
+> [!NOTE]
+> You will likely need to augment these events with customer/session information derived from app state.
 
-_Also note that the customData attribute of CustomPixelEvent can take on any
-shape. As such, this attribute will be returned as a String. Client applications
-should define a custom data type and deserialize the customData string into that
-type._
+> [!NOTE]
+> The `customData` attribute of CustomPixelEvent can take on any shape. As such, this attribute will be returned as a String. Client applications should define a custom data type and deserialize the customData string into that type.
 
-### Integrating identity & customer accounts
+## Identity & customer accounts
 
 Buyer-aware checkout experience reduces friction and increases conversion.
 Depending on the context of the buyer (guest or signed-in), knowledge of buyer
@@ -655,7 +663,7 @@ preferences, or account/identity system, the application can use one of the
 following methods to initialize a personalized and contextualized buyer
 experience.
 
-#### Cart: buyer bag, identity, and preferences
+### Cart: buyer bag, identity, and preferences
 
 In addition to specifying the line items, the Cart can include buyer identity
 (name, email, address, etc.), and delivery and payment preferences: see
@@ -686,14 +694,10 @@ external identity system and initialize a buyer-aware checkout session.
    `checkoutUrl`
 2. Provide the Multipass URL to `present(checkoutUrl)`
 
-<!-- prettier-ignore-start -->
-
 > [!IMPORTANT]
 > The above JSON omits useful customer attributes that should be
 > provided where possible and encryption and signing should be done server-side
 > to ensure Multipass keys are kept secret.
-
-<!-- prettier-ignore-end -->
 
 #### Shop Pay
 
@@ -710,55 +714,40 @@ by the
 [new Customer Account API](https://www.shopify.com/partners/blog/introducing-customer-account-api-for-headless-stores)—stay
 tuned.
 
+## Offsite Payments
+
+Certain payment providers finalize transactions by redirecting customers to
+external banking apps. To enhance the user experience for your buyers, you can
+set up your storefront to support Universal Links on iOS and App links on
+Android, allowing customers to be redirected back to your app once the payment
+is completed.
+
+### Universal Links - iOS
+
+See the
+[Universal Links guide](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/documentation/universal_links_ios.md)
+for information on how to get started with adding support for Offsite Payments
+in your app.
+
+It is crucial for your app to be configured to handle URL clicks during the
+checkout process effectively. By default, the kit includes the following
+delegate method to manage these interactions. This code ensures that external
+links, such as HTTPS and deep-links, are opened correctly by iOS.
+
+```swift
+public func checkoutDidClickLink(url: URL) {
+  if UIApplication.shared.canOpenURL(url) {
+    UIApplication.shared.open(url)
+  }
+}
+```
+
 ---
 
-### Contributing
+## Contributing
 
-We welcome code contributions, feature requests, and reporting of issues. Please
-see [guidelines and instructions](.github/CONTRIBUTING.md). See
-[Contributing](./CONTRIBUTING.md) for development contribution guidance.
+See the [contributing documentation](CONTRIBUTING.md) for details on how to get started.
 
-#### Running the sample app
-
-To run the sample app in this repo, first clone the repo and run the following
-commands at the root of the project directory.
-
-#### Install NPM dependencies
-
-```sh
-yarn
-```
-
-#### Install Cocoapods
-
-```sh
-yarn pod-install sample/ios
-```
-
-#### Build the local module
-
-```sh
-yarn module build
-```
-
-#### Update the dotenv file
-
-Replace the details in the `sample/.env.example` file and rename it to
-`sample/.env`
-
-```
-# Storefront Details
-STOREFRONT_DOMAIN="YOUR_STORE.myshopify.com"
-STOREFRONT_ACCESS_TOKEN="YOUR_PUBLIC_STOREFRONT_ACCESS_TOKEN"
-STOREFRONT_VERSION="2024-04"
-```
-
-#### Start the sample app
-
-```sh
-yarn sample start
-```
-
-### License
+## License
 
 Shopify's Checkout Sheet Kit is provided under an [MIT License](LICENSE).
