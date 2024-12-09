@@ -20,4 +20,12 @@ buildscript {
     }
 }
 
+def loadProperties() {
+    def props = new Properties()
+    file('../.env').withInputStream {
+        props.load(it)
+    }
+    return props
+}
+
 apply plugin: "com.facebook.react.rootproject"

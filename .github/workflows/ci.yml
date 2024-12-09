@@ -87,6 +87,7 @@ jobs:
 
       - name: Run Android tests
         run: |
+          echo "STOREFRONT_DOMAIN=\"myshopify.com\"" > sample/.env
           yarn module build
           yarn sample test:android --no-daemon
 
