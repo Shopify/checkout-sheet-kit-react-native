@@ -146,3 +146,21 @@ apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 apply from: file("../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+
+def properties = loadProperties()
+def storefrontDomain = properties.getProperty("STOREFRONT_DOMAIN")
+
+if (!storefrontDomain) {
+  println("**** Please add a .env file with STOREFRONT_DOMAIN set *****")
+}
+
+task generateAndroidManifestFromTemplate {
+  doLast {
+    def templateFile = file('src/main/AndroidManifest.template.xml')
+    def outputFile = file('src/main/AndroidManifest.xml')
+    def content = templateFile.getText('UTF-8').replace('{{STOREFRONT_DOMAIN}}', "$storefrontDomain")
+    outputFile.write(content, 'UTF-8')
+  }
+}
+
+preBuild.dependsOn(generateAndroidManifestFromTemplate)
