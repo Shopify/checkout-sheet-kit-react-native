@@ -2,6 +2,7 @@
   "recommendations": [
     "esbenp.prettier-vscode",
     "editorconfig.editorconfig",
-    "msjsdiag.vscode-react-native"
+    "msjsdiag.vscode-react-native",
+    "yzhang.markdown-all-in-one"
   ]
 }
