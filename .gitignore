@@ -103,3 +103,6 @@ sample/vendor
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Sample app
+sample/**/AndroidManifest.xml
