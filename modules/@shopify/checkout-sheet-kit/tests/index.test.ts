@@ -56,6 +56,9 @@ jest.mock('react-native', () => {
   };
 
   return {
+    Platform: {
+      OS: 'ios',
+    },
     _listeners: listeners,
     NativeEventEmitter,
     NativeModules: {

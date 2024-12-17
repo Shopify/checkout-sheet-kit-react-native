@@ -144,8 +144,8 @@ function App() {
 }
 ```
 
-See [Usage with the Storefront API](#usage-with-the-storefront-api) below on how
-to get a checkout URL to pass to the kit.
+See [usage with the Storefront API](#usage-with-the-storefront-api) below for details on how
+to obtain a checkout URL to pass to the kit.
 
 > [!NOTE]
 > The recommended usage of the library is through a
