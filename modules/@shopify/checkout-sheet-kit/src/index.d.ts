@@ -164,6 +164,7 @@ export type CheckoutEventCallback =
   | CloseEventCallback
   | CheckoutExceptionCallback
   | CheckoutCompletedEventCallback
+  | GeolocationRequestEventCallback
   | PixelEventCallback;
 
 function addEventListener(

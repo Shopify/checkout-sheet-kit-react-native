@@ -39,10 +39,7 @@ import Icon from 'react-native-vector-icons/Entypo';
 import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
-import type {
-  Configuration,
-  GeolocationRequestEvent,
-} from '@shopify/checkout-sheet-kit';
+import type {Configuration} from '@shopify/checkout-sheet-kit';
 import {
   ColorScheme,
   ShopifyCheckoutSheetProvider,

@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.0 - December 18, 2024
+
+- Handle geolocation requests for Android devices
+
 ## 3.1.2 - November 4, 2024
 
 - Add `consumerProguardRules` build.gradle option to prevent minification of
