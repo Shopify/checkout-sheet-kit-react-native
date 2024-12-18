@@ -25,6 +25,8 @@ package com.shopify.reactnative.checkoutsheetkit;
 
 import android.content.Context;
 import android.util.Log;
+import android.webkit.GeolocationPermissions;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -41,23 +43,68 @@ import java.util.Map;
 
 public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
   private final ReactApplicationContext reactContext;
-
   private final ObjectMapper mapper = new ObjectMapper();
+
+  // Geolocation-specific variables
+
+  private String geolocationOrigin;
+  private GeolocationPermissions.Callback geolocationCallback;
 
   public CustomCheckoutEventProcessor(Context context, ReactApplicationContext reactContext) {
     super(context);
-
     this.reactContext = reactContext;
   }
 
-  @Override
-  public void onCheckoutCompleted(@NonNull CheckoutCompletedEvent event) {
-    try {
-      String data = mapper.writeValueAsString(event);
-      sendEventWithStringData("completed", data);
-    } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error processing completed event", e);
+  // Public methods
+
+  public void invokeGeolocationCallback(boolean allow) {
+    if (geolocationCallback != null) {
+      boolean retainGeolocationForFutureRequests = false;
+      geolocationCallback.invoke(geolocationOrigin, allow, retainGeolocationForFutureRequests);
+      geolocationCallback = null;
     }
+  }
+
+  // Lifecycle events
+
+  /**
+   * This method is called when the checkout sheet webpage requests geolocation
+   * permissions.
+   *
+   * Since the app needs to request permissions first before granting, we store
+   * the callback and origin in memory and emit a "geolocationRequest" event to
+   * the app. The app will then request the necessary geolocation permissions
+   * and invoke the native callback with the result.
+   *
+   * @param origin   - The origin of the request
+   * @param callback - The callback to invoke when the app requests permissions
+   */
+  @Override
+  public void onGeolocationPermissionsShowPrompt(@NonNull String origin,
+      @NonNull GeolocationPermissions.Callback callback) {
+
+    // Store the callback and origin in memory. The kit will wait for the app to
+    // request permissions first before granting.
+    this.geolocationCallback = callback;
+    this.geolocationOrigin = origin;
+
+    // Emit a "geolocationRequest" event to the app.
+    try {
+      Map<String, Object> event = new HashMap<>();
+      event.put("origin", origin);
+      sendEventWithStringData("geolocationRequest", mapper.writeValueAsString(event));
+    } catch (IOException e) {
+      Log.e("ShopifyCheckoutSheetKit", "Error emitting \"geolocationRequest\" event", e);
+    }
+  }
+
+  @Override
+  public void onGeolocationPermissionsHidePrompt() {
+    super.onGeolocationPermissionsHidePrompt();
+
+    // Reset the geolocation callback and origin when the prompt is hidden.
+    this.geolocationCallback = null;
+    this.geolocationOrigin = null;
   }
 
   @Override
@@ -79,6 +126,23 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
       Log.e("ShopifyCheckoutSheetKit", "Error processing checkout failed event", e);
     }
   }
+
+  @Override
+  public void onCheckoutCanceled() {
+    sendEvent("close", null);
+  }
+
+  @Override
+  public void onCheckoutCompleted(@NonNull CheckoutCompletedEvent event) {
+    try {
+      String data = mapper.writeValueAsString(event);
+      sendEventWithStringData("completed", data);
+    } catch (IOException e) {
+      Log.e("ShopifyCheckoutSheetKit", "Error processing completed event", e);
+    }
+  }
+
+  // Private
 
   private Map<String, Object> populateErrorDetails(CheckoutException checkoutError) {
     Map<String, Object> errorMap = new HashMap();
@@ -108,11 +172,6 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
     } else {
       return "UnknownError";
     }
-  }
-
-  @Override
-  public void onCheckoutCanceled() {
-    sendEvent("close", null);
   }
 
   private void sendEvent(String eventName, @Nullable WritableNativeMap params) {

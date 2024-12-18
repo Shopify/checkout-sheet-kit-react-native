@@ -12,7 +12,7 @@ import {
   GenericError,
 } from '../src';
 import {ColorScheme, CheckoutNativeErrorType, type Configuration} from '../src';
-import {NativeModules} from 'react-native';
+import {NativeModules, PermissionsAndroid, Platform} from 'react-native';
 
 const checkoutUrl = 'https://shopify.com/checkout';
 const config: Configuration = {
@@ -53,9 +53,16 @@ jest.mock('react-native', () => {
     setConfig: jest.fn(),
     addEventListener: jest.fn(),
     removeEventListeners: jest.fn(),
+    initiateGeolocationRequest: jest.fn(),
   };
 
   return {
+    Platform: {
+      OS: 'ios',
+    },
+    PermissionsAndroid: {
+      requestMultiple: jest.fn(),
+    },
     _listeners: listeners,
     NativeEventEmitter,
     NativeModules: {
@@ -80,6 +87,8 @@ describe('ShopifyCheckoutSheetKit', () => {
 
     // Clear mock listeners
     NativeModules._listeners = [];
+
+    jest.clearAllMocks();
   });
 
   describe('instantiation', () => {
@@ -432,6 +441,148 @@ describe('ShopifyCheckoutSheetKit', () => {
       instance.addEventListener('close', () => {});
       instance.removeEventListeners('close');
       expect(eventEmitter.removeAllListeners).toHaveBeenCalledWith('close');
+    });
+  });
+
+  describe('Geolocation', () => {
+    const defaultConfig = {};
+
+    async function emitGeolocationRequest() {
+      await new Promise<void>(resolve => {
+        eventEmitter.emit('geolocationRequest', {
+          origin: 'https://shopify.com',
+        });
+        setTimeout(resolve);
+      });
+    }
+
+    describe('Android', () => {
+      const originalPlatform = Platform.OS;
+
+      beforeEach(() => {
+        Platform.OS = 'android';
+      });
+
+      afterAll(() => {
+        Platform.OS = originalPlatform;
+      });
+
+      it('subscribes to geolocation requests on Android when feature is enabled', () => {
+        new ShopifyCheckoutSheet(defaultConfig);
+
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'geolocationRequest',
+          expect.any(Function),
+        );
+      });
+
+      it('does not subscribe to geolocation requests when feature is disabled', () => {
+        new ShopifyCheckoutSheet(defaultConfig, {
+          handleGeolocationRequests: false,
+        });
+
+        expect(eventEmitter.addListener).not.toHaveBeenCalledWith(
+          'geolocationRequest',
+          expect.any(Function),
+        );
+      });
+
+      it('handles geolocation permission grant correctly', async () => {
+        const mockPermissions = {
+          'android.permission.ACCESS_COARSE_LOCATION': 'granted',
+          'android.permission.ACCESS_FINE_LOCATION': 'denied',
+        };
+
+        (PermissionsAndroid.requestMultiple as jest.Mock).mockResolvedValue(
+          mockPermissions,
+        );
+
+        new ShopifyCheckoutSheet();
+
+        await emitGeolocationRequest();
+
+        expect(PermissionsAndroid.requestMultiple).toHaveBeenCalledWith([
+          'android.permission.ACCESS_COARSE_LOCATION',
+          'android.permission.ACCESS_FINE_LOCATION',
+        ]);
+        expect(
+          NativeModules.ShopifyCheckoutSheetKit.initiateGeolocationRequest,
+        ).toHaveBeenCalledWith(true);
+      });
+
+      it('handles geolocation permission denial correctly', async () => {
+        const mockPermissions = {
+          'android.permission.ACCESS_COARSE_LOCATION': 'denied',
+          'android.permission.ACCESS_FINE_LOCATION': 'denied',
+        };
+
+        (PermissionsAndroid.requestMultiple as jest.Mock).mockResolvedValue(
+          mockPermissions,
+        );
+
+        new ShopifyCheckoutSheet();
+
+        await emitGeolocationRequest();
+
+        expect(PermissionsAndroid.requestMultiple).toHaveBeenCalledWith([
+          'android.permission.ACCESS_COARSE_LOCATION',
+          'android.permission.ACCESS_FINE_LOCATION',
+        ]);
+        expect(
+          NativeModules.ShopifyCheckoutSheetKit.initiateGeolocationRequest,
+        ).toHaveBeenCalledWith(false);
+      });
+
+      it('cleans up geolocation callback on teardown', () => {
+        const sheet = new ShopifyCheckoutSheet();
+        const mockRemove = jest.fn();
+
+        // @ts-expect-error
+        sheet.geolocationCallback = {
+          remove: mockRemove,
+        };
+
+        sheet.teardown();
+
+        expect(mockRemove).toHaveBeenCalled();
+      });
+    });
+
+    describe('iOS', () => {
+      const originalPlatform = Platform.OS;
+
+      beforeEach(() => {
+        Platform.OS = 'ios';
+      });
+
+      afterAll(() => {
+        Platform.OS = originalPlatform;
+      });
+
+      it('does not subscribe to geolocation requests', () => {
+        new ShopifyCheckoutSheet();
+
+        expect(eventEmitter.addListener).not.toHaveBeenCalledWith(
+          'geolocationRequest',
+          expect.any(Function),
+        );
+      });
+
+      it('does not call the native function, even if an event is emitted', async () => {
+        new ShopifyCheckoutSheet();
+
+        await emitGeolocationRequest();
+
+        expect(
+          NativeModules.ShopifyCheckoutSheetKit.initiateGeolocationRequest,
+        ).not.toHaveBeenCalled();
+      });
+
+      it('tears down gracefully', () => {
+        const sheet = new ShopifyCheckoutSheet();
+
+        expect(() => sheet.teardown()).not.toThrow();
+      });
     });
   });
 });

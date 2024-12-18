@@ -28,6 +28,18 @@ import type {CheckoutException} from './errors';
 
 export type Maybe<T> = T | undefined;
 
+/**
+ * Configuration options for checkout sheet kit features
+ */
+export interface Features {
+  /**
+   * When enabled, the checkout will handle geolocation permission requests internally.
+   * If disabled, geolocation requests will emit a 'geolocationRequest' event that
+   * must be handled by the application.
+   */
+  handleGeolocationRequests: boolean;
+}
+
 export enum ColorScheme {
   automatic = 'automatic',
   light = 'light',
@@ -127,9 +139,21 @@ export type Configuration = CommonConfiguration &
       }
   );
 
-export type CheckoutEvent = 'close' | 'completed' | 'error' | 'pixel';
+export type CheckoutEvent =
+  | 'close'
+  | 'completed'
+  | 'error'
+  | 'geolocationRequest'
+  | 'pixel';
+
+export interface GeolocationRequestEvent {
+  origin: string;
+}
 
 export type CloseEventCallback = () => void;
+export type GeolocationRequestEventCallback = (
+  event: GeolocationRequestEvent,
+) => void;
 export type PixelEventCallback = (event: PixelEvent) => void;
 export type CheckoutExceptionCallback = (error: CheckoutException) => void;
 export type CheckoutCompletedEventCallback = (
@@ -140,6 +164,7 @@ export type CheckoutEventCallback =
   | CloseEventCallback
   | CheckoutExceptionCallback
   | CheckoutCompletedEventCallback
+  | GeolocationRequestEventCallback
   | PixelEventCallback;
 
 function addEventListener(
@@ -160,6 +185,11 @@ function addEventListener(
 function addEventListener(
   event: 'pixel',
   callback: PixelEventCallback,
+): Maybe<EmitterSubscription>;
+
+function addEventListener(
+  event: 'geolocationRequest',
+  callback: GeolocationRequestEventCallback,
 ): Maybe<EmitterSubscription>;
 
 function removeEventListeners(event: CheckoutEvent): void;
@@ -198,7 +228,11 @@ export interface ShopifyCheckoutSheetKit {
    */
   addEventListener: AddEventListener;
   /**
-   * Remove subscriptions to checkout events
+   * Remove subscriptions to checkout events.
    */
   removeEventListeners: RemoveEventListeners;
+  /**
+   * Cleans up any event callbacks to prevent memory leaks.
+   */
+  teardown(): void;
 }

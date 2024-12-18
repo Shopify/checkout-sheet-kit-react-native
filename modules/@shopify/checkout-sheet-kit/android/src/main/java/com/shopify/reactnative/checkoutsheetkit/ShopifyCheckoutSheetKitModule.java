@@ -48,6 +48,8 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
   private CheckoutSheetKitDialog checkoutSheet;
 
+  private CustomCheckoutEventProcessor checkoutEventProcessor;
+
   public ShopifyCheckoutSheetKitModule(ReactApplicationContext reactContext) {
     super(reactContext);
 
@@ -86,8 +88,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   public void present(String checkoutURL) {
     Activity currentActivity = getCurrentActivity();
     if (currentActivity instanceof ComponentActivity) {
-      DefaultCheckoutEventProcessor checkoutEventProcessor = new CustomCheckoutEventProcessor(currentActivity,
-          this.reactContext);
+      checkoutEventProcessor = new CustomCheckoutEventProcessor(currentActivity, this.reactContext);
       currentActivity.runOnUiThread(() -> {
         checkoutSheet = ShopifyCheckoutSheetKit.present(checkoutURL, (ComponentActivity) currentActivity,
             checkoutEventProcessor);
@@ -116,6 +117,59 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   public void invalidateCache() {
     ShopifyCheckoutSheetKit.invalidate();
   }
+
+  @ReactMethod
+  public void getConfig(Promise promise) {
+    WritableNativeMap resultConfig = new WritableNativeMap();
+
+    resultConfig.putBoolean("preloading", checkoutConfig.getPreloading().getEnabled());
+    resultConfig.putString("colorScheme", colorSchemeToString(checkoutConfig.getColorScheme()));
+
+    promise.resolve(resultConfig);
+  }
+
+  @ReactMethod
+  public void setConfig(ReadableMap config) {
+    Context context = getReactApplicationContext();
+
+    ShopifyCheckoutSheetKit.configure(configuration -> {
+      if (config.hasKey("preloading")) {
+        configuration.setPreloading(new Preloading(config.getBoolean("preloading")));
+      }
+
+      if (config.hasKey("colorScheme")) {
+        ColorScheme colorScheme = getColorScheme(Objects.requireNonNull(config.getString("colorScheme")));
+        ReadableMap colorsConfig = config.hasKey("colors") ? config.getMap("colors") : null;
+        ReadableMap androidConfig = null;
+
+        if (colorsConfig != null && colorsConfig.hasKey("android")) {
+          androidConfig = colorsConfig.getMap("android");
+        }
+
+        if (this.isValidColorConfig(androidConfig)) {
+          ColorScheme colorSchemeWithOverrides = getColors(colorScheme, androidConfig);
+          if (colorSchemeWithOverrides != null) {
+            configuration.setColorScheme(colorSchemeWithOverrides);
+            checkoutConfig = configuration;
+            return;
+          }
+        }
+
+        configuration.setColorScheme(colorScheme);
+      }
+
+      checkoutConfig = configuration;
+    });
+  }
+
+  @ReactMethod
+  public void initiateGeolocationRequest(Boolean allow) {
+    if (checkoutEventProcessor != null) {
+      checkoutEventProcessor.invokeGeolocationCallback(allow);
+    }
+  }
+
+  // Private
 
   private ColorScheme getColorScheme(String colorScheme) {
     switch (colorScheme) {
@@ -231,50 +285,6 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     }
 
     return null;
-  }
-
-  @ReactMethod
-  public void setConfig(ReadableMap config) {
-    Context context = getReactApplicationContext();
-
-    ShopifyCheckoutSheetKit.configure(configuration -> {
-      if (config.hasKey("preloading")) {
-        configuration.setPreloading(new Preloading(config.getBoolean("preloading")));
-      }
-
-      if (config.hasKey("colorScheme")) {
-        ColorScheme colorScheme = getColorScheme(Objects.requireNonNull(config.getString("colorScheme")));
-        ReadableMap colorsConfig = config.hasKey("colors") ? config.getMap("colors") : null;
-        ReadableMap androidConfig = null;
-
-        if (colorsConfig != null && colorsConfig.hasKey("android")) {
-          androidConfig = colorsConfig.getMap("android");
-        }
-
-        if (this.isValidColorConfig(androidConfig)) {
-          ColorScheme colorSchemeWithOverrides = getColors(colorScheme, androidConfig);
-          if (colorSchemeWithOverrides != null) {
-            configuration.setColorScheme(colorSchemeWithOverrides);
-            checkoutConfig = configuration;
-            return;
-          }
-        }
-
-        configuration.setColorScheme(colorScheme);
-      }
-
-      checkoutConfig = configuration;
-    });
-  }
-
-  @ReactMethod
-  public void getConfig(Promise promise) {
-    WritableNativeMap resultConfig = new WritableNativeMap();
-
-    resultConfig.putBoolean("preloading", checkoutConfig.getPreloading().getEnabled());
-    resultConfig.putString("colorScheme", colorSchemeToString(checkoutConfig.getColorScheme()));
-
-    promise.resolve(resultConfig);
   }
 
   private Color parseColor(String colorStr) {

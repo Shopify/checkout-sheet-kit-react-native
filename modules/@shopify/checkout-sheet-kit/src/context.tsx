@@ -23,8 +23,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import React, {useCallback, useMemo, useRef} from 'react';
 import type {PropsWithChildren} from 'react';
-import type {EmitterSubscription} from 'react-native';
+import {type EmitterSubscription} from 'react-native';
 import {ShopifyCheckoutSheet} from './index';
+import type {Features} from './index.d';
 import type {
   AddEventListener,
   RemoveEventListeners,
@@ -61,17 +62,19 @@ const ShopifyCheckoutSheetContext = React.createContext<Context>({
 });
 
 interface Props {
+  features?: Partial<Features>;
   configuration?: Configuration;
 }
 
 export function ShopifyCheckoutSheetProvider({
+  features,
   configuration,
   children,
 }: PropsWithChildren<Props>) {
   const instance = useRef<ShopifyCheckoutSheet | null>(null);
 
   if (!instance.current) {
-    instance.current = new ShopifyCheckoutSheet(configuration);
+    instance.current = new ShopifyCheckoutSheet(configuration, features);
   }
 
   const addEventListener: AddEventListener = useCallback(

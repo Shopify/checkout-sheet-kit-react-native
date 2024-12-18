@@ -21,14 +21,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import {NativeModules, NativeEventEmitter} from 'react-native';
-import type {EmitterSubscription} from 'react-native';
+import {
+  NativeModules,
+  NativeEventEmitter,
+  PermissionsAndroid,
+  Platform,
+} from 'react-native';
+import type {
+  EmitterSubscription,
+  EventSubscription,
+  PermissionStatus,
+} from 'react-native';
 import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
 import {ColorScheme} from './index.d';
 import type {
   CheckoutEvent,
   CheckoutEventCallback,
   Configuration,
+  Features,
+  GeolocationRequestEvent,
+  Maybe,
   ShopifyCheckoutSheetKit,
 } from './index.d';
 import type {CheckoutException, CheckoutNativeError} from './errors.d';
@@ -54,43 +66,95 @@ if (!('ShopifyCheckoutSheetKit' in NativeModules)) {
   If you are building for iOS, make sure to run "pod install" first and restart the metro server.`);
 }
 
+const defaultFeatures: Features = {
+  handleGeolocationRequests: true,
+};
+
 class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   private static eventEmitter: NativeEventEmitter = new NativeEventEmitter(
     RNShopifyCheckoutSheetKit,
   );
 
-  constructor(configuration?: Configuration) {
+  private features: Features;
+  private geolocationCallback: Maybe<EventSubscription>;
+
+  /**
+   * Initializes a new ShopifyCheckoutSheet instance
+   * @param configuration Optional configuration settings for the checkout
+   * @param features Optional feature flags to customize behavior, defaults to defaultFeatures
+   */
+  constructor(
+    configuration?: Configuration,
+    features: Partial<Features> = defaultFeatures,
+  ) {
+    this.features = {...defaultFeatures, ...features};
+
     if (configuration != null) {
       this.setConfig(configuration);
+    }
+
+    if (
+      Platform.OS === 'android' &&
+      this.featureEnabled('handleGeolocationRequests')
+    ) {
+      this.subscribeToGeolocationRequestPrompts();
     }
   }
 
   public readonly version: string = RNShopifyCheckoutSheetKit.version;
 
+  /**
+   * Dismisses the currently displayed checkout sheet
+   */
   public dismiss(): void {
     RNShopifyCheckoutSheetKit.dismiss();
   }
 
+  /**
+   * Invalidates the checkout that was cached using preload
+   */
   public invalidate(): void {
     RNShopifyCheckoutSheetKit.invalidateCache();
   }
 
+  /**
+   * Preloads checkout for a given URL to improve performance
+   * @param checkoutUrl The URL of the checkout to preload
+   */
   public preload(checkoutUrl: string): void {
     RNShopifyCheckoutSheetKit.preload(checkoutUrl);
   }
 
+  /**
+   * Presents the checkout sheet for a given checkout URL
+   * @param checkoutUrl The URL of the checkout to display
+   */
   public present(checkoutUrl: string): void {
     RNShopifyCheckoutSheetKit.present(checkoutUrl);
   }
 
+  /**
+   * Retrieves the current checkout configuration
+   * @returns Promise containing the current Configuration
+   */
   public async getConfig(): Promise<Configuration> {
     return RNShopifyCheckoutSheetKit.getConfig();
   }
 
+  /**
+   * Updates the checkout configuration
+   * @param configuration New configuration settings to apply
+   */
   public setConfig(configuration: Configuration): void {
     RNShopifyCheckoutSheetKit.setConfig(configuration);
   }
 
+  /**
+   * Adds an event listener for checkout events
+   * @param event The type of event to listen for
+   * @param callback Function to be called when the event occurs
+   * @returns An EmitterSubscription that can be used to remove the listener
+   */
   public addEventListener(
     event: CheckoutEvent,
     callback: CheckoutEventCallback,
@@ -115,6 +179,12 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
           this.parseCheckoutError,
         );
         break;
+      case 'geolocationRequest':
+        eventCallback = this.interceptEventEmission(
+          'geolocationRequest',
+          callback,
+        );
+        break;
       default:
         eventCallback = callback;
     }
@@ -123,12 +193,82 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     return ShopifyCheckoutSheet.eventEmitter.addListener(event, eventCallback);
   }
 
+  /**
+   * Removes all event listeners for a specific event type
+   * @param event The type of event to remove listeners for
+   */
   public removeEventListeners(event: CheckoutEvent) {
     ShopifyCheckoutSheet.eventEmitter.removeAllListeners(event);
   }
 
+  /**
+   * Cleans up resources and event listeners used by the checkout sheet
+   */
+  public teardown() {
+    this.geolocationCallback?.remove();
+  }
+
+  /**
+   * Initiates a geolocation request for Android devices
+   * Only needed if features.handleGeolocationRequests is false
+   */
+  public async initiateGeolocationRequest(allow: boolean) {
+    if (Platform.OS === 'android') {
+      RNShopifyCheckoutSheetKit.initiateGeolocationRequest?.(allow);
+    }
+  }
+
   // ---
 
+  /**
+   * Checks if a specific feature is enabled in the configuration
+   * @param feature The feature to check
+   * @returns boolean indicating if the feature is enabled
+   */
+  private featureEnabled(feature: keyof Features) {
+    return this.features[feature] ?? true;
+  }
+
+  /**
+   * Sets up geolocation request handling for Android devices
+   */
+  private subscribeToGeolocationRequestPrompts() {
+    this.geolocationCallback = this.addEventListener(
+      'geolocationRequest',
+      async () => {
+        const coarseOrFineGrainAccessGranted = await this.requestGeolocation();
+
+        this.initiateGeolocationRequest(coarseOrFineGrainAccessGranted);
+      },
+    );
+  }
+
+  /**
+   * Requests geolocation permissions on Android
+   * @returns Promise<boolean> indicating if permission was granted
+   */
+  private async requestGeolocation(): Promise<boolean> {
+    const coarse = 'android.permission.ACCESS_COARSE_LOCATION';
+    const fine = 'android.permission.ACCESS_FINE_LOCATION';
+    const results = await PermissionsAndroid.requestMultiple([coarse, fine]);
+
+    return [results[coarse], results[fine]].some(this.permissionGranted);
+  }
+
+  /**
+   * Checks if the given permission status indicates that permission was granted
+   * @param status The permission status to check
+   * @returns boolean indicating if the permission was granted
+   */
+  private permissionGranted(status: PermissionStatus): boolean {
+    return status === 'granted';
+  }
+
+  /**
+   * Parses custom pixel event data from string to object if needed
+   * @param eventData The pixel event data to parse
+   * @returns Parsed PixelEvent object
+   */
   private parseCustomPixelData(eventData: PixelEvent): PixelEvent {
     if (
       isCustomPixelEvent(eventData) &&
@@ -148,6 +288,11 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     return eventData;
   }
 
+  /**
+   * Converts native checkout errors into appropriate error class instances
+   * @param exception The native error to parse
+   * @returns Appropriate CheckoutException instance
+   */
   private parseCheckoutError(
     exception: CheckoutNativeError,
   ): CheckoutException {
@@ -168,7 +313,11 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   }
 
   /**
-   * Event data can be sent back as either a parsed Event object or a JSON string.
+   * Handles event emission parsing and transformation
+   * @param event The type of event being intercepted
+   * @param callback The callback to execute with the parsed data
+   * @param transformData Optional function to transform the event data
+   * @returns Function that handles the event emission
    */
   private interceptEventEmission(
     event: CheckoutEvent,
@@ -252,6 +401,8 @@ export type {
   CheckoutException,
   Configuration,
   CustomEvent,
+  GeolocationRequestEvent,
+  Features,
   PixelEvent,
   StandardEvent,
 };

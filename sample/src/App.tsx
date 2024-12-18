@@ -342,7 +342,9 @@ function Routes() {
 function App() {
   return (
     <ErrorBoundary>
-      <ShopifyCheckoutSheetProvider configuration={config}>
+      <ShopifyCheckoutSheetProvider
+        configuration={config}
+        features={{handleGeolocationRequests: true}}>
         <AppWithTheme>
           <AppWithContext>
             <AppWithNavigation>
