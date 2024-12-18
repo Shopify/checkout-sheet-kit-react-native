@@ -48,6 +48,8 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
   private CheckoutSheetKitDialog checkoutSheet;
 
+  private CustomCheckoutEventProcessor checkoutEventProcessor;
+
   public ShopifyCheckoutSheetKitModule(ReactApplicationContext reactContext) {
     super(reactContext);
 
@@ -86,8 +88,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   public void present(String checkoutURL) {
     Activity currentActivity = getCurrentActivity();
     if (currentActivity instanceof ComponentActivity) {
-      DefaultCheckoutEventProcessor checkoutEventProcessor = new CustomCheckoutEventProcessor(currentActivity,
-          this.reactContext);
+      checkoutEventProcessor = new CustomCheckoutEventProcessor(currentActivity, this.reactContext);
       currentActivity.runOnUiThread(() -> {
         checkoutSheet = ShopifyCheckoutSheetKit.present(checkoutURL, (ComponentActivity) currentActivity,
             checkoutEventProcessor);
@@ -163,7 +164,9 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void initiateGeolocationRequest(Boolean allow) {
-    checkoutEventProcessor.invokeGeolocationCallback(allow);
+    if (checkoutEventProcessor != null) {
+      checkoutEventProcessor.invokeGeolocationCallback(allow);
+    }
   }
 
   // Private

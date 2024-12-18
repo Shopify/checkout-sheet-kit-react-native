@@ -49,7 +49,6 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
   private String geolocationOrigin;
   private GeolocationPermissions.Callback geolocationCallback;
-  private boolean retainGeolocationForFutureRequests = true;
 
   public CustomCheckoutEventProcessor(Context context, ReactApplicationContext reactContext) {
     super(context);
@@ -60,6 +59,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
   public void invokeGeolocationCallback(boolean allow) {
     if (geolocationCallback != null) {
+      boolean retainGeolocationForFutureRequests = false;
       geolocationCallback.invoke(geolocationOrigin, allow, retainGeolocationForFutureRequests);
       geolocationCallback = null;
     }
@@ -90,8 +90,8 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
     // Emit a "geolocationRequest" event to the app.
     try {
-      Map<String, Object> event = new HashMap();
-      event.put("origin", origin.toString());
+      Map<String, Object> event = new HashMap<>();
+      event.put("origin", origin);
       sendEventWithStringData("geolocationRequest", mapper.writeValueAsString(event));
     } catch (IOException e) {
       Log.e("ShopifyCheckoutSheetKit", "Error emitting \"geolocationRequest\" event", e);
@@ -101,6 +101,10 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   @Override
   public void onGeolocationPermissionsHidePrompt() {
     super.onGeolocationPermissionsHidePrompt();
+
+    // Reset the geolocation callback and origin when the prompt is hidden.
+    this.geolocationCallback = null;
+    this.geolocationOrigin = null;
   }
 
   @Override
