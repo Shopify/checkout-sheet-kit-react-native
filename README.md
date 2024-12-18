@@ -33,8 +33,8 @@ experiences.
   - [Colors](#colors)
   - [Localization](#localization)
     - [Checkout Sheet title](#checkout-sheet-title)
-      - [iOS](#ios)
-      - [Android](#android)
+      - [iOS - Localization](#ios---localization)
+      - [Android - Localization](#android---localization)
     - [Currency](#currency)
     - [Language](#language)
 - [Preloading](#preloading)
@@ -53,6 +53,10 @@ experiences.
     - [Customer Account API](#customer-account-api)
 - [Offsite Payments](#offsite-payments)
   - [Universal Links - iOS](#universal-links---ios)
+- [Pickup points / Pickup in store](#pickup-points--pickup-in-store)
+  - [Geolocation - iOS](#geolocation---ios)
+  - [Geolocation - Android](#geolocation---android)
+    - [Opting out of the default behavior](#opting-out-of-the-default-behavior)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -434,9 +438,7 @@ function AppWithContext() {
 
 #### Checkout Sheet title
 
-There are several ways to change the title of the Checkout Sheet.
-
-##### iOS
+##### iOS - Localization
 
 On iOS, you can set a localized value on the `title` attribute of the
 configuration.
@@ -447,7 +449,7 @@ following:
 1. Create a `Localizable.xcstrings` file under "ios/{YourApplicationName}"
 2. Add an entry for the key `"shopify_checkout_sheet_title"`
 
-##### Android
+##### Android - Localization
 
 On Android, you can add a string entry for the key `"checkout_web_view_title"`
 to the "android/app/src/res/values/strings.xml" file for your application.
@@ -740,6 +742,95 @@ public func checkoutDidClickLink(url: URL) {
     UIApplication.shared.open(url)
   }
 }
+```
+
+## Pickup points / Pickup in store
+
+### Geolocation - iOS
+
+Geolocation permission requests are handled out of the box by iOS, provided you've added the required location usage description to your `Info.plist` file:
+
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Your location is required to locate pickup points near you.</string>
+```
+
+> [!TIP]
+> Consider also adding `NSLocationAlwaysAndWhenInUseUsageDescription` if your app needs background location access for other features.
+
+### Geolocation - Android
+
+Android differs to iOS in that permission requests must be handled in two places:
+(1) in your `AndroidManifest.xml` and (2) at runtime.
+
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+```
+
+The Checkout Sheet Kit native module will emit a `geolocationRequest` event when the webview requests geolocation
+information. By default, the kit will listen for this event and request access to both coarse and fine access when
+invoked.
+
+The geolocation request flow follows this sequence:
+
+1. When checkout needs location data (e.g., to show nearby pickup points), it triggers a geolocation request.
+2. The native module emits a `geolocationRequest` event.
+3. If using default behavior, the module automatically handles the Android runtime permission request.
+4. The result is passed back to checkout, which then proceeds to show relevant pickup points if permission was granted.
+
+> [!NOTE]
+> If the user denies location permissions, the checkout will still function but will not be able to show nearby pickup points. Users can manually enter their location instead.
+
+#### Opting out of the default behavior
+
+> [!NOTE]
+> This section is only applicable for Android.
+
+In order to opt-out of the default permission handling, you can set `features.handleGeolocationRequests` to `false`
+when you instantiate the `ShopifyCheckoutSheet` class.
+
+If you're using the sheet programmatically, you can do so by specifying a `features` object as the second argument:
+
+```tsx
+const checkoutSheetKit = new ShopifyCheckoutSheet(config, {handleGeolocationRequests: false});
+```
+
+If you're using the context provider, you can pass the same `features` object as a prop to the `ShopifyCheckoutSheetProvider` component:
+
+```tsx
+<ShopifyCheckoutSheetProvider configuration={config} features={{handleGeolocationRequests: false}}>
+  {children}
+</ShopifyCheckoutSheetProvider>
+```
+
+When opting out, you'll need to implement your own permission handling logic and communicate the result back to the checkout sheet. This can be useful if you want to:
+
+- Customize the permission request UI/UX
+- Coordinate location permissions with other app features
+- Implement custom fallback behavior when permissions are denied
+
+The steps here to implement your own logic are to:
+
+1. Listen for the `geolocationRequest`
+2. Request the desired permissions
+3. Invoke the native callback by calling `initiateGeolocationRequest` with the permission status
+
+```tsx
+// Listen for "geolocationRequest" events
+shopify.addEventListener('geolocationRequest', async (event: GeolocationRequestEvent) => {
+  const coarse = 'android.permission.ACCESS_COARSE_LOCATION';
+  const fine = 'android.permission.ACCESS_FINE_LOCATION';
+
+  // Request one or many permissions at once
+  const results = await PermissionsAndroid.requestMultiple([coarse, fine]);
+
+  // Check the permission status results
+  const permissionGranted = results[coarse] === 'granted' || results[fine] === 'granted';
+
+  // Dispatch an event to the native module to invoke the native callback with the permission status
+  shopify.initiateGeolocationRequest(permissionGranted);
+})
 ```
 
 ---

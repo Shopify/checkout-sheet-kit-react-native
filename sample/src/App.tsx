@@ -39,7 +39,10 @@ import Icon from 'react-native-vector-icons/Entypo';
 import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
-import type {Configuration} from '@shopify/checkout-sheet-kit';
+import type {
+  Configuration,
+  GeolocationRequestEvent,
+} from '@shopify/checkout-sheet-kit';
 import {
   ColorScheme,
   ShopifyCheckoutSheetProvider,
@@ -342,7 +345,9 @@ function Routes() {
 function App() {
   return (
     <ErrorBoundary>
-      <ShopifyCheckoutSheetProvider configuration={config}>
+      <ShopifyCheckoutSheetProvider
+        configuration={config}
+        features={{handleGeolocationRequests: true}}>
         <AppWithTheme>
           <AppWithContext>
             <AppWithNavigation>

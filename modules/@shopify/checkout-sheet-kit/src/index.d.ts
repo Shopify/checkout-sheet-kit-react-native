@@ -146,8 +146,14 @@ export type CheckoutEvent =
   | 'geolocationRequest'
   | 'pixel';
 
+export interface GeolocationRequestEvent {
+  origin: string;
+}
+
 export type CloseEventCallback = () => void;
-export type GeolocationRequestEventCallback = () => void;
+export type GeolocationRequestEventCallback = (
+  event: GeolocationRequestEvent,
+) => void;
 export type PixelEventCallback = (event: PixelEvent) => void;
 export type CheckoutExceptionCallback = (error: CheckoutException) => void;
 export type CheckoutCompletedEventCallback = (

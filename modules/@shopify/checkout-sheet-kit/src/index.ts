@@ -39,6 +39,7 @@ import type {
   CheckoutEventCallback,
   Configuration,
   Features,
+  GeolocationRequestEvent,
   Maybe,
   ShopifyCheckoutSheetKit,
 } from './index.d';
@@ -400,6 +401,8 @@ export type {
   CheckoutException,
   Configuration,
   CustomEvent,
+  GeolocationRequestEvent,
+  Features,
   PixelEvent,
   StandardEvent,
 };
