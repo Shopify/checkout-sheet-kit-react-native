@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import type {EmitterSubscription} from 'react-native';
 import type {PixelEvent} from './pixels';
-import type {CheckoutCompletedEvent} from './events';
+import type {CheckoutCompletedEvent, CheckoutLinkClickEvent} from './events';
 import type {CheckoutException} from './errors';
 
 export type Maybe<T> = T | undefined;
@@ -144,6 +144,7 @@ export type CheckoutEvent =
   | 'completed'
   | 'error'
   | 'geolocationRequest'
+  | 'linkClick'
   | 'pixel';
 
 export interface GeolocationRequestEvent {
@@ -159,11 +160,15 @@ export type CheckoutExceptionCallback = (error: CheckoutException) => void;
 export type CheckoutCompletedEventCallback = (
   event: CheckoutCompletedEvent,
 ) => void;
+export type CheckoutLinkClickEventCallback = (
+  event: CheckoutLinkClickEvent,
+) => void;
 
 export type CheckoutEventCallback =
   | CloseEventCallback
   | CheckoutExceptionCallback
   | CheckoutCompletedEventCallback
+  | CheckoutLinkClickEventCallback
   | GeolocationRequestEventCallback
   | PixelEventCallback;
 
@@ -175,6 +180,11 @@ function addEventListener(
 function addEventListener(
   event: 'completed',
   callback: CheckoutCompletedEventCallback,
+): Maybe<EmitterSubscription>;
+
+function addEventListener(
+  event: 'linkClick',
+  callback: CheckoutLinkClickEventCallback,
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(

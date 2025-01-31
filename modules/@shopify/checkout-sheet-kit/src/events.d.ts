@@ -110,3 +110,7 @@ namespace CheckoutCompletedEvent {
 export interface CheckoutCompletedEvent {
   orderDetails: CheckoutCompletedEvent.OrderDetails;
 }
+
+export interface CheckoutLinkClickEvent {
+  url: string;
+}

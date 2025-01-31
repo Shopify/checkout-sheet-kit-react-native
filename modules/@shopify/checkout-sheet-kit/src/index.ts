@@ -26,6 +26,7 @@ import {
   NativeEventEmitter,
   PermissionsAndroid,
   Platform,
+  Linking,
 } from 'react-native';
 import type {
   EmitterSubscription,
@@ -54,7 +55,7 @@ import {
   GenericError,
 } from './errors.d';
 import {CheckoutErrorCode} from './errors.d';
-import type {CheckoutCompletedEvent} from './events.d';
+import type {CheckoutCompletedEvent, CheckoutLinkClickEvent} from './events.d';
 import type {CustomEvent, PixelEvent, StandardEvent} from './pixels.d';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
@@ -76,6 +77,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   );
 
   private features: Features;
+  private linkClickCallback: Maybe<EventSubscription>;
   private geolocationCallback: Maybe<EventSubscription>;
 
   /**
@@ -99,6 +101,8 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     ) {
       this.subscribeToGeolocationRequestPrompts();
     }
+
+    this.subscribeToLinkClicks();
   }
 
   public readonly version: string = RNShopifyCheckoutSheetKit.version;
@@ -172,6 +176,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
       case 'completed':
         eventCallback = this.interceptEventEmission('completed', callback);
         break;
+      case 'linkClick':
+        eventCallback = this.interceptEventEmission('linkClick', callback);
+        break;
       case 'error':
         eventCallback = this.interceptEventEmission(
           'error',
@@ -239,6 +246,20 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
         const coarseOrFineGrainAccessGranted = await this.requestGeolocation();
 
         this.initiateGeolocationRequest(coarseOrFineGrainAccessGranted);
+      },
+    );
+  }
+
+  private subscribeToLinkClicks() {
+    this.linkClickCallback = this.addEventListener(
+      'linkClick',
+      async (event: CheckoutLinkClickEvent) => {
+        const {url} = event;
+        const canOpenUrl = await Linking.canOpenURL(url);
+
+        if (canOpenUrl) {
+          await Linking.openURL(url);
+        }
       },
     );
   }
