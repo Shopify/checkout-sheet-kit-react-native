@@ -49,7 +49,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	}
 
 	override func supportedEvents() -> [String]! {
-		return ["close", "completed", "error", "pixel"]
+		return ["close", "completed", "error", "pixel", "linkClick"]
 	}
 
 	override func startObserving() {
@@ -65,6 +65,13 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 			self.sendEvent(withName: "completed", body: encodeToJSON(from: event))
 		}
 	}
+
+ func checkoutDidClickLink(url: URL) {
+   if hasListeners {
+      let event: [String: String] = ["url": url.absoluteString]
+      self.sendEvent(withName: "linkClick", body: encodeToJSON(from: event))
+   }
+ }
 
 	func shouldRecoverFromError(error: CheckoutError) -> Bool {
 		return error.isRecoverable
