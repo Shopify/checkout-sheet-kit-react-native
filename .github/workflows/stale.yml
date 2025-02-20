@@ -33,3 +33,4 @@ jobs:
             recent activity. Please re-open it if it is still relevant.
           stale-pr-message: 'Stale pull request message'
           stale-pr-label: 'stale'
+          exempt-issue-labels: 'never-stale,do-not-close,do-not-mark-as-stale'
