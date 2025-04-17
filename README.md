@@ -189,7 +189,7 @@ checkout URL. The most common way is to use the
 [Storefront GraphQL API](https://shopify.dev/docs/api/storefront), to create a
 cart, add line items, and retrieve a
 [checkoutUrl](https://shopify.dev/docs/api/storefront/2023-10/objects/Cart#field-cart-checkouturl)
-value.
+value. Alternatively, a [cart permalink](https://help.shopify.com/en/manual/products/details/cart-permalink) can be provided.
 
 You can use any GraphQL client to accomplish this - but as an example, our
 [sample app](./sample) uses Apollo.
@@ -646,8 +646,7 @@ For behavioural monitoring,
 ["standard"](https://shopify.dev/docs/api/web-pixels-api/standard-events) and
 ["custom"](https://shopify.dev/docs/api/web-pixels-api#custom-web-pixels) Web
 Pixel events will be relayed back to your application through the `"pixel"`
-event listener. The responsibility then falls on the application developer to
-ensure adherence to Apple's privacy policy and local regulations like GDPR and
+event listener. App developers should only subscribe to pixel events if they have proper levels of consent from merchants/buyers and are responsible for adherence to Apple's privacy policy and local regulations like GDPR and
 ePrivacy directive before disseminating these events to first-party and
 third-party systems.
 
