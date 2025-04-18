@@ -268,15 +268,16 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		}
 	}
 
-	private func encodeToJSON(from value: Codable) -> [String: Any] {
-		let encoder = JSONEncoder()
+	private let jsonEncoder = JSONEncoder()
 
+	private func encodeToJSON(from value: Codable) -> [String: Any] {
 		do {
-			let jsonData = try encoder.encode(value)
+			let jsonData = try jsonEncoder.encode(value)
 			if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
 				return jsonObject
 			}
 		} catch {
+			// Consider using a logging framework here
 			print("Error encoding to JSON object: \(error)")
 		}
 		return [:]
@@ -317,27 +318,36 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 }
 
 extension UIColor {
-	convenience init(hex: String) {
-		let hexString: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-		let start = hexString.index(hexString.startIndex, offsetBy: hexString.hasPrefix("#") ? 1 : 0)
-		let hexColor = String(hexString[start...])
+    private static var colorCache = [String: UIColor]()
 
-		let scanner = Scanner(string: hexColor)
-		var hexNumber: UInt64 = 0
+    convenience init(hex: String) {
+        if let cachedColor = UIColor.colorCache[hex] {
+            self.init(cgColor: cachedColor.cgColor)
+            return
+        }
 
-		if scanner.scanHexInt64(&hexNumber) {
-			let red = (hexNumber & 0xff0000) >> 16
-			let green = (hexNumber & 0x00ff00) >> 8
-			let blue = hexNumber & 0x0000ff
+        let hexString: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        let start = hexString.index(hexString.startIndex, offsetBy: hexString.hasPrefix("#") ? 1 : 0)
+        let hexColor = String(hexString[start...])
 
-			self.init(
-				red: CGFloat(red) / 0xff,
-				green: CGFloat(green) / 0xff,
-				blue: CGFloat(blue) / 0xff,
-				alpha: 1
-			)
-		} else {
-			self.init(red: 0, green: 0, blue: 0, alpha: 1)
-		}
-	}
+        let scanner = Scanner(string: hexColor)
+        var hexNumber: UInt64 = 0
+
+        if scanner.scanHexInt64(&hexNumber) {
+            let red = (hexNumber & 0xff0000) >> 16
+            let green = (hexNumber & 0x00ff00) >> 8
+            let blue = hexNumber & 0x0000ff
+
+            let color = UIColor(
+                red: CGFloat(red) / 0xff,
+                green: CGFloat(green) / 0xff,
+                blue: CGFloat(blue) / 0xff,
+                alpha: 1
+            )
+            UIColor.colorCache[hex] = color
+            self.init(cgColor: color.cgColor)
+        } else {
+            self.init(red: 0, green: 0, blue: 0, alpha: 1)
+        }
+    }
 }
