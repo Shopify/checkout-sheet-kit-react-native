@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.2.0 - April 18, 2025
+
+- Reusing JSONEncoder from CheckoutSheetKitSwift to reduce function overhead
+- The UIColor extension now caches color instances to avoid redundant parsing of hex strings and creation of new UIColor objects
+
 ## 3.2.0 - December 18, 2024
 
 - Handle geolocation requests for Android devices
@@ -171,3 +176,5 @@ Updates the README on the NPM regsitry entry page.
 Initial publication of the `@shopify/checkout-sheet-kit` package.
 
 Please refer to the [Readme](./README.md) for setup intstructions and usage.
+
+
