@@ -277,7 +277,6 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 				return jsonObject
 			}
 		} catch {
-			// Consider using a logging framework here
 			print("Error encoding to JSON object: \(error)")
 		}
 		return [:]
