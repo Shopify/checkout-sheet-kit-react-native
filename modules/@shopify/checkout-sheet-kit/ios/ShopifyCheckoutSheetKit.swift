@@ -318,12 +318,16 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
 extension UIColor {
     private static var colorCache = [String: UIColor]()
+    private static let colorCacheQueue = DispatchQueue(label: "com.shopify.colorCacheQueue")
 
     convenience init(hex: String) {
-        if let cachedColor = UIColor.colorCache[hex] {
+        var cachedColor: UIColor?
+        UIColor.colorCacheQueue.sync {
+            cachedColor = UIColor.colorCache[hex]
+        }
+        if let cachedColor = cachedColor {
             self.init(cgColor: cachedColor.cgColor)
             return
-        }
 
         let hexString: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         let start = hexString.index(hexString.startIndex, offsetBy: hexString.hasPrefix("#") ? 1 : 0)
