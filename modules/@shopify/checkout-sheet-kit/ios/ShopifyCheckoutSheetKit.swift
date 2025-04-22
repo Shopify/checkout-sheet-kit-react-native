@@ -268,10 +268,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		}
 	}
 
-	private let jsonEncoder = JSONEncoder()
 
 	private func encodeToJSON(from value: Codable) -> [String: Any] {
 		do {
+			let jsonEncoder = JSONEncoder()
 			let jsonData = try jsonEncoder.encode(value)
 			if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
 				return jsonObject
