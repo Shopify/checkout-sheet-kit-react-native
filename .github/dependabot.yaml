@@ -1,6 +1,43 @@
 version: 2
 updates:
+  # GitHub Actions
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: weekly
+
+  # Root package.json (monorepo dependencies)
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: daily
+
+  # Checkout Sheet Kit module dependencies
+  - package-ecosystem: npm
+    directory: "/modules/@shopify/checkout-sheet-kit"
+    schedule:
+      interval: daily
+
+  # Sample app dependencies
+  - package-ecosystem: npm
+    directory: "/sample"
+    schedule:
+      interval: daily
+
+  # iOS dependencies (Bundler/CocoaPods via Gemfile)
+  - package-ecosystem: bundler
+    directory: "/sample"
+    schedule:
+      interval: daily
+
+  # Android dependencies (Gradle) - Sample app
+  - package-ecosystem: gradle
+    directory: "/sample/android"
+    schedule:
+      interval: daily
+
+  # Android dependencies (Gradle) - Module
+  - package-ecosystem: gradle
+    directory: "/modules/@shopify/checkout-sheet-kit/android"
+    schedule:
+      interval: daily
