@@ -9228,15 +9228,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-config@npm:^1.5.3":
-  version: 1.5.3
-  resolution: "react-native-config@npm:1.5.3"
+"react-native-config@npm:^1.5.5":
+  version: 1.5.5
+  resolution: "react-native-config@npm:1.5.5"
   peerDependencies:
     react-native-windows: ">=0.61"
   peerDependenciesMeta:
     react-native-windows:
       optional: true
-  checksum: 10c0/98e4659191881a72bf756efa469debe90b84ba5f366489dbdebabd45b4f9ec5b05f116db5bdf181c5c688b759c5bc60365b675ff7446b10216056cef15b5ce3b
+  checksum: 10c0/8fa0b1202b9a7daee4c41ef95baa7adc70fdcaeb4d604dace9ff0c47963d96879b66720cc4e77557a99dacd71453ac99c4607bc2a24ea37e274c4d6d39dab18e
   languageName: node
   linkType: hard
 
@@ -9846,7 +9846,7 @@ __metadata:
     babel-plugin-module-resolver: "npm:^5.0.0"
     graphql: "npm:^16.8.1"
     jotai: "npm:^2.6.0"
-    react-native-config: "npm:^1.5.3"
+    react-native-config: "npm:^1.5.5"
     react-native-reanimated: "npm:^3.16.1"
     react-native-safe-area-context: "npm:^4.14.0"
     react-native-screens: "npm:^4.1.0"
