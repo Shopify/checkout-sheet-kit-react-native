@@ -124,8 +124,8 @@ dependencies {
 
     // Test dependencies
     testImplementation "junit:junit:4.13.2"
-    testImplementation "org.mockito:mockito-core:4.11.0"
-    androidTestImplementation "org.mockito:mockito-android:4.11.0"
+    testImplementation "org.mockito:mockito-core:5.18.0"
+    androidTestImplementation "org.mockito:mockito-android:5.18.0"
     testImplementation "org.mockito:mockito-inline:5.2.0"
     testImplementation "org.assertj:assertj-core:3.27.3"
     testImplementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
