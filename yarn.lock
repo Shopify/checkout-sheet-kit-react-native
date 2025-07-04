@@ -1170,6 +1170,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/plugin-transform-arrow-functions@npm:^7.27.1":
+  version: 7.27.1
+  resolution: "@babel/plugin-transform-arrow-functions@npm:7.27.1"
+  dependencies:
+    "@babel/helper-plugin-utils": "npm:^7.27.1"
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 10c0/19abd7a7d11eef58c9340408a4c2594503f6c4eaea1baa7b0e5fbdda89df097e50663edb3448ad2300170b39efca98a75e5767af05cad3b0facb4944326896a3
+  languageName: node
+  linkType: hard
+
 "@babel/plugin-transform-async-generator-functions@npm:^7.23.3":
   version: 7.23.4
   resolution: "@babel/plugin-transform-async-generator-functions@npm:7.23.4"
@@ -10605,7 +10616,7 @@ __metadata:
     "@babel/core": "npm:^7.20.0"
     "@babel/plugin-proposal-nullish-coalescing-operator": "npm:^7.18.6"
     "@babel/plugin-proposal-optional-chaining": "npm:^7.21.0"
-    "@babel/plugin-transform-arrow-functions": "npm:^7.23.3"
+    "@babel/plugin-transform-arrow-functions": "npm:^7.27.1"
     "@babel/plugin-transform-shorthand-properties": "npm:^7.23.3"
     "@babel/plugin-transform-template-literals": "npm:^7.23.3"
     "@babel/preset-env": "npm:^7.20.0"
