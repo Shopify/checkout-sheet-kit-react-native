@@ -67,7 +67,7 @@ const config: Configuration = {
     ios: {
       backgroundColor: '#f0f0e8',
       tintColor: '#2d2a38',
-      closeButtonColor: '#f0f0e8',
+      closeButtonColor: '#2d2a38',
     },
     android: {
       backgroundColor: '#f0f0e8',
@@ -172,7 +172,11 @@ function AppWithContext({children}: PropsWithChildren) {
     });
 
     const pixel = shopify.addEventListener('pixel', (event: PixelEvent) => {
-      console.log('[CheckoutPixelEvent]', event.name, JSON.stringify(event, null, 2));
+      console.log(
+        '[CheckoutPixelEvent]',
+        event.name,
+        JSON.stringify(event, null, 2),
+      );
     });
 
     const completed = shopify.addEventListener(
