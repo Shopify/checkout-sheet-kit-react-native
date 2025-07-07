@@ -194,10 +194,17 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
       return false;
     }
 
-    String[] colorKeys = { "backgroundColor", "progressIndicator", "headerTextColor", "headerBackgroundColor" };
+    String[] requiredColorKeys = { "backgroundColor", "progressIndicator", "headerTextColor", "headerBackgroundColor" };
 
-    for (String key : colorKeys) {
+    for (String key : requiredColorKeys) {
       if (!config.hasKey(key) || config.getString(key) == null || parseColor(config.getString(key)) == null) {
+        return false;
+      }
+    }
+
+    // closeButtonColor is optional, so we only validate it if it's present
+    if (config.hasKey("closeButtonColor") && config.getString("closeButtonColor") != null) {
+      if (parseColor(config.getString("closeButtonColor")) == null) {
         return false;
       }
     }
@@ -242,13 +249,17 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     Color headerBackground = parseColorFromConfig(config, "headerBackgroundColor");
     Color headerFont = parseColorFromConfig(config, "headerTextColor");
     Color progressIndicator = parseColorFromConfig(config, "progressIndicator");
+    Color closeButtonColor = parseColorFromConfig(config, "closeButtonColor");
 
     if (webViewBackground != null && progressIndicator != null && headerFont != null && headerBackground != null) {
       return new Colors(
           webViewBackground,
           headerBackground,
           headerFont,
-          progressIndicator);
+          progressIndicator,
+          null,
+          closeButtonColor
+        );
     }
 
     return null;

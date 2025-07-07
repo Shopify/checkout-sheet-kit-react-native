@@ -56,6 +56,10 @@ export interface IosColors {
    * A HEX color value for customizing the background color of the webview.
    */
   backgroundColor?: string;
+  /**
+   * A HEX color value for customizing the color of the close button.
+   */
+  closeButtonColor?: string;
 }
 
 export interface AndroidColors {
@@ -75,6 +79,10 @@ export interface AndroidColors {
    * A HEX color value for customizing the text color of the webview header.
    */
   headerTextColor: string;
+  /**
+   * A HEX color value for customizing the color of the close button.
+   */
+  closeButtonColor?: string;
 }
 
 export interface AndroidAutomaticColors {

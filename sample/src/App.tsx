@@ -67,12 +67,14 @@ const config: Configuration = {
     ios: {
       backgroundColor: '#f0f0e8',
       tintColor: '#2d2a38',
+      closeButtonColor: '#2d2a38',
     },
     android: {
       backgroundColor: '#f0f0e8',
       progressIndicator: '#2d2a38',
       headerBackgroundColor: '#f0f0e8',
       headerTextColor: '#2d2a38',
+      closeButtonColor: '#2d2a38',
     },
   },
 };
@@ -170,14 +172,18 @@ function AppWithContext({children}: PropsWithChildren) {
     });
 
     const pixel = shopify.addEventListener('pixel', (event: PixelEvent) => {
-      console.log('[CheckoutPixelEvent]', event.name, event);
+      console.log(
+        '[CheckoutPixelEvent]',
+        event.name,
+        JSON.stringify(event, null, 2),
+      );
     });
 
     const completed = shopify.addEventListener(
       'completed',
       (event: CheckoutCompletedEvent) => {
         console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
-        console.log('[CheckoutCompletedEvent]', event);
+        console.log('[CheckoutCompletedEvent]', JSON.stringify(event, null, 2));
       },
     );
 
