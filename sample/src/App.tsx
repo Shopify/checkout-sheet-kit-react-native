@@ -172,14 +172,14 @@ function AppWithContext({children}: PropsWithChildren) {
     });
 
     const pixel = shopify.addEventListener('pixel', (event: PixelEvent) => {
-      console.log('[CheckoutPixelEvent]', event.name, event);
+      console.log('[CheckoutPixelEvent]', event.name, JSON.stringify(event, null, 2));
     });
 
     const completed = shopify.addEventListener(
       'completed',
       (event: CheckoutCompletedEvent) => {
         console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
-        console.log('[CheckoutCompletedEvent]', event);
+        console.log('[CheckoutCompletedEvent]', JSON.stringify(event, null, 2));
       },
     );
 
