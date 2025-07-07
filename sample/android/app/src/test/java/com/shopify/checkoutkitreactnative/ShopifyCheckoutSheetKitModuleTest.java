@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 import android.content.Context;
@@ -75,6 +76,18 @@ public class ShopifyCheckoutSheetKitModuleTest {
   private CheckoutSheetKitException mockCheckoutSheetKitException;
   @Mock
   private CheckoutException mockCheckoutException;
+
+  // Test constants for color configuration
+  private static final String BACKGROUND_COLOR = "#FFFFFF";
+  private static final String PROGRESS_INDICATOR = "#000000";
+  private static final String HEADER_BACKGROUND_COLOR = "#FFFFFF";
+  private static final String HEADER_TEXT_COLOR = "#000000";
+
+  // Dark theme colors
+  private static final String DARK_BACKGROUND_COLOR = "#000000";
+  private static final String DARK_PROGRESS_INDICATOR = "#FFFFFF";
+  private static final String DARK_HEADER_BACKGROUND_COLOR = "#000000";
+  private static final String DARK_HEADER_TEXT_COLOR = "#FFFFFF";
 
   @Before
   public void setup() {
@@ -127,6 +140,73 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     assertFalse(preloadingEnabled);
     assertEquals(colorScheme, "dark");
+  }
+
+  @Test
+  public void setsConfigWithCloseButtonColor() {
+    JavaOnlyMap androidColors = createLightAndroidColors();
+    androidColors.putString("closeButtonColor", "#FF0000");
+    JavaOnlyMap config = createConfigWithAndroidColors("light", androidColors);
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    String colorScheme = ShopifyCheckoutSheetKitModule.checkoutConfig.getColorScheme().getId();
+    assertEquals("light", colorScheme);
+  }
+
+  @Test
+  public void setsConfigWithMissingCloseButtonColor() {
+    // Missing closeButtonColor - should not crash
+    JavaOnlyMap androidColors = createLightAndroidColors();
+    JavaOnlyMap config = createConfigWithAndroidColors("light", androidColors);
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    String colorScheme = ShopifyCheckoutSheetKitModule.checkoutConfig.getColorScheme().getId();
+    assertEquals("light", colorScheme);
+  }
+
+  @Test
+  public void setsConfigWithInvalidCloseButtonColor() {
+    JavaOnlyMap androidColors = createLightAndroidColors();
+    androidColors.putString("closeButtonColor", "invalid-color");
+    JavaOnlyMap config = createConfigWithAndroidColors("light", androidColors);
+
+    // The method should not throw an exception when given invalid close button color
+    try {
+      shopifyCheckoutSheetKitModule.setConfig(config);
+    } catch (Exception e) {
+      fail("setConfig should not throw exception for invalid close button color: " + e.getMessage());
+    }
+
+    // Verify the color scheme was set correctly despite invalid close button color
+    String colorScheme = ShopifyCheckoutSheetKitModule.checkoutConfig.getColorScheme().getId();
+    assertEquals("light", colorScheme);
+  }
+
+  @Test
+  public void setsAutomaticConfigWithCloseButtonColors() {
+    JavaOnlyMap lightColors = createLightAndroidColors();
+    lightColors.putString("closeButtonColor", "#000000");
+
+    JavaOnlyMap darkColors = createDarkAndroidColors();
+    darkColors.putString("closeButtonColor", "#FFFFFF");
+
+    JavaOnlyMap androidColors = new JavaOnlyMap();
+    androidColors.putMap("light", lightColors);
+    androidColors.putMap("dark", darkColors);
+
+    JavaOnlyMap colorsConfig = new JavaOnlyMap();
+    colorsConfig.putMap("android", androidColors);
+
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putString("colorScheme", "automatic");
+    config.putMap("colors", colorsConfig);
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    String colorScheme = ShopifyCheckoutSheetKitModule.checkoutConfig.getColorScheme().getId();
+    assertEquals("automatic", colorScheme);
   }
 
   @Test
@@ -294,5 +374,38 @@ public class ShopifyCheckoutSheetKitModuleTest {
     assertTrue(capturedString.contains("\"message\":\"General Checkout Error\""));
     assertTrue(capturedString.contains("\"code\":\"unknown\""));
     assertTrue(capturedString.contains("\"recoverable\":true"));
+  }
+
+  // Helper methods
+
+  private JavaOnlyMap createLightAndroidColors() {
+    JavaOnlyMap androidColors = new JavaOnlyMap();
+    androidColors.putString("backgroundColor", BACKGROUND_COLOR);
+    androidColors.putString("progressIndicator", PROGRESS_INDICATOR);
+    androidColors.putString("headerBackgroundColor", HEADER_BACKGROUND_COLOR);
+    androidColors.putString("headerTextColor", HEADER_TEXT_COLOR);
+    return androidColors;
+  }
+
+  private JavaOnlyMap createDarkAndroidColors() {
+    JavaOnlyMap androidColors = new JavaOnlyMap();
+    androidColors.putString("backgroundColor", DARK_BACKGROUND_COLOR);
+    androidColors.putString("progressIndicator", DARK_PROGRESS_INDICATOR);
+    androidColors.putString("headerBackgroundColor", DARK_HEADER_BACKGROUND_COLOR);
+    androidColors.putString("headerTextColor", DARK_HEADER_TEXT_COLOR);
+    return androidColors;
+  }
+
+  /**
+   * Creates a configuration with the given color scheme and Android colors
+   */
+  private JavaOnlyMap createConfigWithAndroidColors(String colorScheme, JavaOnlyMap androidColors) {
+    JavaOnlyMap colorsConfig = new JavaOnlyMap();
+    colorsConfig.putMap("android", androidColors);
+
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putString("colorScheme", colorScheme);
+    config.putMap("colors", colorsConfig);
+    return config;
   }
 }

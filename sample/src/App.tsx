@@ -67,12 +67,14 @@ const config: Configuration = {
     ios: {
       backgroundColor: '#f0f0e8',
       tintColor: '#2d2a38',
+      closeButtonColor: '#f0f0e8',
     },
     android: {
       backgroundColor: '#f0f0e8',
       progressIndicator: '#2d2a38',
       headerBackgroundColor: '#f0f0e8',
       headerTextColor: '#2d2a38',
+      closeButtonColor: '#2d2a38',
     },
   },
 };

@@ -109,12 +109,14 @@ function SettingsScreen() {
               progressIndicator: lightColors.webViewProgressIndicator,
               headerBackgroundColor: lightColors.webviewBackgroundColor,
               headerTextColor: lightColors.webviewHeaderTextColor,
+              closeButtonColor: lightColors.webviewCloseButtonColor,
             },
             dark: {
               backgroundColor: darkColors.webviewBackgroundColor,
               progressIndicator: darkColors.webViewProgressIndicator,
               headerBackgroundColor: darkColors.webviewBackgroundColor,
               headerTextColor: darkColors.webviewHeaderTextColor,
+              closeButtonColor: darkColors.webviewCloseButtonColor,
             },
           },
         },
@@ -126,12 +128,14 @@ function SettingsScreen() {
           ios: {
             backgroundColor: updatedColors.webviewBackgroundColor,
             tintColor: updatedColors.webViewProgressIndicator,
+            closeButtonColor: updatedColors.webviewCloseButtonColor,
           },
           android: {
             backgroundColor: updatedColors.webviewBackgroundColor,
             progressIndicator: updatedColors.webViewProgressIndicator,
             headerBackgroundColor: updatedColors.webviewBackgroundColor,
             headerTextColor: updatedColors.webviewHeaderTextColor,
+            closeButtonColor: updatedColors.webviewCloseButtonColor,
           },
         },
       });
