@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.2.1 - Jul 4, 2025
+## 3.3.0 - Jul 7, 2025
 
 - Upgrades Swift dependency to 3.3.0
 - Upgrades Android dependency to 3.5.0
