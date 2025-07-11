@@ -46,7 +46,7 @@
     "@babel/plugin-transform-shorthand-properties": "^7.23.3",
     "@babel/plugin-transform-template-literals": "^7.23.3",
     "@babel/preset-env": "^7.20.0",
-    "@babel/runtime": "^7.20.0",
+    "@babel/runtime": "^7.27.6",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native/babel-preset": "^0.74.83",
     "@react-native/metro-config": "^0.73.3",
