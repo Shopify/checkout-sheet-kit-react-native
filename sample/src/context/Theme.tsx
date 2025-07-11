@@ -170,7 +170,9 @@ export const ThemeProvider: React.FC<
     useState<ColorScheme>(defaultValue);
 
   const setColorScheme = useCallback((colorScheme: ColorScheme) => {
-    if (colorScheme !== ColorScheme.automatic) {
+    if (colorScheme === ColorScheme.automatic) {
+      Appearance.setColorScheme(null);
+    } else {
       Appearance.setColorScheme(
         colorScheme === ColorScheme.dark ? 'dark' : 'light',
       );

@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import type {PropsWithChildren, ReactNode} from 'react';
 import React, {useEffect, useState} from 'react';
-import {Appearance, Linking, StatusBar} from 'react-native';
+import {Linking, StatusBar} from 'react-native';
 import {
   Link,
   NavigationContainer,
@@ -76,8 +76,6 @@ const config: Configuration = {
     },
   },
 };
-
-Appearance.setColorScheme('light');
 
 export type RootStackParamList = {
   Catalog: undefined;
