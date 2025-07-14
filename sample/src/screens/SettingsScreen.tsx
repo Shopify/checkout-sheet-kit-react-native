@@ -33,6 +33,7 @@ import {
   View,
 } from 'react-native';
 import pkg from '../../../package.json';
+import Config from 'react-native-config';
 import {useConfig} from '../context/Config';
 import {
   ColorScheme,
@@ -219,6 +220,16 @@ function SettingsScreen() {
         title: 'App version',
         type: SectionType.Text,
         value: pkg.version,
+      },
+      {
+        title: 'Storefront Domain',
+        type: SectionType.Text,
+        value: Config.STOREFRONT_DOMAIN || 'undefined',
+      },
+      {
+        title: 'Storefront Access Token (last 4)',
+        type: SectionType.Text,
+        value: Config.STOREFRONT_ACCESS_TOKEN?.slice(-4) || 'undefined',
       },
     ],
     [ShopifyCheckout.version],

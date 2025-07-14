@@ -33,7 +33,7 @@ import {
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
-import env from 'react-native-config';
+import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Entypo';
 
 import CatalogScreen from './screens/CatalogScreen';
@@ -94,11 +94,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const cache = new InMemoryCache();
 
 const client = new ApolloClient({
-  uri: `https://${env.STOREFRONT_DOMAIN}/api/${env.STOREFRONT_VERSION}/graphql.json`,
+  uri: `https://${Config.STOREFRONT_DOMAIN}/api/${Config.STOREFRONT_VERSION}/graphql.json`,
   cache,
   headers: {
     'Content-Type': 'application/json',
-    'X-Shopify-Storefront-Access-Token': env.STOREFRONT_ACCESS_TOKEN ?? '',
+    'X-Shopify-Storefront-Access-Token': Config.STOREFRONT_ACCESS_TOKEN ?? '',
   },
   connectToDevTools: true,
 });
