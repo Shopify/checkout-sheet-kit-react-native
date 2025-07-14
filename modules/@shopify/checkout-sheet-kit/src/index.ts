@@ -21,6 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+import './types.d';
+
 import {
   NativeModules,
   NativeEventEmitter,
@@ -363,9 +365,15 @@ function isCustomPixelEvent(event: PixelEvent): event is CustomEvent {
 }
 
 export class LifecycleEventParseError extends Error {
+  cause?: unknown;
+
   constructor(message?: string, options?: ErrorOptions) {
-    super(message, options);
+    super(message);
     this.name = 'LifecycleEventParseError';
+
+    if (options?.cause) {
+      this.cause = options.cause;
+    }
 
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, LifecycleEventParseError);

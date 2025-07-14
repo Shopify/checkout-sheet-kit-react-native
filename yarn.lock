@@ -4432,6 +4432,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native/virtualized-lists@npm:^0.72.4":
+  version: 0.72.8
+  resolution: "@react-native/virtualized-lists@npm:0.72.8"
+  dependencies:
+    invariant: "npm:^2.2.4"
+    nullthrows: "npm:^1.1.1"
+  peerDependencies:
+    react-native: "*"
+  checksum: 10c0/1fe43afeacf5aacec270d7f64b9ce6c69afe1c65d1e487fff75e647d1f57114527f2223602d546b95fc982b348a6f1773db66184a2e90ba434f4f013f3991bac
+  languageName: node
+  linkType: hard
+
 "@react-navigation/bottom-tabs@npm:^6.5.11":
   version: 6.5.11
   resolution: "@react-navigation/bottom-tabs@npm:6.5.11"
@@ -4778,10 +4790,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*":
-  version: 15.7.11
-  resolution: "@types/prop-types@npm:15.7.11"
-  checksum: 10c0/e53423cf9d510515ef8b47ff42f4f1b65a7b7b37c8704e2dbfcb9a60defe0c0e1f3cb1acfdeb466bad44ca938d7c79bffdd51b48ffb659df2432169d0b27a132
+"@types/react-dom@npm:^19.0.0":
+  version: 19.1.6
+  resolution: "@types/react-dom@npm:19.1.6"
+  peerDependencies:
+    "@types/react": ^19.0.0
+  checksum: 10c0/7ba74eee2919e3f225e898b65fdaa16e54952aaf9e3472a080ddc82ca54585e46e60b3c52018d21d4b7053f09d27b8293e9f468b85f9932ff452cd290cc131e8
   languageName: node
   linkType: hard
 
@@ -4811,6 +4825,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-native@npm:^0.72.8":
+  version: 0.72.8
+  resolution: "@types/react-native@npm:0.72.8"
+  dependencies:
+    "@react-native/virtualized-lists": "npm:^0.72.4"
+    "@types/react": "npm:*"
+  checksum: 10c0/2dde171c2331ac8f6102f9b7a88616c695d158d3140e7b7aee3a393e3645f2aaa202b3411ae371fbbcd28386459fca8d47bd5d3801a0adfdd8815a8ba5c0d5fe
+  languageName: node
+  linkType: hard
+
 "@types/react-test-renderer@npm:^19.0.0":
   version: 19.1.0
   resolution: "@types/react-test-renderer@npm:19.1.0"
@@ -4820,30 +4844,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*":
-  version: 18.2.38
-  resolution: "@types/react@npm:18.2.38"
-  dependencies:
-    "@types/prop-types": "npm:*"
-    "@types/scheduler": "npm:*"
-    csstype: "npm:^3.0.2"
-  checksum: 10c0/56edd4756081b677e38ee23ad6d340658c5e2468785cb20968318cec357e1ea7ccf3ecd9534981741192dd1b894200acfaf0f1551b4795c6077668f6afc19345
-  languageName: node
-  linkType: hard
-
 "@types/react@npm:^19.0.0":
   version: 19.1.8
   resolution: "@types/react@npm:19.1.8"
   dependencies:
     csstype: "npm:^3.0.2"
   checksum: 10c0/4908772be6dc941df276931efeb0e781777fa76e4d5d12ff9f75eb2dcc2db3065e0100efde16fde562c5bafa310cc8f50c1ee40a22640459e066e72cd342143e
-  languageName: node
-  linkType: hard
-
-"@types/scheduler@npm:*":
-  version: 0.16.7
-  resolution: "@types/scheduler@npm:0.16.7"
-  checksum: 10c0/e7d738400618f380d050f91b65a0232be7f2d4d2a68bf5c3ec3c901b359181a6a09b9a0d21c2ee66e534727c87b7c8ae166819b03990cdc7658c190cdf6401da
   languageName: node
   linkType: hard
 
@@ -10956,6 +10962,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-dom@npm:19.0.0":
+  version: 19.0.0
+  resolution: "react-dom@npm:19.0.0"
+  dependencies:
+    scheduler: "npm:^0.25.0"
+  peerDependencies:
+    react: ^19.0.0
+  checksum: 10c0/a36ce7ab507b237ae2759c984cdaad4af4096d8199fb65b3815c16825e5cfeb7293da790a3fc2184b52bfba7ba3ff31c058c01947aff6fd1a3701632aabaa6a9
+  languageName: node
+  linkType: hard
+
 "react-freeze@npm:^1.0.0":
   version: 1.0.3
   resolution: "react-freeze@npm:1.0.3"
@@ -11639,10 +11656,16 @@ __metadata:
     "@react-navigation/native-stack": "npm:^6.9.17"
     "@react-navigation/stack": "npm:^6.3.21"
     "@shopify/checkout-sheet-kit": "link:../modules/@shopify/checkout-sheet-kit"
+    "@types/react": "npm:^19.0.0"
+    "@types/react-dom": "npm:^19.0.0"
+    "@types/react-native": "npm:^0.72.8"
     "@types/react-native-vector-icons": "npm:^6.4.18"
     babel-plugin-module-resolver: "npm:^5.0.0"
     graphql: "npm:^16.8.1"
     jotai: "npm:^2.12.5"
+    react: "npm:19.0.0"
+    react-dom: "npm:19.0.0"
+    react-native: "npm:0.78.3"
     react-native-config: "npm:^1.5.5"
     react-native-reanimated: "npm:^3.16.1"
     react-native-safe-area-context: "npm:^4.14.0"
