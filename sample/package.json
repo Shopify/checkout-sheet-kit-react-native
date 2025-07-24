@@ -27,7 +27,7 @@
     "graphql": "^16.8.1",
     "jotai": "^2.12.5",
     "react-native-config": "^1.5.5",
-    "react-native-reanimated": "^3.16.1",
+    "react-native-reanimated": "^4.0.0",
     "react-native-safe-area-context": "^4.14.0",
     "react-native-screens": "^4.1.0",
     "react-native-vector-icons": "^10.2.0"
