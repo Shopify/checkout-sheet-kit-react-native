@@ -21,7 +21,7 @@
     "@react-native-community/cli-platform-ios": "^12.3.0",
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.10",
-    "@react-navigation/native-stack": "^6.9.17",
+    "@react-navigation/native-stack": "^7.3.23",
     "@react-navigation/stack": "^6.3.21",
     "@shopify/checkout-sheet-kit": "link:../modules/@shopify/checkout-sheet-kit",
     "graphql": "^16.8.1",
