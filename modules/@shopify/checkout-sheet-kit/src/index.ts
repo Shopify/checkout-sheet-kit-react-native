@@ -381,6 +381,12 @@ export {
   useShopifyCheckoutSheet,
 };
 
+// New React Component API
+export {default as ShopifyCheckout} from './ShopifyCheckout';
+export type {ShopifyCheckoutProps, ShopifyCheckoutRef} from './ShopifyCheckout';
+export {registerWebViewPlugin, isWebViewAvailable} from './ShopifyCheckout';
+export type {WebViewPlugin} from './ShopifyCheckout';
+
 // Error classes
 export {
   CheckoutClientError,
