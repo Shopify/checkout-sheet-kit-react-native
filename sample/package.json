@@ -19,7 +19,7 @@
   "dependencies": {
     "@apollo/client": "^3.8.9",
     "@react-native-community/cli-platform-ios": "^12.3.0",
-    "@react-navigation/bottom-tabs": "^6.5.11",
+    "@react-navigation/bottom-tabs": "^7.4.5",
     "@react-navigation/native": "^6.1.10",
     "@react-navigation/native-stack": "^6.9.17",
     "@react-navigation/stack": "^6.3.21",
