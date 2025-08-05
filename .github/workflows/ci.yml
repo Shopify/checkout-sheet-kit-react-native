@@ -87,7 +87,7 @@ jobs:
 
       - name: Run Android tests
         env:
-          GRADLE_OPTS: -Xmx4g
+          GRADLE_OPTS: -Xmx6g
         run: |
           echo "STOREFRONT_DOMAIN=\"myshopify.com\"" > sample/.env
           yarn module build
