@@ -1,11 +1,11 @@
-# Shopify Checkout Sheet Kit - React Native
+# Shopify Checkout Kit - React Native
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/LICENSE)
 [![GitHub Release](https://img.shields.io/github/release/shopify/checkout-sheet-kit-react-native.svg?style=flat)]()
 
-![image](https://github.com/Shopify/checkout-sheet-kit-react-native/assets/2034704/73246cc6-bd39-4130-a7df-69b06907b897)
+<img width="3200" height="800" alt="gradients" src="https://github.com/user-attachments/assets/156492b7-5a64-43d2-b574-2e8f29ed8780" />
 
-**Shopify Checkout Sheet Kit** is a Native Module that enables React Native apps
+**Shopify Checkout Kit** is a Native Module that enables React Native apps
 to provide the world’s highest converting, customizable, one-page checkout
 within the app. The presented experience is a fully-featured checkout that
 preserves all of the store customizations: Checkout UI extensions, Functions,
@@ -13,8 +13,10 @@ branding, and more. It also provides platform idiomatic defaults such as support
 for light and dark mode, and convenient developer APIs to embed, customize, and
 follow the lifecycle of the checkout experience.
 
+Note: We're in the process of renaming "Checkout Sheet Kit" to "Checkout Kit." The dev docs and README already use the new name, while the package itself will be updated in an upcoming version.
+
 Check out our blog to
-[learn how and why we built the Shopify Checkout Sheet Kit](https://www.shopify.com/partners/blog/mobile-checkout-sdks-for-ios-and-android).
+[learn how and why we built the Shopify Checkout Kit](https://www.shopify.com/partners/blog/mobile-checkout-sdks-for-ios-and-android).
 
 The React Native SDK is part of
 [Shopify's Mobile Kit](https://shopify.dev/docs/custom-storefronts/mobile-kit)
@@ -70,14 +72,14 @@ experiences.
 
 ## Getting Started
 
-Shopify Checkout Sheet Kit is an open-source NPM package.
+Shopify Checkout Kit is an open-source NPM package.
 
 Use the following steps to get started with adding it to your React Native
 application:
 
 ### 1. Installation
 
-Install the Shopify Checkout Sheet Kit package dependency:
+Install the Shopify Checkout Kit package dependency:
 
 ```sh
 yarn add @shopify/checkout-sheet-kit
@@ -767,7 +769,7 @@ Android differs to iOS in that permission requests must be handled in two places
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 ```
 
-The Checkout Sheet Kit native module will emit a `geolocationRequest` event when the webview requests geolocation
+The Checkout Kit native module will emit a `geolocationRequest` event when the webview requests geolocation
 information. By default, the kit will listen for this event and request access to both coarse and fine access when
 invoked.
 
@@ -840,4 +842,4 @@ See the [contributing documentation](CONTRIBUTING.md) for details on how to get 
 
 ## License
 
-Shopify's Checkout Sheet Kit is provided under an [MIT License](LICENSE).
+Shopify's Checkout Kit is provided under an [MIT License](LICENSE).
