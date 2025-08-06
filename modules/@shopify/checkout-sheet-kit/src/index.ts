@@ -41,6 +41,7 @@ import type {
   Features,
   GeolocationRequestEvent,
   Maybe,
+  PrivacyConsent,
   ShopifyCheckoutSheetKit,
 } from './index.d';
 import type {CheckoutException, CheckoutNativeError} from './errors.d';
@@ -404,5 +405,6 @@ export type {
   GeolocationRequestEvent,
   Features,
   PixelEvent,
+  PrivacyConsent,
   StandardEvent,
 };

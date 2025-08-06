@@ -125,6 +125,11 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     resultConfig.putBoolean("preloading", checkoutConfig.getPreloading().getEnabled());
     resultConfig.putString("colorScheme", colorSchemeToString(checkoutConfig.getColorScheme()));
 
+    WritableNativeMap privacyConsent = getPrivacyConsentMap();
+    if (privacyConsent != null) {
+      resultConfig.putMap("privacyConsent", privacyConsent);
+    }
+
     promise.resolve(resultConfig);
   }
 
@@ -156,6 +161,11 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
         }
 
         configuration.setColorScheme(colorScheme);
+      }
+
+      if (config.hasKey("privacyConsent")) {
+        ReadableMap privacyConsentConfig = config.getMap("privacyConsent");
+        setPrivacyConsent(configuration, privacyConsentConfig);
       }
 
       checkoutConfig = configuration;
@@ -304,5 +314,31 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
       System.out.println("Warning: Invalid color string. Default color will be used.");
       return null;
     }
+  }
+
+  private void setPrivacyConsent(Configuration configuration, ReadableMap privacyConsentConfig) {
+    if (privacyConsentConfig == null) {
+      return;
+    }
+
+    configuration.setPrivacyConsent(new PrivacyConsent(
+        privacyConsentConfig.getBoolean("marketing"),
+        privacyConsentConfig.getBoolean("analytics"),
+        privacyConsentConfig.getBoolean("preferences"),
+        privacyConsentConfig.getBoolean("saleOfData")
+      )
+    );
+  }
+
+  private WritableNativeMap getPrivacyConsentMap() {
+    PrivacyConsent consent = checkoutConfig.getPrivacyConsent();
+    WritableNativeMap result = new WritableNativeMap();
+
+    result.putBoolean("marketing", consent.getMarketing());
+    result.putBoolean("analytics", consent.getAnalytics());
+    result.putBoolean("preferences", consent.getPreferences());
+    result.putBoolean("saleOfData", consent.getSaleOfData());
+
+    return result;
   }
 }

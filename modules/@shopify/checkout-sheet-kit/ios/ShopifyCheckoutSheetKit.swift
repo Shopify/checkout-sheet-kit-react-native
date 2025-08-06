@@ -242,15 +242,20 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		if let backgroundColorHex = iosConfig?["backgroundColor"] as? String {
 			ShopifyCheckoutSheetKit.configuration.backgroundColor = UIColor(hex: backgroundColorHex)
 		}
+
+		if let privacyConsentConfig = configuration["privacyConsent"] as? [String: Any] {
+			setPrivacyConsent(privacyConsentConfig)
+		}
 	}
 
 	@objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
-		let config: [String: Any] = [
+		var config: [String: Any] = [
 			"title": ShopifyCheckoutSheetKit.configuration.title,
 			"preloading": ShopifyCheckoutSheetKit.configuration.preloading.enabled,
 			"colorScheme": ShopifyCheckoutSheetKit.configuration.colorScheme.rawValue,
 			"tintColor": ShopifyCheckoutSheetKit.configuration.tintColor,
-			"backgroundColor": ShopifyCheckoutSheetKit.configuration.backgroundColor
+			"backgroundColor": ShopifyCheckoutSheetKit.configuration.backgroundColor,
+			"privacyConsent": getPrivacyConsent()
 		]
 
 		resolve(config)
@@ -313,6 +318,35 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 			"timestamp": event.timestamp,
 			"type": "CUSTOM"
 		] as [String: Any]
+	}
+
+	private func setPrivacyConsent(_ privacyConsentConfig: [String: Any]) {
+		var privacyConsent = ShopifyCheckoutSheetKit.Configuration.PrivacyConsent()
+		if let marketing = privacyConsentConfig["marketing"] as? Bool, marketing {
+			privacyConsent.insert(.marketing)
+		}
+		if let analytics = privacyConsentConfig["analytics"] as? Bool, analytics {
+			privacyConsent.insert(.analytics)
+		}
+		if let preferences = privacyConsentConfig["preferences"] as? Bool, preferences {
+			privacyConsent.insert(.preferences)
+		}
+		if let saleOfData = privacyConsentConfig["saleOfData"] as? Bool, saleOfData {
+			privacyConsent.insert(.saleOfData)
+		}
+
+		ShopifyCheckoutSheetKit.configuration.privacyConsent = privacyConsent
+	}
+
+	private func getPrivacyConsent() -> [String: Any] {
+		guard let privacyConsent = ShopifyCheckoutSheetKit.configuration.privacyConsent else { return [] }
+
+		return [
+		    "marketing": privacyConsent.contains(.marketing),
+		    "analytics": privacyConsent.contains(.analytics),
+		    "preferences": privacyConsent.contains(.preferences),
+		    "saleOfData": privacyConsent.contains(.saleOfData)
+		]
 	}
 }
 

@@ -29,6 +29,28 @@ import type {CheckoutException} from './errors';
 export type Maybe<T> = T | undefined;
 
 /**
+ * Privacy consent signals that can be passed to the checkout
+ */
+export interface PrivacyConsent {
+  /**
+   * Consent for marketing communications
+   */
+  marketing?: boolean;
+  /**
+   * Consent for analytics and performance tracking
+   */
+  analytics?: boolean;
+  /**
+   * Consent for preference and customization data
+   */
+  preferences?: boolean;
+  /**
+   * Consent for sending data to third parties to perform marketing, attribution, and targeted advertising
+   */
+  saleOfData?: boolean;
+}
+
+/**
  * Configuration options for checkout sheet kit features
  */
 export interface Features {
@@ -107,6 +129,10 @@ interface CommonConfiguration {
    *  2. Add "<string name="checkout_web_view_title">Checkout</string>"
    */
   title?: string;
+  /**
+   * Privacy consent signals to pass to the checkout.
+   */
+  privacyConsent?: PrivacyConsent;
 }
 
 export type Configuration = CommonConfiguration &

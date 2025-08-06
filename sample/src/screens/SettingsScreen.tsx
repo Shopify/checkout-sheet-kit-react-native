@@ -38,6 +38,7 @@ import {
   ColorScheme,
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
+import type {PrivacyConsent} from '@shopify/checkout-sheet-kit';
 import type {Colors} from '../context/Theme';
 import {darkColors, getColors, lightColors, useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
@@ -151,6 +152,21 @@ function SettingsScreen() {
     });
   }, [appConfig.prefillBuyerInformation, clearCart, setAppConfig]);
 
+  const handlePrivacyConsentChange = useCallback(
+    (consentType: keyof PrivacyConsent) => {
+      const currentConsent = config?.privacyConsent || {};
+      const newConsent = {
+        ...currentConsent,
+        [consentType]: !currentConsent[consentType],
+      };
+
+      setConfig({
+        privacyConsent: newConsent,
+      });
+    },
+    [config?.privacyConsent, setConfig],
+  );
+
   const configurationOptions: readonly SwitchItem[] = useMemo(
     () => [
       {
@@ -204,6 +220,36 @@ function SettingsScreen() {
     [config?.colorScheme],
   );
 
+  const privacyConsentOptions: readonly SwitchItem[] = useMemo(
+    () => [
+      {
+        title: 'Marketing',
+        type: SectionType.Switch,
+        value: config?.privacyConsent?.marketing ?? false,
+        handler: () => handlePrivacyConsentChange('marketing'),
+      },
+      {
+        title: 'Analytics',
+        type: SectionType.Switch,
+        value: config?.privacyConsent?.analytics ?? false,
+        handler: () => handlePrivacyConsentChange('analytics'),
+      },
+      {
+        title: 'Preferences',
+        type: SectionType.Switch,
+        value: config?.privacyConsent?.preferences ?? false,
+        handler: () => handlePrivacyConsentChange('preferences'),
+      },
+      {
+        title: 'Sale of Data',
+        type: SectionType.Switch,
+        value: config?.privacyConsent?.saleOfData ?? false,
+        handler: () => handlePrivacyConsentChange('saleOfData'),
+      },
+    ],
+    [config?.privacyConsent, handlePrivacyConsentChange],
+  );
+
   const informationalItems: readonly TextItem[] = useMemo(
     () => [
       {
@@ -227,6 +273,10 @@ function SettingsScreen() {
         data: configurationOptions,
       },
       {
+        title: 'Privacy Consent Signals',
+        data: privacyConsentOptions,
+      },
+      {
         title: 'Theme',
         data: themeOptions,
       },
@@ -235,7 +285,12 @@ function SettingsScreen() {
         data: informationalItems,
       },
     ],
-    [themeOptions, configurationOptions, informationalItems],
+    [
+      themeOptions,
+      configurationOptions,
+      privacyConsentOptions,
+      informationalItems,
+    ],
   );
 
   return (
