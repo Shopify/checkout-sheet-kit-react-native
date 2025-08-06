@@ -32,19 +32,30 @@ import {
 } from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  from,
+  createHttpLink,
+} from '@apollo/client';
+import {onError} from '@apollo/client/link/error';
 import env from 'react-native-config';
 import Icon from 'react-native-vector-icons/Entypo';
 
 import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import ChatScreen from './screens/ChatScreen';
+import CheckoutKitDemoScreen from './screens/CheckoutKitDemoScreen';
 
 import type {Configuration} from '@shopify/checkout-sheet-kit';
 import {
   ColorScheme,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
+  registerWebViewPlugin,
 } from '@shopify/checkout-sheet-kit';
+import {WebView} from 'react-native-webview';
 import type {
   CheckoutCompletedEvent,
   CheckoutException,
@@ -77,6 +88,12 @@ const config: Configuration = {
   },
 };
 
+// Register WebView plugin for inline checkout support
+registerWebViewPlugin({
+  WebView,
+  createWebViewProps: props => props,
+});
+
 export type RootStackParamList = {
   Catalog: undefined;
   CatalogScreen: undefined;
@@ -84,6 +101,8 @@ export type RootStackParamList = {
   Cart: undefined;
   CartModal: undefined;
   Settings: undefined;
+  Chat: undefined;
+  Demo: undefined;
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -91,14 +110,49 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const cache = new InMemoryCache();
 
-const client = new ApolloClient({
+const errorLink = onError(({graphQLErrors, networkError, operation}) => {
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({message, locations, path}) =>
+      console.log(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
+      ),
+    );
+  }
+
+  if (networkError) {
+    console.log(`[Network error]: ${networkError}`);
+    console.log('Request:', operation.operationName, operation.variables);
+    console.log(
+      'URI:',
+      `https://${env.STOREFRONT_DOMAIN}/api/${env.STOREFRONT_VERSION}/graphql.json`,
+    );
+    console.log('Headers:', {
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': env.STOREFRONT_ACCESS_TOKEN ?? '',
+    });
+  }
+});
+
+const httpLink = createHttpLink({
   uri: `https://${env.STOREFRONT_DOMAIN}/api/${env.STOREFRONT_VERSION}/graphql.json`,
-  cache,
   headers: {
     'Content-Type': 'application/json',
     'X-Shopify-Storefront-Access-Token': env.STOREFRONT_ACCESS_TOKEN ?? '',
   },
+});
+
+const client = new ApolloClient({
+  cache,
+  link: from([errorLink, httpLink]),
   connectToDevTools: true,
+  defaultOptions: {
+    watchQuery: {
+      errorPolicy: 'all',
+    },
+    query: {
+      errorPolicy: 'all',
+    },
+  },
 });
 
 function AppWithTheme({children}: PropsWithChildren) {
@@ -324,6 +378,22 @@ function Routes() {
         options={{
           tabBarIcon: createNavigationIcon('shopping-bag'),
           tabBarBadge: totalQuantity > 0 ? totalQuantity : undefined,
+        }}
+      />
+      <Tab.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{
+          tabBarIcon: createNavigationIcon('chat'),
+          title: 'Assistant',
+        }}
+      />
+      <Tab.Screen
+        name="Demo"
+        component={CheckoutKitDemoScreen}
+        options={{
+          tabBarIcon: createNavigationIcon('code'),
+          title: 'API Demo',
         }}
       />
       <Tab.Screen

@@ -45,7 +45,8 @@
   ],
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-webview": "*"
   },
   "devDependencies": {
     "react-native-builder-bob": "^0.23.1",
