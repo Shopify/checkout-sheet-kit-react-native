@@ -33,7 +33,7 @@ import {
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
-import env from 'react-native-config';
+import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Entypo';
 
 import CatalogScreen from './screens/CatalogScreen';
@@ -67,12 +67,14 @@ const config: Configuration = {
     ios: {
       backgroundColor: '#f0f0e8',
       tintColor: '#2d2a38',
+      closeButtonColor: '#2d2a38',
     },
     android: {
       backgroundColor: '#f0f0e8',
       progressIndicator: '#2d2a38',
       headerBackgroundColor: '#f0f0e8',
       headerTextColor: '#2d2a38',
+      closeButtonColor: '#2d2a38',
     },
   },
 };
@@ -92,11 +94,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const cache = new InMemoryCache();
 
 const client = new ApolloClient({
-  uri: `https://${env.STOREFRONT_DOMAIN}/api/${env.STOREFRONT_VERSION}/graphql.json`,
+  uri: `https://${Config.STOREFRONT_DOMAIN}/api/${Config.STOREFRONT_VERSION}/graphql.json`,
   cache,
   headers: {
     'Content-Type': 'application/json',
-    'X-Shopify-Storefront-Access-Token': env.STOREFRONT_ACCESS_TOKEN ?? '',
+    'X-Shopify-Storefront-Access-Token': Config.STOREFRONT_ACCESS_TOKEN ?? '',
   },
   connectToDevTools: true,
 });
@@ -170,14 +172,18 @@ function AppWithContext({children}: PropsWithChildren) {
     });
 
     const pixel = shopify.addEventListener('pixel', (event: PixelEvent) => {
-      console.log('[CheckoutPixelEvent]', event.name, event);
+      console.log(
+        '[CheckoutPixelEvent]',
+        event.name,
+        JSON.stringify(event, null, 2),
+      );
     });
 
     const completed = shopify.addEventListener(
       'completed',
       (event: CheckoutCompletedEvent) => {
         console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
-        console.log('[CheckoutCompletedEvent]', event);
+        console.log('[CheckoutCompletedEvent]', JSON.stringify(event, null, 2));
       },
     );
 

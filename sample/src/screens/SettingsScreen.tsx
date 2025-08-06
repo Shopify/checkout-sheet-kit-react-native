@@ -33,6 +33,7 @@ import {
   View,
 } from 'react-native';
 import pkg from '../../../package.json';
+import Config from 'react-native-config';
 import {useConfig} from '../context/Config';
 import {
   ColorScheme,
@@ -109,12 +110,14 @@ function SettingsScreen() {
               progressIndicator: lightColors.webViewProgressIndicator,
               headerBackgroundColor: lightColors.webviewBackgroundColor,
               headerTextColor: lightColors.webviewHeaderTextColor,
+              closeButtonColor: lightColors.webviewCloseButtonColor,
             },
             dark: {
               backgroundColor: darkColors.webviewBackgroundColor,
               progressIndicator: darkColors.webViewProgressIndicator,
               headerBackgroundColor: darkColors.webviewBackgroundColor,
               headerTextColor: darkColors.webviewHeaderTextColor,
+              closeButtonColor: darkColors.webviewCloseButtonColor,
             },
           },
         },
@@ -126,12 +129,14 @@ function SettingsScreen() {
           ios: {
             backgroundColor: updatedColors.webviewBackgroundColor,
             tintColor: updatedColors.webViewProgressIndicator,
+            closeButtonColor: updatedColors.webviewCloseButtonColor,
           },
           android: {
             backgroundColor: updatedColors.webviewBackgroundColor,
             progressIndicator: updatedColors.webViewProgressIndicator,
             headerBackgroundColor: updatedColors.webviewBackgroundColor,
             headerTextColor: updatedColors.webviewHeaderTextColor,
+            closeButtonColor: updatedColors.webviewCloseButtonColor,
           },
         },
       });
@@ -215,6 +220,16 @@ function SettingsScreen() {
         title: 'App version',
         type: SectionType.Text,
         value: pkg.version,
+      },
+      {
+        title: 'Storefront Domain',
+        type: SectionType.Text,
+        value: Config.STOREFRONT_DOMAIN || 'undefined',
+      },
+      {
+        title: 'Storefront Access Token (last 4)',
+        type: SectionType.Text,
+        value: Config.STOREFRONT_ACCESS_TOKEN?.slice(-4) || 'undefined',
       },
     ],
     [ShopifyCheckout.version],

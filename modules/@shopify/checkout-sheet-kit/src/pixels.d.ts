@@ -491,6 +491,8 @@ interface Order {
 interface OrderCustomer {
   /* The ID of the customer. */
   id?: string;
+  /* Indicates whether the customer is a first-time buyer. */
+  isFirstOrder?: boolean;
 }
 
 /**

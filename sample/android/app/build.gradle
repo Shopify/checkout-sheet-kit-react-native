@@ -74,7 +74,7 @@ android {
   lintOptions {
     checkDependencies false
   }
-  tasks.whenTaskAdded { task ->
+  tasks.configureEach { task ->
     if (task.name == 'lintAnalyzeDebug' || task.name == 'generateReleaseLintVitalReportModel') {
       task.dependsOn 'copyReactNativeVectorIconFonts'
     }
@@ -85,8 +85,8 @@ android {
     applicationId "com.shopify.checkoutkitreactnative"
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
-    versionCode 5
-    versionName "1.0"
+    versionCode 11
+    versionName "1.1"
   }
   signingConfigs {
     debug {
