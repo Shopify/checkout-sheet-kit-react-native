@@ -209,6 +209,43 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   }
 
   /**
+   * Configure AcceleratedCheckouts for Shop Pay and Apple Pay buttons
+   * @param config Configuration for AcceleratedCheckouts
+   */
+  public configureAcceleratedCheckouts(config: {
+    storefrontDomain: string;
+    storefrontAccessToken: string;
+    customer?: {
+      email?: string;
+      phoneNumber?: string;
+    };
+  }): void {
+    RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+      config.storefrontDomain,
+      config.storefrontAccessToken,
+      config.customer?.email || null,
+      config.customer?.phoneNumber || null
+    );
+  }
+
+  /**
+   * Check if accelerated checkout is available for the given cart or product
+   * @param options Options containing either cartId or variantId/quantity
+   * @returns Promise<boolean> indicating availability
+   */
+  public async isAcceleratedCheckoutAvailable(options: {
+    cartId?: string;
+    variantId?: string;
+    quantity?: number;
+  }): Promise<boolean> {
+    return RNShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable(
+      options.cartId || null,
+      options.variantId || null,
+      options.quantity || 1
+    );
+  }
+
+  /**
    * Initiates a geolocation request for Android devices
    * Only needed if features.handleGeolocationRequests is false
    */
@@ -405,4 +442,8 @@ export type {
   Features,
   PixelEvent,
   StandardEvent,
+  AcceleratedCheckoutConfiguration,
 };
+
+// Components
+export {AcceleratedCheckoutButton} from './AcceleratedCheckoutButton';

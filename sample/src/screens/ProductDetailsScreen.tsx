@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -31,6 +31,7 @@ import {
   Image,
   Pressable,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 
 import type {ShopifyProduct} from '../../@types';
@@ -40,6 +41,7 @@ import {useCart} from '../context/Cart';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {RootStackParamList} from '../App';
 import {currency} from '../utils';
+import {AcceleratedCheckoutButton, useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetails'>;
 
@@ -88,6 +90,19 @@ function ProductDetails({
   const styles = createStyles(colors);
   const image = product.images?.edges[0]?.node;
   const variant = getVariant(product);
+  const shopify = useShopifyCheckoutSheet();
+  const [acceleratedCheckoutAvailable, setAcceleratedCheckoutAvailable] = useState(false);
+
+  useEffect(() => {
+    if (variant?.id && Platform.OS === 'ios') {
+      shopify.isAcceleratedCheckoutAvailable({
+        variantId: variant.id,
+        quantity: 1,
+      }).then(setAcceleratedCheckoutAvailable).catch(() => {
+        setAcceleratedCheckoutAvailable(false);
+      });
+    }
+  }, [variant?.id, shopify]);
 
   return (
     <View key={product.id} style={styles.productItem}>
@@ -106,6 +121,21 @@ function ProductDetails({
           <Text style={styles.productDescription}>{product.description}</Text>
         </View>
         <View style={styles.addToCartButtonContainer}>
+          {acceleratedCheckoutAvailable && variant?.id && (
+            <View style={styles.acceleratedCheckoutContainer}>
+              <AcceleratedCheckoutButton
+                variantId={variant.id}
+                quantity={1}
+                style={styles.acceleratedCheckoutButton}
+                onCheckoutCompleted={() => {
+                  console.log('[AcceleratedCheckout] Completed successfully!');
+                }}
+                onError={(error) => {
+                  console.error('[AcceleratedCheckout] Error:', error.message);
+                }}
+              />
+            </View>
+          )}
           <Pressable
             disabled={loading}
             style={styles.addToCartButton}
@@ -182,6 +212,13 @@ function createStyles(colors: Colors) {
     },
     addToCartButtonContainer: {
       marginHorizontal: 5,
+    },
+    acceleratedCheckoutContainer: {
+      marginBottom: 15,
+    },
+    acceleratedCheckoutButton: {
+      height: 50,
+      marginTop: 15,
     },
     addToCartButton: {
       borderRadius: 10,

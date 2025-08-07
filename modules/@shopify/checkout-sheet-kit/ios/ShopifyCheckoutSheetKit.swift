@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import Foundation
 import ShopifyCheckoutSheetKit
+import ShopifyAcceleratedCheckouts
 import UIKit
 import React
 
@@ -31,6 +32,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	private var hasListeners = false
 
 	internal var checkoutSheet: UIViewController?
+	private var acceleratedCheckoutsConfiguration: ShopifyAcceleratedCheckouts.Configuration?
 
 	override var methodQueue: DispatchQueue! {
 		return DispatchQueue.main
@@ -254,6 +256,61 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		]
 
 		resolve(config)
+	}
+
+	@objc func configureAcceleratedCheckouts(
+		_ storefrontDomain: String,
+		storefrontAccessToken: String,
+		customerEmail: String?,
+		customerPhoneNumber: String?
+	) {
+		let customer = ShopifyAcceleratedCheckouts.Customer(
+			email: customerEmail,
+			phoneNumber: customerPhoneNumber
+		)
+
+		acceleratedCheckoutsConfiguration = ShopifyAcceleratedCheckouts.Configuration(
+			storefrontDomain: storefrontDomain,
+			storefrontAccessToken: storefrontAccessToken,
+			customer: customer
+		)
+		
+		// Update the shared configuration for the UI components
+		AcceleratedCheckoutConfiguration.shared.configuration = acceleratedCheckoutsConfiguration
+	}
+
+	@objc func isAcceleratedCheckoutAvailable(
+		_ cartId: String?,
+		variantId: String?,
+		quantity: NSNumber?,
+		resolve: @escaping RCTPromiseResolveBlock,
+		reject: @escaping RCTPromiseRejectBlock
+	) {
+		guard let config = acceleratedCheckoutsConfiguration else {
+			reject("CONFIG_ERROR", "AcceleratedCheckouts configuration not set", nil)
+			return
+		}
+
+		Task {
+			do {
+				var available = false
+				if let cartId = cartId {
+					available = try await ShopifyAcceleratedCheckouts.isAvailable(
+						for: cartId,
+						configuration: config
+					)
+				} else if let variantId = variantId, let qty = quantity {
+					available = try await ShopifyAcceleratedCheckouts.isAvailable(
+						for: variantId,
+						quantity: qty.intValue,
+						configuration: config
+					)
+				}
+				resolve(available)
+			} catch {
+				reject("AVAILABILITY_ERROR", error.localizedDescription, error)
+			}
+		}
 	}
 
 	// MARK: - Private
