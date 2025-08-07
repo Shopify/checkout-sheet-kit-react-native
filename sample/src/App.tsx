@@ -165,6 +165,16 @@ function AppWithContext({children}: PropsWithChildren) {
   const shopify = useShopifyCheckoutSheet();
 
   useEffect(() => {
+    // Configure AcceleratedCheckouts
+    shopify.configureAcceleratedCheckouts({
+      storefrontDomain: env.STOREFRONT_DOMAIN ?? '',
+      storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN ?? '',
+      customer: {
+        email: 'customer@example.com', // Optional: replace with actual customer email
+        phoneNumber: '+1234567890', // Optional: replace with actual customer phone
+      },
+    });
+
     const close = shopify.addEventListener('close', () => {
       console.log('[CheckoutClose]');
     });

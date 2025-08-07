@@ -21,8 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#import <React/RCTBridgeModule.h>
 #import <React/RCTViewManager.h>
-#import <React/RCTEventEmitter.h>
-#import <React/RCTUIManager.h>
-#import <React/RCTBridge.h>
+
+@interface RCT_EXTERN_MODULE(RCTAcceleratedCheckoutButtonManager, RCTViewManager)
+
+RCT_EXPORT_VIEW_PROPERTY(cartId, NSString)
+RCT_EXPORT_VIEW_PROPERTY(variantId, NSString)  
+RCT_EXPORT_VIEW_PROPERTY(quantity, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(cornerRadius, NSNumber)
+RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onError, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onCheckoutCompleted, RCTBubblingEventBlock)
+
+@end

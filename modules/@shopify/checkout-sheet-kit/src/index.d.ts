@@ -167,6 +167,29 @@ export type CheckoutEventCallback =
   | GeolocationRequestEventCallback
   | PixelEventCallback;
 
+/**
+ * Configuration for AcceleratedCheckouts
+ */
+export interface AcceleratedCheckoutConfiguration {
+  /**
+   * The storefront domain (e.g., "your-shop.myshopify.com")
+   */
+  storefrontDomain: string;
+  
+  /**
+   * The storefront access token with write_cart_wallet_payments scope
+   */
+  storefrontAccessToken: string;
+  
+  /**
+   * Customer information for personalized checkout
+   */
+  customer?: {
+    email?: string;
+    phoneNumber?: string;
+  };
+}
+
 function addEventListener(
   event: 'close',
   callback: () => void,
@@ -235,4 +258,18 @@ export interface ShopifyCheckoutSheetKit {
    * Cleans up any event callbacks to prevent memory leaks.
    */
   teardown(): void;
+  
+  /**
+   * Configure AcceleratedCheckouts for Shop Pay and Apple Pay buttons
+   */
+  configureAcceleratedCheckouts(config: AcceleratedCheckoutConfiguration): void;
+  
+  /**
+   * Check if accelerated checkout is available for the given cart or product
+   */
+  isAcceleratedCheckoutAvailable(options: {
+    cartId?: string;
+    variantId?: string;
+    quantity?: number;
+  }): Promise<boolean>;
 }
