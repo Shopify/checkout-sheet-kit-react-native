@@ -259,8 +259,8 @@ function createStyles(colors: Colors) {
       color: colors.textSubdued,
     },
     productImage: {
-      width: 80,
-      height: 120,
+      width: 100,
+      height: 100,
       marginRight: 5,
       borderRadius: 6,
     },

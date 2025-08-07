@@ -35,6 +35,7 @@ import type {
 import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
 import {ColorScheme} from './index.d';
 import type {
+  AcceleratedCheckoutConfiguration,
   CheckoutEvent,
   CheckoutEventCallback,
   Configuration,
@@ -43,6 +44,7 @@ import type {
   Maybe,
   ShopifyCheckoutSheetKit,
 } from './index.d';
+import {AcceleratedCheckoutWallet} from './index.d';
 import type {CheckoutException, CheckoutNativeError} from './errors.d';
 import {
   CheckoutExpiredError,
@@ -209,6 +211,40 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   }
 
   /**
+   * Configure AcceleratedCheckouts for Shop Pay and Apple Pay buttons
+   * @param config Configuration for AcceleratedCheckouts
+   */
+  public async configureAcceleratedCheckouts(
+    config: AcceleratedCheckoutConfiguration,
+  ): Promise<boolean> {
+    if (Platform.OS !== 'ios') {
+      return false;
+    }
+
+    this.validateAcceleratedCheckoutsConfiguration(config);
+
+    return RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+      config.storefrontDomain,
+      config.storefrontAccessToken,
+      config.customer?.email || null,
+      config.customer?.phoneNumber || null,
+    );
+  }
+
+  /**
+   * Check if accelerated checkout is available for the given cart or product
+   * @param options Options containing either cartId or variantId/quantity
+   * @returns Promise<boolean> indicating availability
+   */
+  public async isAcceleratedCheckoutAvailable(): Promise<boolean> {
+    if (Platform.OS !== 'ios') {
+      return false;
+    }
+
+    return RNShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable();
+  }
+
+  /**
    * Initiates a geolocation request for Android devices
    * Only needed if features.handleGeolocationRequests is false
    */
@@ -218,7 +254,24 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     }
   }
 
-  // ---
+  // --- private
+
+  private validateAcceleratedCheckoutsConfiguration(
+    acceleratedCheckouts: Configuration['acceleratedCheckouts'],
+  ) {
+    if (!acceleratedCheckouts?.storefrontDomain) {
+      throw new Error('storefrontDomain is required');
+    }
+    if (!acceleratedCheckouts.storefrontAccessToken) {
+      throw new Error('storefrontAccessToken is required');
+    }
+    if (
+      acceleratedCheckouts.wallets?.applePay &&
+      !acceleratedCheckouts.wallets.applePay.merchantIdentifier
+    ) {
+      throw new Error('wallets.applePay.merchantIdentifier is required');
+    }
+  }
 
   /**
    * Checks if a specific feature is enabled in the configuration
@@ -375,6 +428,7 @@ export class LifecycleEventParseError extends Error {
 
 // API
 export {
+  AcceleratedCheckoutWallet,
   ColorScheme,
   ShopifyCheckoutSheet,
   ShopifyCheckoutSheetProvider,
@@ -405,4 +459,11 @@ export type {
   Features,
   PixelEvent,
   StandardEvent,
+  AcceleratedCheckoutConfiguration,
 };
+
+// Components
+export {
+  AcceleratedCheckoutButtons,
+  RenderState,
+} from './components/AcceleratedCheckoutButtons';
