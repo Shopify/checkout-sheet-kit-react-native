@@ -5,7 +5,7 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-platform :ios, '13.4'
+platform :ios, '17.0'
 
 prepare_react_native_project!
 
@@ -55,6 +55,6 @@ target 'ReactNative' do
   end
 end
 
-pod 'SwiftLint'
+# pod 'SwiftLint'
 
 pod "RNShopifyCheckoutSheetKit", :path => "../../modules/@shopify/checkout-sheet-kit"

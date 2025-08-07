@@ -98,6 +98,10 @@ enum ShopifyEventSerialization {
         return ["url": url]
     }
 
+    static func serialize(clickEvent url: URL) -> [String: URL] {
+        return ["url": url]
+    }
+
     /**
      * Converts a CheckoutError to a React Native compatible dictionary.
      * Handles all specific error types with proper type information.
@@ -154,6 +158,22 @@ enum ShopifyEventSerialization {
                 "message": error.localizedDescription,
                 "recoverable": error.isRecoverable
             ]
+        }
+    }
+
+    /**
+     * Converts a RenderState enum to a string for React Native.
+     */
+    static func serialize(renderState state: RenderState) -> [String: String] {
+        switch state {
+        case .loading:
+            return ["state": "loading"]
+        case .rendered:
+            return ["state": "rendered"]
+        case .error:
+            return ["state": "error"]
+        @unknown default:
+            return ["state": "unknown"]
         }
     }
 }

@@ -23,6 +23,7 @@
 
 import Foundation
 import React
+import ShopifyAcceleratedCheckouts
 import ShopifyCheckoutSheetKit
 import UIKit
 
@@ -31,6 +32,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     private var hasListeners = false
 
     internal var checkoutSheet: UIViewController?
+    private var acceleratedCheckoutsConfiguration: ShopifyAcceleratedCheckouts.Configuration?
 
     override var methodQueue: DispatchQueue! {
         return DispatchQueue.main
@@ -205,5 +207,66 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         ]
 
         resolve(config)
+    }
+
+    @objc func configureAcceleratedCheckouts(
+        _ storefrontDomain: String,
+        storefrontAccessToken: String,
+        customerEmail: String?,
+        customerPhoneNumber: String?,
+        resolve: @escaping RCTPromiseResolveBlock,
+        reject _: @escaping RCTPromiseRejectBlock
+    ) {
+        if #available(iOS 17.0, *) {
+            let customer = ShopifyAcceleratedCheckouts.Customer(
+                email: customerEmail,
+                phoneNumber: customerPhoneNumber
+            )
+
+            acceleratedCheckoutsConfiguration = ShopifyAcceleratedCheckouts.Configuration(
+                storefrontDomain: storefrontDomain,
+                storefrontAccessToken: storefrontAccessToken,
+                customer: customer
+            )
+
+            AcceleratedCheckoutConfiguration.shared.configuration = acceleratedCheckoutsConfiguration as? ShopifyAcceleratedCheckouts.Configuration
+
+            NotificationCenter.default.post(name: Notification.Name("AcceleratedCheckoutConfigurationUpdated"), object: nil)
+
+            resolve(true)
+        } else {
+            resolve(false)
+        }
+    }
+
+    @objc func isAcceleratedCheckoutAvailable(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        reject _: @escaping RCTPromiseRejectBlock
+    ) {
+        guard #available(iOS 17.0, *) else {
+            resolve(false)
+            return
+        }
+
+        let isConfigured = (acceleratedCheckoutsConfiguration as? ShopifyAcceleratedCheckouts.Configuration) != nil
+        resolve(isConfigured)
+    }
+
+    @objc func getAcceleratedCheckoutConfiguration(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        reject _: @escaping RCTPromiseRejectBlock
+    ) {
+        guard #available(iOS 17.0, *) else {
+            resolve(nil)
+            do {
+                let jsonData = try encoder.encode(value)
+                if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+                    return jsonObject
+                }
+            } catch {
+                print("Error encoding to JSON object: \(error)")
+            }
+            return [:]
+        }
     }
 }

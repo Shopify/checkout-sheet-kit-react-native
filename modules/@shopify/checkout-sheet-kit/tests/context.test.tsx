@@ -12,7 +12,6 @@ const config: Configuration = {
   colorScheme: ColorScheme.automatic,
 };
 
-// Use the shared manual mock. Individual tests can override if needed.
 jest.mock('react-native');
 
 // Helper component to test the hook

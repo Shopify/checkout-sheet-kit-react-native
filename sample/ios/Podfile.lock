@@ -1323,7 +1323,8 @@ PODS:
     - Yoga
   - RNShopifyCheckoutSheetKit (3.3.0):
     - React-Core
-    - ShopifyCheckoutSheetKit (~> 3.3.0)
+    - ShopifyCheckoutSheetKit (~> 3.4.0-rc.2)
+    - ShopifyCheckoutSheetKit/AcceleratedCheckouts (~> 3.4.0-rc.2)
   - RNVectorIcons (10.2.0):
     - DoubleConversion
     - glog
@@ -1345,9 +1346,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ShopifyCheckoutSheetKit (3.3.0)
+  - ShopifyCheckoutSheetKit (3.4.0-rc.3):
+    - ShopifyCheckoutSheetKit/Core (= 3.4.0-rc.3)
+  - ShopifyCheckoutSheetKit/AcceleratedCheckouts (3.4.0-rc.3):
+    - ShopifyCheckoutSheetKit/Core
+  - ShopifyCheckoutSheetKit/Core (3.4.0-rc.3)
   - SocketRocket (0.7.0)
-  - SwiftLint (0.57.0)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1414,14 +1418,12 @@ DEPENDENCIES:
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNShopifyCheckoutSheetKit (from `../../modules/@shopify/checkout-sheet-kit`)"
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
-  - SwiftLint
   - Yoga (from `../../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   trunk:
     - ShopifyCheckoutSheetKit
     - SocketRocket
-    - SwiftLint
 
 EXTERNAL SOURCES:
   boost:
@@ -1610,13 +1612,12 @@ SPEC CHECKSUMS:
   RNGestureHandler: 293aea360e79439e2272b8a5ffebd582a1e4c486
   RNReanimated: af5545657216ca1794252c132f9e6e8ceb475462
   RNScreens: 02747ebee17d2e322af4ee383877367cf82a3cd6
-  RNShopifyCheckoutSheetKit: 31d302a9150b461f5fac739bbdcc18cd0f750a6b
+  RNShopifyCheckoutSheetKit: faf8e4a701b800cf66ae7a553751161ecb5d4fbf
   RNVectorIcons: 6c795cacc9276decc31d8e1a139b9cc6fc0479ca
-  ShopifyCheckoutSheetKit: 5ee0c9753132d79924089ddef7e73ba4aa84fe37
+  ShopifyCheckoutSheetKit: 0d357433d21967e1596f82f82f4f1c1182809e22
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  SwiftLint: eb47480d47c982481592c195c221d11013a679cc
   Yoga: 348f8b538c3ed4423eb58a8e5730feec50bce372
 
-PODFILE CHECKSUM: 9efd19a381198fb46f36acf3d269233039fb9dc5
+PODFILE CHECKSUM: 541d15f6e904ad72180d7d5b564cb65bd3463c5a
 
 COCOAPODS: 1.16.2

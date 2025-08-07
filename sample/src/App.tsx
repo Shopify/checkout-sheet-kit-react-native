@@ -33,13 +33,12 @@ import {
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
-import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Entypo';
 
 import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
-import type {Configuration} from '@shopify/checkout-sheet-kit';
+import type {Configuration, Features} from '@shopify/checkout-sheet-kit';
 import {
   ColorScheme,
   ShopifyCheckoutSheetProvider,
@@ -57,28 +56,33 @@ import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import type {ProductVariant, ShopifyProduct} from '../@types';
 import ErrorBoundary from './ErrorBoundary';
+import env from 'react-native-config';
+import {createDebugLogger} from './utils';
 import {useShopifyEventHandlers} from './hooks/useCheckoutEventHandlers';
+
+const log = createDebugLogger('ENV');
 
 const colorScheme = ColorScheme.web;
 
-const config: Configuration = {
-  colorScheme,
-  preloading: true,
-  colors: {
-    ios: {
-      backgroundColor: '#f0f0e8',
-      tintColor: '#2d2a38',
-      closeButtonColor: '#2d2a38',
-    },
-    android: {
-      backgroundColor: '#f0f0e8',
-      progressIndicator: '#2d2a38',
-      headerBackgroundColor: '#f0f0e8',
-      headerTextColor: '#2d2a38',
-      closeButtonColor: '#2d2a38',
-    },
-  },
-};
+function quote(str: string | undefined) {
+  return `"${str}"`;
+}
+
+log('--------------------------------');
+log('Using the following env');
+log('STOREFRONT_DOMAIN:', quote(env.STOREFRONT_DOMAIN));
+log(
+  'STOREFRONT_ACCESS_TOKEN:',
+  '*'.repeat(8) + env.STOREFRONT_ACCESS_TOKEN?.slice(-4),
+);
+log('STOREFRONT_VERSION:', quote(env.STOREFRONT_VERSION));
+log(
+  'STOREFRONT_MERCHANT_IDENTIFIER:',
+  quote(env.STOREFRONT_MERCHANT_IDENTIFIER),
+);
+log('EMAIL:', quote(env.EMAIL));
+log('PHONE:', quote(env.PHONE));
+log('--------------------------------');
 
 export type RootStackParamList = {
   Catalog: undefined;
@@ -95,13 +99,13 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const cache = new InMemoryCache();
 
 const client = new ApolloClient({
-  uri: `https://${Config.STOREFRONT_DOMAIN}/api/${Config.STOREFRONT_VERSION}/graphql.json`,
+  uri: `https://${env.STOREFRONT_DOMAIN}/api/${env.STOREFRONT_VERSION}/graphql.json`,
   cache,
   headers: {
     'Content-Type': 'application/json',
-    'X-Shopify-Storefront-Access-Token': Config.STOREFRONT_ACCESS_TOKEN ?? '',
+    'X-Shopify-Storefront-Access-Token': env.STOREFRONT_ACCESS_TOKEN ?? '',
   },
-  connectToDevTools: true,
+  connectToDevTools: __DEV__,
 });
 
 function AppWithTheme({children}: PropsWithChildren) {
@@ -340,12 +344,51 @@ function Routes() {
   );
 }
 
+const checkoutKitConfig: Configuration = {
+  colorScheme,
+  preloading: true,
+  colors: {
+    ios: {
+      backgroundColor: '#f0f0e8',
+      tintColor: '#2d2a38',
+    },
+    android: {
+      backgroundColor: '#f0f0e8',
+      progressIndicator: '#2d2a38',
+      headerBackgroundColor: '#f0f0e8',
+      headerTextColor: '#2d2a38',
+    },
+  },
+  acceleratedCheckouts: {
+    storefrontDomain: env.STOREFRONT_DOMAIN!,
+    storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN!,
+    /**
+     * We're reading the customer email and phone number from the environment
+     * variables. In a real app, you would get these values from your backend.
+     */
+    customer: {
+      email: env.EMAIL!,
+      phoneNumber: env.PHONE!,
+    },
+    wallets: {
+      applePay: {
+        contactFields: ['email', 'phone'],
+        merchantIdentifier: env.STOREFRONT_MERCHANT_IDENTIFIER!,
+      },
+    },
+  },
+};
+
+const checkoutKitFeatures: Partial<Features> = {
+  handleGeolocationRequests: true,
+};
+
 function App() {
   return (
     <ErrorBoundary>
       <ShopifyCheckoutSheetProvider
-        configuration={config}
-        features={{handleGeolocationRequests: true}}>
+        configuration={checkoutKitConfig}
+        features={checkoutKitFeatures}>
         <AppWithTheme>
           <AppWithContext>
             <AppWithNavigation>

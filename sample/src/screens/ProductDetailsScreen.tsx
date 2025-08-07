@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -31,6 +31,7 @@ import {
   Image,
   Pressable,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 
 import type {ShopifyProduct} from '../../@types';
@@ -39,14 +40,19 @@ import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {RootStackParamList} from '../App';
-import {currency} from '../utils';
+import {
+  AcceleratedCheckoutButtons,
+  AcceleratedCheckoutWallet,
+  useShopifyCheckoutSheet,
+} from '@shopify/checkout-sheet-kit';
+import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetails'>;
 
 function ProductDetailsScreen({route}: Props) {
-  const {colors} = useTheme();
+  const {colors, cornerRadius} = useTheme();
   const {addToCart, addingToCart} = useCart();
-  const styles = createStyles(colors);
+  const styles = createStyles(colors, cornerRadius);
 
   if (!route?.params) {
     return null;
@@ -84,10 +90,27 @@ function ProductDetails({
   loading?: boolean;
   onAddToCart: (variantId: string) => void;
 }) {
-  const {colors} = useTheme();
-  const styles = createStyles(colors);
+  const {colors, cornerRadius} = useTheme();
+  const styles = createStyles(colors, cornerRadius);
   const image = product.images?.edges[0]?.node;
   const variant = getVariant(product);
+  const shopify = useShopifyCheckoutSheet();
+  const [acceleratedCheckoutAvailable, setAcceleratedCheckoutAvailable] =
+    useState(false);
+  const eventHandlers = useShopifyEventHandlers(
+    'PDP - AcceleratedCheckoutButtons',
+  );
+
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      shopify
+        .isAcceleratedCheckoutAvailable()
+        .then(setAcceleratedCheckoutAvailable)
+        .catch(() => {
+          setAcceleratedCheckoutAvailable(false);
+        });
+    }
+  }, [shopify]);
 
   return (
     <View key={product.id} style={styles.productItem}>
@@ -105,7 +128,9 @@ function ProductDetails({
       <View style={styles.productText}>
         <View>
           <Text style={styles.productTitle}>{product.title}</Text>
-          <Text style={styles.productDescription}>{product.description}</Text>
+          <Text style={styles.productDescription}>
+            {product.description.slice(0, 100)} ...
+          </Text>
         </View>
         <View style={styles.addToCartButtonContainer}>
           <Pressable
@@ -115,12 +140,20 @@ function ProductDetails({
             {loading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
-              <Text style={styles.addToCartButtonText}>
-                Add to cart &bull;{' '}
-                {currency(variant?.price.amount, variant?.price.currencyCode)}
-              </Text>
+              <Text style={styles.addToCartButtonText}>Add to cart</Text>
             )}
           </Pressable>
+
+          {acceleratedCheckoutAvailable && variant?.id && (
+            <AcceleratedCheckoutButtons
+              {...eventHandlers}
+              wallets={[AcceleratedCheckoutWallet.applePay]}
+              variantId={variant.id}
+              quantity={1}
+              cornerRadius={cornerRadius}
+              style={styles.acceleratedCheckoutButton}
+            />
+          )}
         </View>
       </View>
     </View>
@@ -129,7 +162,7 @@ function ProductDetails({
 
 export default ProductDetailsScreen;
 
-function createStyles(colors: Colors) {
+function createStyles(colors: Colors, cornerRadius: number) {
   return StyleSheet.create({
     container: {
       maxHeight: '100%',
@@ -141,7 +174,7 @@ function createStyles(colors: Colors) {
       flex: 1,
       flexDirection: 'column',
       marginBottom: 10,
-      padding: 10,
+      padding: 20,
       backgroundColor: colors.backgroundSubdued,
       borderRadius: 5,
     },
@@ -180,22 +213,27 @@ function createStyles(colors: Colors) {
       width: '100%',
       height: 400,
       marginTop: 5,
-      borderRadius: 6,
+      borderRadius: cornerRadius,
     },
     addToCartButtonContainer: {
-      marginHorizontal: 5,
+      marginTop: 10,
+      gap: 10,
+      height: 80,
+    },
+    acceleratedCheckoutButton: {
+      height: 48,
+      width: '100%',
     },
     addToCartButton: {
-      borderRadius: 10,
+      borderRadius: cornerRadius,
       fontSize: 8,
-      marginTop: 15,
-      marginBottom: 10,
       backgroundColor: colors.secondary,
       paddingHorizontal: 10,
-      paddingVertical: 18,
+      paddingVertical: 14,
+      height: 48,
     },
     addToCartButtonText: {
-      fontSize: 14,
+      fontSize: 16,
       lineHeight: 20,
       color: colors.secondaryText,
       fontWeight: 'bold',
