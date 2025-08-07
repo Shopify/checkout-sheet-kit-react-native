@@ -43,4 +43,10 @@ RCT_EXTERN_METHOD(setConfig:(NSDictionary *)configuration);
 // Return configuration for checkout
 RCT_EXTERN_METHOD(getConfig: (RCTPromiseResolveBlock) resolve reject: (RCTPromiseRejectBlock) reject)
 
+/// Configure AcceleratedCheckouts
+RCT_EXTERN_METHOD(configureAcceleratedCheckouts:(NSString *)storefrontDomain storefrontAccessToken:(NSString *)storefrontAccessToken customerEmail:(NSString *)customerEmail customerPhoneNumber:(NSString *)customerPhoneNumber);
+
+/// Check if accelerated checkout is available
+RCT_EXTERN_METHOD(isAcceleratedCheckoutAvailable:(NSString *)cartId variantId:(NSString *)variantId quantity:(NSNumber *)quantity resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject);
+
 @end
