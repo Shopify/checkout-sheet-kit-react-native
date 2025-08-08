@@ -42,7 +42,7 @@ import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {RootStackParamList} from '../App';
-import {currency} from '../utils';
+import {currency, getOptimizedImageUrl} from '../utils';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CatalogScreen'>;
 
@@ -150,7 +150,9 @@ function Product({
           resizeMode="cover"
           style={styles.productImage}
           alt={image?.altText}
-          source={{uri: image?.url}}
+          source={{
+            uri: getOptimizedImageUrl(image.url, {width: 150, height: 150}),
+          }}
         />
       )}
       <View style={styles.productText}>
@@ -257,8 +259,8 @@ function createStyles(colors: Colors) {
       color: colors.textSubdued,
     },
     productImage: {
-      width: 80,
-      height: 120,
+      width: 100,
+      height: 100,
       marginRight: 5,
       borderRadius: 6,
     },

@@ -57,27 +57,21 @@ import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import type {ProductVariant, ShopifyProduct} from '../@types';
 import ErrorBoundary from './ErrorBoundary';
-
-// Temporarily hardcode environment variables for testing
-const STOREFRONT_DOMAIN = 'checkout-sdk.myshopify.com';
-const STOREFRONT_ACCESS_TOKEN = 'ec242e8c0bfd38b44702d2d1b76c505b';
-const STOREFRONT_VERSION = '2025-07';
-const EMAIL = 'checkout-kit@shopify.com';
-const PHONE = '1-888-746-7439';
+import env from 'react-native-config';
 
 const colorScheme = ColorScheme.web;
 
 console.log('Environment variables loaded:', {
-  STOREFRONT_DOMAIN,
-  STOREFRONT_ACCESS_TOKEN: STOREFRONT_ACCESS_TOKEN
-    ? '***' + STOREFRONT_ACCESS_TOKEN.slice(-4)
+  STOREFRONT_DOMAIN: env.STOREFRONT_DOMAIN,
+  STOREFRONT_ACCESS_TOKEN: env.STOREFRONT_ACCESS_TOKEN
+    ? '***' + env.STOREFRONT_ACCESS_TOKEN.slice(-4)
     : 'undefined',
-  STOREFRONT_VERSION,
-  EMAIL,
-  PHONE,
+  STOREFRONT_VERSION: env.STOREFRONT_VERSION,
+  EMAIL: env.EMAIL,
+  PHONE: env.PHONE,
 });
 
-const config: Configuration = {
+const checkoutKitConfig: Configuration = {
   colorScheme,
   preloading: true,
   colors: {
@@ -109,11 +103,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const cache = new InMemoryCache();
 
 const client = new ApolloClient({
-  uri: `https://${STOREFRONT_DOMAIN}/api/${STOREFRONT_VERSION}/graphql.json`,
+  uri: `https://${env.STOREFRONT_DOMAIN}/api/${env.STOREFRONT_VERSION}/graphql.json`,
   cache,
   headers: {
     'Content-Type': 'application/json',
-    'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN ?? '',
+    'X-Shopify-Storefront-Access-Token': env.STOREFRONT_ACCESS_TOKEN ?? '',
   },
   connectToDevTools: true,
 });
@@ -184,13 +178,16 @@ function AppWithContext({children}: PropsWithChildren) {
   useEffect(() => {
     // Configure AcceleratedCheckouts with both wallets
     shopify.configureAcceleratedCheckouts({
-      storefrontDomain: STOREFRONT_DOMAIN ?? '',
-      storefrontAccessToken: STOREFRONT_ACCESS_TOKEN ?? '',
+      storefrontDomain: env.STOREFRONT_DOMAIN ?? '',
+      storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN ?? '',
       customer: {
-        email: EMAIL ?? '',
-        phoneNumber: PHONE ?? '',
+        email: env.EMAIL ?? '',
+        phoneNumber: env.PHONE ?? '',
       },
-      wallets: [AcceleratedCheckoutWallet.shopPay, AcceleratedCheckoutWallet.applePay],
+      wallets: [
+        AcceleratedCheckoutWallet.shopPay,
+        AcceleratedCheckoutWallet.applePay,
+      ],
     });
 
     const close = shopify.addEventListener('close', () => {
@@ -369,7 +366,7 @@ function App() {
   return (
     <ErrorBoundary>
       <ShopifyCheckoutSheetProvider
-        configuration={config}
+        configuration={checkoutKitConfig}
         features={{handleGeolocationRequests: true}}>
         <AppWithTheme>
           <AppWithContext>

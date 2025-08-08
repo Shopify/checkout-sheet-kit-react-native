@@ -46,7 +46,7 @@ import type {CartLineItem, CartItem} from '../../@types';
 import type {Colors} from '../context/Theme';
 import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
-import {currency} from '../utils';
+import {currency, getOptimizedImageUrl} from '../utils';
 
 function CartScreen(): React.JSX.Element {
   const ShopifyCheckout = useShopifyCheckoutSheet();
@@ -62,7 +62,6 @@ function CartScreen(): React.JSX.Element {
 
   useEffect(() => {
     if (cartId) {
-      console.log('[CartScreen] Cart ID:', cartId);
       fetchCart({
         variables: {
           cartId,
@@ -147,9 +146,7 @@ function CartScreen(): React.JSX.Element {
 
           <View style={styles.costBlock}>
             <Text style={styles.costBlockText}>Taxes</Text>
-            <Text style={styles.costBlockText}>
-              {price(data.cart.cost.totalTaxAmount)}
-            </Text>
+            <Text style={styles.costBlockText}>Estimated at checkout</Text>
           </View>
 
           <View style={styles.costBlock}>
@@ -166,14 +163,7 @@ function CartScreen(): React.JSX.Element {
               <AcceleratedCheckoutButtons
                 cartId={cartId}
                 cornerRadius={10}
-                style={{height: 100, width: '100%'}}
-                onCheckoutCompleted={() => {
-                  console.log('[AcceleratedCheckout] Checkout completed!');
-                  // Clear cart or navigate to success screen
-                }}
-                onError={error => {
-                  console.error('[AcceleratedCheckout] Error:', error.message);
-                }}
+                style={styles.acceleratedCheckoutContainer}
               />
 
               <Pressable
@@ -182,7 +172,6 @@ function CartScreen(): React.JSX.Element {
                 onPress={presentCheckout}>
                 <Text style={styles.cartButtonText}>Checkout</Text>
                 <Text style={styles.cartButtonTextSubtitle}>
-                  {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'} -{' '}
                   {price(data.cart.cost.totalAmount)}
                 </Text>
               </Pressable>
@@ -230,7 +219,12 @@ function CartItem({
           resizeMode="cover"
           style={styles.productImage}
           alt={item.merchandise.image?.altText}
-          source={{uri: item.merchandise.image?.url}}
+          source={{
+            uri: getOptimizedImageUrl(item.merchandise.image.url, {
+              width: 60,
+              height: 60,
+            }),
+          }}
         />
       )}
       <View style={styles.productText}>
@@ -259,6 +253,10 @@ function CartItem({
 
 function createStyles(colors: Colors) {
   return StyleSheet.create({
+    acceleratedCheckoutContainer: {
+      height: 100,
+      width: '100%',
+    },
     loading: {
       flex: 1,
       padding: 2,
@@ -278,10 +276,15 @@ function createStyles(colors: Colors) {
       gap: 10,
     },
     cartButton: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       width: 'auto',
-      height: 55,
+      height: 48,
       borderRadius: 10,
-      padding: 10,
+      paddingHorizontal: 20,
+      paddingVertical: 2,
       backgroundColor: colors.secondary,
       fontWeight: 'bold',
     },
@@ -354,7 +357,7 @@ function createStyles(colors: Colors) {
       color: colors.textSubdued,
     },
     productImage: {
-      width: 40,
+      width: 60,
       height: 60,
       borderRadius: 6,
     },

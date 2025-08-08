@@ -71,6 +71,6 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>ApplePayMerchantID</key>
-	<string>merchant.com.shopify.checkout-kit-sample</string>
+	<string>merchant.com.shopify.example.MobileBuyIntegration.ApplePay</string>
 </dict>
 </plist>

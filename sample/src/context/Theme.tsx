@@ -6,6 +6,7 @@ import {DarkTheme, DefaultTheme} from '@react-navigation/native';
 import {ColorScheme} from '@shopify/checkout-sheet-kit';
 
 interface Context {
+  cornerRadius: number;
   colors: Colors;
   colorScheme: ColorScheme;
   preference: ColorSchemeName;
@@ -64,6 +65,7 @@ export const webColors: Colors = {
 };
 
 const ThemeContext = createContext<Context>({
+  cornerRadius: 10,
   colorScheme: ColorScheme.automatic,
   colors: lightColors,
   preference: Appearance.getColorScheme(),
@@ -163,8 +165,8 @@ export function getColors(
 }
 
 export const ThemeProvider: React.FC<
-  PropsWithChildren<{defaultValue: ColorScheme}>
-> = ({children, defaultValue = ColorScheme.automatic}) => {
+  PropsWithChildren<{defaultValue: ColorScheme; cornerRadius?: number}>
+> = ({children, defaultValue = ColorScheme.automatic, cornerRadius = 10}) => {
   const preference = useColorScheme();
   const [colorScheme, setColorSchemeInternal] =
     useState<ColorScheme>(defaultValue);
@@ -182,12 +184,13 @@ export const ThemeProvider: React.FC<
 
   const value = useMemo(
     () => ({
+      cornerRadius,
       colors: getColors(colorScheme, preference),
       preference,
       colorScheme,
       setColorScheme,
     }),
-    [preference, colorScheme, setColorScheme],
+    [preference, colorScheme, setColorScheme, cornerRadius],
   );
 
   return (

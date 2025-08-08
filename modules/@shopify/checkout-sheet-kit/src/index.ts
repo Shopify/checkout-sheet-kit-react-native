@@ -451,4 +451,7 @@ export type {
 };
 
 // Components
-export {AcceleratedCheckoutButtons} from './AcceleratedCheckoutButtons';
+export {
+  AcceleratedCheckoutButtons,
+  RenderState,
+} from './components/AcceleratedCheckoutButtons';
