@@ -31,6 +31,7 @@ import type {
   RemoveEventListeners,
   CheckoutEvent,
   Configuration,
+  AcceleratedCheckoutConfiguration,
 } from './index.d';
 
 type Maybe<T> = T | undefined;
@@ -45,6 +46,14 @@ interface Context {
   dismiss: () => void;
   invalidate: () => void;
   version: Maybe<string>;
+  configureAcceleratedCheckouts: (
+    config: AcceleratedCheckoutConfiguration,
+  ) => void;
+  isAcceleratedCheckoutAvailable: (options: {
+    cartId?: string;
+    variantId?: string;
+    quantity?: number;
+  }) => Promise<boolean>;
 }
 
 const noop = () => undefined;
@@ -59,6 +68,8 @@ const ShopifyCheckoutSheetContext = React.createContext<Context>({
   invalidate: noop,
   dismiss: noop,
   version: undefined,
+  configureAcceleratedCheckouts: noop,
+  isAcceleratedCheckoutAvailable: async () => false,
 });
 
 interface Props {
@@ -116,6 +127,27 @@ export function ShopifyCheckoutSheetProvider({
     return instance.current?.getConfig();
   }, []);
 
+  const configureAcceleratedCheckouts = useCallback(
+    (config: AcceleratedCheckoutConfiguration) => {
+      instance.current?.configureAcceleratedCheckouts(config);
+    },
+    [],
+  );
+
+  const isAcceleratedCheckoutAvailable = useCallback(
+    async (options: {
+      cartId?: string;
+      variantId?: string;
+      quantity?: number;
+    }) => {
+      return (
+        (await instance.current?.isAcceleratedCheckoutAvailable(options)) ??
+        false
+      );
+    },
+    [],
+  );
+
   const context = useMemo((): Context => {
     return {
       addEventListener,
@@ -127,6 +159,8 @@ export function ShopifyCheckoutSheetProvider({
       invalidate,
       removeEventListeners,
       version: instance.current?.version,
+      configureAcceleratedCheckouts,
+      isAcceleratedCheckoutAvailable,
     };
   }, [
     addEventListener,
@@ -137,6 +171,8 @@ export function ShopifyCheckoutSheetProvider({
     preload,
     present,
     invalidate,
+    configureAcceleratedCheckouts,
+    isAcceleratedCheckoutAvailable,
   ]);
 
   return (

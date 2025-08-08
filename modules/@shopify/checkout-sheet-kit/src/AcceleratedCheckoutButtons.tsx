@@ -22,14 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import React, {useCallback} from 'react';
-import {
-  requireNativeComponent,
-  ViewStyle,
-  NativeSyntheticEvent,
-  Platform,
-} from 'react-native';
+import {requireNativeComponent, Platform} from 'react-native';
+import type {ViewStyle} from 'react-native';
+import type {AcceleratedCheckoutWallet} from '.';
 
-interface AcceleratedCheckoutButtonProps {
+interface AcceleratedCheckoutButtonsProps {
   /**
    * The cart ID for cart-based checkout
    */
@@ -56,6 +53,12 @@ interface AcceleratedCheckoutButtonProps {
   style?: ViewStyle;
 
   /**
+   * Wallets to display in the button
+   * Defaults to both shopPay and applePay if not specified
+   */
+  wallets?: AcceleratedCheckoutWallet[];
+
+  /**
    * Called when the button is pressed
    */
   onPress?: () => void;
@@ -71,15 +74,9 @@ interface AcceleratedCheckoutButtonProps {
   onCheckoutCompleted?: () => void;
 }
 
-interface AcceleratedCheckoutButtonEvent {
-  nativeEvent: {
-    message?: string;
-  };
-}
-
-const RCTAcceleratedCheckoutButton =
-  requireNativeComponent<AcceleratedCheckoutButtonProps>(
-    'RCTAcceleratedCheckoutButtonManager',
+const RCTAcceleratedCheckoutButtons =
+  requireNativeComponent<AcceleratedCheckoutButtonsProps>(
+    'RCTAcceleratedCheckoutButtons',
   );
 
 /**
@@ -100,28 +97,26 @@ const RCTAcceleratedCheckoutButton =
  *   onCheckoutCompleted={() => console.log('Checkout completed!')}
  * />
  */
-export const AcceleratedCheckoutButton: React.FC<
-  AcceleratedCheckoutButtonProps
+export const AcceleratedCheckoutButtons: React.FC<
+  AcceleratedCheckoutButtonsProps
 > = ({
   cartId,
   variantId,
   quantity = 1,
   cornerRadius = 8,
   style,
+  wallets,
   onPress,
   onError,
   onCheckoutCompleted,
 }) => {
-  const handlePress = useCallback(
-    (event: AcceleratedCheckoutButtonEvent) => {
-      onPress?.();
-    },
-    [onPress],
-  );
+  const handlePress = useCallback(() => {
+    onPress?.();
+  }, [onPress]);
 
   const handleError = useCallback(
-    (event: AcceleratedCheckoutButtonEvent) => {
-      const {message} = event.nativeEvent;
+    (event: {message: string}) => {
+      const {message} = event;
       if (message) {
         onError?.({message});
       }
@@ -129,12 +124,9 @@ export const AcceleratedCheckoutButton: React.FC<
     [onError],
   );
 
-  const handleCheckoutCompleted = useCallback(
-    (event: AcceleratedCheckoutButtonEvent) => {
-      onCheckoutCompleted?.();
-    },
-    [onCheckoutCompleted],
-  );
+  const handleCheckoutCompleted = useCallback(() => {
+    onCheckoutCompleted?.();
+  }, [onCheckoutCompleted]);
 
   // Only render on iOS for now since ShopifyAcceleratedCheckouts is iOS-only
   if (Platform.OS !== 'ios') {
@@ -143,19 +135,21 @@ export const AcceleratedCheckoutButton: React.FC<
 
   // Require either cartId or variantId
   if (!cartId && !variantId) {
+    // eslint-disable-next-line no-console
     console.warn(
-      'AcceleratedCheckoutButton: Either cartId or variantId must be provided',
+      'AcceleratedCheckoutButton: Either `cartId` or `variantId` must be provided',
     );
     return null;
   }
 
   return (
-    <RCTAcceleratedCheckoutButton
+    <RCTAcceleratedCheckoutButtons
       style={style}
       cartId={cartId}
       variantId={variantId}
       quantity={quantity}
       cornerRadius={cornerRadius}
+      wallets={wallets}
       onPress={handlePress}
       onError={handleError}
       onCheckoutCompleted={handleCheckoutCompleted}
@@ -163,4 +157,4 @@ export const AcceleratedCheckoutButton: React.FC<
   );
 };
 
-export default AcceleratedCheckoutButton;
+export default AcceleratedCheckoutButtons;

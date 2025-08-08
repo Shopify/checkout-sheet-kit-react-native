@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 #import <React/RCTBridgeModule.h>
+#import <React/RCTViewManager.h>
 
 @interface RCT_EXTERN_MODULE(RCTShopifyCheckoutSheetKit, NSObject)
 
@@ -44,9 +45,23 @@ RCT_EXTERN_METHOD(setConfig:(NSDictionary *)configuration);
 RCT_EXTERN_METHOD(getConfig: (RCTPromiseResolveBlock) resolve reject: (RCTPromiseRejectBlock) reject)
 
 /// Configure AcceleratedCheckouts
-RCT_EXTERN_METHOD(configureAcceleratedCheckouts:(NSString *)storefrontDomain storefrontAccessToken:(NSString *)storefrontAccessToken customerEmail:(NSString *)customerEmail customerPhoneNumber:(NSString *)customerPhoneNumber);
+RCT_EXTERN_METHOD(configureAcceleratedCheckouts:(NSString *)storefrontDomain storefrontAccessToken:(NSString *)storefrontAccessToken customerEmail:(NSString *)customerEmail customerPhoneNumber:(NSString *)customerPhoneNumber wallets:(NSArray *)wallets);
 
 /// Check if accelerated checkout is available
 RCT_EXTERN_METHOD(isAcceleratedCheckoutAvailable:(NSString *)cartId variantId:(NSString *)variantId quantity:(NSNumber *)quantity resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject);
+
+@end
+
+// AcceleratedCheckoutButtons View Manager
+@interface RCT_EXTERN_MODULE(RCTAcceleratedCheckoutButtonsManager, RCTViewManager)
+
+RCT_EXPORT_VIEW_PROPERTY(cartId, NSString *)
+RCT_EXPORT_VIEW_PROPERTY(variantId, NSString *)
+RCT_EXPORT_VIEW_PROPERTY(quantity, NSNumber *)
+RCT_EXPORT_VIEW_PROPERTY(cornerRadius, NSNumber *)
+RCT_EXPORT_VIEW_PROPERTY(wallets, NSArray *)
+RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onError, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onCheckoutCompleted, RCTBubblingEventBlock)
 
 @end

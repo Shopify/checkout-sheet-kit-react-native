@@ -168,6 +168,14 @@ export type CheckoutEventCallback =
   | PixelEventCallback;
 
 /**
+ * Available wallet types for accelerated checkout
+ */
+export enum AcceleratedCheckoutWallet {
+  shopPay = 'shopPay',
+  applePay = 'applePay',
+}
+
+/**
  * Configuration for AcceleratedCheckouts
  */
 export interface AcceleratedCheckoutConfiguration {
@@ -175,12 +183,12 @@ export interface AcceleratedCheckoutConfiguration {
    * The storefront domain (e.g., "your-shop.myshopify.com")
    */
   storefrontDomain: string;
-  
+
   /**
    * The storefront access token with write_cart_wallet_payments scope
    */
   storefrontAccessToken: string;
-  
+
   /**
    * Customer information for personalized checkout
    */
@@ -188,6 +196,12 @@ export interface AcceleratedCheckoutConfiguration {
     email?: string;
     phoneNumber?: string;
   };
+
+  /**
+   * Wallets to display in the AcceleratedCheckoutButtons
+   * Defaults to both shopPay and applePay
+   */
+  wallets?: AcceleratedCheckoutWallet[];
 }
 
 function addEventListener(
@@ -258,12 +272,12 @@ export interface ShopifyCheckoutSheetKit {
    * Cleans up any event callbacks to prevent memory leaks.
    */
   teardown(): void;
-  
+
   /**
    * Configure AcceleratedCheckouts for Shop Pay and Apple Pay buttons
    */
   configureAcceleratedCheckouts(config: AcceleratedCheckoutConfiguration): void;
-  
+
   /**
    * Check if accelerated checkout is available for the given cart or product
    */

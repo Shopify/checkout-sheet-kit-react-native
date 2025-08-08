@@ -35,6 +35,7 @@ import type {
 import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
 import {ColorScheme} from './index.d';
 import type {
+  AcceleratedCheckoutConfiguration,
   CheckoutEvent,
   CheckoutEventCallback,
   Configuration,
@@ -43,6 +44,7 @@ import type {
   Maybe,
   ShopifyCheckoutSheetKit,
 } from './index.d';
+import {AcceleratedCheckoutWallet} from './index.d';
 import type {CheckoutException, CheckoutNativeError} from './errors.d';
 import {
   CheckoutExpiredError,
@@ -212,19 +214,21 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * Configure AcceleratedCheckouts for Shop Pay and Apple Pay buttons
    * @param config Configuration for AcceleratedCheckouts
    */
-  public configureAcceleratedCheckouts(config: {
-    storefrontDomain: string;
-    storefrontAccessToken: string;
-    customer?: {
-      email?: string;
-      phoneNumber?: string;
-    };
-  }): void {
+  public configureAcceleratedCheckouts(
+    config: AcceleratedCheckoutConfiguration,
+  ): void {
+    // Default to both shopPay and applePay if no wallets specified
+    const wallets = config.wallets ?? [
+      AcceleratedCheckoutWallet.shopPay,
+      AcceleratedCheckoutWallet.applePay,
+    ];
+
     RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
       config.storefrontDomain,
       config.storefrontAccessToken,
       config.customer?.email || null,
-      config.customer?.phoneNumber || null
+      config.customer?.phoneNumber || null,
+      wallets,
     );
   }
 
@@ -241,7 +245,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     return RNShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable(
       options.cartId || null,
       options.variantId || null,
-      options.quantity || 1
+      options.quantity || 1,
     );
   }
 
@@ -412,6 +416,7 @@ export class LifecycleEventParseError extends Error {
 
 // API
 export {
+  AcceleratedCheckoutWallet,
   ColorScheme,
   ShopifyCheckoutSheet,
   ShopifyCheckoutSheetProvider,
@@ -446,4 +451,4 @@ export type {
 };
 
 // Components
-export {AcceleratedCheckoutButton} from './AcceleratedCheckoutButton';
+export {AcceleratedCheckoutButtons} from './AcceleratedCheckoutButtons';

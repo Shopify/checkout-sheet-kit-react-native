@@ -33,7 +33,6 @@ import {
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
-import env from 'react-native-config';
 import Icon from 'react-native-vector-icons/Entypo';
 
 import CatalogScreen from './screens/CatalogScreen';
@@ -41,6 +40,7 @@ import SettingsScreen from './screens/SettingsScreen';
 
 import type {Configuration} from '@shopify/checkout-sheet-kit';
 import {
+  AcceleratedCheckoutWallet,
   ColorScheme,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
@@ -58,7 +58,24 @@ import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import type {ProductVariant, ShopifyProduct} from '../@types';
 import ErrorBoundary from './ErrorBoundary';
 
+// Temporarily hardcode environment variables for testing
+const STOREFRONT_DOMAIN = 'checkout-sdk.myshopify.com';
+const STOREFRONT_ACCESS_TOKEN = 'ec242e8c0bfd38b44702d2d1b76c505b';
+const STOREFRONT_VERSION = '2025-07';
+const EMAIL = 'checkout-kit@shopify.com';
+const PHONE = '1-888-746-7439';
+
 const colorScheme = ColorScheme.web;
+
+console.log('Environment variables loaded:', {
+  STOREFRONT_DOMAIN,
+  STOREFRONT_ACCESS_TOKEN: STOREFRONT_ACCESS_TOKEN
+    ? '***' + STOREFRONT_ACCESS_TOKEN.slice(-4)
+    : 'undefined',
+  STOREFRONT_VERSION,
+  EMAIL,
+  PHONE,
+});
 
 const config: Configuration = {
   colorScheme,
@@ -92,11 +109,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const cache = new InMemoryCache();
 
 const client = new ApolloClient({
-  uri: `https://${env.STOREFRONT_DOMAIN}/api/${env.STOREFRONT_VERSION}/graphql.json`,
+  uri: `https://${STOREFRONT_DOMAIN}/api/${STOREFRONT_VERSION}/graphql.json`,
   cache,
   headers: {
     'Content-Type': 'application/json',
-    'X-Shopify-Storefront-Access-Token': env.STOREFRONT_ACCESS_TOKEN ?? '',
+    'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN ?? '',
   },
   connectToDevTools: true,
 });
@@ -165,14 +182,15 @@ function AppWithContext({children}: PropsWithChildren) {
   const shopify = useShopifyCheckoutSheet();
 
   useEffect(() => {
-    // Configure AcceleratedCheckouts
+    // Configure AcceleratedCheckouts with both wallets
     shopify.configureAcceleratedCheckouts({
-      storefrontDomain: env.STOREFRONT_DOMAIN ?? '',
-      storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN ?? '',
+      storefrontDomain: STOREFRONT_DOMAIN ?? '',
+      storefrontAccessToken: STOREFRONT_ACCESS_TOKEN ?? '',
       customer: {
-        email: 'customer@example.com', // Optional: replace with actual customer email
-        phoneNumber: '+1234567890', // Optional: replace with actual customer phone
+        email: EMAIL ?? '',
+        phoneNumber: PHONE ?? '',
       },
+      wallets: [AcceleratedCheckoutWallet.shopPay, AcceleratedCheckoutWallet.applePay],
     });
 
     const close = shopify.addEventListener('close', () => {
