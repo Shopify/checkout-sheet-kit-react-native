@@ -27,6 +27,7 @@ import type {ViewStyle} from 'react-native';
 import type {
   AcceleratedCheckoutWallet,
   CheckoutCompletedEvent,
+  CheckoutException,
   PixelEvent,
 } from '..';
 
@@ -76,7 +77,7 @@ interface AcceleratedCheckoutButtonsProps {
   /**
    * Called when checkout fails
    */
-  onFail?: (error: {message: string}) => void;
+  onFail?: (error: CheckoutException) => void;
 
   /**
    * Called when checkout is completed successfully
@@ -93,12 +94,6 @@ interface AcceleratedCheckoutButtonsProps {
    * States from SDK: loading, rendered, error
    */
   onRenderStateChange?: (state: RenderState) => void;
-
-  /**
-   * Called to determine if the error should be recovered from
-   * Return true to attempt recovery, false to show error state
-   */
-  onShouldRecoverFromError?: (error: {message: string}) => boolean;
 
   /**
    * Called when a web pixel event is triggered
@@ -119,13 +114,10 @@ interface NativeAcceleratedCheckoutButtonsProps {
   cornerRadius?: number;
   wallets?: AcceleratedCheckoutWallet[];
   onPress?: () => void;
-  onFail?: (event: {nativeEvent: {message: string}}) => void;
+  onFail?: (event: {nativeEvent: CheckoutException}) => void;
   onComplete?: (event: {nativeEvent: CheckoutCompletedEvent}) => void;
   onCancel?: () => void;
   onRenderStateChange?: (event: {nativeEvent: {state: string}}) => void;
-  onShouldRecoverFromError?: (event: {
-    nativeEvent: {message: string};
-  }) => boolean;
   onWebPixelEvent?: (event: {nativeEvent: PixelEvent}) => void;
   onClickLink?: (event: {nativeEvent: {url: string}}) => void;
 }
@@ -176,32 +168,25 @@ export const AcceleratedCheckoutButtons: React.FC<
   }, [onPress]);
 
   const handleFail = useCallback(
-    (event: {nativeEvent?: {message: string}; message?: string}) => {
-      log('Checkout failed', event.nativeEvent);
-      const message = event.nativeEvent?.message || event.message;
-      if (message) {
-        onFail?.({message});
-      }
+    (event: {nativeEvent: CheckoutException}) => {
+      onFail?.(event.nativeEvent);
     },
     [onFail],
   );
 
   const handleComplete = useCallback(
     (event: {nativeEvent: CheckoutCompletedEvent}) => {
-      log('Checkout completed', event.nativeEvent.orderDetails.id);
       onComplete?.(event.nativeEvent);
     },
     [onComplete],
   );
 
   const handleCancel = useCallback(() => {
-    log('Checkout cancelled');
     onCancel?.();
   }, [onCancel]);
 
   const handleRenderStateChange = useCallback(
     (event: {nativeEvent: {state: string}}) => {
-      log('Render state changed', event.nativeEvent);
       if (event.nativeEvent?.state) {
         onRenderStateChange?.(event.nativeEvent.state as RenderState);
       }
@@ -211,7 +196,6 @@ export const AcceleratedCheckoutButtons: React.FC<
 
   const handleWebPixelEvent = useCallback(
     (event: {nativeEvent: PixelEvent}) => {
-      log('Web pixel event', event.nativeEvent.name);
       onWebPixelEvent?.(event.nativeEvent);
     },
     [onWebPixelEvent],
@@ -219,7 +203,6 @@ export const AcceleratedCheckoutButtons: React.FC<
 
   const handleClickLink = useCallback(
     (event: {nativeEvent: {url: string}}) => {
-      log('Link clicked', event.nativeEvent);
       if (event.nativeEvent?.url) {
         onClickLink?.(event.nativeEvent.url);
       }
@@ -261,10 +244,3 @@ export const AcceleratedCheckoutButtons: React.FC<
 };
 
 export default AcceleratedCheckoutButtons;
-
-function log(message: string, data?: any) {
-  if (__DEV__) {
-    // eslint-disable-next-line no-console
-    console.log(`[AcceleratedCheckoutButtons] ${message}`, data || '');
-  }
-}

@@ -40,7 +40,6 @@ import SettingsScreen from './screens/SettingsScreen';
 
 import type {Configuration} from '@shopify/checkout-sheet-kit';
 import {
-  AcceleratedCheckoutWallet,
   ColorScheme,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
@@ -58,18 +57,28 @@ import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import type {ProductVariant, ShopifyProduct} from '../@types';
 import ErrorBoundary from './ErrorBoundary';
 import env from 'react-native-config';
+import {createDebugLogger} from './utils';
+import {useShopifyEventHandlers} from './hooks/useCheckoutEventHandlers';
+
+const log = createDebugLogger('ENV');
 
 const colorScheme = ColorScheme.web;
 
-console.log('Environment variables loaded:', {
-  STOREFRONT_DOMAIN: env.STOREFRONT_DOMAIN,
-  STOREFRONT_ACCESS_TOKEN: env.STOREFRONT_ACCESS_TOKEN
-    ? '***' + env.STOREFRONT_ACCESS_TOKEN.slice(-4)
-    : 'undefined',
-  STOREFRONT_VERSION: env.STOREFRONT_VERSION,
-  EMAIL: env.EMAIL,
-  PHONE: env.PHONE,
-});
+function quote(str: string | undefined) {
+  return `"${str}"`;
+}
+
+log('--------------------------------');
+log('Using the following env');
+log('STOREFRONT_DOMAIN:', quote(env.STOREFRONT_DOMAIN));
+log(
+  'STOREFRONT_ACCESS_TOKEN:',
+  '*'.repeat(8) + env.STOREFRONT_ACCESS_TOKEN?.slice(-4),
+);
+log('STOREFRONT_VERSION:', quote(env.STOREFRONT_VERSION));
+log('EMAIL:', quote(env.EMAIL));
+log('PHONE:', quote(env.PHONE));
+log('--------------------------------');
 
 const checkoutKitConfig: Configuration = {
   colorScheme,
@@ -174,42 +183,38 @@ class StorefrontURL {
 
 function AppWithContext({children}: PropsWithChildren) {
   const shopify = useShopifyCheckoutSheet();
+  const eventHandlers = useShopifyEventHandlers();
 
   useEffect(() => {
     // Configure AcceleratedCheckouts with both wallets
     shopify.configureAcceleratedCheckouts({
-      storefrontDomain: env.STOREFRONT_DOMAIN ?? '',
-      storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN ?? '',
+      storefrontDomain: env.STOREFRONT_DOMAIN!,
+      storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN!,
       customer: {
-        email: env.EMAIL ?? '',
-        phoneNumber: env.PHONE ?? '',
+        email: env.EMAIL!,
+        phoneNumber: env.PHONE!,
       },
-      wallets: [
-        AcceleratedCheckoutWallet.shopPay,
-        AcceleratedCheckoutWallet.applePay,
-      ],
     });
 
     const close = shopify.addEventListener('close', () => {
-      console.log('[CheckoutClose]');
+      eventHandlers.onCancel?.();
     });
 
     const pixel = shopify.addEventListener('pixel', (event: PixelEvent) => {
-      console.log('[CheckoutPixelEvent]', event.name, event);
+      eventHandlers.onWebPixelEvent?.(event);
     });
 
     const completed = shopify.addEventListener(
       'completed',
       (event: CheckoutCompletedEvent) => {
-        console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
-        console.log('[CheckoutCompletedEvent]', event);
+        eventHandlers.onComplete?.(event);
       },
     );
 
     const error = shopify.addEventListener(
       'error',
       (error: CheckoutException) => {
-        console.log(error.constructor.name, error);
+        eventHandlers.onFail?.(error);
       },
     );
 
@@ -219,7 +224,7 @@ function AppWithContext({children}: PropsWithChildren) {
       close?.remove();
       error?.remove();
     };
-  }, [shopify]);
+  }, [shopify, eventHandlers]);
 
   return (
     <ConfigProvider>

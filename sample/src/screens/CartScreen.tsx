@@ -47,6 +47,7 @@ import type {Colors} from '../context/Theme';
 import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 import {currency, getOptimizedImageUrl} from '../utils';
+import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
 
 function CartScreen(): React.JSX.Element {
   const ShopifyCheckout = useShopifyCheckoutSheet();
@@ -54,6 +55,9 @@ function CartScreen(): React.JSX.Element {
   const {cartId, checkoutURL, totalQuantity, removeFromCart, addingToCart} =
     useCart();
   const {queries} = useShopify();
+  const eventHandlers = useShopifyEventHandlers(
+    'Cart - AcceleratedCheckoutButtons',
+  );
 
   const [fetchCart, {data, loading, error}] = queries.cart;
 
@@ -161,6 +165,7 @@ function CartScreen(): React.JSX.Element {
           <View>
             <View style={styles.checkoutContainer}>
               <AcceleratedCheckoutButtons
+                {...eventHandlers}
                 cartId={cartId}
                 cornerRadius={10}
                 style={styles.acceleratedCheckoutContainer}

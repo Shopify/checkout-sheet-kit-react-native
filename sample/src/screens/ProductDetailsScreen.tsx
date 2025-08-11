@@ -46,6 +46,7 @@ import {
   AcceleratedCheckoutWallet,
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
+import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetails'>;
 
@@ -97,6 +98,9 @@ function ProductDetails({
   const shopify = useShopifyCheckoutSheet();
   const [acceleratedCheckoutAvailable, setAcceleratedCheckoutAvailable] =
     useState(false);
+  const eventHandlers = useShopifyEventHandlers(
+    'PDP - AcceleratedCheckoutButtons',
+  );
 
   useEffect(() => {
     if (variant?.id && Platform.OS === 'ios') {
@@ -149,17 +153,12 @@ function ProductDetails({
 
           {acceleratedCheckoutAvailable && variant?.id && (
             <AcceleratedCheckoutButtons
+              {...eventHandlers}
               wallets={[AcceleratedCheckoutWallet.applePay]}
               variantId={variant.id}
               quantity={1}
               cornerRadius={cornerRadius}
               style={styles.acceleratedCheckoutButton}
-              onComplete={() => {
-                console.log('[AcceleratedCheckout] Completed successfully!');
-              }}
-              onFail={error => {
-                console.error('[AcceleratedCheckout] Error:', error.message);
-              }}
             />
           )}
         </View>
@@ -226,6 +225,7 @@ function createStyles(colors: Colors, cornerRadius: number) {
     addToCartButtonContainer: {
       marginTop: 10,
       gap: 10,
+      height: 80,
     },
     acceleratedCheckoutButton: {
       height: 48,

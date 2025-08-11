@@ -210,7 +210,6 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		storefrontAccessToken: String,
 		customerEmail: String?,
 		customerPhoneNumber: String?,
-		wallets: [String]
 	) {
 		if #available(iOS 17.0, *) {
 			let customer = ShopifyAcceleratedCheckouts.Customer(
@@ -226,7 +225,6 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
 			// Update the shared configuration for the UI components
 			AcceleratedCheckoutConfiguration.shared.configuration = acceleratedCheckoutsConfiguration as? ShopifyAcceleratedCheckouts.Configuration
-			AcceleratedCheckoutConfiguration.shared.wallets = wallets
 
 			// Notify all button views to update with the new configuration
 			NotificationCenter.default.post(name: Notification.Name("AcceleratedCheckoutConfigurationUpdated"), object: nil)
@@ -236,7 +234,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 	@objc func isAcceleratedCheckoutAvailable(
 		_ cartId: String?,
 		variantId: String?,
-		quantity: NSNumber?,
+		quantity: NSNumber,
 		resolve: @escaping RCTPromiseResolveBlock,
 		reject: @escaping RCTPromiseRejectBlock
 	) {

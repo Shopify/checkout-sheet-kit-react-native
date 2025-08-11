@@ -127,3 +127,14 @@ export function getOptimizedImageUrl(
     return url;
   }
 }
+
+export function debugLog(message: string, data?: any) {
+  if (__DEV__) {
+    console.log(message, data || '');
+  }
+}
+
+export function createDebugLogger(name: string) {
+  return (message: string, data?: any) =>
+    debugLog(`[${name}] ${message}`, data);
+}

@@ -18,19 +18,20 @@ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 */
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTViewManager.h>
 
-@interface RCT_EXTERN_MODULE(RCTShopifyCheckoutSheetKit, NSObject)
+@interface RCT_EXTERN_MODULE (RCTShopifyCheckoutSheetKit, NSObject)
 
 /// Present checkout
-RCT_EXTERN_METHOD(present:(NSString *)checkoutURLString);
+RCT_EXTERN_METHOD(present : (NSString *)checkoutURLString);
 
 /// Preload checkout
-RCT_EXTERN_METHOD(preload:(NSString *)checkoutURLString);
+RCT_EXTERN_METHOD(preload : (NSString *)checkoutURLString);
 
 /// Dismiss checkout
 RCT_EXTERN_METHOD(dismiss);
@@ -39,21 +40,31 @@ RCT_EXTERN_METHOD(dismiss);
 RCT_EXTERN_METHOD(invalidateCache);
 
 /// Set configuration for checkout
-RCT_EXTERN_METHOD(setConfig:(NSDictionary *)configuration);
+RCT_EXTERN_METHOD(setConfig : (NSDictionary *)configuration);
 
 // Return configuration for checkout
-RCT_EXTERN_METHOD(getConfig: (RCTPromiseResolveBlock) resolve reject: (RCTPromiseRejectBlock) reject)
+RCT_EXTERN_METHOD(getConfig : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject)
 
 /// Configure AcceleratedCheckouts
-RCT_EXTERN_METHOD(configureAcceleratedCheckouts:(NSString *)storefrontDomain storefrontAccessToken:(NSString *)storefrontAccessToken customerEmail:(NSString *)customerEmail customerPhoneNumber:(NSString *)customerPhoneNumber wallets:(NSArray *)wallets);
+RCT_EXTERN_METHOD(configureAcceleratedCheckouts : (NSString *)
+                      storefrontDomain storefrontAccessToken : (NSString *)
+                          storefrontAccessToken customerEmail : (NSString *)
+                              customerEmail customerPhoneNumber : (NSString *)
+                                  customerPhoneNumber);
 
 /// Check if accelerated checkout is available
-RCT_EXTERN_METHOD(isAcceleratedCheckoutAvailable:(NSString *)cartId variantId:(NSString *)variantId quantity:(NSNumber *)quantity resolve:(RCTPromiseResolveBlock) resolve reject:(RCTPromiseRejectBlock) reject);
+RCT_EXTERN_METHOD(
+    isAcceleratedCheckoutAvailable : (NSString *)cartId variantId : (NSString *)
+        variantId quantity : (nonnull NSNumber *)
+            quantity resolve : (RCTPromiseResolveBlock)
+                resolve reject : (RCTPromiseRejectBlock)reject);
 
 @end
 
 // AcceleratedCheckoutButtons View Manager
-@interface RCT_EXTERN_MODULE(RCTAcceleratedCheckoutButtonsManager, RCTViewManager)
+@interface RCT_EXTERN_MODULE (RCTAcceleratedCheckoutButtonsManager,
+                              RCTViewManager)
 
 RCT_EXPORT_VIEW_PROPERTY(cartId, NSString *)
 RCT_EXPORT_VIEW_PROPERTY(variantId, NSString *)

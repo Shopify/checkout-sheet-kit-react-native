@@ -217,18 +217,11 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   public configureAcceleratedCheckouts(
     config: AcceleratedCheckoutConfiguration,
   ): void {
-    // Default to both shopPay and applePay if no wallets specified
-    const wallets = config.wallets ?? [
-      AcceleratedCheckoutWallet.shopPay,
-      AcceleratedCheckoutWallet.applePay,
-    ];
-
     RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
       config.storefrontDomain,
       config.storefrontAccessToken,
       config.customer?.email || null,
       config.customer?.phoneNumber || null,
-      wallets,
     );
   }
 

@@ -196,12 +196,6 @@ export interface AcceleratedCheckoutConfiguration {
     email?: string;
     phoneNumber?: string;
   };
-
-  /**
-   * Wallets to display in the AcceleratedCheckoutButtons
-   * Defaults to both shopPay and applePay
-   */
-  wallets?: AcceleratedCheckoutWallet[];
 }
 
 function addEventListener(
