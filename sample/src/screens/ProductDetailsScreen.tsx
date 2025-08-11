@@ -103,18 +103,15 @@ function ProductDetails({
   );
 
   useEffect(() => {
-    if (variant?.id && Platform.OS === 'ios') {
+    if (Platform.OS === 'ios') {
       shopify
-        .isAcceleratedCheckoutAvailable({
-          variantId: variant.id,
-          quantity: 1,
-        })
+        .isAcceleratedCheckoutAvailable()
         .then(setAcceleratedCheckoutAvailable)
         .catch(() => {
           setAcceleratedCheckoutAvailable(false);
         });
     }
-  }, [variant?.id, shopify]);
+  }, [shopify]);
 
   return (
     <View key={product.id} style={styles.productItem}>

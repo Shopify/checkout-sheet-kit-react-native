@@ -47,18 +47,17 @@ RCT_EXTERN_METHOD(getConfig : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject)
 
 /// Configure AcceleratedCheckouts
-RCT_EXTERN_METHOD(configureAcceleratedCheckouts : (NSString *)
-                      storefrontDomain storefrontAccessToken : (NSString *)
-                          storefrontAccessToken customerEmail : (NSString *)
-                              customerEmail customerPhoneNumber : (NSString *)
-                                  customerPhoneNumber);
+RCT_EXTERN_METHOD(
+    configureAcceleratedCheckouts : (NSString *)
+        storefrontDomain storefrontAccessToken : (NSString *)
+            storefrontAccessToken customerEmail : (NSString *)
+                customerEmail customerPhoneNumber : (NSString *)
+                    customerPhoneNumber resolve : (RCTPromiseResolveBlock)
+                        resolve reject : (RCTPromiseRejectBlock)reject);
 
 /// Check if accelerated checkout is available
-RCT_EXTERN_METHOD(
-    isAcceleratedCheckoutAvailable : (NSString *)cartId variantId : (NSString *)
-        variantId quantity : (nonnull NSNumber *)
-            quantity resolve : (RCTPromiseResolveBlock)
-                resolve reject : (RCTPromiseRejectBlock)reject);
+RCT_EXTERN_METHOD(isAcceleratedCheckoutAvailable : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject);
 
 @end
 

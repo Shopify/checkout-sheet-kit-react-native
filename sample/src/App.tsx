@@ -38,7 +38,7 @@ import Icon from 'react-native-vector-icons/Entypo';
 import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
-import type {Configuration} from '@shopify/checkout-sheet-kit';
+import type {Configuration, Features} from '@shopify/checkout-sheet-kit';
 import {
   ColorScheme,
   ShopifyCheckoutSheetProvider,
@@ -76,26 +76,13 @@ log(
   '*'.repeat(8) + env.STOREFRONT_ACCESS_TOKEN?.slice(-4),
 );
 log('STOREFRONT_VERSION:', quote(env.STOREFRONT_VERSION));
+log(
+  'STOREFRONT_MERCHANT_IDENTIFIER:',
+  quote(env.STOREFRONT_MERCHANT_IDENTIFIER),
+);
 log('EMAIL:', quote(env.EMAIL));
 log('PHONE:', quote(env.PHONE));
 log('--------------------------------');
-
-const checkoutKitConfig: Configuration = {
-  colorScheme,
-  preloading: true,
-  colors: {
-    ios: {
-      backgroundColor: '#f0f0e8',
-      tintColor: '#2d2a38',
-    },
-    android: {
-      backgroundColor: '#f0f0e8',
-      progressIndicator: '#2d2a38',
-      headerBackgroundColor: '#f0f0e8',
-      headerTextColor: '#2d2a38',
-    },
-  },
-};
 
 export type RootStackParamList = {
   Catalog: undefined;
@@ -118,7 +105,7 @@ const client = new ApolloClient({
     'Content-Type': 'application/json',
     'X-Shopify-Storefront-Access-Token': env.STOREFRONT_ACCESS_TOKEN ?? '',
   },
-  connectToDevTools: true,
+  connectToDevTools: __DEV__,
 });
 
 function AppWithTheme({children}: PropsWithChildren) {
@@ -367,12 +354,51 @@ function Routes() {
   );
 }
 
+const checkoutKitConfig: Configuration = {
+  colorScheme,
+  preloading: true,
+  colors: {
+    ios: {
+      backgroundColor: '#f0f0e8',
+      tintColor: '#2d2a38',
+    },
+    android: {
+      backgroundColor: '#f0f0e8',
+      progressIndicator: '#2d2a38',
+      headerBackgroundColor: '#f0f0e8',
+      headerTextColor: '#2d2a38',
+    },
+  },
+  acceleratedCheckouts: {
+    storefrontDomain: env.STOREFRONT_DOMAIN!,
+    storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN!,
+    /**
+     * We're reading the customer email and phone number from the environment
+     * variables. In a real app, you would get these values from your backend.
+     */
+    customer: {
+      email: env.EMAIL!,
+      phoneNumber: env.PHONE!,
+    },
+    wallets: {
+      applePay: {
+        contactFields: ['email', 'phone'],
+        merchantIdentifier: env.STOREFRONT_MERCHANT_IDENTIFIER!,
+      },
+    },
+  },
+};
+
+const checkoutKitFeatures: Partial<Features> = {
+  handleGeolocationRequests: true,
+};
+
 function App() {
   return (
     <ErrorBoundary>
       <ShopifyCheckoutSheetProvider
         configuration={checkoutKitConfig}
-        features={{handleGeolocationRequests: true}}>
+        features={checkoutKitFeatures}>
         <AppWithTheme>
           <AppWithContext>
             <AppWithNavigation>

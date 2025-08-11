@@ -10,8 +10,16 @@ import {
   CheckoutClientError,
   CheckoutExpiredError,
   GenericError,
+  AcceleratedCheckoutWallet,
+  RenderState,
 } from '../src';
-import {ColorScheme, CheckoutNativeErrorType, type Configuration} from '../src';
+import {
+  ColorScheme,
+  CheckoutNativeErrorType,
+  type Configuration,
+  type AcceleratedCheckoutConfiguration,
+} from '../src';
+import type {ApplePayContactField} from '../src/index.d';
 import {NativeModules, PermissionsAndroid, Platform} from 'react-native';
 
 const checkoutUrl = 'https://shopify.com/checkout';
@@ -22,7 +30,7 @@ const config: Configuration = {
 jest.mock('react-native', () => {
   let listeners: (typeof jest.fn)[] = [];
 
-  const NativeEventEmitter = jest.fn(() => ({
+  const mockNativeEventEmitter = jest.fn(() => ({
     addListener: jest.fn((_, callback) => {
       listeners.push(callback);
     }),
@@ -43,8 +51,8 @@ jest.mock('react-native', () => {
     preloading: true,
   };
 
-  const ShopifyCheckoutSheetKit = {
-    eventEmitter: NativeEventEmitter(),
+  const mockShopifyCheckoutSheetKit = {
+    eventEmitter: mockNativeEventEmitter(),
     version: '0.7.0',
     preload: jest.fn(),
     present: jest.fn(),
@@ -55,7 +63,13 @@ jest.mock('react-native', () => {
     addEventListener: jest.fn(),
     removeEventListeners: jest.fn(),
     initiateGeolocationRequest: jest.fn(),
+    configureAcceleratedCheckouts: jest.fn(),
+    isAcceleratedCheckoutAvailable: jest.fn(),
   };
+
+  const mockRequireNativeComponent = jest.fn().mockImplementation(() => {
+    return 'MockNativeComponent';
+  });
 
   return {
     Platform: {
@@ -64,10 +78,11 @@ jest.mock('react-native', () => {
     PermissionsAndroid: {
       requestMultiple: jest.fn(),
     },
+    requireNativeComponent: mockRequireNativeComponent,
     _listeners: listeners,
-    NativeEventEmitter,
+    NativeEventEmitter: mockNativeEventEmitter,
     NativeModules: {
-      ShopifyCheckoutSheetKit,
+      ShopifyCheckoutSheetKit: mockShopifyCheckoutSheetKit,
     },
   };
 });
@@ -75,7 +90,25 @@ jest.mock('react-native', () => {
 global.console = {
   ...global.console,
   error: jest.fn(),
+  warn: jest.fn(),
 };
+
+describe('Exports', () => {
+  describe('AcceleratedCheckoutWallet enum', () => {
+    it('exports correct wallet types', () => {
+      expect(AcceleratedCheckoutWallet.shopPay).toBe('shopPay');
+      expect(AcceleratedCheckoutWallet.applePay).toBe('applePay');
+    });
+  });
+
+  describe('RenderState enum', () => {
+    it('exports correct render states', () => {
+      expect(RenderState.Loading).toBe('loading');
+      expect(RenderState.Rendered).toBe('rendered');
+      expect(RenderState.Error).toBe('error');
+    });
+  });
+});
 
 describe('ShopifyCheckoutSheetKit', () => {
   // @ts-expect-error "eventEmitter is private"
@@ -692,6 +725,177 @@ describe('ShopifyCheckoutSheetKit', () => {
         error,
         LifecycleEventParseError,
       );
+    });
+  });
+
+  describe('Accelerated Checkout', () => {
+    const acceleratedConfig: AcceleratedCheckoutConfiguration = {
+      storefrontDomain: 'test-shop.myshopify.com',
+      storefrontAccessToken: 'shpat_test_token',
+      customer: {
+        email: 'test@example.com',
+        phoneNumber: '+1234567890',
+      },
+      wallets: {
+        applePay: {
+          contactFields: ['email', 'phone'] as ApplePayContactField[],
+          merchantIdentifier: 'merchant.com.test',
+        },
+      },
+    };
+
+    beforeEach(() => {
+      Platform.OS = 'ios';
+      NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts.mockReset();
+      NativeModules.ShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable.mockReset();
+    });
+
+    describe('configureAcceleratedCheckouts', () => {
+      it('calls native configureAcceleratedCheckouts with correct parameters on iOS', async () => {
+        const instance = new ShopifyCheckoutSheet();
+        NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts.mockResolvedValue(
+          true,
+        );
+
+        const result =
+          await instance.configureAcceleratedCheckouts(acceleratedConfig);
+
+        expect(result).toBe(true);
+        expect(
+          NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts,
+        ).toHaveBeenCalledWith(
+          'test-shop.myshopify.com',
+          'shpat_test_token',
+          'test@example.com',
+          '+1234567890',
+        );
+      });
+
+      it('calls native configureAcceleratedCheckouts with null customer data when not provided', async () => {
+        const instance = new ShopifyCheckoutSheet();
+        const minimalConfig = {
+          storefrontDomain: 'test-shop.myshopify.com',
+          storefrontAccessToken: 'shpat_test_token',
+        };
+        NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts.mockResolvedValue(
+          true,
+        );
+
+        await instance.configureAcceleratedCheckouts(minimalConfig);
+
+        expect(
+          NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts,
+        ).toHaveBeenCalledWith(
+          'test-shop.myshopify.com',
+          'shpat_test_token',
+          null,
+          null,
+        );
+      });
+
+      it('returns false on Android', async () => {
+        Platform.OS = 'android';
+        const instance = new ShopifyCheckoutSheet();
+
+        const result =
+          await instance.configureAcceleratedCheckouts(acceleratedConfig);
+
+        expect(result).toBe(false);
+        expect(
+          NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts,
+        ).not.toHaveBeenCalled();
+      });
+
+      it('validates required storefrontDomain', async () => {
+        const instance = new ShopifyCheckoutSheet();
+        const invalidConfig = {
+          ...acceleratedConfig,
+          storefrontDomain: '',
+        };
+
+        await expect(
+          instance.configureAcceleratedCheckouts(invalidConfig),
+        ).rejects.toThrow('storefrontDomain is required');
+      });
+
+      it('validates required storefrontAccessToken', async () => {
+        const instance = new ShopifyCheckoutSheet();
+        const invalidConfig = {
+          ...acceleratedConfig,
+          storefrontAccessToken: '',
+        };
+
+        await expect(
+          instance.configureAcceleratedCheckouts(invalidConfig),
+        ).rejects.toThrow('storefrontAccessToken is required');
+      });
+
+      it('validates required merchantIdentifier when Apple Pay is configured', async () => {
+        const instance = new ShopifyCheckoutSheet();
+        const invalidConfig = {
+          ...acceleratedConfig,
+          wallets: {
+            applePay: {
+              contactFields: ['email'] as ApplePayContactField[],
+              merchantIdentifier: '',
+            },
+          },
+        };
+
+        await expect(
+          instance.configureAcceleratedCheckouts(invalidConfig),
+        ).rejects.toThrow('wallets.applePay.merchantIdentifier is required');
+      });
+
+      it('does not throw when Apple Pay wallet is not configured', async () => {
+        const instance = new ShopifyCheckoutSheet();
+        const configWithoutApplePay = {
+          storefrontDomain: 'test-shop.myshopify.com',
+          storefrontAccessToken: 'shpat_test_token',
+        };
+        NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts.mockResolvedValue(
+          true,
+        );
+
+        await expect(
+          instance.configureAcceleratedCheckouts(configWithoutApplePay),
+        ).resolves.toBe(true);
+      });
+    });
+
+    describe('isAcceleratedCheckoutAvailable', () => {
+      it('calls native isAcceleratedCheckoutAvailable on iOS', async () => {
+        const instance = new ShopifyCheckoutSheet();
+        NativeModules.ShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable.mockResolvedValue(
+          true,
+        );
+
+        const result = await instance.isAcceleratedCheckoutAvailable();
+
+        expect(result).toBe(true);
+        expect(
+          NativeModules.ShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable,
+        ).toHaveBeenCalledTimes(1);
+      });
+
+      it('returns false on Android', async () => {
+        Platform.OS = 'android';
+        const instance = new ShopifyCheckoutSheet();
+
+        const result = await instance.isAcceleratedCheckoutAvailable();
+
+        expect(result).toBe(false);
+        expect(
+          NativeModules.ShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable,
+        ).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('AcceleratedCheckoutWallet enum', () => {
+      it('exports correct wallet types', () => {
+        expect(AcceleratedCheckoutWallet.shopPay).toBe('shopPay');
+        expect(AcceleratedCheckoutWallet.applePay).toBe('applePay');
+      });
     });
   });
 });

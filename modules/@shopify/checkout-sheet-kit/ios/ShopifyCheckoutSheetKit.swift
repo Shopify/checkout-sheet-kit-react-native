@@ -205,61 +205,48 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 		resolve(config)
 	}
 
-	@objc func configureAcceleratedCheckouts(
-		_ storefrontDomain: String,
-		storefrontAccessToken: String,
-		customerEmail: String?,
-		customerPhoneNumber: String?,
-	) {
-		if #available(iOS 17.0, *) {
-			let customer = ShopifyAcceleratedCheckouts.Customer(
-				email: customerEmail,
-				phoneNumber: customerPhoneNumber
-			)
+    @objc func configureAcceleratedCheckouts(
+        _ storefrontDomain: String,
+        storefrontAccessToken: String,
+        customerEmail: String?,
+        customerPhoneNumber: String?,
+        resolve: @escaping RCTPromiseResolveBlock,
+        reject: @escaping RCTPromiseRejectBlock
+    ) {
+        if #available(iOS 17.0, *) {
+            let customer = ShopifyAcceleratedCheckouts.Customer(
+                email: customerEmail,
+                phoneNumber: customerPhoneNumber
+            )
 
-			acceleratedCheckoutsConfiguration = ShopifyAcceleratedCheckouts.Configuration(
-				storefrontDomain: storefrontDomain,
-				storefrontAccessToken: storefrontAccessToken,
-				customer: customer
-			)
+            acceleratedCheckoutsConfiguration = ShopifyAcceleratedCheckouts.Configuration(
+                storefrontDomain: storefrontDomain,
+                storefrontAccessToken: storefrontAccessToken,
+                customer: customer
+            )
 
-			// Update the shared configuration for the UI components
-			AcceleratedCheckoutConfiguration.shared.configuration = acceleratedCheckoutsConfiguration as? ShopifyAcceleratedCheckouts.Configuration
+            AcceleratedCheckoutConfiguration.shared.configuration = acceleratedCheckoutsConfiguration as? ShopifyAcceleratedCheckouts.Configuration
 
-			// Notify all button views to update with the new configuration
-			NotificationCenter.default.post(name: Notification.Name("AcceleratedCheckoutConfigurationUpdated"), object: nil)
-		}
-	}
+            NotificationCenter.default.post(name: Notification.Name("AcceleratedCheckoutConfigurationUpdated"), object: nil)
 
-	@objc func isAcceleratedCheckoutAvailable(
-		_ cartId: String?,
-		variantId: String?,
-		quantity: NSNumber,
-		resolve: @escaping RCTPromiseResolveBlock,
-		reject: @escaping RCTPromiseRejectBlock
-	) {
-		guard #available(iOS 17.0, *) else {
-			reject("UNAVAILABLE", "AcceleratedCheckouts requires iOS 17.0+", nil)
-			return
-		}
+            resolve(true)
+        } else {
+            resolve(false)
+        }
+    }
 
-		guard let config = acceleratedCheckoutsConfiguration as? ShopifyAcceleratedCheckouts.Configuration else {
-			reject("CONFIG_ERROR", "AcceleratedCheckouts configuration not set", nil)
-			return
-		}
+    @objc func isAcceleratedCheckoutAvailable(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        reject: @escaping RCTPromiseRejectBlock
+    ) {
+        guard #available(iOS 17.0, *) else {
+            resolve(false)
+            return
+        }
 
-		Task {
-			do {
-				// For now, assume accelerated checkouts are available if configuration is set
-				// Future enhancement: implement actual availability checking based on shop settings
-				let available = true
-
-				resolve(available)
-			} catch {
-				reject("AVAILABILITY_ERROR", error.localizedDescription, error)
-			}
-		}
-	}
+        let isConfigured = (acceleratedCheckoutsConfiguration as? ShopifyAcceleratedCheckouts.Configuration) != nil
+        resolve(isConfigured)
+    }
 
 	// MARK: - Private
 }

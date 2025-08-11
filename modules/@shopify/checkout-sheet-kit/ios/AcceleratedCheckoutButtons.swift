@@ -34,7 +34,7 @@ import PassKit
 class AcceleratedCheckoutConfiguration {
 	static let shared = AcceleratedCheckoutConfiguration()
 	var configuration: ShopifyAcceleratedCheckouts.Configuration?
-	var wallets: [String] = ["shopPay", "applePay"]
+	var wallets: [Wallet] = [Wallet.shopPay, Wallet.applePay]
 
 	private init() {
 		setupApplePay()
@@ -238,9 +238,8 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
 			return
 		}
 
-		// Use wallets from props, or fall back to shared configuration, or default to both
-		let walletsToUse = wallets ?? AcceleratedCheckoutConfiguration.shared.wallets
-		let shopifyWallets = convertToShopifyWallets(walletsToUse)
+		// Use wallets from props, or fallback to default
+		let shopifyWallets = wallets.map(convertToShopifyWallets) ?? AcceleratedCheckoutConfiguration.shared.wallets
 
 		// Create Apple Pay configuration
 		let applePayConfig = ShopifyAcceleratedCheckouts.ApplePayConfiguration(
@@ -321,7 +320,7 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
 	}
 
 	private func handleRenderStateChange(_ state: RenderState) {
-		onRenderStateChange?(["state": ShopifyEventSerialization.serialize(renderState: state)])
+		onRenderStateChange?(ShopifyEventSerialization.serialize(renderState: state))
 	}
 
 	private func handleWebPixelEvent(_ event: PixelEvent) {
@@ -329,9 +328,7 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
 	}
 
 	private func handleClickLink(_ url: URL) {
-		onClickLink?([
-			"url": url.absoluteString
-		])
+		onClickLink?(ShopifyEventSerialization.serialize(clickEvent: url))
 	}
 
 	override func layoutSubviews() {

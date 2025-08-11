@@ -61,6 +61,14 @@ jest.mock('react-native', () => {
     NativeModules: {
       ShopifyCheckoutSheetKit,
     },
+    requireNativeComponent: jest.fn().mockImplementation(() => {
+      const mockComponent = (props: any) => {
+        // Use React.createElement with plain object instead
+        const mockReact = jest.requireActual('react');
+        return mockReact.createElement('View', props);
+      };
+      return mockComponent;
+    }),
   };
 });
 
@@ -394,7 +402,9 @@ describe('ShopifyCheckoutSheetContext without provider', () => {
     // Test all the noop functions to ensure they don't throw
     expect(() => hookValue.addEventListener('close', jest.fn())).not.toThrow();
     expect(() => hookValue.removeEventListeners('close')).not.toThrow();
-    expect(() => hookValue.setConfig({colorScheme: ColorScheme.automatic})).not.toThrow();
+    expect(() =>
+      hookValue.setConfig({colorScheme: ColorScheme.automatic}),
+    ).not.toThrow();
     expect(() => hookValue.preload('test-url')).not.toThrow();
     expect(() => hookValue.present('test-url')).not.toThrow();
     expect(() => hookValue.invalidate()).not.toThrow();

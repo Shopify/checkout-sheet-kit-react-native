@@ -214,10 +214,16 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * Configure AcceleratedCheckouts for Shop Pay and Apple Pay buttons
    * @param config Configuration for AcceleratedCheckouts
    */
-  public configureAcceleratedCheckouts(
+  public async configureAcceleratedCheckouts(
     config: AcceleratedCheckoutConfiguration,
-  ): void {
-    RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+  ): Promise<boolean> {
+    if (Platform.OS !== 'ios') {
+      return false;
+    }
+
+    this.validateAcceleratedCheckoutsConfiguration(config);
+
+    return RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
       config.storefrontDomain,
       config.storefrontAccessToken,
       config.customer?.email || null,
@@ -230,16 +236,12 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * @param options Options containing either cartId or variantId/quantity
    * @returns Promise<boolean> indicating availability
    */
-  public async isAcceleratedCheckoutAvailable(options: {
-    cartId?: string;
-    variantId?: string;
-    quantity?: number;
-  }): Promise<boolean> {
-    return RNShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable(
-      options.cartId || null,
-      options.variantId || null,
-      options.quantity || 1,
-    );
+  public async isAcceleratedCheckoutAvailable(): Promise<boolean> {
+    if (Platform.OS !== 'ios') {
+      return false;
+    }
+
+    return RNShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable();
   }
 
   /**
@@ -252,7 +254,24 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     }
   }
 
-  // ---
+  // --- private
+
+  private validateAcceleratedCheckoutsConfiguration(
+    acceleratedCheckouts: Configuration['acceleratedCheckouts'],
+  ) {
+    if (!acceleratedCheckouts?.storefrontDomain) {
+      throw new Error('storefrontDomain is required');
+    }
+    if (!acceleratedCheckouts.storefrontAccessToken) {
+      throw new Error('storefrontAccessToken is required');
+    }
+    if (
+      acceleratedCheckouts.wallets?.applePay &&
+      !acceleratedCheckouts.wallets.applePay.merchantIdentifier
+    ) {
+      throw new Error('wallets.applePay.merchantIdentifier is required');
+    }
+  }
 
   /**
    * Checks if a specific feature is enabled in the configuration
