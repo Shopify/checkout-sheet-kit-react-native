@@ -48,6 +48,7 @@ jest.mock('react-native', () => {
     version: '0.7.0',
     preload: jest.fn(),
     present: jest.fn(),
+    dismiss: jest.fn(),
     invalidateCache: jest.fn(),
     getConfig: jest.fn(async () => exampleConfig),
     setConfig: jest.fn(),
@@ -153,6 +154,16 @@ describe('ShopifyCheckoutSheetKit', () => {
       expect(
         NativeModules.ShopifyCheckoutSheetKit.present,
       ).toHaveBeenCalledWith(checkoutUrl);
+    });
+  });
+
+  describe('dismiss', () => {
+    it('calls `dismiss`', () => {
+      const instance = new ShopifyCheckoutSheet();
+      instance.dismiss();
+      expect(
+        NativeModules.ShopifyCheckoutSheetKit.dismiss,
+      ).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -280,6 +291,26 @@ describe('ShopifyCheckoutSheetKit', () => {
           expect.any(LifecycleEventParseError),
           invalidData,
         );
+      });
+
+      it('handles unexpected errors during event processing', () => {
+        const mock = jest.spyOn(global.console, 'error');
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'pixel';
+        const callback = jest.fn(() => {
+          throw new Error('Callback error');
+        });
+        instance.addEventListener(eventName, callback);
+        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          eventName,
+          callback,
+        );
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'pixel',
+          expect.any(Function),
+        );
+        eventEmitter.emit('pixel', {type: 'STANDARD', someAttribute: 123});
+        expect(mock).toHaveBeenCalledWith(expect.any(LifecycleEventParseError));
       });
     });
 
