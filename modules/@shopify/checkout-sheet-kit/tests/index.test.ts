@@ -312,6 +312,17 @@ describe('ShopifyCheckoutSheetKit', () => {
         eventEmitter.emit('pixel', {type: 'STANDARD', someAttribute: 123});
         expect(mock).toHaveBeenCalledWith(expect.any(LifecycleEventParseError));
       });
+
+      it('handles falsy object event data', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'pixel';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+
+        // Emit falsy object (null is typeof 'object')
+        eventEmitter.emit('pixel', null);
+        expect(callback).not.toHaveBeenCalled();
+      });
     });
 
     describe('Completed Event', () => {
@@ -614,6 +625,73 @@ describe('ShopifyCheckoutSheetKit', () => {
 
         expect(() => sheet.teardown()).not.toThrow();
       });
+    });
+  });
+
+  describe('Feature Management', () => {
+    it('returns true for undefined features (feature fallback)', () => {
+      // Create instance without any features to test fallback
+      const instance = new ShopifyCheckoutSheet(undefined, {});
+
+      // Access private method via type assertion to test featureEnabled
+      const featureEnabled = (instance as any).featureEnabled(
+        'handleGeolocationRequests',
+      );
+      expect(featureEnabled).toBe(true);
+    });
+
+    it('returns false when feature is explicitly disabled', () => {
+      // Create instance with feature explicitly disabled
+      const instance = new ShopifyCheckoutSheet(undefined, {
+        handleGeolocationRequests: false,
+      });
+
+      // Access private method via type assertion to test featureEnabled
+      const featureEnabled = (instance as any).featureEnabled(
+        'handleGeolocationRequests',
+      );
+      expect(featureEnabled).toBe(false);
+    });
+
+    it('returns true when feature is explicitly enabled', () => {
+      // Create instance with feature explicitly enabled
+      const instance = new ShopifyCheckoutSheet(undefined, {
+        handleGeolocationRequests: true,
+      });
+
+      // Access private method via type assertion to test featureEnabled
+      const featureEnabled = (instance as any).featureEnabled(
+        'handleGeolocationRequests',
+      );
+      expect(featureEnabled).toBe(true);
+    });
+  });
+
+  describe('LifecycleEventParseError', () => {
+    it('creates error without Error.captureStackTrace', () => {
+      const originalCaptureStackTrace = Error.captureStackTrace;
+      delete (Error as any).captureStackTrace;
+
+      const error = new LifecycleEventParseError('test message');
+      expect(error.name).toBe('LifecycleEventParseError');
+      expect(error.message).toBe('test message');
+
+      // Restore
+      if (originalCaptureStackTrace) {
+        Error.captureStackTrace = originalCaptureStackTrace;
+      }
+    });
+
+    it('creates error with Error.captureStackTrace', () => {
+      const mockCaptureStackTrace = jest.fn();
+      Error.captureStackTrace = mockCaptureStackTrace;
+
+      const error = new LifecycleEventParseError('test message');
+      expect(error.name).toBe('LifecycleEventParseError');
+      expect(mockCaptureStackTrace).toHaveBeenCalledWith(
+        error,
+        LifecycleEventParseError,
+      );
     });
   });
 });
