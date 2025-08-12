@@ -1,0 +1,107 @@
+#!/bin/bash
+
+DIR=modules/@shopify/checkout-sheet-kit
+
+# Check for verbose flag
+VERBOSE=false
+if [[ "$*" == *"--verbose"* ]]; then
+    VERBOSE=true
+fi
+
+# Accept --verbose before check/fix
+if [[ "$1" == "--verbose" ]]; then
+    MODE="${2:-check}"
+else
+    MODE="${1:-check}"
+fi
+
+# Validate the mode
+if [[ "$MODE" != "check" && "$MODE" != "fix" ]]; then
+    echo "❌ Invalid mode: $MODE"
+    echo "Usage: $0 [check|fix] [--verbose]"
+    echo "  check: Run linters in check mode (default)"
+    echo "  fix:   Run linters in fix mode to auto-fix issues"
+    echo "  --verbose: Show detailed output from linters"
+    exit 1
+fi
+
+# Function to provide installation instructions
+print_install_instructions() {
+    echo "🔧 FIX:"
+    echo "   Shopify employee? Run 'dev up'"
+    echo "   Not a Shopify employee? Install via homebrew:"
+    echo "     - SwiftLint: 'brew install swiftlint' / https://github.com/realm/SwiftLint"
+    echo "     - SwiftFormat: 'brew install swiftformat' / https://github.com/nicklockwood/SwiftFormat"
+}
+
+# Check for SwiftLint
+if ! which swiftlint >/dev/null; then
+    echo "⚠️ WARN: SwiftLint not installed"
+    print_install_instructions
+    exit 1
+fi
+
+# Check for SwiftFormat
+if ! which swiftformat >/dev/null; then
+    echo "⚠️ WARN: SwiftFormat not installed"
+    print_install_instructions
+    exit 1
+fi
+
+# Run SwiftLint
+QUIET_FLAG=""
+if [[ "$VERBOSE" == "false" ]]; then
+    QUIET_FLAG="--quiet"
+fi
+
+if [[ "$MODE" == "check" ]]; then
+    echo "🔄 Running SwiftLint in check mode..."
+    swiftlint lint --strict $QUIET_FLAG $DIR
+    LINT_STATUS=$?
+else
+    echo "🔄 Running SwiftLint in fix mode..."
+    swiftlint lint --fix $QUIET_FLAG $DIR
+    LINT_STATUS=$?
+fi
+echo "SwiftLint exit status: $LINT_STATUS"
+
+# Run SwiftFormat
+if [[ "$MODE" == "check" ]]; then
+    echo "🔄 Running SwiftFormat in check mode..."
+    swiftformat $DIR $QUIET_FLAG --lint
+    FORMAT_STATUS=$?
+else
+    echo "🔄 Running SwiftFormat in fix mode..."
+    swiftformat $DIR $QUIET_FLAG
+    FORMAT_STATUS=$?
+fi
+echo "SwiftFormat exit status: $FORMAT_STATUS"
+
+# Function to print error messages for linting issues
+print_linting_error() {
+    local tool_name=$1
+    echo "❌ $tool_name detected issues that need to be fixed."
+    echo "🔧 How to fix:"
+    echo "   Shopify employee? Run 'dev fix' or 'dev lint --verbose' to see detailed output"
+    echo "   Not a Shopify employee? Run './Scripts/lint fix' to auto-fix issues"
+    if [[ "$tool_name" == "SwiftLint" ]]; then
+        echo "   Then fix any remaining non-autofixable issues manually"
+    fi
+}
+
+# Handle exit codes for check mode
+if [[ "$MODE" == "check" ]]; then
+    if [ $LINT_STATUS -ne 0 ]; then
+        print_linting_error "SwiftLint"
+        exit 1
+    fi
+
+    if [ $FORMAT_STATUS -ne 0 ]; then
+        print_linting_error "SwiftFormat"
+        exit 1
+    fi
+
+    echo "✅ All linting checks passed!"
+else
+    echo "✅ Linting fixes applied!"
+fi
