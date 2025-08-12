@@ -2,34 +2,124 @@
 
 require 'find'
 
-license_text = "/*\n" + File.read('LICENSE') + "*/\n\n"
+##
+# Builds the canonical license block that will be inserted at the top of files
+# when needed.
+def build_license_block
+  license_body = File.read('LICENSE')
+  "/*\n#{license_body}*/\n\n"
+end
 
-def copy_license(dir, text)
-  Find.find(dir) do |path|
-    next unless File.file?(path) &&
-      path.end_with?('.swift') ||
-      path.end_with?('.h') ||
-      path.end_with?('.mm') ||
-      path.end_with?('.java') ||
-      path.end_with?('.js') ||
-      path.end_with?('.ts') ||
-      path.end_with?('.tsx')
+##
+# Normalizes a string by collapsing all whitespace (spaces, tabs, newlines)
+# into single spaces and trimming the ends. Used to compare license text while
+# ignoring formatting differences such as indentation or wrapping.
+def normalize_whitespace(text)
+  text.gsub(/\s+/, ' ').strip
+end
 
-    print("[copy_license] " + path + "\n")
+##
+# Given the contents of a file, extracts the very first comment at the top of
+# the file if it exists and returns a tuple of:
+# - full_comment_with_markers: the raw comment including comment markers
+# - inner_comment_text: the text inside the comment with common decorations removed
+# - range_end_index: the index where the comment ends in the file contents
+# If there is no top-of-file comment, returns [nil, nil, 0].
+def extract_top_comment(content)
+  # Handle optional UTF-8 BOM at start
+  content = content.sub(/^\uFEFF/, '')
 
-    content = File.read(path)
-
-    # Remove existing license
-    content.sub!(/\/\*.*?\*\//m, '')
-    # remove existing newlines from start of file
-    content.gsub!(/\A\n*/, '')
-    # Add new license
-    content.prepend(text)
-
-    File.write(path, content)
+  if content.start_with?('/*')
+    end_idx = content.index('*/', 2)
+    return [nil, nil, 0] unless end_idx
+    full = content[0..(end_idx + 1)]
+    inner = full[2..-3]
+    # Remove leading '*' decoration often found in block comments
+    inner = inner.lines.map { |line| line.sub(/^\s*\*\s?/, '') }.join
+    return [full, inner, end_idx + 2]
+  elsif content.start_with?('//')
+    lines = []
+    consumed = 0
+    content.each_line do |line|
+      break unless line.start_with?('//')
+      lines << line
+      consumed += line.bytesize
+    end
+    full = lines.join
+    inner = lines.map { |l| l.sub(/^\/\/\s?/, '') }.join
+    return [full, inner, consumed]
+  else
+    return [nil, nil, 0]
   end
 end
 
-copy_license('modules/@shopify/checkout-sheet-kit/ios', license_text)
-copy_license('modules/@shopify/checkout-sheet-kit/android', license_text)
-copy_license('modules/@shopify/checkout-sheet-kit/src', license_text)
+##
+# Returns true if the provided file content begins with a license comment whose
+# normalized text matches the repository LICENSE content, ignoring whitespace.
+def license_at_top?(content, normalized_license)
+  _full, inner, _ = extract_top_comment(content)
+  return false unless inner
+  normalize_whitespace(inner) == normalized_license
+end
+
+##
+# Processes a single file, ensuring the license block exists at the very top of
+# the file. If the file already has the license (with any whitespace formatting),
+# it is left unchanged. Otherwise, the license block is prepended above any
+# existing content.
+def process_file(path, license_block, normalized_license, write: true)
+  content = File.read(path)
+
+  # If license already at the very top (ignoring whitespace differences), do nothing.
+  return false if license_at_top?(content, normalized_license)
+
+  # Remove leading BOM and leading blank lines to place license at true top.
+  content = content.sub(/^\uFEFF/, '')
+  content = content.sub(/^\n+/, '')
+
+  updated = license_block + content
+  if write
+    File.write(path, updated)
+  end
+  true
+end
+
+##
+# Iterates through a directory tree and applies the license update for supported
+# file extensions. Returns the list of files that would be or were modified.
+def copy_license(dir, license_block, normalized_license, check_only: false)
+  modified = []
+  supported_exts = %w[.swift .h .mm .java .js .ts .tsx]
+
+  Find.find(dir) do |path|
+    next unless File.file?(path) && supported_exts.any? { |ext| path.end_with?(ext) }
+
+    changed = process_file(path, license_block, normalized_license, write: !check_only)
+    if changed
+      modified << path
+      puts("[copy_license] #{check_only ? 'would update' : 'updated'} #{path}")
+    end
+  end
+
+  modified
+end
+
+license_block = build_license_block
+normalized_license = normalize_whitespace(File.read('LICENSE'))
+
+check_only = ARGV.include?('--check')
+
+modified = []
+modified += copy_license('modules/@shopify/checkout-sheet-kit/ios', license_block, normalized_license, check_only: check_only)
+modified += copy_license('modules/@shopify/checkout-sheet-kit/android', license_block, normalized_license, check_only: check_only)
+modified += copy_license('modules/@shopify/checkout-sheet-kit/src', license_block, normalized_license, check_only: check_only)
+
+if check_only
+  if modified.empty?
+    puts('[copy_license] all files compliant')
+    exit 0
+  else
+    puts("[copy_license] non-compliant files: #{modified.count}")
+    exit 1
+  end
+end

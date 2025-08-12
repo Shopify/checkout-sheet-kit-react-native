@@ -1,9 +1,13 @@
 disabled_rules:
   - line_length
-  - redundant_void_return
-  - todo
-  - switch_case_alignment
+  - file_length
+  - non_optional_string_data_conversion
+  - type_body_length
+  - type_name
+  - identifier_name
+  - opening_brace
   - function_body_length
+  - trailing_comma
 
 opt_in_rules:
   - array_init
@@ -22,6 +26,10 @@ opt_in_rules:
   - modifier_order
   - overridden_super_call
   - toggle_bool
+  - switch_case_alignment:
+    indented_cases: false
+  - fallthrough
+  - explicit_acl
 
 nesting:
   type_level:

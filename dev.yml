@@ -26,6 +26,9 @@ up:
 packages:
   - xcode
 
+check:
+  lint: ./scripts/lint_swift
+
 commands:
 
   server:
@@ -47,3 +50,8 @@ commands:
       yarn module clean
       yarn sample clean
       echo "✅ Cleaned root, module and sample workspaces"
+
+  fix:
+    desc: Fix linting
+    run: |
+      ./scripts/lint_swift fix
