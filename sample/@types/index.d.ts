@@ -26,6 +26,7 @@ export interface ShopifyProduct {
     id: string;
     altText: string;
     url: string;
+    thumbnailUrl: string;
   }>;
   variants: Edges<ProductVariant>;
 }
@@ -41,6 +42,7 @@ export interface CartItem {
     width: number;
     height: number;
     url: string;
+    thumbnailUrl: string;
     altText: string;
   };
 }
