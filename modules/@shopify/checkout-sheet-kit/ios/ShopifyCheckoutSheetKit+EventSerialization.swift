@@ -28,7 +28,7 @@ import ShopifyCheckoutSheetKit
  * Shared event serialization utilities for converting ShopifyCheckoutSheetKit events
  * to React Native compatible dictionaries.
  */
-class ShopifyEventSerialization {
+enum ShopifyEventSerialization {
     /**
      * Encodes a Codable object to a JSON dictionary for React Native bridge.
      */
