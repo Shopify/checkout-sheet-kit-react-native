@@ -29,3 +29,11 @@ def loadProperties() {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+// Configure memory for forked test JVMs to avoid OOMs in CI
+subprojects {
+    tasks.withType(Test).configureEach {
+        maxHeapSize = "1536m"
+        jvmArgs "-XX:MaxMetaspaceSize=512m"
+    }
+}
