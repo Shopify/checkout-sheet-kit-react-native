@@ -201,7 +201,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
             "colorScheme": ShopifyCheckoutSheetKit.configuration.colorScheme.rawValue,
             "tintColor": ShopifyCheckoutSheetKit.configuration.tintColor,
             "backgroundColor": ShopifyCheckoutSheetKit.configuration.backgroundColor,
-			      "closeButtonColor": ShopifyCheckoutSheetKit.configuration.closeButtonTintColor
+            "closeButtonColor": ShopifyCheckoutSheetKit.configuration.closeButtonTintColor
         ]
 
         resolve(config)
