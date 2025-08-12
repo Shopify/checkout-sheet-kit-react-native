@@ -1347,7 +1347,7 @@ PODS:
     - Yoga
   - ShopifyCheckoutSheetKit (3.3.0)
   - SocketRocket (0.7.0)
-  - SwiftLint (0.57.0)
+  - SwiftLint (0.59.1)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1614,7 +1614,7 @@ SPEC CHECKSUMS:
   RNVectorIcons: 6c795cacc9276decc31d8e1a139b9cc6fc0479ca
   ShopifyCheckoutSheetKit: 5ee0c9753132d79924089ddef7e73ba4aa84fe37
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  SwiftLint: eb47480d47c982481592c195c221d11013a679cc
+  SwiftLint: 3d48e2fb2a3468fdaccf049e5e755df22fb40c2c
   Yoga: 348f8b538c3ed4423eb58a8e5730feec50bce372
 
 PODFILE CHECKSUM: 9efd19a381198fb46f36acf3d269233039fb9dc5
