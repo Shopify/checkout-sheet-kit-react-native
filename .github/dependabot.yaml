@@ -5,39 +5,67 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
 
   # Root package.json (monorepo dependencies)
   - package-ecosystem: npm
     directory: "/"
     schedule:
       interval: daily
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
 
   # Checkout Sheet Kit module dependencies
   - package-ecosystem: npm
     directory: "/modules/@shopify/checkout-sheet-kit"
     schedule:
       interval: daily
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
 
   # Sample app dependencies
   - package-ecosystem: npm
     directory: "/sample"
     schedule:
       interval: daily
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
 
   # iOS dependencies (Bundler/CocoaPods via Gemfile)
   - package-ecosystem: bundler
     directory: "/sample"
     schedule:
       interval: daily
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
 
   # Android dependencies (Gradle) - Sample app
   - package-ecosystem: gradle
     directory: "/sample/android"
     schedule:
       interval: daily
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
 
   # Android dependencies (Gradle) - Module
   - package-ecosystem: gradle
     directory: "/modules/@shopify/checkout-sheet-kit/android"
     schedule:
       interval: daily
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
