@@ -43,6 +43,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     private func resetShopifyCheckoutSheetKitDefaults() {
         ShopifyCheckoutSheetKit.configuration.preloading = Configuration.Preloading(enabled: true)
         ShopifyCheckoutSheetKit.configuration.colorScheme = .automatic
+    ShopifyCheckoutSheetKit.configuration.closeButtonTintColor = nil
     }
 
     private func getShopifyCheckoutSheetKit() -> RCTShopifyCheckoutSheetKit {
@@ -105,6 +106,71 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
 
         XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.tintColor, defaultColorFallback)
     }
+
+  func testConfigureWithCloseButtonColor() {
+    let configuration: [AnyHashable: Any] = [
+      "colors": [
+        "ios": [
+          "closeButtonColor": "#FF0000"
+        ]
+      ]
+    ]
+
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.closeButtonTintColor, UIColor(hex: "#FF0000"))
+  }
+
+  func testConfigureWithInvalidCloseButtonColor() {
+    let configuration: [AnyHashable: Any] = [
+      "colors": [
+        "ios": [
+          "closeButtonColor": "invalid"
+        ]
+      ]
+    ]
+
+    let defaultColorFallback = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.closeButtonTintColor, defaultColorFallback)
+  }
+
+  func testConfigureWithoutCloseButtonColor() {
+    let configuration: [AnyHashable: Any] = [
+      "colors": [
+        "ios": [
+          "tintColor": "#FF0000"
+        ]
+      ]
+    ]
+
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    // closeButtonTintColor should remain nil when not specified (uses system default)
+    XCTAssertNil(ShopifyCheckoutSheetKit.configuration.closeButtonTintColor)
+  }
+
+  func testGetConfigIncludesCloseButtonColor() {
+    // Set a close button color
+    let configuration: [AnyHashable: Any] = [
+      "colors": [
+        "ios": [
+          "closeButtonColor": "#00FF00"
+        ]
+      ]
+    ]
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    // Call getConfig and capture the result
+    var result: [String: Any]?
+    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+
+    // Verify that getConfig returned the close button color
+    XCTAssertNotNil(result?["closeButtonColor"])
+    let returnedColor = result?["closeButtonColor"] as? UIColor
+    XCTAssertEqual(returnedColor, UIColor(hex: "#00FF00"))
+  }
 
     /// checkoutDidComplete
     func testCheckoutDidCompleteSendsEvent() {

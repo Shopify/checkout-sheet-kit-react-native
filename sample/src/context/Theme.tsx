@@ -27,6 +27,7 @@ export const darkColors: Colors = {
   webViewProgressIndicator: '#0B96F1',
   webviewHeaderBackgroundColor: '#1D1D1F',
   webviewHeaderTextColor: '#ffffff',
+  webviewCloseButtonColor: '#ffffff',
 };
 
 export const lightColors: Colors = {
@@ -44,6 +45,7 @@ export const lightColors: Colors = {
   webViewProgressIndicator: '#0087ff',
   webviewHeaderBackgroundColor: '#ffffff',
   webviewHeaderTextColor: '#000000',
+  webviewCloseButtonColor: '#000000',
 };
 
 export const webColors: Colors = {
@@ -61,6 +63,7 @@ export const webColors: Colors = {
   webViewProgressIndicator: '#2c2a38',
   webviewHeaderBackgroundColor: '#f0f0e8',
   webviewHeaderTextColor: '#2c2a38',
+  webviewCloseButtonColor: '#2c2a38',
 };
 
 const ThemeContext = createContext<Context>({
@@ -84,6 +87,7 @@ export interface Colors {
   webViewProgressIndicator: string;
   webviewHeaderBackgroundColor: string;
   webviewHeaderTextColor: string;
+  webviewCloseButtonColor: string;
 }
 
 export function getNavigationTheme(

@@ -11,7 +11,7 @@ This repo is subdivided into 3 parts using yarn workspaces:
 - The `@shopify/checkout-sheet-kit` Native Module (workspace name = `module`)
 - The sample application (workspace name = `sample`)
 
-Each of the worksapces contains a separate `package.json` to manage tasks
+Each of the workspaces contains a separate `package.json` to manage tasks
 specific to each workspace.
 
 ## Getting started
@@ -132,7 +132,7 @@ Replace the details in the `sample/.env.example` file and rename it to
 # Storefront Details
 STOREFRONT_DOMAIN="YOUR_STORE.myshopify.com"
 STOREFRONT_ACCESS_TOKEN="YOUR_PUBLIC_STOREFRONT_ACCESS_TOKEN"
-STOREFRONT_VERSION="2024-04"
+STOREFRONT_VERSION="2025-07"
 ```
 
 ### Start the sample app

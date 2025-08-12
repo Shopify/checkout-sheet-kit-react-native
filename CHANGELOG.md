@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.3.0 - Aug 12, 2025
+
+- Upgrades Swift dependency to 3.3.0
+- Upgrades Android dependency to 3.5.0
+- Adds GooglePay support for eligible devices in Android
+- Adds isFirstOrder to web pixel events
+- Allow customizing sheet close button color
+- React Native dependency updates
+- Sample updates - fix for automatic scheme, stringify objects before logging.
+
 ## 3.2.0 - December 18, 2024
 
 - Handle geolocation requests for Android devices

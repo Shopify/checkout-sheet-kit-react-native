@@ -204,7 +204,7 @@ import {STOREFRONT_NAME, STOREFRONT_ACCESS_TOKEN} from '@env';
 
 // Create a new instance of the ApolloClient
 const client = new ApolloClient({
-  uri: `https://${STOREFRONT_NAME}.myshopify.com/api/2024-01/graphql.json`,
+  uri: `https://${STOREFRONT_NAME}.myshopify.com/api/2025-07/graphql.json`,
   headers: {
     'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN,
   },
@@ -384,12 +384,14 @@ const config: Configuration = {
     ios: {
       backgroundColor: '#ffffff',
       tintColor: '#000000',
+      closeButtonColor: '#333333',
     },
     android: {
       backgroundColor: '#ffffff',
       progressIndicator: '#2d2a38',
       headerBackgroundColor: '#ffffff',
       headerTextColor: '#000000',
+      closeButtonColor: '#333333',
     },
   },
 };
@@ -416,12 +418,14 @@ const config: Configuration = {
         progressIndicator: '#2d2a38',
         headerBackgroundColor: '#ffffff',
         headerTextColor: '#000000',
+        closeButtonColor: '#000000',
       },
       dark: {
         backgroundColor: '#000000',
         progressIndicator: '#0087ff',
         headerBackgroundColor: '#000000',
         headerTextColor: '#ffffff',
+        closeButtonColor: '#ffffff',
       },
     },
   },
