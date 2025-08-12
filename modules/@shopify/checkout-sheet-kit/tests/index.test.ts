@@ -19,58 +19,8 @@ const config: Configuration = {
   colorScheme: ColorScheme.automatic,
 };
 
-jest.mock('react-native', () => {
-  let listeners: (typeof jest.fn)[] = [];
-
-  const NativeEventEmitter = jest.fn(() => ({
-    addListener: jest.fn((_, callback) => {
-      listeners.push(callback);
-    }),
-    removeAllListeners: jest.fn(() => {
-      listeners = [];
-    }),
-    emit: jest.fn((_, data: any) => {
-      for (const listener of listeners) {
-        listener(data);
-      }
-
-      // clear listeners
-      listeners = [];
-    }),
-  }));
-
-  const exampleConfig = {
-    preloading: true,
-  };
-
-  const ShopifyCheckoutSheetKit = {
-    eventEmitter: NativeEventEmitter(),
-    version: '0.7.0',
-    preload: jest.fn(),
-    present: jest.fn(),
-    dismiss: jest.fn(),
-    invalidateCache: jest.fn(),
-    getConfig: jest.fn(async () => exampleConfig),
-    setConfig: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListeners: jest.fn(),
-    initiateGeolocationRequest: jest.fn(),
-  };
-
-  return {
-    Platform: {
-      OS: 'ios',
-    },
-    PermissionsAndroid: {
-      requestMultiple: jest.fn(),
-    },
-    _listeners: listeners,
-    NativeEventEmitter,
-    NativeModules: {
-      ShopifyCheckoutSheetKit,
-    },
-  };
-});
+// Use the shared manual mock. Individual tests can override if needed.
+jest.mock('react-native');
 
 global.console = {
   ...global.console,
@@ -429,27 +379,36 @@ describe('ShopifyCheckoutSheetKit', () => {
         {error: clientError, constructor: CheckoutClientError},
         {error: networkError, constructor: CheckoutHTTPError},
         {error: expiredError, constructor: CheckoutExpiredError},
-      ])(`correctly parses error $error`, ({error, constructor}) => {
-        const instance = new ShopifyCheckoutSheet();
-        const eventName = 'error';
-        const callback = jest.fn();
-        instance.addEventListener(eventName, callback);
-        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
-          eventName,
-          callback,
-        );
-        expect(eventEmitter.addListener).toHaveBeenCalledWith(
-          'error',
-          expect.any(Function),
-        );
-        eventEmitter.emit('error', error);
-        const calledWith = callback.mock.calls[0][0];
-        expect(calledWith).toBeInstanceOf(constructor);
-        expect(calledWith).not.toHaveProperty('__typename');
-        expect(calledWith).toHaveProperty('code');
-        expect(calledWith).toHaveProperty('message');
-        expect(calledWith).toHaveProperty('recoverable');
-      });
+      ])(
+        `correctly parses error $error`,
+        ({
+          error,
+          constructor,
+        }: {
+          error: any;
+          constructor: new (...args: any[]) => any;
+        }) => {
+          const instance = new ShopifyCheckoutSheet();
+          const eventName = 'error';
+          const callback = jest.fn();
+          instance.addEventListener(eventName, callback);
+          NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+            eventName,
+            callback,
+          );
+          expect(eventEmitter.addListener).toHaveBeenCalledWith(
+            'error',
+            expect.any(Function),
+          );
+          eventEmitter.emit('error', error);
+          const calledWith = callback.mock.calls[0][0];
+          expect(calledWith).toBeInstanceOf(constructor);
+          expect(calledWith).not.toHaveProperty('__typename');
+          expect(calledWith).toHaveProperty('code');
+          expect(calledWith).toHaveProperty('message');
+          expect(calledWith).toHaveProperty('recoverable');
+        },
+      );
 
       it('returns an unknown generic error if the error cannot be parsed', () => {
         const instance = new ShopifyCheckoutSheet();
@@ -535,9 +494,11 @@ describe('ShopifyCheckoutSheetKit', () => {
           'android.permission.ACCESS_FINE_LOCATION': 'denied',
         };
 
-        (PermissionsAndroid.requestMultiple as jest.Mock).mockResolvedValue(
-          mockPermissions,
-        );
+        (
+          PermissionsAndroid.requestMultiple as unknown as {
+            mockResolvedValue: (v: any) => void;
+          }
+        ).mockResolvedValue(mockPermissions);
 
         new ShopifyCheckoutSheet();
 
@@ -558,9 +519,11 @@ describe('ShopifyCheckoutSheetKit', () => {
           'android.permission.ACCESS_FINE_LOCATION': 'denied',
         };
 
-        (PermissionsAndroid.requestMultiple as jest.Mock).mockResolvedValue(
-          mockPermissions,
-        );
+        (
+          PermissionsAndroid.requestMultiple as unknown as {
+            mockResolvedValue: (v: any) => void;
+          }
+        ).mockResolvedValue(mockPermissions);
 
         new ShopifyCheckoutSheet();
 
