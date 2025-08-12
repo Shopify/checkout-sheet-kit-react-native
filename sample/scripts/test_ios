@@ -1,7 +1,6 @@
  #!/usr/bin/env bash
 
-set -ex
-set -eo pipefail
+set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/simulator"
@@ -9,7 +8,7 @@ dest="$(get_sim_destination)"
 
 cd ios
 
-xcodebuild build-for-testing test \
+xcodebuild test \
     -workspace ReactNative.xcworkspace \
     -scheme ReactNative \
     -destination "$dest" \

@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import type {PropsWithChildren, ReactNode} from 'react';
-import React, {useEffect, useState} from 'react';
-import {Linking, StatusBar} from 'react-native';
+import React, {useEffect, useMemo, useState} from 'react';
+import {Appearance, Linking, StatusBar} from 'react-native';
 import {
   Link,
   NavigationContainer,
@@ -33,14 +33,14 @@ import {
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
-import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Entypo';
 
 import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
-import type {Configuration} from '@shopify/checkout-sheet-kit';
+import type {Configuration, Features} from '@shopify/checkout-sheet-kit';
 import {
+  ApplePayContactField,
   ColorScheme,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
@@ -50,35 +50,45 @@ import type {
   CheckoutException,
   PixelEvent,
 } from '@shopify/checkout-sheet-kit';
-import {ConfigProvider} from './context/Config';
-import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
+import {ConfigProvider, useConfig} from './context/Config';
+import {
+  ThemeProvider,
+  darkColors,
+  getColors,
+  getNavigationTheme,
+  lightColors,
+  useTheme,
+} from './context/Theme';
 import {CartProvider, useCart} from './context/Cart';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import type {ProductVariant, ShopifyProduct} from '../@types';
 import ErrorBoundary from './ErrorBoundary';
+import env from 'react-native-config';
+import {createDebugLogger} from './utils';
 import {useShopifyEventHandlers} from './hooks/useCheckoutEventHandlers';
 
-const colorScheme = ColorScheme.web;
+const log = createDebugLogger('ENV');
 
-const config: Configuration = {
-  colorScheme,
-  preloading: true,
-  colors: {
-    ios: {
-      backgroundColor: '#f0f0e8',
-      tintColor: '#2d2a38',
-      closeButtonColor: '#2d2a38',
-    },
-    android: {
-      backgroundColor: '#f0f0e8',
-      progressIndicator: '#2d2a38',
-      headerBackgroundColor: '#f0f0e8',
-      headerTextColor: '#2d2a38',
-      closeButtonColor: '#2d2a38',
-    },
-  },
-};
+function quote(str: string | undefined) {
+  return `"${str}"`;
+}
+
+log('--------------------------------');
+log('Using the following env');
+log('STOREFRONT_DOMAIN:', quote(env.STOREFRONT_DOMAIN));
+log(
+  'STOREFRONT_ACCESS_TOKEN:',
+  '*'.repeat(8) + env.STOREFRONT_ACCESS_TOKEN?.slice(-4),
+);
+log('STOREFRONT_VERSION:', quote(env.STOREFRONT_VERSION));
+log(
+  'STOREFRONT_MERCHANT_IDENTIFIER:',
+  quote(env.STOREFRONT_MERCHANT_IDENTIFIER),
+);
+log('EMAIL:', quote(env.EMAIL));
+log('PHONE:', quote(env.PHONE));
+log('--------------------------------');
 
 export type RootStackParamList = {
   Catalog: undefined;
@@ -95,17 +105,23 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const cache = new InMemoryCache();
 
 const client = new ApolloClient({
-  uri: `https://${Config.STOREFRONT_DOMAIN}/api/${Config.STOREFRONT_VERSION}/graphql.json`,
+  uri: `https://${env.STOREFRONT_DOMAIN}/api/${env.STOREFRONT_VERSION}/graphql.json`,
   cache,
   headers: {
     'Content-Type': 'application/json',
-    'X-Shopify-Storefront-Access-Token': Config.STOREFRONT_ACCESS_TOKEN ?? '',
+    'X-Shopify-Storefront-Access-Token': env.STOREFRONT_ACCESS_TOKEN ?? '',
   },
-  connectToDevTools: true,
+  connectToDevTools: __DEV__,
 });
 
 function AppWithTheme({children}: PropsWithChildren) {
-  return <ThemeProvider defaultValue={colorScheme}>{children}</ThemeProvider>;
+  const {colorScheme} = useTheme();
+
+  return (
+    <ThemeProvider cornerRadius={30} defaultValue={colorScheme}>
+      {children}
+    </ThemeProvider>
+  );
 }
 
 const createNavigationIcon =
@@ -164,9 +180,26 @@ class StorefrontURL {
   }
 }
 
+const checkoutKitConfigDefaults: Configuration = {
+  colorScheme: ColorScheme.dark,
+  preloading: true,
+  colors: {
+    ios: {
+      backgroundColor: '#f0f0e8',
+      tintColor: '#2d2a38',
+    },
+    android: {
+      backgroundColor: '#f0f0e8',
+      progressIndicator: '#2d2a38',
+      headerBackgroundColor: '#f0f0e8',
+      headerTextColor: '#2d2a38',
+    },
+  },
+};
+
 function AppWithContext({children}: PropsWithChildren) {
   const shopify = useShopifyCheckoutSheet();
-  const eventHandlers = useShopifyEventHandlers('App');
+  const eventHandlers = useShopifyEventHandlers();
 
   useEffect(() => {
     const close = shopify.addEventListener('close', () => {
@@ -200,7 +233,14 @@ function AppWithContext({children}: PropsWithChildren) {
   }, [shopify, eventHandlers]);
 
   return (
-    <ConfigProvider>
+    <ConfigProvider
+      config={{
+        colorScheme:
+          checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
+        enablePreloading: checkoutKitConfigDefaults.preloading ?? true,
+        prefillBuyerInformation: false,
+        customerAuthenticated: false,
+      }}>
       <ApolloProvider client={client}>
         <CartProvider>
           <StatusBar barStyle="default" />
@@ -215,7 +255,7 @@ function CatalogStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerBackTitleVisible: true,
+        headerBackTitle: 'Back',
         headerRight: CartIcon,
       }}>
       <Stack.Screen
@@ -261,10 +301,103 @@ function CartIcon() {
 
 function AppWithNavigation({children}: PropsWithChildren) {
   const {colorScheme, preference} = useTheme();
+  const {appConfig} = useConfig();
+
+  const updatedColors = getColors(
+    appConfig.colorScheme,
+    Appearance.getColorScheme(),
+  );
+
+  const checkoutKitThemeConfig: Configuration = useMemo(() => {
+    if (appConfig.colorScheme === ColorScheme.automatic) {
+      return {
+        colorScheme: ColorScheme.automatic,
+        colors: {
+          ios: {
+            backgroundColor: updatedColors.webviewBackgroundColor,
+            tintColor: updatedColors.webViewProgressIndicator,
+          },
+          android: {
+            light: {
+              backgroundColor: lightColors.webviewBackgroundColor,
+              progressIndicator: lightColors.webViewProgressIndicator,
+              headerBackgroundColor: lightColors.webviewBackgroundColor,
+              headerTextColor: lightColors.webviewHeaderTextColor,
+              closeButtonColor: lightColors.webviewCloseButtonColor,
+            },
+            dark: {
+              backgroundColor: darkColors.webviewBackgroundColor,
+              progressIndicator: darkColors.webViewProgressIndicator,
+              headerBackgroundColor: darkColors.webviewBackgroundColor,
+              headerTextColor: darkColors.webviewHeaderTextColor,
+              closeButtonColor: darkColors.webviewCloseButtonColor,
+            },
+          },
+        },
+      };
+    }
+
+    return {
+      colorScheme: appConfig.colorScheme,
+      colors: {
+        ios: {
+          backgroundColor: updatedColors.webviewBackgroundColor,
+          tintColor: updatedColors.webViewProgressIndicator,
+          closeButtonColor: updatedColors.webviewCloseButtonColor,
+        },
+        android: {
+          backgroundColor: updatedColors.webviewBackgroundColor,
+          progressIndicator: updatedColors.webViewProgressIndicator,
+          headerBackgroundColor: updatedColors.webviewBackgroundColor,
+          headerTextColor: updatedColors.webviewHeaderTextColor,
+          closeButtonColor: updatedColors.webviewCloseButtonColor,
+        },
+      },
+    };
+  }, [appConfig.colorScheme, updatedColors]);
+
+  const checkoutKitConfig: Configuration = useMemo(() => {
+    return {
+      ...checkoutKitConfigDefaults,
+      ...checkoutKitThemeConfig,
+      preloading: appConfig.enablePreloading,
+      acceleratedCheckouts: {
+        storefrontDomain: env.STOREFRONT_DOMAIN!,
+        storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN!,
+        /**
+         * We're reading the customer email and phone number from the environment variables here,
+         * but in a real app you would derive these values from your backend.
+         */
+        customer: appConfig.customerAuthenticated
+          ? {
+              email: env.EMAIL!,
+              phoneNumber: env.PHONE!,
+            }
+          : undefined,
+        wallets: {
+          applePay: {
+            /**
+             * In cases where customers are authenticated, email/phone will be provided through the customer property,
+             * In cases where customers are NOT authenticated, we will collect email and phone number via the Apple Pay sheet.
+             */
+            contactFields: appConfig.customerAuthenticated
+              ? []
+              : [ApplePayContactField.email, ApplePayContactField.phone],
+            merchantIdentifier: env.STOREFRONT_MERCHANT_IDENTIFIER!,
+          },
+        },
+      },
+    } as Configuration;
+  }, [appConfig, checkoutKitThemeConfig]);
+
   return (
-    <NavigationContainer theme={getNavigationTheme(colorScheme, preference)}>
-      {children}
-    </NavigationContainer>
+    <ShopifyCheckoutSheetProvider
+      configuration={checkoutKitConfig}
+      features={checkoutKitFeatures}>
+      <NavigationContainer theme={getNavigationTheme(colorScheme, preference)}>
+        {children}
+      </NavigationContainer>
+    </ShopifyCheckoutSheetProvider>
   );
 }
 
@@ -340,20 +473,20 @@ function Routes() {
   );
 }
 
+const checkoutKitFeatures: Partial<Features> = {
+  handleGeolocationRequests: true,
+};
+
 function App() {
   return (
     <ErrorBoundary>
-      <ShopifyCheckoutSheetProvider
-        configuration={config}
-        features={{handleGeolocationRequests: true}}>
-        <AppWithTheme>
-          <AppWithContext>
-            <AppWithNavigation>
-              <Routes />
-            </AppWithNavigation>
-          </AppWithContext>
-        </AppWithTheme>
-      </ShopifyCheckoutSheetProvider>
+      <AppWithTheme>
+        <AppWithContext>
+          <AppWithNavigation>
+            <Routes />
+          </AppWithNavigation>
+        </AppWithContext>
+      </AppWithTheme>
     </ErrorBoundary>
   );
 }

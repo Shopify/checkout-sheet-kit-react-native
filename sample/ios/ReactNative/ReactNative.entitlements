@@ -7,5 +7,7 @@
 		<string>webcredentials:myshopify.com</string>
     <string>applinks:myshopify.com</string>
 	</array>
+	<key>com.apple.developer.in-app-payments</key>
+	<true/>
 </dict>
 </plist>
