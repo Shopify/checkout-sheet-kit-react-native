@@ -101,7 +101,7 @@ jobs:
 
       - name: Run Android tests
         env:
-          GRADLE_OPTS: -Xmx2g -XX:MaxMetaspaceSize=512m
+          GRADLE_OPTS: -Xmx4g -XX:MaxMetaspaceSize=768m
         run: |
           echo "STOREFRONT_DOMAIN=\"myshopify.com\"" > sample/.env
           yarn module build
