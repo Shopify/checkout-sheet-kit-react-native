@@ -1,0 +1,11 @@
+--indent 4
+--linebreaks lf
+--wraparguments before-first
+--wrapcollections before-first
+--commas inline
+--allman false
+--semicolons inline
+--trimwhitespace always
+--disable redundantReturn,hoistAwait,preferKeyPath,redundantInternal,redundantPublic
+--swiftversion 5.7.1
+--extensionacl on-declarations

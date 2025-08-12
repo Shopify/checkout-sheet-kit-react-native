@@ -9,9 +9,6 @@ disabled_rules:
   - function_body_length
   - trailing_comma
 
-included:
-  ios
-
 opt_in_rules:
   - array_init
   - collection_alignment
@@ -32,6 +29,7 @@ opt_in_rules:
   - switch_case_alignment:
     indented_cases: false
   - fallthrough
+  - explicit_acl
 
 nesting:
   type_level:

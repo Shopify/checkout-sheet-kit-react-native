@@ -1,27 +1,14 @@
 #!/bin/bash
 
 DIR=modules/@shopify/checkout-sheet-kit
-
-# Check for verbose flag
-VERBOSE=false
-if [[ "$*" == *"--verbose"* ]]; then
-    VERBOSE=true
-fi
-
-# Accept --verbose before check/fix
-if [[ "$1" == "--verbose" ]]; then
-    MODE="${2:-check}"
-else
-    MODE="${1:-check}"
-fi
+MODE="${1:-check}"
 
 # Validate the mode
 if [[ "$MODE" != "check" && "$MODE" != "fix" ]]; then
     echo "❌ Invalid mode: $MODE"
-    echo "Usage: $0 [check|fix] [--verbose]"
+    echo "Usage: $0 [check|fix]"
     echo "  check: Run linters in check mode (default)"
     echo "  fix:   Run linters in fix mode to auto-fix issues"
-    echo "  --verbose: Show detailed output from linters"
     exit 1
 fi
 
@@ -49,18 +36,13 @@ if ! which swiftformat >/dev/null; then
 fi
 
 # Run SwiftLint
-QUIET_FLAG=""
-if [[ "$VERBOSE" == "false" ]]; then
-    QUIET_FLAG="--quiet"
-fi
-
 if [[ "$MODE" == "check" ]]; then
     echo "🔄 Running SwiftLint in check mode..."
-    swiftlint lint --strict $QUIET_FLAG $DIR
+    swiftlint lint --strict $DIR
     LINT_STATUS=$?
 else
     echo "🔄 Running SwiftLint in fix mode..."
-    swiftlint lint --fix $QUIET_FLAG $DIR
+    swiftlint lint --fix $DIR
     LINT_STATUS=$?
 fi
 echo "SwiftLint exit status: $LINT_STATUS"
@@ -68,11 +50,11 @@ echo "SwiftLint exit status: $LINT_STATUS"
 # Run SwiftFormat
 if [[ "$MODE" == "check" ]]; then
     echo "🔄 Running SwiftFormat in check mode..."
-    swiftformat $DIR $QUIET_FLAG --lint
+    swiftformat $DIR --lint
     FORMAT_STATUS=$?
 else
     echo "🔄 Running SwiftFormat in fix mode..."
-    swiftformat $DIR $QUIET_FLAG
+    swiftformat $DIR
     FORMAT_STATUS=$?
 fi
 echo "SwiftFormat exit status: $FORMAT_STATUS"
@@ -82,8 +64,8 @@ print_linting_error() {
     local tool_name=$1
     echo "❌ $tool_name detected issues that need to be fixed."
     echo "🔧 How to fix:"
-    echo "   Shopify employee? Run 'dev fix' or 'dev lint --verbose' to see detailed output"
-    echo "   Not a Shopify employee? Run './Scripts/lint fix' to auto-fix issues"
+    echo "   Shopify employee? Run 'dev fix' or 'dev check' to see detailed output"
+    echo "   Not a Shopify employee? Run './scripts/lint_swift fix' to auto-fix issues"
     if [[ "$tool_name" == "SwiftLint" ]]; then
         echo "   Then fix any remaining non-autofixable issues manually"
     fi

@@ -1,25 +1,25 @@
 /*
-MIT License
+ MIT License
 
-Copyright 2023 - Present, Shopify Inc.
+ Copyright 2023 - Present, Shopify Inc.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 import Foundation
 import React
@@ -30,7 +30,7 @@ import UIKit
 class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     private var hasListeners = false
 
-    var checkoutSheet: UIViewController?
+    internal var checkoutSheet: UIViewController?
 
     override var methodQueue: DispatchQueue! {
         return DispatchQueue.main
@@ -78,7 +78,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
                 "__typename": "CheckoutExpiredError",
                 "message": message,
                 "code": code.rawValue,
-                "recoverable": recoverable,
+                "recoverable": recoverable
             ])
         } else if case let .checkoutUnavailable(message, code, recoverable) = error {
             switch code {
@@ -87,7 +87,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
                     "__typename": "CheckoutClientError",
                     "message": message,
                     "code": clientErrorCode.rawValue,
-                    "recoverable": recoverable,
+                    "recoverable": recoverable
                 ])
             case let .httpError(statusCode):
                 sendEvent(withName: "error", body: [
@@ -95,7 +95,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
                     "message": message,
                     "code": "http_error",
                     "statusCode": statusCode,
-                    "recoverable": recoverable,
+                    "recoverable": recoverable
                 ])
             }
         } else if case let .configurationError(message, code, recoverable) = error {
@@ -103,7 +103,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
                 "__typename": "ConfigurationError",
                 "message": message,
                 "code": code.rawValue,
-                "recoverable": recoverable,
+                "recoverable": recoverable
             ])
         } else if case let .sdkError(underlying, recoverable) = error {
             var errorMessage = "\(underlying.localizedDescription)"
@@ -111,14 +111,14 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
                 "__typename": "InternalError",
                 "code": "unknown",
                 "message": errorMessage,
-                "recoverable": recoverable,
+                "recoverable": recoverable
             ])
         } else {
             sendEvent(withName: "error", body: [
                 "__typename": "UnknownError",
                 "code": "unknown",
                 "message": error.localizedDescription,
-                "recoverable": error.isRecoverable,
+                "recoverable": error.isRecoverable
             ])
         }
     }
@@ -148,7 +148,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
     @objc override func constantsToExport() -> [AnyHashable: Any]! {
         return [
-            "version": ShopifyCheckoutSheetKit.version,
+            "version": ShopifyCheckoutSheetKit.version
         ]
     }
 
@@ -250,7 +250,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
             "preloading": ShopifyCheckoutSheetKit.configuration.preloading.enabled,
             "colorScheme": ShopifyCheckoutSheetKit.configuration.colorScheme.rawValue,
             "tintColor": ShopifyCheckoutSheetKit.configuration.tintColor,
-            "backgroundColor": ShopifyCheckoutSheetKit.configuration.backgroundColor,
+            "backgroundColor": ShopifyCheckoutSheetKit.configuration.backgroundColor
         ]
 
         resolve(config)
@@ -290,7 +290,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
             "id": encoded["id"],
             "name": encoded["name"],
             "timestamp": encoded["timestamp"],
-            "type": "STANDARD",
+            "type": "STANDARD"
         ] as [String: Any]
     }
 
@@ -311,7 +311,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
             "id": event.id,
             "name": event.name,
             "timestamp": event.timestamp,
-            "type": "CUSTOM",
+            "type": "CUSTOM"
         ] as [String: Any]
     }
 }
