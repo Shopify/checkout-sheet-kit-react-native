@@ -3747,10 +3747,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/react-native@npm:^3.0.0":
-  version: 3.0.2
-  resolution: "@tsconfig/react-native@npm:3.0.2"
-  checksum: 10c0/498cc4e6f52e88c550f2f1721864ccef5c2cb5030f66055b3a22d6c0b64d0f64a505effb07d908d1d39a5ce6a1f011983434efddb3fa51bc5dcd07c6df6c0c86
+"@tsconfig/react-native@npm:^3.0.6":
+  version: 3.0.6
+  resolution: "@tsconfig/react-native@npm:3.0.6"
+  checksum: 10c0/f727300d25343595786deacf42742c51473238ab9b18f31f4c9f2bbafc3bb37f21a90723754235465ccbc8e8c94c0eef11c0508fa0882d06052e5dd3707e4c61
   languageName: node
   linkType: hard
 
@@ -5192,7 +5192,7 @@ __metadata:
     "@react-native/eslint-config": "npm:0.74.83"
     "@react-native/metro-config": "npm:0.74.83"
     "@react-native/typescript-config": "npm:0.74.83"
-    "@tsconfig/react-native": "npm:^3.0.0"
+    "@tsconfig/react-native": "npm:^3.0.6"
     "@types/jest": "npm:^30.0.0"
     "@types/react": "npm:^18"
     "@types/react-native-dotenv": "npm:^0.2.1"
