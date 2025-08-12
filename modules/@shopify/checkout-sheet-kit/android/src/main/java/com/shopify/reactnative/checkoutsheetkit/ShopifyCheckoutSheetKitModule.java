@@ -257,6 +257,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
           headerBackground,
           headerFont,
           progressIndicator,
+          // Parameter allows passing a custom drawable, we'll just support custom color for now
           null,
           closeButtonColor
         );

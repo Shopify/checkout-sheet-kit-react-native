@@ -243,9 +243,9 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
             ShopifyCheckoutSheetKit.configuration.backgroundColor = UIColor(hex: backgroundColorHex)
         }
 
-		if let closeButtonColorHex = iosConfig?["closeButtonColor"] as? String {
-			ShopifyCheckoutSheetKit.configuration.closeButtonTintColor = UIColor(hex: closeButtonColorHex)
-		}
+        if let closeButtonColorHex = iosConfig?["closeButtonColor"] as? String {
+            ShopifyCheckoutSheetKit.configuration.closeButtonTintColor = UIColor(hex: closeButtonColorHex)
+        }
     }
 
     @objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
@@ -255,7 +255,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
             "colorScheme": ShopifyCheckoutSheetKit.configuration.colorScheme.rawValue,
             "tintColor": ShopifyCheckoutSheetKit.configuration.tintColor,
             "backgroundColor": ShopifyCheckoutSheetKit.configuration.backgroundColor,
-			"closeButtonColor": ShopifyCheckoutSheetKit.configuration.closeButtonTintColor
+			      "closeButtonColor": ShopifyCheckoutSheetKit.configuration.closeButtonTintColor
         ]
 
         resolve(config)
