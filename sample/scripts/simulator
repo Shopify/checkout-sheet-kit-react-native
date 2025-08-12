@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# Determine an iOS Simulator destination string for xcodebuild.
+get_sim_destination() {
+  if [[ -n "$CURRENT_SIMULATOR_UUID" ]]; then
+    echo "id=$CURRENT_SIMULATOR_UUID"
+    return
+  fi
+
+  # Prefer a currently booted iOS simulator (iPhone or iPad)
+  local udid
+  udid="$(xcrun simctl list devices booted \
+    | grep -E 'iPhone|iPad' \
+    | sed -n -E 's/.*\(([0-9A-Fa-f-]{36})\).*/\1/p' \
+    | head -n1)"
+
+  # If none booted, pick the first available iOS simulator (iPhone or iPad)
+  if [[ -z "$udid" ]]; then
+    udid="$(xcrun simctl list devices available \
+      | grep -E 'iPhone|iPad' \
+      | sed -n -E 's/.*\(([0-9A-Fa-f-]{36})\).*/\1/p' \
+      | head -n1)"
+  fi
+
+  if [[ -n "$udid" ]]; then
+    echo "id=$udid"
+  else
+    echo "platform=iOS Simulator,name=iPhone 15 Pro"
+  fi
+}
+
+
