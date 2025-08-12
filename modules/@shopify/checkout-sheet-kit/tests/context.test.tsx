@@ -12,57 +12,8 @@ const config: Configuration = {
   colorScheme: ColorScheme.automatic,
 };
 
-jest.mock('react-native', () => {
-  let listeners: (typeof jest.fn)[] = [];
-
-  const NativeEventEmitter = jest.fn(() => ({
-    addListener: jest.fn((_, callback) => {
-      listeners.push(callback);
-      return {remove: jest.fn()};
-    }),
-    removeAllListeners: jest.fn(() => {
-      listeners = [];
-    }),
-    emit: jest.fn((_, data: any) => {
-      for (const listener of listeners) {
-        listener(data);
-      }
-      listeners = [];
-    }),
-  }));
-
-  const exampleConfig = {
-    preloading: true,
-  };
-
-  const ShopifyCheckoutSheetKit = {
-    eventEmitter: NativeEventEmitter(),
-    version: '0.7.0',
-    preload: jest.fn(),
-    present: jest.fn(),
-    dismiss: jest.fn(),
-    invalidateCache: jest.fn(),
-    getConfig: jest.fn(async () => exampleConfig),
-    setConfig: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListeners: jest.fn(),
-    initiateGeolocationRequest: jest.fn(),
-  };
-
-  return {
-    Platform: {
-      OS: 'ios',
-    },
-    PermissionsAndroid: {
-      requestMultiple: jest.fn(),
-    },
-    _listeners: listeners,
-    NativeEventEmitter,
-    NativeModules: {
-      ShopifyCheckoutSheetKit,
-    },
-  };
-});
+// Use the shared manual mock. Individual tests can override if needed.
+jest.mock('react-native');
 
 // Helper component to test the hook
 const HookTestComponent = ({
@@ -394,7 +345,9 @@ describe('ShopifyCheckoutSheetContext without provider', () => {
     // Test all the noop functions to ensure they don't throw
     expect(() => hookValue.addEventListener('close', jest.fn())).not.toThrow();
     expect(() => hookValue.removeEventListeners('close')).not.toThrow();
-    expect(() => hookValue.setConfig({colorScheme: ColorScheme.automatic})).not.toThrow();
+    expect(() =>
+      hookValue.setConfig({colorScheme: ColorScheme.automatic}),
+    ).not.toThrow();
     expect(() => hookValue.preload('test-url')).not.toThrow();
     expect(() => hookValue.present('test-url')).not.toThrow();
     expect(() => hookValue.invalidate()).not.toThrow();
