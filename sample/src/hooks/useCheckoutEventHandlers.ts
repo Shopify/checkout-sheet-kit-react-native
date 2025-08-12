@@ -7,7 +7,6 @@ import type {
   CheckoutCompletedEvent,
   CheckoutException,
   PixelEvent,
-  RenderState,
 } from '@shopify/checkout-sheet-kit';
 import {Linking} from 'react-native';
 
@@ -16,7 +15,6 @@ interface EventHandlers {
   onFail?: (error: CheckoutException) => void;
   onComplete?: (event: CheckoutCompletedEvent) => void;
   onCancel?: () => void;
-  onRenderStateChange?: (state: RenderState) => void;
   onShouldRecoverFromError?: (error: {message: string}) => boolean;
   onWebPixelEvent?: (event: PixelEvent) => void;
   onClickLink?: (url: string) => void;
@@ -40,9 +38,6 @@ export function useShopifyEventHandlers(name?: string): EventHandlers {
       },
       onCancel: () => {
         log('onCancel');
-      },
-      onRenderStateChange: state => {
-        log('onRenderStateChange', state);
       },
       onWebPixelEvent: event => {
         log('onWebPixelEvent', event.name);
