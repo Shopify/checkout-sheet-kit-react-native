@@ -68,7 +68,10 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - run: yarn test --coverage --testPathPatterns="modules/@shopify/checkout-sheet-kit/tests" --coverageReporters=json-summary
+      - run:
+          yarn test --coverage
+          --testPathPatterns="modules/@shopify/checkout-sheet-kit/tests"
+          --coverageReporters=json-summary
 
       - name: Coverage comment
         if: github.event_name == 'pull_request'
@@ -98,7 +101,7 @@ jobs:
 
       - name: Run Android tests
         env:
-          GRADLE_OPTS: -Xmx6g
+          GRADLE_OPTS: -Xmx2g -XX:MaxMetaspaceSize=512m
         run: |
           echo "STOREFRONT_DOMAIN=\"myshopify.com\"" > sample/.env
           yarn module build
