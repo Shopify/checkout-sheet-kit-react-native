@@ -72,3 +72,69 @@ export function currency(amount?: string, currency?: string): string {
     return `${Number(amount ?? 0).toFixed(2)}` + currencyCode;
   }
 }
+
+/**
+ * Optimizes a Shopify image URL by requesting a specific size
+ * This significantly reduces bandwidth and improves loading times
+ *
+ * @param url - Original Shopify CDN image URL
+ * @param size - Desired image dimensions
+ * @param scale - Pixel density multiplier (default: 2 for retina displays)
+ * @returns Optimized image URL with size parameters
+ *
+ * @example For product thumbnails
+ * getOptimizedImageUrl(imageUrl, {width: 150, height: 150})
+ *
+ * @example For product detail images
+ * getOptimizedImageUrl(imageUrl, {width: 400, height: 400})
+ *
+ * @example For cart item thumbnails
+ * getOptimizedImageUrl(imageUrl, {width: 80, height: 80})
+ */
+export function getOptimizedImageUrl(
+  url: string | undefined,
+  size: {width: number; height: number},
+  scale: number = 2,
+): string | undefined {
+  if (!url) {
+    return undefined;
+  }
+
+  try {
+    // Calculate actual dimensions for device pixel density
+    const width = size.width * scale;
+    const height = size.height * scale;
+
+    // Shopify CDN image transformation pattern:
+    // Original: https://cdn.shopify.com/s/files/1/0001/0002/products/image.jpg
+    // Resized:  https://cdn.shopify.com/s/files/1/0001/0002/products/image_600x600.jpg
+
+    if (url.includes('cdn.shopify.com')) {
+      // Remove any existing size parameters
+      const cleanUrl = url.replace(/_\d+x\d+(\.\w+)/, '$1');
+
+      // Insert new size parameters before file extension
+      const lastDot = cleanUrl.lastIndexOf('.');
+      if (lastDot > -1) {
+        return `${cleanUrl.slice(0, lastDot)}_${width}x${height}${cleanUrl.slice(lastDot)}`;
+      }
+    }
+
+    // Return original URL if not a Shopify CDN image
+    return url;
+  } catch {
+    // Return original URL if transformation fails
+    return url;
+  }
+}
+
+export function debugLog(message: string, data?: any) {
+  if (__DEV__) {
+    console.log(message, data || '');
+  }
+}
+
+export function createDebugLogger(name: string) {
+  return (message: string, data?: any) =>
+    debugLog(`[${name}] ${message}`, data);
+}
