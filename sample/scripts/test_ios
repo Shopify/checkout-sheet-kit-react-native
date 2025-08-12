@@ -3,11 +3,9 @@
 set -ex
 set -eo pipefail
 
-if [[ -n $CURRENT_SIMULATOR_UUID ]]; then
-    dest="id=$CURRENT_SIMULATOR_UUID"
-else
-    dest="platform=iOS Simulator,name=iPhone 15 Pro"
-fi
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/simulator"
+dest="$(get_sim_destination)"
 
 cd ios
 
