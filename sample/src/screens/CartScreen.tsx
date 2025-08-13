@@ -203,13 +203,15 @@ function CartItem({
         ...styles.productItem,
         ...(loading ? styles.productItemLoading : {}),
       }}>
-      {item.merchandise.image?.url && (
+      {item.merchandise.image?.thumbnailUrl && (
         <Image
           resizeMethod="resize"
           resizeMode="cover"
           style={styles.productImage}
           alt={item.merchandise.image?.altText}
-          source={{uri: item.merchandise.image?.url}}
+          source={{
+            uri: item.merchandise.image?.thumbnailUrl,
+          }}
         />
       )}
       <View style={styles.productText}>

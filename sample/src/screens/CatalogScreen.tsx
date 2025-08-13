@@ -150,7 +150,9 @@ function Product({
           resizeMode="cover"
           style={styles.productImage}
           alt={image?.altText}
-          source={{uri: image?.url}}
+          source={{
+            uri: image.thumbnailUrl,
+          }}
         />
       )}
       <View style={styles.productText}>

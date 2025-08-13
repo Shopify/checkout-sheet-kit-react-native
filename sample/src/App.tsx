@@ -57,6 +57,7 @@ import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import type {ProductVariant, ShopifyProduct} from '../@types';
 import ErrorBoundary from './ErrorBoundary';
+import {useShopifyEventHandlers} from './hooks/useCheckoutEventHandlers';
 
 const colorScheme = ColorScheme.web;
 
@@ -165,32 +166,28 @@ class StorefrontURL {
 
 function AppWithContext({children}: PropsWithChildren) {
   const shopify = useShopifyCheckoutSheet();
+  const eventHandlers = useShopifyEventHandlers('App');
 
   useEffect(() => {
     const close = shopify.addEventListener('close', () => {
-      console.log('[CheckoutClose]');
+      eventHandlers.onCancel?.();
     });
 
     const pixel = shopify.addEventListener('pixel', (event: PixelEvent) => {
-      console.log(
-        '[CheckoutPixelEvent]',
-        event.name,
-        JSON.stringify(event, null, 2),
-      );
+      eventHandlers.onWebPixelEvent?.(event);
     });
 
     const completed = shopify.addEventListener(
       'completed',
       (event: CheckoutCompletedEvent) => {
-        console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
-        console.log('[CheckoutCompletedEvent]', JSON.stringify(event, null, 2));
+        eventHandlers.onComplete?.(event);
       },
     );
 
     const error = shopify.addEventListener(
       'error',
       (error: CheckoutException) => {
-        console.log(error.constructor.name, error);
+        eventHandlers.onFail?.(error);
       },
     );
 
@@ -200,7 +197,7 @@ function AppWithContext({children}: PropsWithChildren) {
       close?.remove();
       error?.remove();
     };
-  }, [shopify]);
+  }, [shopify, eventHandlers]);
 
   return (
     <ConfigProvider>

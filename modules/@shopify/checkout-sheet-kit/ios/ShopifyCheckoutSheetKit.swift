@@ -62,7 +62,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
     func checkoutDidComplete(event: CheckoutCompletedEvent) {
         if hasListeners {
-            sendEvent(withName: "completed", body: encodeToJSON(from: event))
+            sendEvent(withName: "completed", body: ShopifyEventSerialization.serialize(checkoutCompletedEvent: event))
         }
     }
 
@@ -73,66 +73,12 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     func checkoutDidFail(error: ShopifyCheckoutSheetKit.CheckoutError) {
         guard hasListeners else { return }
 
-        if case let .checkoutExpired(message, code, recoverable) = error {
-            sendEvent(withName: "error", body: [
-                "__typename": "CheckoutExpiredError",
-                "message": message,
-                "code": code.rawValue,
-                "recoverable": recoverable
-            ])
-        } else if case let .checkoutUnavailable(message, code, recoverable) = error {
-            switch code {
-            case let .clientError(clientErrorCode):
-                sendEvent(withName: "error", body: [
-                    "__typename": "CheckoutClientError",
-                    "message": message,
-                    "code": clientErrorCode.rawValue,
-                    "recoverable": recoverable
-                ])
-            case let .httpError(statusCode):
-                sendEvent(withName: "error", body: [
-                    "__typename": "CheckoutHTTPError",
-                    "message": message,
-                    "code": "http_error",
-                    "statusCode": statusCode,
-                    "recoverable": recoverable
-                ])
-            }
-        } else if case let .configurationError(message, code, recoverable) = error {
-            sendEvent(withName: "error", body: [
-                "__typename": "ConfigurationError",
-                "message": message,
-                "code": code.rawValue,
-                "recoverable": recoverable
-            ])
-        } else if case let .sdkError(underlying, recoverable) = error {
-            var errorMessage = "\(underlying.localizedDescription)"
-            sendEvent(withName: "error", body: [
-                "__typename": "InternalError",
-                "code": "unknown",
-                "message": errorMessage,
-                "recoverable": recoverable
-            ])
-        } else {
-            sendEvent(withName: "error", body: [
-                "__typename": "UnknownError",
-                "code": "unknown",
-                "message": error.localizedDescription,
-                "recoverable": error.isRecoverable
-            ])
-        }
+        sendEvent(withName: "error", body: ShopifyEventSerialization.serialize(checkoutError: error))
     }
 
     func checkoutDidEmitWebPixelEvent(event: ShopifyCheckoutSheetKit.PixelEvent) {
         if hasListeners {
-            var genericEvent: [String: Any]
-            switch event {
-            case let .standardEvent(standardEvent):
-                genericEvent = mapToGenericEvent(standardEvent: standardEvent)
-            case let .customEvent(customEvent):
-                genericEvent = mapToGenericEvent(customEvent: customEvent)
-            }
-            sendEvent(withName: "pixel", body: genericEvent)
+            sendEvent(withName: "pixel", body: ShopifyEventSerialization.serialize(pixelEvent: event))
         }
     }
 
@@ -255,94 +201,9 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
             "colorScheme": ShopifyCheckoutSheetKit.configuration.colorScheme.rawValue,
             "tintColor": ShopifyCheckoutSheetKit.configuration.tintColor,
             "backgroundColor": ShopifyCheckoutSheetKit.configuration.backgroundColor,
-			      "closeButtonColor": ShopifyCheckoutSheetKit.configuration.closeButtonTintColor
+            "closeButtonColor": ShopifyCheckoutSheetKit.configuration.closeButtonTintColor
         ]
 
         resolve(config)
-    }
-
-    // MARK: - Private
-
-    private func stringToJSON(from value: String?) -> [String: Any]? {
-        guard let data = value?.data(using: .utf8, allowLossyConversion: false) else { return [:] }
-        do {
-            return try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any]
-        } catch {
-            print("Failed to convert string to JSON: \(error)", value)
-            return [:]
-        }
-    }
-
-    private func encodeToJSON(from value: Codable) -> [String: Any] {
-        let encoder = JSONEncoder()
-
-        do {
-            let jsonData = try encoder.encode(value)
-            if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
-                return jsonObject
-            }
-        } catch {
-            print("Error encoding to JSON object: \(error)")
-        }
-        return [:]
-    }
-
-    private func mapToGenericEvent(standardEvent: StandardEvent) -> [String: Any] {
-        let encoded = encodeToJSON(from: standardEvent)
-        return [
-            "context": encoded["context"],
-            "data": encoded["data"],
-            "id": encoded["id"],
-            "name": encoded["name"],
-            "timestamp": encoded["timestamp"],
-            "type": "STANDARD"
-        ] as [String: Any]
-    }
-
-    private func mapToGenericEvent(customEvent: CustomEvent) -> [String: Any] {
-        do {
-            return try decodeAndMap(event: customEvent)
-        } catch {
-            print("[debug] Failed to map custom event: \(error)")
-        }
-
-        return [:]
-    }
-
-    private func decodeAndMap(event: CustomEvent, decoder _: JSONDecoder = JSONDecoder()) throws -> [String: Any] {
-        return [
-            "context": encodeToJSON(from: event.context),
-            "customData": stringToJSON(from: event.customData),
-            "id": event.id,
-            "name": event.name,
-            "timestamp": event.timestamp,
-            "type": "CUSTOM"
-        ] as [String: Any]
-    }
-}
-
-extension UIColor {
-    convenience init(hex: String) {
-        let hexString: String = hex.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        let start = hexString.index(hexString.startIndex, offsetBy: hexString.hasPrefix("#") ? 1 : 0)
-        let hexColor = String(hexString[start...])
-
-        let scanner = Scanner(string: hexColor)
-        var hexNumber: UInt64 = 0
-
-        if scanner.scanHexInt64(&hexNumber) {
-            let red = (hexNumber & 0xFF0000) >> 16
-            let green = (hexNumber & 0x00FF00) >> 8
-            let blue = hexNumber & 0x0000FF
-
-            self.init(
-                red: CGFloat(red) / 0xFF,
-                green: CGFloat(green) / 0xFF,
-                blue: CGFloat(blue) / 0xFF,
-                alpha: 1
-            )
-        } else {
-            self.init(red: 0, green: 0, blue: 0, alpha: 1)
-        }
     }
 }
