@@ -27,7 +27,9 @@ packages:
   - xcode
 
 check:
-  lint: ./scripts/lint_swift
+  lint_swift: yarn module lint:swift
+  lint_module: yarn module lint
+  lint_sample: yarn sample lint
 
 commands:
 
