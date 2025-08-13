@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {useCallback, useMemo, useRef} from 'react';
+import React, {useCallback, useMemo, useRef, useEffect, useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {type EmitterSubscription} from 'react-native';
 import {ShopifyCheckoutSheet} from './index';
@@ -36,6 +36,7 @@ import type {
 type Maybe<T> = T | undefined;
 
 interface Context {
+  acceleratedCheckoutsAvailable: boolean;
   addEventListener: AddEventListener;
   getConfig: () => Promise<Configuration | undefined>;
   setConfig: (config: Configuration) => void;
@@ -50,6 +51,7 @@ interface Context {
 const noop = () => undefined;
 
 const ShopifyCheckoutSheetContext = React.createContext<Context>({
+  acceleratedCheckoutsAvailable: false,
   addEventListener: noop,
   removeEventListeners: noop,
   setConfig: noop,
@@ -71,11 +73,31 @@ export function ShopifyCheckoutSheetProvider({
   configuration,
   children,
 }: PropsWithChildren<Props>) {
+  const [acceleratedCheckoutsAvailable, setAcceleratedCheckoutsAvailable] =
+    useState(false);
   const instance = useRef<ShopifyCheckoutSheet | null>(null);
 
   if (!instance.current) {
     instance.current = new ShopifyCheckoutSheet(configuration, features);
   }
+
+  useEffect(() => {
+    async function configureAcceleratedCheckouts() {
+      if (!instance.current || !configuration) {
+        return;
+      }
+
+      if (configuration.acceleratedCheckouts) {
+        setAcceleratedCheckoutsAvailable(
+          await instance.current?.configureAcceleratedCheckouts(
+            configuration.acceleratedCheckouts,
+          ),
+        );
+      }
+    }
+
+    configureAcceleratedCheckouts();
+  }, [configuration]);
 
   const addEventListener: AddEventListener = useCallback(
     (eventName, callback): EmitterSubscription | undefined => {
@@ -118,6 +140,7 @@ export function ShopifyCheckoutSheetProvider({
 
   const context = useMemo((): Context => {
     return {
+      acceleratedCheckoutsAvailable,
       addEventListener,
       dismiss,
       setConfig,
@@ -129,6 +152,7 @@ export function ShopifyCheckoutSheetProvider({
       version: instance.current?.version,
     };
   }, [
+    acceleratedCheckoutsAvailable,
     addEventListener,
     dismiss,
     removeEventListeners,

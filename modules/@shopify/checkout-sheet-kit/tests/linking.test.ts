@@ -11,6 +11,14 @@ jest.mock('react-native', () => ({
   Platform: {
     OS: 'ios',
   },
+  requireNativeComponent: jest.fn().mockImplementation(() => {
+    const mockComponent = (props: any) => {
+      // Use React.createElement with plain object instead
+      const mockReact = jest.requireActual('react');
+      return mockReact.createElement('View', props);
+    };
+    return mockComponent;
+  }),
 }));
 
 describe('Native Module Linking', () => {
