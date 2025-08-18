@@ -33,7 +33,7 @@
             <category android:name="android.intent.category.BROWSABLE" />
 
             <!-- Note: the host here will be replaced on application start -->
-            <data android:scheme="https" android:host={{STOREFRONT_DOMAIN}} />
+            <data android:scheme="https" android:host="{{STOREFRONT_DOMAIN}}" />
         </intent-filter>
       </activity>
     </application>
