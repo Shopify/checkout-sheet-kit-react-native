@@ -4,18 +4,27 @@ description: Install cocoapods for sample app
 runs:
   using: composite
   steps:
+    - uses: ruby/setup-ruby@829114fc20da43a41d27359103ec7a63020954d4 # v1.255.0
+      with:
+        bundler-cache: true
+        ruby-version: 3.1.2
+        working-directory: sample
+
     - name: Cache cocoapods
       id: cache-cocoapods
       uses: actions/cache@v4
       with:
         path: |
           **/ios/Pods
-        key: ${{ runner.os }}-cocoapods-${{ hashFiles('sample/ios/Podfile.lock') }}
+          ~/.cocoapods/repos
+        key: ${{ runner.os }}-cocoapods-ruby-3.1.2-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock') }}
         restore-keys: |
+          ${{ runner.os }}-cocoapods-ruby-3.1.2-${{ hashFiles('sample/ios/Podfile.lock') }}
+          ${{ runner.os }}-cocoapods-ruby-3.1.2-
           ${{ runner.os }}-cocoapods-
 
     - name: Install cocoapods
-      if: steps.cocoapods-cache.outputs.cache-hit != 'true'
+      if: steps.cache-cocoapods.outputs.cache-hit != 'true'
       shell: bash
       env:
         NO_FLIPPER: "1"
@@ -24,5 +33,5 @@ runs:
         cd sample
         bundle install
         cd ios
-        NO_FLIPPER=1 bundle exec pod install
+        NO_FLIPPER=1 bundle exec pod install --no-repo-update
         cd $ROOT

@@ -1,6 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
+    "clean": {},
     "build": {
       "outputs": ["./modules/@shopify/checkout-sheet-kit/lib/**"]
     },

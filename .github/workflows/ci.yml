@@ -10,6 +10,7 @@ jobs:
   lint-swift:
     name: Lint Swift code
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
 
@@ -21,6 +22,7 @@ jobs:
   license:
     name: Verify license headers
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
 
@@ -29,6 +31,7 @@ jobs:
   check-packed-files:
     name: Check package files
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     env:
       TERM: xterm
     steps:
@@ -45,6 +48,7 @@ jobs:
   lint:
     name: Lint module + sample
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
 
@@ -52,6 +56,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - run: |
+          yarn module typecheck
           yarn module build
           yarn module lint
           yarn sample lint
@@ -59,6 +64,7 @@ jobs:
   test:
     name: Run jest tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       pull-requests: write
@@ -68,14 +74,13 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - run:
-          yarn test --coverage
-          --testPathPatterns="modules/@shopify/checkout-sheet-kit/tests"
-          --coverageReporters=json-summary
+      - run: |
+          yarn module build
+          yarn test --coverage --testPathPatterns="modules/@shopify/checkout-sheet-kit/tests" --coverageReporters=json-summary
 
       - name: Coverage comment
         if: github.event_name == 'pull_request'
-        uses: MishaKav/jest-coverage-comment@main
+        uses: MishaKav/jest-coverage-comment@v1.0.23
         with:
           coverage-summary-path: ./coverage/coverage-summary.json
           title: 'Coverage Report'
@@ -84,6 +89,7 @@ jobs:
   test-android:
     name: Run Android Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [lint, test]
     steps:
       - name: Checkout
@@ -93,11 +99,11 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Install JDK
-        # if: env.turbo_cache_hit != 1
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
         with:
           distribution: 'zulu'
           java-version: '17'
+          cache: 'gradle'
 
       - name: Run Android tests
         env:
@@ -110,6 +116,7 @@ jobs:
   test-ios:
     name: Run iOS Tests
     runs-on: macos-13-xlarge
+    timeout-minutes: 25
     needs: [lint, lint-swift, test]
     steps:
       - name: Checkout
@@ -121,19 +128,10 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Check turbo cache
-        uses: ./.github/actions/use-turbo-cache
-
-      - name: Check build cache
-        run: |
-          CACHE_STATUS=$(./scripts/check_cache sample test:ios)
-          echo "[sample] build:ios - $CACHE_STATUS"
-          echo "turbo_cache_hit=$CACHE_STATUS" >> $GITHUB_ENV
-
       - name: Install cocoapods
         uses: ./.github/actions/install-cocoapods
 
       - name: Run Swift tests
-        # If turbo has already cached the build it will return instantly here
         run: |
-          yarn turbo run test:ios --cache-dir=".turbo" --no-daemon
+          yarn module build
+          yarn sample test:ios

@@ -38,8 +38,7 @@ import Icon from 'react-native-vector-icons/Entypo';
 import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import type {CartLineItem, CartItem} from '../../@types';
+import type {CartLineItem} from '../../@types';
 import type {Colors} from '../context/Theme';
 import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';

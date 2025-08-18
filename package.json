@@ -77,7 +77,15 @@
       "@typescript-eslint/no-shadow": "off",
       "@typescript-eslint/consistent-type-imports": "error",
       "no-console": "error"
-    }
+    },
+    "overrides": [
+      {
+        "files": ["**/*.js"],
+        "rules": {
+          "@typescript-eslint/consistent-type-imports": "off"
+        }
+      }
+    ]
   },
   "packageManager": "yarn@4.4.1"
 }
