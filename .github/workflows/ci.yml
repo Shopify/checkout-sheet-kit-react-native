@@ -109,12 +109,21 @@ jobs:
 
   test-ios:
     name: Run iOS Tests
-    runs-on: macos-13-xlarge
+    runs-on: macos-15-xlarge
+    timeout-minutes: 20
     needs: [lint, lint-swift, test]
     steps:
       - name: Checkout
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
 
+      - name: Switch to Xcode 16.4
+        run: |
+          sudo xcode-select --switch /Applications/Xcode_16.4.app
+
+      - name: Display Current Xcode Information
+        run: |
+          echo "Xcode Path: $(xcode-select -p)"
+          echo "Xcode Version: $(xcrun xcodebuild -version)"
       - name: Setup iOS Simulator
         uses: ./.github/actions/setup-simulator
 
