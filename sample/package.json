@@ -56,8 +56,19 @@
     "node": ">= 18"
   },
   "eslintConfig": {
+    "root": true,
+    "extends": "@react-native",
     "rules": {
-      "no-console": "off"
-    }
+      "no-console": "off",
+      "@typescript-eslint/no-shadow": "off"
+    },
+    "overrides": [
+      {
+        "files": ["*.ts", "*.tsx"],
+        "rules": {
+          "@typescript-eslint/consistent-type-imports": "error"
+        }
+      }
+    ]
   }
 }
