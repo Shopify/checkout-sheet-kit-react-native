@@ -1,6 +1,12 @@
 name: Cocoapods
 description: Install cocoapods for sample app
 
+inputs:
+  ruby-version:
+    description: 'Ruby version to use'
+    required: false
+    default: '3.1.2'
+
 runs:
   using: composite
   steps:
@@ -8,23 +14,23 @@ runs:
       uses: ruby/setup-ruby@829114fc20da43a41d27359103ec7a63020954d4 # v1.255.0
       with:
         bundler-cache: true
-        ruby-version: 3.1.2
+        ruby-version: ${{ inputs.ruby-version }}
         working-directory: sample
 
-    # - name: Cache cocoapods
-    #   id: cache-cocoapods
-    #   uses: actions/cache@v4
-    #   with:
-    #     path: |
-    #       **/ios/Pods
-    #     key: ${{ runner.os }}-cocoapods-ruby-3.1.2-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-cocoapods-ruby-3.1.2-${{ hashFiles('sample/ios/Podfile.lock') }}
-    #       ${{ runner.os }}-cocoapods-ruby-3.1.2-
-    #       ${{ runner.os }}-cocoapods-
+    - name: Cache cocoapods
+      id: cache-cocoapods
+      uses: actions/cache@v4
+      with:
+        path: |
+          **/ios/Pods
+        key: ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock') }}
+          ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-
+          ${{ runner.os }}-cocoapods-
 
     - name: Install cocoapods
-      # if: steps.cache-cocoapods.outputs.cache-hit != 'true'
+      if: steps.cache-cocoapods.outputs.cache-hit != 'true'
       shell: bash
       env:
         NO_FLIPPER: "1"

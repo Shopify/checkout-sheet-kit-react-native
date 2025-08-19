@@ -6,6 +6,10 @@ on:
   pull_request:
     types: [opened, synchronize]
 
+env:
+  RUBY_VERSION: '3.1.2'
+  JAVA_VERSION: '22'
+
 jobs:
   lint-swift:
     name: Lint Swift code
@@ -93,18 +97,36 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Install JDK
-        # if: env.turbo_cache_hit != 1
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        id: setup-java
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: ${{ env.JAVA_VERSION }}
 
       - name: Run Android tests
         env:
           GRADLE_OPTS: -Xmx4g -XX:MaxMetaspaceSize=768m
+          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
         run: |
-          echo "STOREFRONT_DOMAIN=\"myshopify.com\"" > sample/.env
+          echo "JAVA_HOME: $JAVA_HOME"
+          java -version
+          javac -version
+          echo "STOREFRONT_DOMAIN=myshopify.com" > sample/.env
           yarn module build
+
+          # Debug: Check .env file was created correctly
+          echo "=== .env file contents ==="
+          cat sample/.env
+
+          # Trigger manifest generation by running a gradle task that depends on preBuild
+          cd sample/android
+          ./gradlew generateAndroidManifestFromTemplate
+
+          # Verify the manifest was generated correctly
+          echo "=== Generated AndroidManifest.xml ==="
+          cat app/src/main/AndroidManifest.xml
+          cd ../..
+
           yarn sample test:android --no-daemon
 
   test-ios:
@@ -141,6 +163,8 @@ jobs:
 
       - name: Install cocoapods
         uses: ./.github/actions/install-cocoapods
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
 
       - name: Run Swift tests
         # If turbo has already cached the build it will return instantly here
