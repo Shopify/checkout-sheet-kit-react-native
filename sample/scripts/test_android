@@ -4,4 +4,4 @@ set -e
 
 cd android
 
-./gradlew clean test --no-daemon --console=plain -Dorg.gradle.workers.max=1 -PreactNativeArchitectures=arm64-v8a
+./gradlew clean generateAndroidManifestFromTemplate test --no-daemon --console=plain -Dorg.gradle.workers.max=1 -PreactNativeArchitectures=arm64-v8a

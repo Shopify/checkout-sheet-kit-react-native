@@ -14,6 +14,7 @@ jobs:
   lint-swift:
     name: Lint Swift code
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
 
@@ -25,6 +26,7 @@ jobs:
   license:
     name: Verify license headers
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
 
@@ -33,6 +35,7 @@ jobs:
   check-packed-files:
     name: Check package files
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     env:
       TERM: xterm
     steps:
@@ -49,6 +52,7 @@ jobs:
   lint:
     name: Lint module + sample
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
 
@@ -63,6 +67,7 @@ jobs:
   test:
     name: Run jest tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
       pull-requests: write
@@ -88,6 +93,7 @@ jobs:
   test-android:
     name: Run Android Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [lint, test]
     steps:
       - name: Checkout
@@ -104,6 +110,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: Run Android tests
+        timeout-minutes: 20
         env:
           GRADLE_OPTS: -Xmx4g -XX:MaxMetaspaceSize=768m
           JAVA_HOME: ${{ steps.setup-java.outputs.path }}
@@ -113,20 +120,6 @@ jobs:
           javac -version
           echo "STOREFRONT_DOMAIN=myshopify.com" > sample/.env
           yarn module build
-
-          # Debug: Check .env file was created correctly
-          echo "=== .env file contents ==="
-          cat sample/.env
-
-          # Trigger manifest generation by running a gradle task that depends on preBuild
-          cd sample/android
-          ./gradlew generateAndroidManifestFromTemplate
-
-          # Verify the manifest was generated correctly
-          echo "=== Generated AndroidManifest.xml ==="
-          cat app/src/main/AndroidManifest.xml
-          cd ../..
-
           yarn sample test:android --no-daemon
 
   test-ios:
@@ -167,6 +160,7 @@ jobs:
           ruby-version: ${{ env.RUBY_VERSION }}
 
       - name: Run Swift tests
+        timeout-minutes: 15
         # If turbo has already cached the build it will return instantly here
         run: |
           yarn turbo run test:ios --cache-dir=".turbo" --no-daemon
