@@ -23,8 +23,9 @@ runs:
       with:
         path: |
           **/ios/Pods
-        key: ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock') }}
+        key: ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock', 'package.json', 'sample/package.json', 'modules/@shopify/checkout-sheet-kit/package.json', 'yarn.lock') }}
         restore-keys: |
+          ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock', 'sample/package.json', 'yarn.lock') }}
           ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock') }}
           ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-
           ${{ runner.os }}-cocoapods-
