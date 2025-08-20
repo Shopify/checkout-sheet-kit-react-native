@@ -1,5 +1,5 @@
 import React from 'react';
-import renderer from 'react-test-renderer';
+import {render, act} from '@testing-library/react-native';
 import {Platform} from 'react-native';
 import {
   AcceleratedCheckoutButtons,
@@ -7,43 +7,7 @@ import {
   RenderState,
 } from '../src';
 
-// Mock react-native Platform and requireNativeComponent
-jest.mock('react-native', () => {
-  const mockRequireNativeComponent = jest.fn().mockImplementation(() => {
-    const mockComponent = (props: any) => {
-      // Use React.createElement with plain object instead
-      const mockReact = jest.requireActual('react');
-      return mockReact.createElement('View', props);
-    };
-    return mockComponent;
-  });
-
-  const mockShopifyCheckoutSheetKit = {
-    version: '0.7.0',
-    preload: jest.fn(),
-    present: jest.fn(),
-    invalidateCache: jest.fn(),
-    getConfig: jest.fn(async () => ({preloading: true})),
-    setConfig: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListeners: jest.fn(),
-    initiateGeolocationRequest: jest.fn(),
-    configureAcceleratedCheckouts: jest.fn(),
-    isAcceleratedCheckoutAvailable: jest.fn(),
-  };
-
-  return {
-    Platform: {
-      OS: 'ios',
-      Version: '16.0',
-    },
-    requireNativeComponent: mockRequireNativeComponent,
-    NativeModules: {
-      ShopifyCheckoutSheetKit: mockShopifyCheckoutSheetKit,
-    },
-    NativeEventEmitter: jest.fn(),
-  };
-});
+jest.mock('react-native');
 
 const mockLog = jest.fn();
 // Silence console.error
@@ -71,101 +35,64 @@ describe('AcceleratedCheckoutButtons', () => {
     });
 
     describe('iOS Version Compatibility', () => {
-      it('returns null on iOS versions below 16', () => {
-        (Platform as any).Version = '15.5';
+      it.each(['16.0', '17.0', '16.4.1'])('renders on iOS %s', version => {
+        (Platform as any).Version = version;
 
-        const component = renderer.create(
+        const {getByTestId} = render(
           <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
         );
 
-        expect(component.toJSON()).toBeNull();
+        expect(getByTestId('accelerated-checkout-buttons')).toBeTruthy();
       });
 
-      it('returns null on iOS 14', () => {
-        (Platform as any).Version = '14.0';
+      it.each(['15.5', '14.0', '15.0'])(
+        'does not render on iOS %s',
+        version => {
+          (Platform as any).Version = version;
 
-        const component = renderer.create(
-          <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
-        );
+          const {queryByTestId} = render(
+            <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
+          );
 
-        expect(component.toJSON()).toBeNull();
-      });
-
-      it('renders on iOS 16', () => {
-        (Platform as any).Version = '16.0';
-
-        const component = renderer.create(
-          <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
-        );
-
-        expect(component.toJSON()).toBeTruthy();
-      });
-
-      it('renders on iOS 17', () => {
-        (Platform as any).Version = '17.0';
-
-        const component = renderer.create(
-          <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
-        );
-
-        expect(component.toJSON()).toBeTruthy();
-      });
-
-      it('handles iOS version with decimal correctly', () => {
-        (Platform as any).Version = '16.4.1';
-
-        const component = renderer.create(
-          <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
-        );
-
-        expect(component.toJSON()).toBeTruthy();
-      });
-
-      it('does not warn when returning null for iOS < 16', () => {
-        (Platform as any).Version = '15.0';
-
-        const component = renderer.create(
-          <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
-        );
-
-        expect(component.toJSON()).toBeNull();
-        expect(mockLog).not.toHaveBeenCalled();
-        expect(mockError).not.toHaveBeenCalled();
-      });
+          expect(queryByTestId('accelerated-checkout-buttons')).toBeNull();
+          expect(mockLog).not.toHaveBeenCalled();
+          expect(mockError).not.toHaveBeenCalled();
+        },
+      );
     });
 
     it('renders without crashing with cartId', () => {
-      const component = renderer.create(
+      const {getByTestId} = render(
         <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
       );
 
-      expect(component.toJSON()).toBeTruthy();
+      expect(getByTestId('accelerated-checkout-buttons')).toBeTruthy();
     });
 
     it('renders without crashing with variant', () => {
-      const component = renderer.create(
+      const {getByTestId} = render(
         <AcceleratedCheckoutButtons
           variantId={'gid://shopify/ProductVariant/456'}
           quantity={1}
         />,
       );
 
-      expect(component.toJSON()).toBeTruthy();
+      expect(getByTestId('accelerated-checkout-buttons')).toBeTruthy();
     });
 
     it('renders without crashing with variant and quantity', () => {
-      const component = renderer.create(
+      const {getByTestId} = render(
         <AcceleratedCheckoutButtons
           variantId={'gid://shopify/ProductVariant/456'}
           quantity={2}
         />,
       );
 
-      expect(component.toJSON()).toBeTruthy();
+      expect(getByTestId('accelerated-checkout-buttons')).toBeTruthy();
     });
 
     it('passes through props to native component', () => {
-      const component = renderer.create(
+      const {getByTestId} = render(
         <AcceleratedCheckoutButtons
           cartId={'gid://shopify/Cart/123'}
           cornerRadius={12}
@@ -173,44 +100,48 @@ describe('AcceleratedCheckoutButtons', () => {
         />,
       );
 
-      const tree = component.toJSON();
-      expect(tree).toBeTruthy();
-      // @ts-expect-error tree is not null based on check above
-      expect(tree.props.checkoutIdentifier).toEqual({
+      const nativeComponent = getByTestId('accelerated-checkout-buttons');
+      expect(nativeComponent).toBeTruthy();
+      expect(nativeComponent.props.checkoutIdentifier).toEqual({
         cartId: 'gid://shopify/Cart/123',
       });
-      // @ts-expect-error tree is not null based on check above
-      expect(tree.props.cornerRadius).toBe(12);
-      // @ts-expect-error tree is not null based on check above
-      expect(tree.props.wallets).toEqual([AcceleratedCheckoutWallet.shopPay]);
+      expect(nativeComponent.props.cornerRadius).toBe(12);
+      expect(nativeComponent.props.wallets).toEqual([
+        AcceleratedCheckoutWallet.shopPay,
+      ]);
     });
 
-    it('logs and returns null when neither cartId nor variantId is provided', () => {
-      expect(() => {
-        renderer.create(
-          <AcceleratedCheckoutButtons variantId="" quantity={0} />,
+    it.each([0, -1, -2, Number.NaN])(
+      'throws when invalid variant quantity %p',
+      quantity => {
+        expect(() => {
+          render(
+            <AcceleratedCheckoutButtons
+              variantId={'gid://shopify/ProductVariant/456'}
+              quantity={quantity as any}
+            />,
+          );
+        }).toThrow(
+          'AcceleratedCheckoutButton: Either `cartId` or `variantId` and `quantity` must be provided',
         );
-      }).toThrow(
-        'AcceleratedCheckoutButton: Either `cartId` or `variantId` and `quantity` must be provided',
-      );
-    });
+      },
+    );
 
     it('uses default values for cornerRadius', () => {
-      const component = renderer.create(
+      const {getByTestId} = render(
         <AcceleratedCheckoutButtons
           variantId="gid://shopify/ProductVariant/456"
           quantity={1}
         />,
       );
 
-      const tree = component.toJSON();
-      expect(tree).toBeTruthy();
-      // @ts-expect-error tree is not null based on check above
-      expect(tree.props.cornerRadius).toBeUndefined();
+      const nativeComponent = getByTestId('accelerated-checkout-buttons');
+      expect(nativeComponent).toBeTruthy();
+      expect(nativeComponent.props.cornerRadius).toBeUndefined();
     });
 
     it('passes through custom quantity and cornerRadius', () => {
-      const component = renderer.create(
+      const {getByTestId} = render(
         <AcceleratedCheckoutButtons
           variantId="gid://shopify/ProductVariant/456"
           quantity={3}
@@ -218,10 +149,9 @@ describe('AcceleratedCheckoutButtons', () => {
         />,
       );
 
-      const tree = component.toJSON();
-      expect(tree).toBeTruthy();
-      // @ts-expect-error tree is not null based on check above
-      expect(tree.props.cornerRadius).toBe(16);
+      const nativeComponent = getByTestId('accelerated-checkout-buttons');
+      expect(nativeComponent).toBeTruthy();
+      expect(nativeComponent.props.cornerRadius).toBe(16);
     });
 
     it('supports custom wallet configuration', () => {
@@ -230,17 +160,162 @@ describe('AcceleratedCheckoutButtons', () => {
         AcceleratedCheckoutWallet.shopPay,
       ];
 
-      const component = renderer.create(
+      const {getByTestId} = render(
         <AcceleratedCheckoutButtons
           cartId="gid://shopify/Cart/123"
           wallets={customWallets}
         />,
       );
 
-      const tree = component.toJSON();
-      expect(tree).toBeTruthy();
-      // @ts-expect-error tree is not null based on check above
-      expect(tree.props.wallets).toEqual(customWallets);
+      const nativeComponent = getByTestId('accelerated-checkout-buttons');
+      expect(nativeComponent).toBeTruthy();
+      expect(nativeComponent.props.wallets).toEqual(customWallets);
+    });
+
+    it('forwards native fail event to onFail prop', () => {
+      const onFail = jest.fn();
+      const {getByTestId} = render(
+        <AcceleratedCheckoutButtons
+          cartId="gid://shopify/Cart/123"
+          onFail={onFail}
+        />,
+      );
+
+      const nativeComponent = getByTestId('accelerated-checkout-buttons');
+      const error = {message: 'boom'} as any;
+      nativeComponent.props.onFail({nativeEvent: error});
+      expect(onFail).toHaveBeenCalledWith(error);
+    });
+
+    it('forwards native complete event to onComplete prop', () => {
+      const onComplete = jest.fn();
+      const {getByTestId} = render(
+        <AcceleratedCheckoutButtons
+          cartId="gid://shopify/Cart/123"
+          onComplete={onComplete}
+        />,
+      );
+
+      const nativeComponent = getByTestId('accelerated-checkout-buttons');
+      const details = {orderDetails: {id: '1'}} as any;
+      nativeComponent.props.onComplete({nativeEvent: details});
+      expect(onComplete).toHaveBeenCalledWith(details);
+    });
+
+    it('calls onCancel when native cancel is invoked', () => {
+      const onCancel = jest.fn();
+      const {getByTestId} = render(
+        <AcceleratedCheckoutButtons
+          cartId="gid://shopify/Cart/123"
+          onCancel={onCancel}
+        />,
+      );
+      const nativeComponent = getByTestId('accelerated-checkout-buttons');
+      nativeComponent.props.onCancel();
+      expect(onCancel).toHaveBeenCalled();
+    });
+
+    it('maps render state change to typed states including error reason', () => {
+      const onRenderStateChange = jest.fn();
+      const {getByTestId} = render(
+        <AcceleratedCheckoutButtons
+          cartId="gid://shopify/Cart/123"
+          onRenderStateChange={onRenderStateChange}
+        />,
+      );
+      const nativeComponent = getByTestId('accelerated-checkout-buttons');
+      nativeComponent.props.onRenderStateChange({
+        nativeEvent: {state: 'error', reason: 'bad'},
+      });
+      expect(onRenderStateChange).toHaveBeenCalledWith({
+        state: RenderState.Error,
+        reason: 'bad',
+      });
+
+      nativeComponent.props.onRenderStateChange({
+        nativeEvent: {state: 'rendered'},
+      });
+      expect(onRenderStateChange).toHaveBeenCalledWith({
+        state: RenderState.Rendered,
+      });
+
+      nativeComponent.props.onRenderStateChange({
+        nativeEvent: {state: 'loading'},
+      });
+      expect(onRenderStateChange).toHaveBeenCalledWith({
+        state: RenderState.Loading,
+      });
+
+      nativeComponent.props.onRenderStateChange({
+        nativeEvent: {state: 'unexpected'},
+      });
+      expect(onRenderStateChange).toHaveBeenCalledWith({
+        state: RenderState.Unknown,
+      });
+    });
+
+    it('forwards web pixel native events', () => {
+      const onWebPixelEvent = jest.fn();
+      const {getByTestId} = render(
+        <AcceleratedCheckoutButtons
+          cartId="gid://shopify/Cart/123"
+          onWebPixelEvent={onWebPixelEvent}
+        />,
+      );
+      const nativeComponent = getByTestId('accelerated-checkout-buttons');
+      const pixel = {type: 'STANDARD'} as any;
+      nativeComponent.props.onWebPixelEvent({nativeEvent: pixel});
+      expect(onWebPixelEvent).toHaveBeenCalledWith(pixel);
+    });
+
+    it('handles onClickLink when URL is present and ignores when absent', () => {
+      const onClickLink = jest.fn();
+      const {getByTestId} = render(
+        <AcceleratedCheckoutButtons
+          cartId="gid://shopify/Cart/123"
+          onClickLink={onClickLink}
+        />,
+      );
+      const nativeComponent = getByTestId('accelerated-checkout-buttons');
+      nativeComponent.props.onClickLink({
+        nativeEvent: {url: 'https://checkout.shopify.com'},
+      });
+      expect(onClickLink).toHaveBeenCalledWith('https://checkout.shopify.com');
+
+      onClickLink.mockClear();
+      nativeComponent.props.onClickLink({nativeEvent: {}});
+      expect(onClickLink).not.toHaveBeenCalled();
+    });
+
+    it('applies dynamic height when onSizeChange is emitted', async () => {
+      const {getByTestId} = render(
+        <AcceleratedCheckoutButtons cartId="gid://shopify/Cart/123" />,
+      );
+      let nativeComponent = getByTestId('accelerated-checkout-buttons');
+      await act(async () => {
+        nativeComponent.props.onSizeChange({nativeEvent: {height: 42}});
+      });
+      nativeComponent = getByTestId('accelerated-checkout-buttons');
+      expect(nativeComponent.props.style).toEqual({height: 42});
+    });
+
+    it('warns and returns null when missing identifiers in production', () => {
+      const originalDev = (global as any).__DEV__;
+      (global as any).__DEV__ = false;
+      (Platform as any).Version = '16.0';
+      const warn = jest.spyOn(global.console, 'warn').mockImplementation();
+
+      const {queryByTestId} = render(
+        // invalid: no cartId and invalid variant path
+        <AcceleratedCheckoutButtons variantId="" quantity={0} />,
+      );
+      expect(queryByTestId('accelerated-checkout-buttons')).toBeNull();
+      expect(warn).toHaveBeenCalledWith(
+        'AcceleratedCheckoutButton: Either `cartId` or `variantId` and `quantity` must be provided',
+      );
+
+      warn.mockRestore();
+      (global as any).__DEV__ = originalDev;
     });
 
     it('handles callbacks without throwing', () => {
@@ -254,7 +329,7 @@ describe('AcceleratedCheckoutButtons', () => {
       };
 
       expect(() => {
-        renderer.create(
+        render(
           <AcceleratedCheckoutButtons
             cartId={'gid://shopify/Cart/123'}
             {...mockCallbacks}
@@ -270,15 +345,15 @@ describe('AcceleratedCheckoutButtons', () => {
     });
 
     it('returns null on Android', () => {
-      const component = renderer.create(
+      const {queryByTestId} = render(
         <AcceleratedCheckoutButtons cartId="gid://shopify/Cart/123" />,
       );
 
-      expect(component.toJSON()).toBeNull();
+      expect(queryByTestId('accelerated-checkout-buttons')).toBeNull();
     });
 
     it('does not warn on Android even without required props', () => {
-      renderer.create(<AcceleratedCheckoutButtons variantId="" quantity={0} />);
+      render(<AcceleratedCheckoutButtons variantId="" quantity={0} />);
 
       expect(mockLog).not.toHaveBeenCalled();
     });
