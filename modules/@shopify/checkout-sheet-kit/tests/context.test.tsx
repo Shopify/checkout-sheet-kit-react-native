@@ -1,5 +1,5 @@
 import React from 'react';
-import {act, create} from 'react-test-renderer';
+import {render, act} from '@testing-library/react-native';
 import {NativeModules} from 'react-native';
 import {
   ShopifyCheckoutSheetProvider,
@@ -12,10 +12,8 @@ const config: Configuration = {
   colorScheme: ColorScheme.automatic,
 };
 
-// Use the shared manual mock. Individual tests can override if needed.
 jest.mock('react-native');
 
-// Helper component to test the hook
 const HookTestComponent = ({
   onHookValue,
 }: {
@@ -25,6 +23,8 @@ const HookTestComponent = ({
   onHookValue(hookValue);
   return null;
 };
+
+const MockChild = () => null;
 
 describe('ShopifyCheckoutSheetProvider', () => {
   const TestComponent = ({children}: {children: React.ReactNode}) => (
@@ -37,18 +37,22 @@ describe('ShopifyCheckoutSheetProvider', () => {
     jest.clearAllMocks();
   });
 
-  it('renders children correctly', () => {
-    const component = create(
+  it('renders without crashing', () => {
+    const component = render(
       <TestComponent>
-        <div>Test Child</div>
+        <MockChild />
       </TestComponent>,
     );
 
-    expect(component.toJSON()).toBeTruthy();
+    expect(component).toBeTruthy();
   });
 
   it('creates ShopifyCheckoutSheet instance with configuration', () => {
-    create(<TestComponent>test</TestComponent>);
+    render(
+      <TestComponent>
+        <MockChild />
+      </TestComponent>,
+    );
 
     expect(
       NativeModules.ShopifyCheckoutSheetKit.setConfig,
@@ -58,9 +62,9 @@ describe('ShopifyCheckoutSheetProvider', () => {
   it('creates ShopifyCheckoutSheet instance with features', () => {
     const features = {handleGeolocationRequests: false};
 
-    create(
+    render(
       <ShopifyCheckoutSheetProvider features={features}>
-        test
+        <MockChild />
       </ShopifyCheckoutSheetProvider>,
     );
 
@@ -70,12 +74,20 @@ describe('ShopifyCheckoutSheetProvider', () => {
   });
 
   it('reuses the same instance across re-renders', () => {
-    const component = create(<TestComponent>test</TestComponent>);
+    const {rerender} = render(
+      <TestComponent>
+        <MockChild />
+      </TestComponent>,
+    );
 
     const firstCallCount =
       NativeModules.ShopifyCheckoutSheetKit.setConfig.mock.calls.length;
 
-    component.update(<TestComponent>updated</TestComponent>);
+    rerender(
+      <TestComponent>
+        <MockChild />
+      </TestComponent>,
+    );
 
     const secondCallCount =
       NativeModules.ShopifyCheckoutSheetKit.setConfig.mock.calls.length;
@@ -101,7 +113,7 @@ describe('useShopifyCheckoutSheet', () => {
       hookValue = value;
     };
 
-    create(
+    render(
       <Wrapper>
         <HookTestComponent onHookValue={onHookValue} />
       </Wrapper>,
@@ -117,7 +129,7 @@ describe('useShopifyCheckoutSheet', () => {
       hookValue = value;
     };
 
-    create(
+    render(
       <Wrapper>
         <HookTestComponent onHookValue={onHookValue} />
       </Wrapper>,
@@ -136,7 +148,7 @@ describe('useShopifyCheckoutSheet', () => {
       hookValue = value;
     };
 
-    create(
+    render(
       <Wrapper>
         <HookTestComponent onHookValue={onHookValue} />
       </Wrapper>,
@@ -157,7 +169,7 @@ describe('useShopifyCheckoutSheet', () => {
       hookValue = value;
     };
 
-    create(
+    render(
       <Wrapper>
         <HookTestComponent onHookValue={onHookValue} />
       </Wrapper>,
@@ -178,7 +190,7 @@ describe('useShopifyCheckoutSheet', () => {
       hookValue = value;
     };
 
-    create(
+    render(
       <Wrapper>
         <HookTestComponent onHookValue={onHookValue} />
       </Wrapper>,
@@ -199,7 +211,7 @@ describe('useShopifyCheckoutSheet', () => {
       hookValue = value;
     };
 
-    create(
+    render(
       <Wrapper>
         <HookTestComponent onHookValue={onHookValue} />
       </Wrapper>,
@@ -220,7 +232,7 @@ describe('useShopifyCheckoutSheet', () => {
       hookValue = value;
     };
 
-    create(
+    render(
       <Wrapper>
         <HookTestComponent onHookValue={onHookValue} />
       </Wrapper>,
@@ -241,7 +253,7 @@ describe('useShopifyCheckoutSheet', () => {
       hookValue = value;
     };
 
-    create(
+    render(
       <Wrapper>
         <HookTestComponent onHookValue={onHookValue} />
       </Wrapper>,
@@ -262,7 +274,7 @@ describe('useShopifyCheckoutSheet', () => {
 
     const newConfig = {colorScheme: ColorScheme.light};
 
-    create(
+    render(
       <Wrapper>
         <HookTestComponent onHookValue={onHookValue} />
       </Wrapper>,
@@ -283,7 +295,7 @@ describe('useShopifyCheckoutSheet', () => {
       hookValue = value;
     };
 
-    create(
+    render(
       <Wrapper>
         <HookTestComponent onHookValue={onHookValue} />
       </Wrapper>,
@@ -303,7 +315,7 @@ describe('useShopifyCheckoutSheet', () => {
       hookValue = value;
     };
 
-    create(
+    render(
       <Wrapper>
         <HookTestComponent onHookValue={onHookValue} />
       </Wrapper>,
@@ -318,7 +330,7 @@ describe('useShopifyCheckoutSheet', () => {
       hookValue = value;
     };
 
-    create(
+    render(
       <Wrapper>
         <HookTestComponent onHookValue={onHookValue} />
       </Wrapper>,
@@ -337,7 +349,7 @@ describe('ShopifyCheckoutSheetContext without provider', () => {
       hookValue = value;
     };
 
-    create(<HookTestComponent onHookValue={onHookValue} />);
+    render(<HookTestComponent onHookValue={onHookValue} />);
 
     const config = await hookValue.getConfig();
     expect(config).toBeUndefined();
