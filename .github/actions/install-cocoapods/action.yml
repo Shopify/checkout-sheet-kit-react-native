@@ -1,28 +1,45 @@
 name: Cocoapods
 description: Install cocoapods for sample app
 
+inputs:
+  ruby-version:
+    description: 'Ruby version to use'
+    required: false
+    default: '3.1.2'
+
 runs:
   using: composite
   steps:
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@829114fc20da43a41d27359103ec7a63020954d4 # v1.255.0
+      with:
+        bundler-cache: true
+        ruby-version: ${{ inputs.ruby-version }}
+        working-directory: sample
+
     - name: Cache cocoapods
       id: cache-cocoapods
       uses: actions/cache@v4
       with:
         path: |
           **/ios/Pods
-        key: ${{ runner.os }}-cocoapods-${{ hashFiles('sample/ios/Podfile.lock') }}
+        key: ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock', 'package.json', 'sample/package.json', 'modules/@shopify/checkout-sheet-kit/package.json', 'yarn.lock') }}
         restore-keys: |
+          ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock', 'sample/package.json', 'yarn.lock') }}
+          ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock') }}
+          ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-
           ${{ runner.os }}-cocoapods-
 
     - name: Install cocoapods
-      if: steps.cocoapods-cache.outputs.cache-hit != 'true'
+      if: steps.cache-cocoapods.outputs.cache-hit != 'true'
       shell: bash
       env:
         NO_FLIPPER: "1"
       run: |
+        set -euo pipefail
         ROOT=$(pwd)
         cd sample
         bundle install
         cd ios
-        NO_FLIPPER=1 bundle exec pod install
+        NO_FLIPPER=1 bundle exec pod install --no-repo-update
         cd $ROOT

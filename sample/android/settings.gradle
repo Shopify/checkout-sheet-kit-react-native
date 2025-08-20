@@ -1,6 +1,8 @@
-rootProject.name = 'ReactNative'
+pluginManagement { includeBuild("../../node_modules/@react-native/gradle-plugin") }
+plugins { id("com.facebook.react.settings") }
+extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
 
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+rootProject.name = 'ReactNative'
 
 include ':app'
 include ':react-native-config'

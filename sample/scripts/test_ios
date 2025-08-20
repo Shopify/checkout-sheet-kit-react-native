@@ -6,9 +6,17 @@ set -eo pipefail
 if [[ -n $CURRENT_SIMULATOR_UUID ]]; then
     dest="id=$CURRENT_SIMULATOR_UUID"
 else
-    dest="platform=iOS Simulator,name=iPhone 15 Pro"
+    dest="platform=iOS Simulator,name=iPhone 16 Pro"
 fi
 
 cd ios
 
-xcodebuild build-for-testing test -workspace ReactNative.xcworkspace -scheme ReactNative -destination "$dest" -skipPackagePluginValidation -sdk iphonesimulator ASSETCATALOG_COMPILER_OPTIMIZATION=time COMPILER_INDEX_STORE_ENABLE=NO | xcpretty -c
+xcodebuild build-for-testing test \
+    -workspace ReactNative.xcworkspace \
+    -scheme ReactNative \
+    -destination "$dest" \
+    -skipPackagePluginValidation \
+    -sdk iphonesimulator \
+    ASSETCATALOG_COMPILER_OPTIMIZATION=time \
+    COMPILER_INDEX_STORE_ENABLE=NO \
+| xcbeautify
