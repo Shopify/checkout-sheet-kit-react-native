@@ -72,3 +72,14 @@ export function currency(amount?: string, currency?: string): string {
     return `${Number(amount ?? 0).toFixed(2)}` + currencyCode;
   }
 }
+
+export function debugLog(message: string, data?: any) {
+  if (__DEV__) {
+    console.log(message, data || '');
+  }
+}
+
+export function createDebugLogger(name: string) {
+  return (message: string, data?: any) =>
+    debugLog(`[${name}] ${message}`, data);
+}

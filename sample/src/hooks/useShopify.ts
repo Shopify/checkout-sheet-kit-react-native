@@ -46,6 +46,7 @@ const productFragment = gql`
       width
       height
       url
+      thumbnailUrl: url(transform: {maxWidth: 80, maxHeight: 80})
     }
   }
 
@@ -95,6 +96,7 @@ const PRODUCTS_QUERY = gql`
                 width
                 height
                 url
+                thumbnailUrl: url(transform: {maxWidth: 150, maxHeight: 150})
               }
             }
           }

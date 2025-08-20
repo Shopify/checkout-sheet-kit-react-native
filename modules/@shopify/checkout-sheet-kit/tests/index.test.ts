@@ -19,12 +19,12 @@ const config: Configuration = {
   colorScheme: ColorScheme.automatic,
 };
 
-// Use the shared manual mock. Individual tests can override if needed.
 jest.mock('react-native');
 
 global.console = {
   ...global.console,
   error: jest.fn(),
+  warn: jest.fn(),
 };
 
 describe('ShopifyCheckoutSheetKit', () => {
