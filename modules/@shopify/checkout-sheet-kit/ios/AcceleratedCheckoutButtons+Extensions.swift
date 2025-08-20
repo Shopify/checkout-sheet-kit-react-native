@@ -26,6 +26,8 @@ import Foundation
 import PassKit
 import SwiftUI
 
+// MARK: - Apple Pay Button
+
 @available(iOS 16.0, *)
 extension PayWithApplePayButtonLabel {
     static func from(_ string: String?, fallback: PayWithApplePayButtonLabel = .plain) -> PayWithApplePayButtonLabel {
@@ -64,6 +66,8 @@ extension PayWithApplePayButtonLabel {
         "topUp": .topUp
     ]
 }
+
+// MARK: - SwiftUI Helpers
 
 extension View {
     @ViewBuilder

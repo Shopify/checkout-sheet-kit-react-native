@@ -332,18 +332,7 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         isUserInteractionEnabled = true
     }
 
-    private func convertToShopifyWallets(_ walletStrings: [String]) -> [Wallet] {
-        return walletStrings.compactMap { walletString in
-            switch walletString {
-            case "shopPay":
-                return .shopPay
-            case "applePay":
-                return .applePay
-            default:
-                return nil
-            }
-        }
-    }
+    // MARK: - Event Handlers
 
     private func handleCheckoutCompleted(_ event: CheckoutCompletedEvent) {
         onComplete?(ShopifyEventSerialization.serialize(checkoutCompletedEvent: event))
@@ -369,6 +358,8 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         onClickLink?(ShopifyEventSerialization.serialize(clickEvent: url))
     }
 
+    // MARK: - Helper Methods
+
     private func calculateRequiredHeight() -> CGFloat {
         let shopifyWallets = wallets.map(convertToShopifyWallets) ?? AcceleratedCheckoutConfiguration.shared.wallets
         let numberOfWallets = max(shopifyWallets.count, 1)
@@ -377,5 +368,18 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         let totalHeight = (CGFloat(numberOfWallets) * buttonHeight) + (CGFloat(numberOfWallets - 1) * gapHeight)
 
         return totalHeight
+    }
+
+    private func convertToShopifyWallets(_ walletStrings: [String]) -> [Wallet] {
+        return walletStrings.compactMap { walletString in
+            switch walletString {
+            case "shopPay":
+                return .shopPay
+            case "applePay":
+                return .applePay
+            default:
+                return nil
+            }
+        }
     }
 }

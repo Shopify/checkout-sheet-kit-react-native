@@ -22,7 +22,6 @@
  */
 
 import Foundation
-import ShopifyAcceleratedCheckouts
 import ShopifyCheckoutSheetKit
 
 /**
