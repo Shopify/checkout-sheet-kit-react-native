@@ -21,10 +21,11 @@ interface EventHandlers {
 }
 
 export function useShopifyEventHandlers(name?: string): EventHandlers {
-  const log = createDebugLogger(name ?? '');
   const {clearCart} = useCart();
 
   return useMemo(() => {
+    const log = createDebugLogger(name ?? '');
+
     return {
       onPress: () => {
         log('onPress');
@@ -50,5 +51,5 @@ export function useShopifyEventHandlers(name?: string): EventHandlers {
         }
       },
     };
-  }, [log, clearCart]);
+  }, [clearCart, name]);
 }
