@@ -43,7 +43,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     private func resetShopifyCheckoutSheetKitDefaults() {
         ShopifyCheckoutSheetKit.configuration.preloading = Configuration.Preloading(enabled: true)
         ShopifyCheckoutSheetKit.configuration.colorScheme = .automatic
-    ShopifyCheckoutSheetKit.configuration.closeButtonTintColor = nil
+        ShopifyCheckoutSheetKit.configuration.closeButtonTintColor = nil
     }
 
     private func getShopifyCheckoutSheetKit() -> RCTShopifyCheckoutSheetKit {

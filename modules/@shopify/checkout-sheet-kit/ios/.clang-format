@@ -1,0 +1,29 @@
+BasedOnStyle: LLVM
+Language: ObjC
+UseTab: Never
+IndentWidth: 2
+ContinuationIndentWidth: 2
+ColumnLimit: 120
+
+# Keep long macro calls (e.g., RCT_EXTERN_METHOD) readable
+AlignAfterOpenBracket: DontAlign
+BinPackArguments: false
+BinPackParameters: false
+PenaltyBreakBeforeFirstCallParameter: 200
+ReflowComments: false
+
+# Objective-C specifics
+ObjCSpaceAfterProperty: true
+ObjCSpaceBeforeProtocolList: true
+ObjCBreakBeforeNestedBlockParam: true
+PointerAlignment: Left
+BreakBeforeBraces: Attach
+SpaceBeforeParens: ControlStatements
+SortIncludes: false
+
+# Treat common React Native macros as statements for nicer wrapping
+StatementMacros:
+  - RCT_EXTERN_METHOD
+  - RCT_EXTERN_MODULE
+  - RCT_EXPORT_VIEW_PROPERTY
+
