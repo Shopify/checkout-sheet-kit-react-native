@@ -148,8 +148,15 @@ apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
+def stripSurroundingQuotes(String value) {
+  if (value == null) {
+    return null
+  }
+  return value.trim()?.replaceAll(/^['"]|['"]$/, '')
+}
+
 def properties = loadProperties()
-def storefrontDomain = properties.getProperty("STOREFRONT_DOMAIN")
+def storefrontDomain = stripSurroundingQuotes(properties.getProperty("STOREFRONT_DOMAIN"))
 
 if (!storefrontDomain) {
   println("**** Please add a .env file with STOREFRONT_DOMAIN set *****")
