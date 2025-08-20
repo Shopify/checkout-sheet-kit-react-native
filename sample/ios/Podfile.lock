@@ -1656,14 +1656,9 @@ PODS:
     - Yoga
   - RNShopifyCheckoutSheetKit (3.3.0):
     - React-Core
-<<<<<<< HEAD
-    - ShopifyCheckoutSheetKit (~> 3.3.0)
+    - ShopifyCheckoutSheetKit (~> 3.4.0-rc.5)
+    - ShopifyCheckoutSheetKit/AcceleratedCheckouts (~> 3.4.0-rc.5)
   - RNVectorIcons (10.3.0):
-=======
-    - ShopifyCheckoutSheetKit (~> 3.4.0-rc.2)
-    - ShopifyCheckoutSheetKit/AcceleratedCheckouts (~> 3.4.0-rc.2)
-  - RNVectorIcons (10.2.0):
->>>>>>> ea60daa (feat: Accelerated Checkouts)
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1684,16 +1679,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ShopifyCheckoutSheetKit (3.4.0-rc.2):
-    - ShopifyCheckoutSheetKit/Core (= 3.4.0-rc.2)
-  - ShopifyCheckoutSheetKit/AcceleratedCheckouts (3.4.0-rc.2):
+  - ShopifyCheckoutSheetKit (3.4.0-rc.5):
+    - ShopifyCheckoutSheetKit/Core (= 3.4.0-rc.5)
+  - ShopifyCheckoutSheetKit/AcceleratedCheckouts (3.4.0-rc.5):
     - ShopifyCheckoutSheetKit/Core
-  - ShopifyCheckoutSheetKit/Core (3.4.0-rc.2)
+  - ShopifyCheckoutSheetKit/Core (3.4.0-rc.5)
   - SocketRocket (0.7.0)
-<<<<<<< HEAD
-  - SwiftLint (0.59.1)
-=======
->>>>>>> ea60daa (feat: Accelerated Checkouts)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1955,7 +1946,6 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 5dffd4714a7261a2fd1d94985eec118d0728b787
   React-microtasksnativemodule: 9856dcf1c3d981843197b1b75253a079d961795d
   react-native-config: 644074ab88db883fcfaa584f03520ec29589d7df
-<<<<<<< HEAD
   react-native-safe-area-context: 758e894ca5a9bd1868d2a9cfbca7326a2b6bf9dc
   React-nativeconfig: 237c862aab56a7426301fcbbb8dd6988745231e0
   React-NativeModulesApple: 5b3c2bcfa3a53b22da441b35189e902ede27513d
@@ -1987,48 +1977,12 @@ SPEC CHECKSUMS:
   RNGestureHandler: 94ed503f49baffca0b1c048d5401c5a393a2660a
   RNReanimated: 9d34c9eb2e2265f66d0ca982f994088da24ca1f7
   RNScreens: 4a5ab20b324ed1e3fe3862796b8f8e0a6208c415
-  RNShopifyCheckoutSheetKit: 31d302a9150b461f5fac739bbdcc18cd0f750a6b
+  RNShopifyCheckoutSheetKit: e6682366288726b2165fd3aca0092ba0963dde99
   RNVectorIcons: 18f6874f831ee0c755e31bb16b0f746c093fc0d8
-  ShopifyCheckoutSheetKit: 5ee0c9753132d79924089ddef7e73ba4aa84fe37
+  ShopifyCheckoutSheetKit: 0a0c5626057297d17ac47c39adb7672f40c5ac26
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  SwiftLint: 3d48e2fb2a3468fdaccf049e5e755df22fb40c2c
   Yoga: 1dd9dabb9df8fe08f12cd522eae04a2da0e252eb
-=======
-  react-native-safe-area-context: b13be9714d9771fbde0120bc519c963484de3a71
-  React-nativeconfig: b0073a590774e8b35192fead188a36d1dca23dec
-  React-NativeModulesApple: 61b07ab32af3ea4910ba553932c0a779e853c082
-  React-perflogger: 3d31e0d1e8ad891e43a09ac70b7b17a79773003a
-  React-RCTActionSheet: c4a3a134f3434c9d7b0c1054f1a8cfed30c7a093
-  React-RCTAnimation: dab04683056694845eb7a9e283f4c63eec7fa633
-  React-RCTAppDelegate: 1785d42459138c45175b2fa18e86cd2aee829a93
-  React-RCTBlob: a0a8f6bfd8926bff0e2814ec3f8cd5514f2db243
-  React-RCTFabric: f69d856b74b6d385c4cf4bd128c330161ce18306
-  React-RCTImage: 51db983bcc5075fa9bf3e094e5c6c1f5b5575472
-  React-RCTLinking: 3430cd1023a5ac86a96ed6d4fbf7a8ed7b2e44d5
-  React-RCTNetwork: 52198f8a8c823639dcc8f6725ca5b360d66ea1a0
-  React-RCTSettings: c127440c2c538128f92fb45524e976e25cb69bd6
-  React-RCTText: 640b2d0bfb51d88d8a76c6a1a7ea1f94667bf231
-  React-RCTVibration: bd20c8156b649cd745c70db3341c409ae3b42821
-  React-rendererdebug: 16394ffe0d852967123b3b76a630233b90ec8e63
-  React-rncore: 4f1e645acb5107bd4b4cf29eff17b04a7cd422f3
-  React-RuntimeApple: 97d0a5c655467c57b88076434427ec32413e7802
-  React-RuntimeCore: a55443ddb73e6666b441963d8951a16ba5cfc223
-  React-runtimeexecutor: a278d4249921853d4a3f24e4d6e0ff30688f3c16
-  React-RuntimeHermes: 6273f0755fef304453fc3c356b25abf17e915b83
-  React-runtimescheduler: 87b14969bb0b10538014fb8407d472f9904bc8cd
-  React-utils: 67574b07bff4429fd6c4d43a7fad8254d814ee20
-  ReactCommon: 64c64f4ae1f2debe3fab1800e00cb8466a4477b7
-  RNCMaskedView: af7c1703f39cdef08a99275bfcadf324aa403403
-  RNGestureHandler: 293aea360e79439e2272b8a5ffebd582a1e4c486
-  RNReanimated: af5545657216ca1794252c132f9e6e8ceb475462
-  RNScreens: 02747ebee17d2e322af4ee383877367cf82a3cd6
-  RNShopifyCheckoutSheetKit: faf8e4a701b800cf66ae7a553751161ecb5d4fbf
-  RNVectorIcons: 6c795cacc9276decc31d8e1a139b9cc6fc0479ca
-  ShopifyCheckoutSheetKit: b38da424376c9e4f06737fe2da65cbc84abc9ff2
-  SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  Yoga: 348f8b538c3ed4423eb58a8e5730feec50bce372
->>>>>>> ea60daa (feat: Accelerated Checkouts)
 
-PODFILE CHECKSUM: 541d15f6e904ad72180d7d5b564cb65bd3463c5a
+PODFILE CHECKSUM: ef7c1248088910182f6b4aa083731a541b0da99f
 
 COCOAPODS: 1.15.2

@@ -48,15 +48,21 @@ RCT_EXTERN_METHOD(getConfig : (RCTPromiseResolveBlock)
 
 /// Configure AcceleratedCheckouts
 RCT_EXTERN_METHOD(
-    configureAcceleratedCheckouts : (NSString *)
-        storefrontDomain storefrontAccessToken : (NSString *)
-            storefrontAccessToken customerEmail : (NSString *)
-                customerEmail customerPhoneNumber : (NSString *)
-                    customerPhoneNumber resolve : (RCTPromiseResolveBlock)
+    configureAcceleratedCheckouts : (
+        NSString *)storefrontDomain storefrontAccessToken : (NSString *)
+        storefrontAccessToken customerEmail : (
+            NSString *)customerEmail customerPhoneNumber : (NSString *)
+            customerPhoneNumber applePayMerchantIdentifier : (NSString *)
+                applePayMerchantIdentifier applyPayContactFields : (NSArray *)
+                    applyPayContactFields resolve : (RCTPromiseResolveBlock)
                         resolve reject : (RCTPromiseRejectBlock)reject);
 
 /// Check if accelerated checkout is available
 RCT_EXTERN_METHOD(isAcceleratedCheckoutAvailable : (RCTPromiseResolveBlock)
+                      resolve reject : (RCTPromiseRejectBlock)reject);
+
+/// Check if Apple Pay is available
+RCT_EXTERN_METHOD(isApplePayAvailable : (RCTPromiseResolveBlock)
                       resolve reject : (RCTPromiseRejectBlock)reject);
 
 @end
@@ -70,6 +76,7 @@ RCT_EXPORT_VIEW_PROPERTY(variantId, NSString *)
 RCT_EXPORT_VIEW_PROPERTY(quantity, NSNumber *)
 RCT_EXPORT_VIEW_PROPERTY(cornerRadius, NSNumber *)
 RCT_EXPORT_VIEW_PROPERTY(wallets, NSArray *)
+RCT_EXPORT_VIEW_PROPERTY(applePayLabel, NSString *)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onFail, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onComplete, RCTBubblingEventBlock)
@@ -78,5 +85,6 @@ RCT_EXPORT_VIEW_PROPERTY(onRenderStateChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onShouldRecoverFromError, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onWebPixelEvent, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onClickLink, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onSizeChange, RCTDirectEventBlock)
 
 @end

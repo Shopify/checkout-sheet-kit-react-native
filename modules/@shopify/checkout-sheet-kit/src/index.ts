@@ -33,7 +33,7 @@ import type {
   PermissionStatus,
 } from 'react-native';
 import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
-import {ColorScheme} from './index.d';
+import {ApplePayContactField, ColorScheme} from './index.d';
 import type {
   AcceleratedCheckoutConfiguration,
   CheckoutEvent,
@@ -58,6 +58,7 @@ import {
 import {CheckoutErrorCode} from './errors.d';
 import type {CheckoutCompletedEvent} from './events.d';
 import type {CustomEvent, PixelEvent, StandardEvent} from './pixels.d';
+import {ApplePayLabel} from './components/AcceleratedCheckoutButtons';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
 
@@ -217,18 +218,23 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   public async configureAcceleratedCheckouts(
     config: AcceleratedCheckoutConfiguration,
   ): Promise<boolean> {
-    if (Platform.OS !== 'ios') {
+    if (!this.acceleratedCheckoutsSupported) {
       return false;
     }
 
     this.validateAcceleratedCheckoutsConfiguration(config);
 
-    return RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
-      config.storefrontDomain,
-      config.storefrontAccessToken,
-      config.customer?.email || null,
-      config.customer?.phoneNumber || null,
-    );
+    const configured =
+      await RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+        config.storefrontDomain,
+        config.storefrontAccessToken,
+        config.customer?.email || null,
+        config.customer?.phoneNumber || null,
+        config.wallets?.applePay?.merchantIdentifier || null,
+        config.wallets?.applePay?.contactFields || [],
+      );
+
+    return configured;
   }
 
   /**
@@ -237,7 +243,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * @returns Promise<boolean> indicating availability
    */
   public async isAcceleratedCheckoutAvailable(): Promise<boolean> {
-    if (Platform.OS !== 'ios') {
+    if (!this.acceleratedCheckoutsSupported) {
       return false;
     }
 
@@ -256,20 +262,37 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   // --- private
 
+  /**
+   * Accelerated Checkouts is only supported from iOS 16.0 onwards
+   */
+  private get acceleratedCheckoutsSupported(): boolean {
+    return Platform.OS === 'ios' && this.majorVersion >= 16;
+  }
+
+  private get majorVersion(): number {
+    return parseInt(String(Platform.Version), 10);
+  }
+
   private validateAcceleratedCheckoutsConfiguration(
     acceleratedCheckouts: Configuration['acceleratedCheckouts'],
   ) {
+    /**
+     * Required Accelerated Checkouts configuration properties
+     */
     if (!acceleratedCheckouts?.storefrontDomain) {
       throw new Error('storefrontDomain is required');
     }
     if (!acceleratedCheckouts.storefrontAccessToken) {
       throw new Error('storefrontAccessToken is required');
     }
-    if (
-      acceleratedCheckouts.wallets?.applePay &&
-      !acceleratedCheckouts.wallets.applePay.merchantIdentifier
-    ) {
-      throw new Error('wallets.applePay.merchantIdentifier is required');
+
+    /**
+     * Validate Apple Pay config if available
+     */
+    if (acceleratedCheckouts.wallets?.applePay) {
+      if (!acceleratedCheckouts.wallets.applePay.merchantIdentifier) {
+        throw new Error('wallets.applePay.merchantIdentifier is required');
+      }
     }
   }
 
@@ -428,6 +451,8 @@ export class LifecycleEventParseError extends Error {
 
 // API
 export {
+  ApplePayContactField,
+  ApplePayLabel,
   AcceleratedCheckoutWallet,
   ColorScheme,
   ShopifyCheckoutSheet,

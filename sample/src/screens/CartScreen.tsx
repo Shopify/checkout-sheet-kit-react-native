@@ -38,9 +38,10 @@ import Icon from 'react-native-vector-icons/Entypo';
 import {
   useShopifyCheckoutSheet,
   AcceleratedCheckoutButtons,
+  ApplePayLabel,
+  AcceleratedCheckoutWallet,
 } from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
-
 import type {CartLineItem, CartItem} from '../../@types';
 import type {Colors} from '../context/Theme';
 import {useTheme} from '../context/Theme';
@@ -165,9 +166,12 @@ function CartScreen(): React.JSX.Element {
             <View style={styles.checkoutContainer}>
               <AcceleratedCheckoutButtons
                 {...eventHandlers}
+                applePayLabel={ApplePayLabel.checkout}
                 cartId={cartId}
-                cornerRadius={10}
-                style={styles.acceleratedCheckoutContainer}
+                wallets={[
+                  AcceleratedCheckoutWallet.applePay,
+                  AcceleratedCheckoutWallet.shopPay,
+                ]}
               />
 
               <Pressable
@@ -254,10 +258,6 @@ function CartItem({
 
 function createStyles(colors: Colors) {
   return StyleSheet.create({
-    acceleratedCheckoutContainer: {
-      height: 100,
-      width: '100%',
-    },
     loading: {
       flex: 1,
       padding: 2,
@@ -274,7 +274,7 @@ function createStyles(colors: Colors) {
     checkoutContainer: {
       paddingHorizontal: 20,
       paddingVertical: 10,
-      gap: 10,
+      gap: 8,
     },
     cartButton: {
       flex: 1,
@@ -290,7 +290,7 @@ function createStyles(colors: Colors) {
       fontWeight: 'bold',
     },
     cartButtonText: {
-      fontSize: 16,
+      fontSize: 22,
       lineHeight: 20,
       textAlign: 'center',
       color: colors.secondaryText,

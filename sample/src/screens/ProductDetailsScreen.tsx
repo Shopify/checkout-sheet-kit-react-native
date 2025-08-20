@@ -42,6 +42,7 @@ import type {RootStackParamList} from '../App';
 import {
   AcceleratedCheckoutButtons,
   AcceleratedCheckoutWallet,
+  ApplePayLabel,
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
 import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
@@ -108,7 +109,7 @@ function ProductDetails({
           style={styles.productImage}
           alt={image?.altText}
           source={{
-            uri: image.thumbnailUrl,
+            uri: image.url,
           }}
         />
       )}
@@ -119,7 +120,19 @@ function ProductDetails({
             {product.description.slice(0, 100)} ...
           </Text>
         </View>
-        <View style={styles.addToCartButtonContainer}>
+
+        <View style={styles.buttonContainer}>
+          {acceleratedCheckoutsAvailable && variant?.id && (
+            <AcceleratedCheckoutButtons
+              {...eventHandlers}
+              applePayLabel={ApplePayLabel.order}
+              wallets={[AcceleratedCheckoutWallet.applePay]}
+              variantId={variant.id}
+              quantity={1}
+              cornerRadius={cornerRadius}
+            />
+          )}
+
           <Pressable
             disabled={loading}
             style={styles.addToCartButton}
@@ -130,17 +143,6 @@ function ProductDetails({
               <Text style={styles.addToCartButtonText}>Add to cart</Text>
             )}
           </Pressable>
-
-          {acceleratedCheckoutsAvailable && variant?.id && (
-            <AcceleratedCheckoutButtons
-              {...eventHandlers}
-              wallets={[AcceleratedCheckoutWallet.applePay]}
-              variantId={variant.id}
-              quantity={1}
-              cornerRadius={cornerRadius}
-              style={styles.acceleratedCheckoutButton}
-            />
-          )}
         </View>
       </View>
     </View>
@@ -202,25 +204,19 @@ function createStyles(colors: Colors, cornerRadius: number) {
       marginTop: 5,
       borderRadius: cornerRadius,
     },
-    addToCartButtonContainer: {
-      marginTop: 10,
-      gap: 10,
-      height: 80,
-    },
-    acceleratedCheckoutButton: {
-      height: 48,
-      width: '100%',
+    buttonContainer: {
+      marginTop: 20,
+      gap: 8,
     },
     addToCartButton: {
       borderRadius: cornerRadius,
-      fontSize: 8,
       backgroundColor: colors.secondary,
       paddingHorizontal: 10,
       paddingVertical: 14,
       height: 48,
     },
     addToCartButtonText: {
-      fontSize: 16,
+      fontSize: 20,
       lineHeight: 20,
       color: colors.secondaryText,
       fontWeight: 'bold',

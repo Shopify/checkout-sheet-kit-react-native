@@ -184,7 +184,10 @@ export enum AcceleratedCheckoutWallet {
   applePay = 'applePay',
 }
 
-type ApplePayContactField = 'email' | 'phone';
+export enum ApplePayContactField {
+  email = 'email',
+  phone = 'phone',
+}
 
 /**
  * Configuration for AcceleratedCheckouts

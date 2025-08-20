@@ -34,6 +34,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
     internal var checkoutSheet: UIViewController?
     private var acceleratedCheckoutsConfiguration: Any?
+    private var acceleratedCheckoutsApplePayConfiguration: Any?
 
     override var methodQueue: DispatchQueue! {
         return DispatchQueue.main
@@ -195,6 +196,8 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         if let closeButtonColorHex = iosConfig?["closeButtonColor"] as? String {
             ShopifyCheckoutSheetKit.configuration.closeButtonTintColor = UIColor(hex: closeButtonColorHex)
         }
+
+        NotificationCenter.default.post(name: Notification.Name("CheckoutKitConfigurationUpdated"), object: nil)
     }
 
     @objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
@@ -215,10 +218,12 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         storefrontAccessToken: String,
         customerEmail: String?,
         customerPhoneNumber: String?,
+        applePayMerchantIdentifier: String?,
+        applyPayContactFields: [String]?,
         resolve: @escaping RCTPromiseResolveBlock,
         reject _: @escaping RCTPromiseRejectBlock
     ) {
-        if #available(iOS 17.0, *) {
+        if #available(iOS 16.0, *) {
             let customer = ShopifyAcceleratedCheckouts.Customer(
                 email: customerEmail,
                 phoneNumber: customerPhoneNumber
@@ -229,6 +234,14 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
                 storefrontAccessToken: storefrontAccessToken,
                 customer: customer
             )
+
+            if let merchantIdentifier = applePayMerchantIdentifier, let contactFields = applyPayContactFields {
+                acceleratedCheckoutsApplePayConfiguration = ShopifyAcceleratedCheckouts.ApplePayConfiguration(
+                    merchantIdentifier: merchantIdentifier,
+                    contactFields: contactFieldsToRequiredContactFields(contactFields)
+                )
+                AcceleratedCheckoutConfiguration.shared.applePayConfiguration = acceleratedCheckoutsApplePayConfiguration as? ShopifyAcceleratedCheckouts.ApplePayConfiguration
+            }
 
             AcceleratedCheckoutConfiguration.shared.configuration = acceleratedCheckoutsConfiguration as? ShopifyAcceleratedCheckouts.Configuration
 
@@ -244,14 +257,41 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         _ resolve: @escaping RCTPromiseResolveBlock,
         reject _: @escaping RCTPromiseRejectBlock
     ) {
-        guard #available(iOS 17.0, *) else {
+        guard #available(iOS 16.0, *) else {
             resolve(false)
             return
         }
 
-        let isConfigured = (acceleratedCheckoutsConfiguration as? ShopifyAcceleratedCheckouts.Configuration) != nil
-        resolve(isConfigured)
+        resolve(AcceleratedCheckoutConfiguration.shared.available)
+    }
+
+    @objc func isApplePayAvailable(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        reject _: @escaping RCTPromiseRejectBlock
+    ) {
+        guard #available(iOS 16.0, *) else {
+            resolve(false)
+            return
+        }
+
+        let available = AcceleratedCheckoutConfiguration.shared.available && AcceleratedCheckoutConfiguration.shared.applePayAvailable
+
+        resolve(available)
     }
 
     // MARK: - Private
+
+    @available(iOS 16.0, *)
+    private func contactFieldsToRequiredContactFields(_ contactFields: [String]) -> [ShopifyAcceleratedCheckouts.RequiredContactFields] {
+        return contactFields.compactMap {
+            switch $0 {
+            case "email":
+                return ShopifyAcceleratedCheckouts.RequiredContactFields.email
+            case "phone":
+                return ShopifyAcceleratedCheckouts.RequiredContactFields.phone
+            default:
+                return nil
+            }
+        }
+    }
 }

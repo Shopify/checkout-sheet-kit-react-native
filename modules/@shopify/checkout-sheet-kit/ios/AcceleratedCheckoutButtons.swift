@@ -30,25 +30,26 @@ import UIKit
 
 // MARK: - AcceleratedCheckout Components
 
-@available(iOS 17.0, *)
+@available(iOS 16.0, *)
 class AcceleratedCheckoutConfiguration {
     static let shared = AcceleratedCheckoutConfiguration()
     var configuration: ShopifyAcceleratedCheckouts.Configuration?
+    var applePayConfiguration: ShopifyAcceleratedCheckouts.ApplePayConfiguration?
     var wallets: [Wallet] = [Wallet.shopPay, Wallet.applePay]
 
-    private init() {
-        setupApplePay()
+    var available: Bool {
+        if #available(iOS 16.0, *) {
+            return configuration != nil
+        } else {
+            return false
+        }
     }
 
-    private func setupApplePay() {
-        // Configure Apple Pay environment
-        // This should be called during app initialization
-        if let merchantID = Bundle.main.object(forInfoDictionaryKey: "ApplePayMerchantID") as? String {
-            // Apple Pay is configured via merchant ID in Info.plist
-            // The actual Apple Pay setup is handled by the ShopifyAcceleratedCheckouts framework
-            print("✅ Apple Pay configured with Merchant ID: \(merchantID)")
+    var applePayAvailable: Bool {
+        if #available(iOS 16.0, *) {
+            return applePayConfiguration != nil
         } else {
-            print("⚠️ Apple Pay Merchant ID not found in Info.plist. Add 'ApplePayMerchantID' key to enable Apple Pay.")
+            return false
         }
     }
 }
@@ -56,7 +57,7 @@ class AcceleratedCheckoutConfiguration {
 @objc(RCTAcceleratedCheckoutButtonsManager)
 class RCTAcceleratedCheckoutButtonsManager: RCTViewManager {
     override func view() -> UIView! {
-        if #available(iOS 17.0, *) {
+        if #available(iOS 16.0, *) {
             return RCTAcceleratedCheckoutButtonsView()
         }
 
@@ -73,11 +74,15 @@ class RCTAcceleratedCheckoutButtonsManager: RCTViewManager {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 16.0, *)
 class RCTAcceleratedCheckoutButtonsView: UIView {
     private var hostingController: UIHostingController<AnyView>?
     private var configuration: ShopifyAcceleratedCheckouts.Configuration?
     private weak var parentViewController: UIViewController?
+
+    @objc var onSizeChange: RCTDirectEventBlock?
+
+    // MARK: - Props
 
     @objc var cartId: String? {
         didSet {
@@ -105,6 +110,16 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
 
     @objc var wallets: [String]? {
         didSet {
+            let height = calculateRequiredHeight()
+            onSizeChange?(["height": height])
+            invalidateIntrinsicContentSize()
+            setNeedsLayout()
+            updateView()
+        }
+    }
+
+    @objc var applePayLabel: String? {
+        didSet {
             updateView()
         }
     }
@@ -128,6 +143,16 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         setupView()
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        hostingController?.view.frame = bounds
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let height = calculateRequiredHeight()
+        return CGSize(width: UIView.noIntrinsicMetric, height: height)
+    }
+
     private func setupView() {
         // Configuration will be set via a static method from the main module
         configuration = AcceleratedCheckoutConfiguration.shared.configuration
@@ -146,6 +171,20 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
             name: Notification.Name("AcceleratedCheckoutConfigurationUpdated"),
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(configurationUpdated),
+            name: Notification.Name("CheckoutKitConfigurationUpdated"),
+            object: nil
+        )
+
+        // Fire initial size change event
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let height = self.calculateRequiredHeight()
+            self.onSizeChange?(["height": height])
+        }
     }
 
     private func findViewController() -> UIViewController? {
@@ -167,8 +206,9 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
     private func createCartButtons(
         cartId: String,
         wallets: [Wallet],
+        applePayLabel: PayWithApplePayButtonLabel?,
         config: ShopifyAcceleratedCheckouts.Configuration,
-        applePayConfig: ShopifyAcceleratedCheckouts.ApplePayConfiguration
+        applePayConfig: ShopifyAcceleratedCheckouts.ApplePayConfiguration?
     ) -> some View {
         AcceleratedCheckoutButtons(cartID: cartId)
             .wallets(wallets)
@@ -190,17 +230,19 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
             .onWebPixelEvent { [weak self] event in
                 self?.handleWebPixelEvent(event)
             }
+            .applePayLabel(applePayLabel ?? .plain)
             .cornerRadius(CGFloat(cornerRadius.doubleValue))
-            .environment(config)
-            .environment(applePayConfig)
+            .environmentObject(config)
+            .conditionalEnvironmentObject(applePayConfig)
     }
 
     private func createVariantButtons(
         variantId: String,
         quantity: Int,
         wallets: [Wallet],
+        applePayLabel: PayWithApplePayButtonLabel?,
         config: ShopifyAcceleratedCheckouts.Configuration,
-        applePayConfig: ShopifyAcceleratedCheckouts.ApplePayConfiguration
+        applePayConfig: ShopifyAcceleratedCheckouts.ApplePayConfiguration?
     ) -> some View {
         AcceleratedCheckoutButtons(variantID: variantId, quantity: quantity)
             .wallets(wallets)
@@ -222,9 +264,10 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
             .onWebPixelEvent { [weak self] event in
                 self?.handleWebPixelEvent(event)
             }
+            .applePayLabel(applePayLabel ?? .plain)
             .cornerRadius(CGFloat(cornerRadius.doubleValue))
-            .environment(config)
-            .environment(applePayConfig)
+            .environmentObject(config)
+            .conditionalEnvironmentObject(applePayConfig)
     }
 
     private func updateView() {
@@ -240,29 +283,24 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         // Use wallets from props, or fallback to default
         let shopifyWallets = wallets.map(convertToShopifyWallets) ?? AcceleratedCheckoutConfiguration.shared.wallets
 
-        // Create Apple Pay configuration
-        let applePayConfig = ShopifyAcceleratedCheckouts.ApplePayConfiguration(
-            merchantIdentifier: Bundle.main.object(
-                forInfoDictionaryKey: "ApplePayMerchantID") as? String ?? "merchant.com.shopify",
-            contactFields: [.email, .phone]
-        )
-
         let swiftUIView: AnyView
 
         if let cartId {
             swiftUIView = AnyView(createCartButtons(
                 cartId: cartId,
                 wallets: shopifyWallets,
+                applePayLabel: PayWithApplePayButtonLabel.from(applePayLabel),
                 config: config,
-                applePayConfig: applePayConfig
+                applePayConfig: AcceleratedCheckoutConfiguration.shared.applePayConfiguration
             ))
         } else if let variantId {
             swiftUIView = AnyView(createVariantButtons(
                 variantId: variantId,
                 quantity: quantity.intValue,
                 wallets: shopifyWallets,
+                applePayLabel: PayWithApplePayButtonLabel.from(applePayLabel),
                 config: config,
-                applePayConfig: applePayConfig
+                applePayConfig: AcceleratedCheckoutConfiguration.shared.applePayConfiguration
             ))
         } else {
             // Empty view if no cart or variant ID is provided
@@ -331,13 +369,13 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         onClickLink?(ShopifyEventSerialization.serialize(clickEvent: url))
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        hostingController?.view.frame = bounds
-    }
+    private func calculateRequiredHeight() -> CGFloat {
+        let shopifyWallets = wallets.map(convertToShopifyWallets) ?? AcceleratedCheckoutConfiguration.shared.wallets
+        let numberOfWallets = max(shopifyWallets.count, 1)
+        let buttonHeight: CGFloat = 48
+        let gapHeight: CGFloat = 8
+        let totalHeight = (CGFloat(numberOfWallets) * buttonHeight) + (CGFloat(numberOfWallets - 1) * gapHeight)
 
-    override var intrinsicContentSize: CGSize {
-        // Provide a default size for the button
-        return CGSize(width: UIView.noIntrinsicMetric, height: 50)
+        return totalHeight
     }
 }

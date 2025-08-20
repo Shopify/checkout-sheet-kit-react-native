@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import type {PropsWithChildren, ReactNode} from 'react';
-import React, {useEffect, useState} from 'react';
-import {Linking, StatusBar} from 'react-native';
+import React, {useEffect, useMemo, useState} from 'react';
+import {Appearance, Linking, StatusBar} from 'react-native';
 import {
   Link,
   NavigationContainer,
@@ -40,6 +40,7 @@ import SettingsScreen from './screens/SettingsScreen';
 
 import type {Configuration, Features} from '@shopify/checkout-sheet-kit';
 import {
+  ApplePayContactField,
   ColorScheme,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
@@ -49,8 +50,15 @@ import type {
   CheckoutException,
   PixelEvent,
 } from '@shopify/checkout-sheet-kit';
-import {ConfigProvider} from './context/Config';
-import {ThemeProvider, getNavigationTheme, useTheme} from './context/Theme';
+import {ConfigProvider, useConfig} from './context/Config';
+import {
+  ThemeProvider,
+  darkColors,
+  getColors,
+  getNavigationTheme,
+  lightColors,
+  useTheme,
+} from './context/Theme';
 import {CartProvider, useCart} from './context/Cart';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
@@ -61,8 +69,6 @@ import {createDebugLogger} from './utils';
 import {useShopifyEventHandlers} from './hooks/useCheckoutEventHandlers';
 
 const log = createDebugLogger('ENV');
-
-const colorScheme = ColorScheme.web;
 
 function quote(str: string | undefined) {
   return `"${str}"`;
@@ -109,6 +115,8 @@ const client = new ApolloClient({
 });
 
 function AppWithTheme({children}: PropsWithChildren) {
+  const {colorScheme} = useTheme();
+
   return <ThemeProvider defaultValue={colorScheme}>{children}</ThemeProvider>;
 }
 
@@ -168,6 +176,23 @@ class StorefrontURL {
   }
 }
 
+const checkoutKitConfigDefaults: Configuration = {
+  colorScheme: ColorScheme.dark,
+  preloading: true,
+  colors: {
+    ios: {
+      backgroundColor: '#f0f0e8',
+      tintColor: '#2d2a38',
+    },
+    android: {
+      backgroundColor: '#f0f0e8',
+      progressIndicator: '#2d2a38',
+      headerBackgroundColor: '#f0f0e8',
+      headerTextColor: '#2d2a38',
+    },
+  },
+};
+
 function AppWithContext({children}: PropsWithChildren) {
   const shopify = useShopifyCheckoutSheet();
   const eventHandlers = useShopifyEventHandlers();
@@ -204,7 +229,14 @@ function AppWithContext({children}: PropsWithChildren) {
   }, [shopify, eventHandlers]);
 
   return (
-    <ConfigProvider>
+    <ConfigProvider
+      config={{
+        colorScheme:
+          checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
+        enablePreloading: checkoutKitConfigDefaults.preloading ?? true,
+        prefillBuyerInformation: false,
+        customerAuthenticated: false,
+      }}>
       <ApolloProvider client={client}>
         <CartProvider>
           <StatusBar barStyle="default" />
@@ -265,10 +297,103 @@ function CartIcon() {
 
 function AppWithNavigation({children}: PropsWithChildren) {
   const {colorScheme, preference} = useTheme();
+  const {appConfig} = useConfig();
+
+  const updatedColors = getColors(
+    appConfig.colorScheme,
+    Appearance.getColorScheme(),
+  );
+
+  const checkoutKitThemeConfig: Configuration = useMemo(() => {
+    if (appConfig.colorScheme === ColorScheme.automatic) {
+      return {
+        colorScheme: ColorScheme.automatic,
+        colors: {
+          ios: {
+            backgroundColor: updatedColors.webviewBackgroundColor,
+            tintColor: updatedColors.webViewProgressIndicator,
+          },
+          android: {
+            light: {
+              backgroundColor: lightColors.webviewBackgroundColor,
+              progressIndicator: lightColors.webViewProgressIndicator,
+              headerBackgroundColor: lightColors.webviewBackgroundColor,
+              headerTextColor: lightColors.webviewHeaderTextColor,
+              closeButtonColor: lightColors.webviewCloseButtonColor,
+            },
+            dark: {
+              backgroundColor: darkColors.webviewBackgroundColor,
+              progressIndicator: darkColors.webViewProgressIndicator,
+              headerBackgroundColor: darkColors.webviewBackgroundColor,
+              headerTextColor: darkColors.webviewHeaderTextColor,
+              closeButtonColor: darkColors.webviewCloseButtonColor,
+            },
+          },
+        },
+      };
+    }
+
+    return {
+      colorScheme: appConfig.colorScheme,
+      colors: {
+        ios: {
+          backgroundColor: updatedColors.webviewBackgroundColor,
+          tintColor: updatedColors.webViewProgressIndicator,
+          closeButtonColor: updatedColors.webviewCloseButtonColor,
+        },
+        android: {
+          backgroundColor: updatedColors.webviewBackgroundColor,
+          progressIndicator: updatedColors.webViewProgressIndicator,
+          headerBackgroundColor: updatedColors.webviewBackgroundColor,
+          headerTextColor: updatedColors.webviewHeaderTextColor,
+          closeButtonColor: updatedColors.webviewCloseButtonColor,
+        },
+      },
+    };
+  }, [appConfig.colorScheme, updatedColors]);
+
+  const checkoutKitConfig: Configuration = useMemo(() => {
+    return {
+      ...checkoutKitConfigDefaults,
+      ...checkoutKitThemeConfig,
+      preloading: appConfig.enablePreloading,
+      acceleratedCheckouts: {
+        storefrontDomain: env.STOREFRONT_DOMAIN!,
+        storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN!,
+        /**
+         * We're reading the customer email and phone number from the environment variables here,
+         * but in a real app you would derive these values from your backend.
+         */
+        customer: appConfig.customerAuthenticated
+          ? {
+              email: env.EMAIL!,
+              phoneNumber: env.PHONE!,
+            }
+          : undefined,
+        wallets: {
+          applePay: {
+            /**
+             * In cases where customers are authenticated, email/phone will be provided through the customer property,
+             * In cases where customers are NOT authenticated, we will collect email and phone number via the Apple Pay sheet.
+             */
+            contactFields: appConfig.customerAuthenticated
+              ? []
+              : [ApplePayContactField.email, ApplePayContactField.phone],
+            merchantIdentifier: env.STOREFRONT_MERCHANT_IDENTIFIER!,
+          },
+        },
+      },
+    } as Configuration;
+  }, [appConfig, checkoutKitThemeConfig]);
+
   return (
-    <NavigationContainer theme={getNavigationTheme(colorScheme, preference)}>
-      {children}
-    </NavigationContainer>
+    <ShopifyCheckoutSheetProvider
+      configuration={checkoutKitConfig}
+      features={checkoutKitFeatures}>
+      <NavigationContainer theme={getNavigationTheme(colorScheme, preference)}>
+        {children}
+      </NavigationContainer>
+    </ShopifyCheckoutSheetProvider>
   );
 }
 
@@ -344,41 +469,6 @@ function Routes() {
   );
 }
 
-const checkoutKitConfig: Configuration = {
-  colorScheme,
-  preloading: true,
-  colors: {
-    ios: {
-      backgroundColor: '#f0f0e8',
-      tintColor: '#2d2a38',
-    },
-    android: {
-      backgroundColor: '#f0f0e8',
-      progressIndicator: '#2d2a38',
-      headerBackgroundColor: '#f0f0e8',
-      headerTextColor: '#2d2a38',
-    },
-  },
-  acceleratedCheckouts: {
-    storefrontDomain: env.STOREFRONT_DOMAIN!,
-    storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN!,
-    /**
-     * We're reading the customer email and phone number from the environment
-     * variables. In a real app, you would get these values from your backend.
-     */
-    customer: {
-      email: env.EMAIL!,
-      phoneNumber: env.PHONE!,
-    },
-    wallets: {
-      applePay: {
-        contactFields: ['email', 'phone'],
-        merchantIdentifier: env.STOREFRONT_MERCHANT_IDENTIFIER!,
-      },
-    },
-  },
-};
-
 const checkoutKitFeatures: Partial<Features> = {
   handleGeolocationRequests: true,
 };
@@ -386,17 +476,13 @@ const checkoutKitFeatures: Partial<Features> = {
 function App() {
   return (
     <ErrorBoundary>
-      <ShopifyCheckoutSheetProvider
-        configuration={checkoutKitConfig}
-        features={checkoutKitFeatures}>
-        <AppWithTheme>
-          <AppWithContext>
-            <AppWithNavigation>
-              <Routes />
-            </AppWithNavigation>
-          </AppWithContext>
-        </AppWithTheme>
-      </ShopifyCheckoutSheetProvider>
+      <AppWithTheme>
+        <AppWithContext>
+          <AppWithNavigation>
+            <Routes />
+          </AppWithNavigation>
+        </AppWithContext>
+      </AppWithTheme>
     </ErrorBoundary>
   );
 }

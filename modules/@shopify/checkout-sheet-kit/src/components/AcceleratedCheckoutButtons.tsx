@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {requireNativeComponent, Platform} from 'react-native';
 import type {ViewStyle} from 'react-native';
 import type {
@@ -35,6 +35,26 @@ export enum RenderState {
   Loading = 'loading',
   Rendered = 'rendered',
   Error = 'error',
+}
+
+export enum ApplePayLabel {
+  addMoney = 'addMoney',
+  book = 'book',
+  buy = 'buy',
+  checkout = 'checkout',
+  continue = 'continue',
+  contribute = 'contribute',
+  donate = 'donate',
+  inStore = 'inStore',
+  order = 'order',
+  plain = 'plain',
+  reload = 'reload',
+  rent = 'rent',
+  setUp = 'setUp',
+  subscribe = 'subscribe',
+  support = 'support',
+  tip = 'tip',
+  topUp = 'topUp',
 }
 
 interface AcceleratedCheckoutButtonsProps {
@@ -68,6 +88,11 @@ interface AcceleratedCheckoutButtonsProps {
    * Defaults to both shopPay and applePay if not specified
    */
   wallets?: AcceleratedCheckoutWallet[];
+
+  /**
+   * Label for the Apple Pay button
+   */
+  applePayLabel?: ApplePayLabel;
 
   /**
    * Called when the button is pressed
@@ -104,9 +129,15 @@ interface AcceleratedCheckoutButtonsProps {
    * Called when a link is clicked within the checkout
    */
   onClickLink?: (url: string) => void;
+
+  /**
+   * Called when the size of the button changes
+   */
+  onSizeChange?: (event: {nativeEvent: {height: number}}) => void;
 }
 
 interface NativeAcceleratedCheckoutButtonsProps {
+  applePayLabel?: string;
   style?: ViewStyle;
   cartId?: string;
   variantId?: string;
@@ -120,6 +151,7 @@ interface NativeAcceleratedCheckoutButtonsProps {
   onRenderStateChange?: (event: {nativeEvent: {state: string}}) => void;
   onWebPixelEvent?: (event: {nativeEvent: PixelEvent}) => void;
   onClickLink?: (event: {nativeEvent: {url: string}}) => void;
+  onSizeChange?: (event: {nativeEvent: {height: number}}) => void;
 }
 
 const RCTAcceleratedCheckoutButtons =
@@ -149,11 +181,11 @@ const RCTAcceleratedCheckoutButtons =
 export const AcceleratedCheckoutButtons: React.FC<
   AcceleratedCheckoutButtonsProps
 > = ({
+  applePayLabel,
   cartId,
   variantId,
   quantity = 1,
   cornerRadius = 8,
-  style,
   wallets,
   onPress,
   onFail,
@@ -163,6 +195,9 @@ export const AcceleratedCheckoutButtons: React.FC<
   onWebPixelEvent,
   onClickLink,
 }) => {
+  const [dynamicHeight, setDynamicHeight] = useState<number | undefined>(
+    undefined,
+  );
   const handlePress = useCallback(() => {
     onPress?.();
   }, [onPress]);
@@ -210,6 +245,13 @@ export const AcceleratedCheckoutButtons: React.FC<
     [onClickLink],
   );
 
+  const handleSizeChange = useCallback(
+    (event: {nativeEvent: {height: number}}) => {
+      setDynamicHeight(event.nativeEvent.height);
+    },
+    [],
+  );
+
   // Only render on iOS for now since ShopifyAcceleratedCheckouts is iOS-only
   if (Platform.OS !== 'ios') {
     return null;
@@ -226,7 +268,8 @@ export const AcceleratedCheckoutButtons: React.FC<
 
   return (
     <RCTAcceleratedCheckoutButtons
-      style={style}
+      applePayLabel={applePayLabel}
+      style={dynamicHeight ? {height: dynamicHeight} : undefined}
       cartId={cartId}
       variantId={variantId}
       quantity={quantity}
@@ -239,6 +282,7 @@ export const AcceleratedCheckoutButtons: React.FC<
       onRenderStateChange={handleRenderStateChange}
       onWebPixelEvent={handleWebPixelEvent}
       onClickLink={handleClickLink}
+      onSizeChange={handleSizeChange}
     />
   );
 };
