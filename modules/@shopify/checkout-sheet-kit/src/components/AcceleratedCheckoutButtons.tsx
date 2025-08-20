@@ -79,11 +79,6 @@ interface AcceleratedCheckoutButtonsProps {
   cornerRadius?: number;
 
   /**
-   * Style for the container view
-   */
-  style?: ViewStyle;
-
-  /**
    * Wallets to display in the button
    * Defaults to both shopPay and applePay if not specified
    */

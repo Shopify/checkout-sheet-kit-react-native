@@ -92,21 +92,6 @@ describe('AcceleratedCheckoutButtons', () => {
       expect(component.toJSON()).toBeTruthy();
     });
 
-    it('applies custom styling', () => {
-      const customStyle = {backgroundColor: 'red', height: 50};
-      const component = renderer.create(
-        <AcceleratedCheckoutButtons
-          cartId="gid://shopify/Cart/123"
-          style={customStyle}
-        />,
-      );
-
-      const tree = component.toJSON();
-      expect(tree).toBeTruthy();
-      // @ts-expect-error tree is not null based on check above
-      expect(tree.props.style).toEqual(customStyle);
-    });
-
     it('passes through props to native component', () => {
       const component = renderer.create(
         <AcceleratedCheckoutButtons

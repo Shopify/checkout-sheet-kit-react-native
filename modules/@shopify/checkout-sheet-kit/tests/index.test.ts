@@ -701,6 +701,7 @@ describe('ShopifyCheckoutSheetKit', () => {
 
     beforeEach(() => {
       Platform.OS = 'ios';
+      Platform.Version = '17.0';
       NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts.mockReset();
       NativeModules.ShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable.mockReset();
     });
@@ -723,6 +724,8 @@ describe('ShopifyCheckoutSheetKit', () => {
           'shpat_test_token',
           'test@example.com',
           '+1234567890',
+          'merchant.com.test',
+          ['email', 'phone'],
         );
       });
 
@@ -745,6 +748,8 @@ describe('ShopifyCheckoutSheetKit', () => {
           'shpat_test_token',
           null,
           null,
+          null,
+          [],
         );
       });
 

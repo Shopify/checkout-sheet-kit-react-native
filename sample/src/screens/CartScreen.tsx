@@ -42,7 +42,7 @@ import {
   AcceleratedCheckoutWallet,
 } from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
-import type {CartLineItem, CartItem} from '../../@types';
+import type {CartLineItem} from '../../@types';
 import type {Colors} from '../context/Theme';
 import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
