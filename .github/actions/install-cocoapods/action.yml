@@ -22,13 +22,8 @@ runs:
       uses: actions/cache@v4
       with:
         path: |
-          **/ios/Pods
+          sample/ios/Pods
         key: ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock', 'package.json', 'sample/package.json', 'modules/@shopify/checkout-sheet-kit/package.json', 'yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock', 'sample/package.json', 'yarn.lock') }}
-          ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock') }}
-          ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-
-          ${{ runner.os }}-cocoapods-
 
     - name: Install cocoapods
       if: steps.cache-cocoapods.outputs.cache-hit != 'true'
@@ -41,5 +36,5 @@ runs:
         cd sample
         bundle install
         cd ios
-        NO_FLIPPER=1 bundle exec pod install --no-repo-update
+        NO_FLIPPER=1 bundle exec pod install --clean-install --no-repo-update
         cd $ROOT
