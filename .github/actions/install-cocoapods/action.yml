@@ -36,5 +36,5 @@ runs:
         cd sample
         bundle install
         cd ios
-        NO_FLIPPER=1 bundle exec pod install --clean-install --no-repo-update
+        NO_FLIPPER=1 bundle exec pod install --deployment
         cd $ROOT
