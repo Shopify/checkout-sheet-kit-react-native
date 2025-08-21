@@ -45,12 +45,12 @@ jest.mock('react-native', () => {
 });
 
 // Mock console methods
-const mockWarn = jest.fn();
+const mockLog = jest.fn();
 
 beforeAll(() => {
   global.console = {
     ...global.console,
-    warn: mockWarn,
+    log: mockLog,
   };
 });
 
@@ -75,7 +75,10 @@ describe('AcceleratedCheckoutButtons', () => {
 
     it('renders without crashing with variantId', () => {
       const component = renderer.create(
-        <AcceleratedCheckoutButtons variantId="gid://shopify/ProductVariant/456" />,
+        <AcceleratedCheckoutButtons
+          variantId="gid://shopify/ProductVariant/456"
+          quantity={1}
+        />,
       );
 
       expect(component.toJSON()).toBeTruthy();
@@ -111,18 +114,22 @@ describe('AcceleratedCheckoutButtons', () => {
       expect(tree.props.wallets).toEqual([AcceleratedCheckoutWallet.shopPay]);
     });
 
-    it('warns and returns null when neither cartId nor variantId is provided', () => {
-      const component = renderer.create(<AcceleratedCheckoutButtons />);
-
-      expect(mockWarn).toHaveBeenCalledWith(
-        'AcceleratedCheckoutButton: Either `cartId` or `variantId` must be provided',
+    it('logs and returns null when neither cartId nor variantId is provided', () => {
+      expect(() => {
+        renderer.create(
+          <AcceleratedCheckoutButtons variantId="" quantity={0} />,
+        );
+      }).toThrow(
+        'AcceleratedCheckoutButton: Either `cartId` or `variantId` and `quantity` must be provided',
       );
-      expect(component.toJSON()).toBeNull();
     });
 
     it('uses default values for quantity and cornerRadius', () => {
       const component = renderer.create(
-        <AcceleratedCheckoutButtons variantId="gid://shopify/ProductVariant/456" />,
+        <AcceleratedCheckoutButtons
+          variantId="gid://shopify/ProductVariant/456"
+          quantity={1}
+        />,
       );
 
       const tree = component.toJSON();
@@ -169,22 +176,6 @@ describe('AcceleratedCheckoutButtons', () => {
       expect(tree.props.wallets).toEqual(customWallets);
     });
 
-    it('supports both cartId and variantId provided', () => {
-      const component = renderer.create(
-        <AcceleratedCheckoutButtons
-          cartId="gid://shopify/Cart/123"
-          variantId="gid://shopify/ProductVariant/456"
-        />,
-      );
-
-      const tree = component.toJSON();
-      expect(tree).toBeTruthy();
-      // @ts-expect-error tree is not null based on check above
-      expect(tree.props.cartId).toBe('gid://shopify/Cart/123');
-      // @ts-expect-error tree is not null based on check above
-      expect(tree.props.variantId).toBe('gid://shopify/ProductVariant/456');
-    });
-
     it('handles callbacks without throwing', () => {
       const mockCallbacks = {
         onPress: jest.fn(),
@@ -221,9 +212,9 @@ describe('AcceleratedCheckoutButtons', () => {
     });
 
     it('does not warn on Android even without required props', () => {
-      renderer.create(<AcceleratedCheckoutButtons />);
+      renderer.create(<AcceleratedCheckoutButtons variantId="" quantity={0} />);
 
-      expect(mockWarn).not.toHaveBeenCalled();
+      expect(mockLog).not.toHaveBeenCalled();
     });
   });
 

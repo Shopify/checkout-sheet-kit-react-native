@@ -183,6 +183,14 @@ function CartScreen(): React.JSX.Element {
                   {price(data.cart.cost.totalAmount)}
                 </Text>
               </Pressable>
+
+              {/* Empty wallets, should not render anything */}
+              <AcceleratedCheckoutButtons
+                {...eventHandlers}
+                applePayLabel={ApplePayLabel.checkout}
+                cartId={cartId}
+                wallets={[]}
+              />
             </View>
           </View>
         )}
@@ -291,7 +299,7 @@ function createStyles(colors: Colors) {
     },
     cartButtonText: {
       fontSize: 22,
-      lineHeight: 20,
+      lineHeight: 24,
       textAlign: 'center',
       color: colors.secondaryText,
       fontWeight: 'bold',

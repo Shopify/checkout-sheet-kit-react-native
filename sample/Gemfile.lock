@@ -71,7 +71,7 @@ GEM
     connection_pool (2.5.3)
     drb (2.2.3)
     escape (0.0.4)
-    ethon (0.16.0)
+    ethon (0.17.0)
       ffi (>= 1.15.0)
     ffi (1.17.2)
     fourflusher (2.3.1)
@@ -117,7 +117,7 @@ DEPENDENCIES
   xcodeproj (< 1.26.0)
 
 RUBY VERSION
-   ruby 3.1.2p20
+   ruby 3.3.6p108
 
 BUNDLED WITH
    2.5.23

@@ -66,16 +66,3 @@ extension PayWithApplePayButtonLabel {
         "topUp": .topUp
     ]
 }
-
-// MARK: - SwiftUI Helpers
-
-extension View {
-    @ViewBuilder
-    func conditionalEnvironmentObject(_ object: (some ObservableObject)?) -> some View {
-        if let object {
-            environmentObject(object)
-        } else {
-            self
-        }
-    }
-}

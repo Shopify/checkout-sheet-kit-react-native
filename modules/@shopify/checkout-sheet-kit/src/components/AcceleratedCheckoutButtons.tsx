@@ -57,22 +57,7 @@ export enum ApplePayLabel {
   topUp = 'topUp',
 }
 
-interface AcceleratedCheckoutButtonsProps {
-  /**
-   * The cart ID for cart-based checkout
-   */
-  cartId?: string;
-
-  /**
-   * The variant ID for product-based checkout
-   */
-  variantId?: string;
-
-  /**
-   * The quantity for product-based checkout (defaults to 1)
-   */
-  quantity?: number;
-
+interface CommonAcceleratedCheckoutButtonsProps {
   /**
    * Corner radius for the button (defaults to 8)
    */
@@ -113,7 +98,7 @@ interface AcceleratedCheckoutButtonsProps {
    * Called when the render state changes
    * States from SDK: loading, rendered, error
    */
-  onRenderStateChange?: (state: RenderState) => void;
+  onRenderStateChange?: (state: RenderState, reason?: string) => void;
 
   /**
    * Called when a web pixel event is triggered
@@ -130,6 +115,28 @@ interface AcceleratedCheckoutButtonsProps {
    */
   onSizeChange?: (event: {nativeEvent: {height: number}}) => void;
 }
+
+interface CartProps {
+  /**
+   * The cart ID for cart-based checkout
+   */
+  cartId: string;
+}
+
+interface VariantProps {
+  /**
+   * The variant ID for product-based checkout
+   */
+  variantId: string;
+
+  /**
+   * The quantity for product-based checkout
+   */
+  quantity: number;
+}
+
+type AcceleratedCheckoutButtonsProps = (CartProps | VariantProps) &
+  CommonAcceleratedCheckoutButtonsProps;
 
 interface NativeAcceleratedCheckoutButtonsProps {
   applePayLabel?: string;
@@ -168,7 +175,7 @@ const RCTAcceleratedCheckoutButtons =
  * @example Product-based checkout
  * <AcceleratedCheckoutButtons
  *   variantId="gid://shopify/ProductVariant/456"
- *   quantity={2}
+ *   quantity={1}
  *   onComplete={(event) => console.log('Checkout completed!', event.orderDetails)}
  * />
  */
@@ -177,9 +184,6 @@ export const AcceleratedCheckoutButtons: React.FC<
   AcceleratedCheckoutButtonsProps
 > = ({
   applePayLabel,
-  cartId,
-  variantId,
-  quantity = 1,
   cornerRadius = 8,
   wallets,
   onPress,
@@ -189,7 +193,11 @@ export const AcceleratedCheckoutButtons: React.FC<
   onRenderStateChange,
   onWebPixelEvent,
   onClickLink,
+  ...props
 }) => {
+  const isCart = isCartProps(props);
+  const isVariant = isVariantProps(props);
+
   const [dynamicHeight, setDynamicHeight] = useState<number | undefined>(
     undefined,
   );
@@ -216,8 +224,16 @@ export const AcceleratedCheckoutButtons: React.FC<
   }, [onCancel]);
 
   const handleRenderStateChange = useCallback(
-    (event: {nativeEvent: {state: string}}) => {
+    (event: {nativeEvent: {state: string; reason?: string}}) => {
       if (event.nativeEvent?.state) {
+        if (isRenderStateError(event.nativeEvent.state)) {
+          onRenderStateChange?.(
+            event.nativeEvent.state,
+            event.nativeEvent.reason ?? '',
+          );
+          return;
+        }
+
         onRenderStateChange?.(event.nativeEvent.state as RenderState);
       }
     },
@@ -252,22 +268,38 @@ export const AcceleratedCheckoutButtons: React.FC<
     return null;
   }
 
-  // Require either cartId or variantId
-  if (!cartId && !variantId) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'AcceleratedCheckoutButton: Either `cartId` or `variantId` must be provided',
+  // Either `cartId` or `variantId` and `quantity` are required
+  if (!isCart && !isVariant) {
+    /**
+     * @todo
+     *
+     * The ShopifyAcceleratedCheckouts module will handle this error by returning an empty view over the bridge
+     * to the javascript client.
+     *
+     * The onRenderStateChange event will be invoked with both an error state and a reason to indicate the error, at
+     * which point this error handling can be removed.
+     *
+     */
+
+    const error = new Error(
+      'AcceleratedCheckoutButton: Either `cartId` or `variantId` and `quantity` must be provided',
     );
-    return null;
+    if (__DEV__) {
+      throw error;
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn(error.message);
+      return null;
+    }
   }
 
   return (
     <RCTAcceleratedCheckoutButtons
       applePayLabel={applePayLabel}
       style={dynamicHeight ? {height: dynamicHeight} : undefined}
-      cartId={cartId}
-      variantId={variantId}
-      quantity={quantity}
+      cartId={isCart ? props.cartId : undefined}
+      variantId={isVariant ? props.variantId : undefined}
+      quantity={isVariant ? props.quantity : undefined}
       cornerRadius={cornerRadius}
       wallets={wallets}
       onPress={handlePress}
@@ -283,3 +315,19 @@ export const AcceleratedCheckoutButtons: React.FC<
 };
 
 export default AcceleratedCheckoutButtons;
+
+function isCartProps(
+  props: AcceleratedCheckoutButtonsProps,
+): props is CartProps {
+  return 'cartId' in props;
+}
+
+function isVariantProps(
+  props: AcceleratedCheckoutButtonsProps,
+): props is VariantProps {
+  return 'variantId' in props && 'quantity' in props && props.quantity > 0;
+}
+
+function isRenderStateError(state: string): state is RenderState.Error {
+  return state === RenderState.Error;
+}
