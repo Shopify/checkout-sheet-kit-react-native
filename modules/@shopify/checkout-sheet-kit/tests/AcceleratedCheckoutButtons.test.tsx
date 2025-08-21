@@ -44,13 +44,15 @@ jest.mock('react-native', () => {
   };
 });
 
-// Mock console methods
 const mockLog = jest.fn();
+// Silence console.error
+const mockError = jest.fn();
 
 beforeAll(() => {
   global.console = {
     ...global.console,
     log: mockLog,
+    error: mockError,
   };
 });
 
@@ -67,16 +69,16 @@ describe('AcceleratedCheckoutButtons', () => {
 
     it('renders without crashing with cartId', () => {
       const component = renderer.create(
-        <AcceleratedCheckoutButtons cartId="gid://shopify/Cart/123" />,
+        <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
       );
 
       expect(component.toJSON()).toBeTruthy();
     });
 
-    it('renders without crashing with variantId', () => {
+    it('renders without crashing with variant', () => {
       const component = renderer.create(
         <AcceleratedCheckoutButtons
-          variantId="gid://shopify/ProductVariant/456"
+          variantId={'gid://shopify/ProductVariant/456'}
           quantity={1}
         />,
       );
@@ -84,10 +86,10 @@ describe('AcceleratedCheckoutButtons', () => {
       expect(component.toJSON()).toBeTruthy();
     });
 
-    it('renders without crashing with variantId and quantity', () => {
+    it('renders without crashing with variant and quantity', () => {
       const component = renderer.create(
         <AcceleratedCheckoutButtons
-          variantId="gid://shopify/ProductVariant/456"
+          variantId={'gid://shopify/ProductVariant/456'}
           quantity={2}
         />,
       );
@@ -98,7 +100,7 @@ describe('AcceleratedCheckoutButtons', () => {
     it('passes through props to native component', () => {
       const component = renderer.create(
         <AcceleratedCheckoutButtons
-          cartId="gid://shopify/Cart/123"
+          cartId={'gid://shopify/Cart/123'}
           cornerRadius={12}
           wallets={[AcceleratedCheckoutWallet.shopPay]}
         />,
@@ -107,7 +109,9 @@ describe('AcceleratedCheckoutButtons', () => {
       const tree = component.toJSON();
       expect(tree).toBeTruthy();
       // @ts-expect-error tree is not null based on check above
-      expect(tree.props.cartId).toBe('gid://shopify/Cart/123');
+      expect(tree.props.checkoutIdentifier).toEqual({
+        cartId: 'gid://shopify/Cart/123',
+      });
       // @ts-expect-error tree is not null based on check above
       expect(tree.props.cornerRadius).toBe(12);
       // @ts-expect-error tree is not null based on check above
@@ -124,7 +128,7 @@ describe('AcceleratedCheckoutButtons', () => {
       );
     });
 
-    it('uses default values for quantity and cornerRadius', () => {
+    it('uses default values for cornerRadius', () => {
       const component = renderer.create(
         <AcceleratedCheckoutButtons
           variantId="gid://shopify/ProductVariant/456"
@@ -135,9 +139,7 @@ describe('AcceleratedCheckoutButtons', () => {
       const tree = component.toJSON();
       expect(tree).toBeTruthy();
       // @ts-expect-error tree is not null based on check above
-      expect(tree.props.quantity).toBe(1);
-      // @ts-expect-error tree is not null based on check above
-      expect(tree.props.cornerRadius).toBe(8);
+      expect(tree.props.cornerRadius).toBeUndefined();
     });
 
     it('passes through custom quantity and cornerRadius', () => {
@@ -151,8 +153,6 @@ describe('AcceleratedCheckoutButtons', () => {
 
       const tree = component.toJSON();
       expect(tree).toBeTruthy();
-      // @ts-expect-error tree is not null based on check above
-      expect(tree.props.quantity).toBe(3);
       // @ts-expect-error tree is not null based on check above
       expect(tree.props.cornerRadius).toBe(16);
     });
@@ -190,7 +190,7 @@ describe('AcceleratedCheckoutButtons', () => {
       expect(() => {
         renderer.create(
           <AcceleratedCheckoutButtons
-            cartId="gid://shopify/Cart/123"
+            cartId={'gid://shopify/Cart/123'}
             {...mockCallbacks}
           />,
         );

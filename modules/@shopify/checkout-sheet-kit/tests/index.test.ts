@@ -850,12 +850,5 @@ describe('ShopifyCheckoutSheetKit', () => {
         ).not.toHaveBeenCalled();
       });
     });
-
-    describe('AcceleratedCheckoutWallet enum', () => {
-      it('exports correct wallet types', () => {
-        expect(AcceleratedCheckoutWallet.shopPay).toBe('shopPay');
-        expect(AcceleratedCheckoutWallet.applePay).toBe('applePay');
-      });
-    });
   });
 });

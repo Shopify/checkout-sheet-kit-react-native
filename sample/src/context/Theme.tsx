@@ -68,7 +68,7 @@ export const webColors: Colors = {
 };
 
 const ThemeContext = createContext<Context>({
-  cornerRadius: 10,
+  cornerRadius: 35,
   colorScheme: ColorScheme.automatic,
   colors: lightColors,
   preference: Appearance.getColorScheme(),
@@ -169,8 +169,8 @@ export function getColors(
 }
 
 export const ThemeProvider: React.FC<
-  PropsWithChildren<{defaultValue: ColorScheme; cornerRadius?: number}>
-> = ({children, defaultValue = ColorScheme.automatic, cornerRadius = 10}) => {
+  PropsWithChildren<{defaultValue: ColorScheme; cornerRadius: number}>
+> = ({children, defaultValue = ColorScheme.automatic, cornerRadius}) => {
   const preference = useColorScheme();
   const [colorScheme, setColorSchemeInternal] =
     useState<ColorScheme>(defaultValue);

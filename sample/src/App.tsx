@@ -117,7 +117,11 @@ const client = new ApolloClient({
 function AppWithTheme({children}: PropsWithChildren) {
   const {colorScheme} = useTheme();
 
-  return <ThemeProvider defaultValue={colorScheme}>{children}</ThemeProvider>;
+  return (
+    <ThemeProvider cornerRadius={30} defaultValue={colorScheme}>
+      {children}
+    </ThemeProvider>
+  );
 }
 
 const createNavigationIcon =
@@ -251,7 +255,7 @@ function CatalogStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerBackTitleVisible: true,
+        headerBackTitle: 'Back',
         headerRight: CartIcon,
       }}>
       <Stack.Screen

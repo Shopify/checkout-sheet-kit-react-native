@@ -84,19 +84,10 @@ RCT_EXTERN_METHOD(isApplePayAvailable : (RCTPromiseResolveBlock)resolve reject :
 @interface RCT_EXTERN_MODULE (RCTAcceleratedCheckoutButtonsManager, RCTViewManager)
 
 /**
- * The cart ID for cart-based checkout.
+ * Unified checkout identifier payload.
+ * Accepts either { cartId } or { variantId, quantity }.
  */
-RCT_EXPORT_VIEW_PROPERTY(cartId, NSString*)
-
-/**
- * The product variant ID for product-based checkout.
- */
-RCT_EXPORT_VIEW_PROPERTY(variantId, NSString*)
-
-/**
- * Quantity for product-based checkout. Defaults to 1 when not provided.
- */
-RCT_EXPORT_VIEW_PROPERTY(quantity, NSNumber*)
+RCT_EXPORT_VIEW_PROPERTY(checkoutIdentifier, NSDictionary*)
 
 /**
  * Corner radius for rendered buttons, in points. Defaults to 8.

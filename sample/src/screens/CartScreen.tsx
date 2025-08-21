@@ -61,8 +61,8 @@ function CartScreen(): React.JSX.Element {
 
   const [fetchCart, {data, loading, error}] = queries.cart;
 
-  const {colors} = useTheme();
-  const styles = createStyles(colors);
+  const {colors, cornerRadius} = useTheme();
+  const styles = createStyles(colors, cornerRadius);
 
   useEffect(() => {
     if (cartId) {
@@ -172,6 +172,7 @@ function CartScreen(): React.JSX.Element {
                   AcceleratedCheckoutWallet.applePay,
                   AcceleratedCheckoutWallet.shopPay,
                 ]}
+                cornerRadius={cornerRadius}
               />
 
               <Pressable
@@ -219,8 +220,8 @@ function CartItem({
   loading?: boolean;
   onRemove: () => void;
 }) {
-  const {colors} = useTheme();
-  const styles = createStyles(colors);
+  const {colors, cornerRadius} = useTheme();
+  const styles = createStyles(colors, cornerRadius);
 
   return (
     <View
@@ -264,7 +265,7 @@ function CartItem({
   );
 }
 
-function createStyles(colors: Colors) {
+function createStyles(colors: Colors, cornerRadius: number) {
   return StyleSheet.create({
     loading: {
       flex: 1,
@@ -291,8 +292,8 @@ function createStyles(colors: Colors) {
       alignItems: 'center',
       width: 'auto',
       height: 48,
-      borderRadius: 10,
-      paddingHorizontal: 20,
+      borderRadius: cornerRadius,
+      paddingHorizontal: 30,
       paddingVertical: 2,
       backgroundColor: colors.secondary,
       fontWeight: 'bold',

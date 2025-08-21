@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {requireNativeComponent, Platform} from 'react-native';
 import type {ViewStyle} from 'react-native';
 import type {
@@ -56,6 +56,15 @@ export enum ApplePayLabel {
   tip = 'tip',
   topUp = 'topUp',
 }
+
+type CheckoutIdentifier =
+  | {
+      cartId: string;
+    }
+  | {
+      variantId: string;
+      quantity: number;
+    };
 
 interface CommonAcceleratedCheckoutButtonsProps {
   /**
@@ -141,9 +150,7 @@ type AcceleratedCheckoutButtonsProps = (CartProps | VariantProps) &
 interface NativeAcceleratedCheckoutButtonsProps {
   applePayLabel?: string;
   style?: ViewStyle;
-  cartId?: string;
-  variantId?: string;
-  quantity?: number;
+  checkoutIdentifier: CheckoutIdentifier;
   cornerRadius?: number;
   wallets?: AcceleratedCheckoutWallet[];
   onPress?: () => void;
@@ -184,9 +191,9 @@ export const AcceleratedCheckoutButtons: React.FC<
   AcceleratedCheckoutButtonsProps
 > = ({
   applePayLabel,
-  cornerRadius = 8,
+  cornerRadius,
   wallets,
-  onPress,
+  // onPress,
   onFail,
   onComplete,
   onCancel,
@@ -197,13 +204,12 @@ export const AcceleratedCheckoutButtons: React.FC<
 }) => {
   const isCart = isCartProps(props);
   const isVariant = isVariantProps(props);
-
   const [dynamicHeight, setDynamicHeight] = useState<number | undefined>(
     undefined,
   );
-  const handlePress = useCallback(() => {
-    onPress?.();
-  }, [onPress]);
+  // const handlePress = useCallback(() => {
+  //   onPress?.();
+  // }, [onPress]);
 
   const handleFail = useCallback(
     (event: {nativeEvent: CheckoutException}) => {
@@ -263,13 +269,23 @@ export const AcceleratedCheckoutButtons: React.FC<
     [],
   );
 
+  const checkoutIdentifier: CheckoutIdentifier | undefined = useMemo(() => {
+    switch (true) {
+      case isCart:
+        return {cartId: props.cartId};
+      case isVariant:
+        return {variantId: props.variantId, quantity: props.quantity};
+      default:
+        return undefined;
+    }
+  }, [isCart, isVariant, props]);
+
   // Only render on iOS for now since ShopifyAcceleratedCheckouts is iOS-only
   if (Platform.OS !== 'ios') {
     return null;
   }
 
-  // Either `cartId` or `variantId` and `quantity` are required
-  if (!isCart && !isVariant) {
+  if (!checkoutIdentifier) {
     /**
      * @todo
      *
@@ -297,12 +313,10 @@ export const AcceleratedCheckoutButtons: React.FC<
     <RCTAcceleratedCheckoutButtons
       applePayLabel={applePayLabel}
       style={dynamicHeight ? {height: dynamicHeight} : undefined}
-      cartId={isCart ? props.cartId : undefined}
-      variantId={isVariant ? props.variantId : undefined}
-      quantity={isVariant ? props.quantity : undefined}
+      checkoutIdentifier={checkoutIdentifier}
       cornerRadius={cornerRadius}
       wallets={wallets}
-      onPress={handlePress}
+      // onPress={handlePress}
       onFail={handleFail}
       onComplete={handleComplete}
       onCancel={handleCancel}
@@ -316,6 +330,10 @@ export const AcceleratedCheckoutButtons: React.FC<
 
 export default AcceleratedCheckoutButtons;
 
+function isRenderStateError(state: string): state is RenderState.Error {
+  return state === RenderState.Error;
+}
+
 function isCartProps(
   props: AcceleratedCheckoutButtonsProps,
 ): props is CartProps {
@@ -326,8 +344,4 @@ function isVariantProps(
   props: AcceleratedCheckoutButtonsProps,
 ): props is VariantProps {
   return 'variantId' in props && 'quantity' in props && props.quantity > 0;
-}
-
-function isRenderStateError(state: string): state is RenderState.Error {
-  return state === RenderState.Error;
 }

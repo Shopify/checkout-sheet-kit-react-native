@@ -86,25 +86,18 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
 
     // MARK: - Props
 
-    @objc var cartId: String? {
+    /// Note that prop values are intentionally nil so that the kit defaults are used
+
+    /**
+     * Accepts either { cartId } or { variantId, quantity }.
+     */
+    @objc var checkoutIdentifier: NSDictionary? {
         didSet {
             updateView()
         }
     }
 
-    @objc var variantId: String? {
-        didSet {
-            updateView()
-        }
-    }
-
-    @objc var quantity: NSNumber? {
-        didSet {
-            updateView()
-        }
-    }
-
-    @objc var cornerRadius: NSNumber = 8 {
+    @objc var cornerRadius: NSNumber? {
         didSet {
             updateView()
         }
@@ -219,7 +212,9 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
             modifiedButtons = modifiedButtons.applePayLabel(applePayLabel)
         }
 
-        modifiedButtons = modifiedButtons.cornerRadius(CGFloat(cornerRadius.doubleValue))
+        if let cornerRadius {
+            modifiedButtons = modifiedButtons.cornerRadius(CGFloat(cornerRadius.doubleValue))
+        }
 
         return modifiedButtons
     }
@@ -250,30 +245,35 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         /// A configuration is required to render
         guard let config = configuration else {
             /// If no configuration is set yet, show an empty view
-            hostingController?.rootView = AnyView(EmptyView())
+            renderEmptyView()
             return
         }
 
         /// If the wallets property is not nil and an empty string, return empty view
         if let wallets, wallets != nil, wallets.isEmpty {
-            hostingController?.rootView = AnyView(EmptyView())
-            onSizeChange?(["height": 0])
+            renderEmptyView()
             return
         }
 
-        /// Map wallets if provided; otherwise let the SDK decide the defaults
+        /// Map wallets if provided; otherwise let the kit decide the defaults
         let shopifyWallets = wallets.map(convertToShopifyWallets)
 
         var buttons: AcceleratedCheckoutButtons
 
-        if let cartId {
-            buttons = AcceleratedCheckoutButtons(cartID: cartId)
-        } else if let variantId, let quantity {
-            buttons = AcceleratedCheckoutButtons(variantID: variantId, quantity: quantity.intValue)
-        } else {
-            if let hostingController {
-                hostingController.rootView = AnyView(EmptyView())
+        if let checkoutIdentifierDictionary = checkoutIdentifier as? [String: Any] {
+            if let cartIdentifier = extractCartIdentifier(from: checkoutIdentifierDictionary) {
+                buttons = AcceleratedCheckoutButtons(cartID: cartIdentifier)
+            } else if let productIdentifier = extractProductIdentifier(from: checkoutIdentifierDictionary) {
+                buttons = AcceleratedCheckoutButtons(
+                    variantID: productIdentifier.variantId,
+                    quantity: productIdentifier.quantity
+                )
+            } else {
+                renderEmptyView()
+                return
             }
+        } else {
+            renderEmptyView()
             return
         }
 
@@ -346,6 +346,30 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
     }
 
     // MARK: - Helper Methods
+
+    /// Parses `cartId` from `checkoutIdentifier` NSDictionary
+    private func extractCartIdentifier(from dictionary: [String: Any]) -> String? {
+        guard let rawCartId = dictionary["cartId"] as? String else { return nil }
+        let trimmedCartId = rawCartId.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmedCartId.isEmpty ? nil : trimmedCartId
+    }
+
+    /// Parses `variantId` and `quantity` from `checkoutIdentifier` NSDictionary
+    private func extractProductIdentifier(from dictionary: [String: Any]) -> (variantId: String, quantity: Int)? {
+        guard let rawVariantId = dictionary["variantId"] as? String else { return nil }
+        guard let rawQuantity = dictionary["quantity"] as? NSNumber else { return nil }
+
+        let trimmedVariantId = rawVariantId.trimmingCharacters(in: .whitespacesAndNewlines)
+        let quantityValue = rawQuantity.intValue
+
+        guard !trimmedVariantId.isEmpty, quantityValue > 0 else { return nil }
+        return (variantId: trimmedVariantId, quantity: quantityValue)
+    }
+
+    private func renderEmptyView() {
+        hostingController?.rootView = AnyView(EmptyView())
+        onSizeChange?(["height": 0])
+    }
 
     private func calculateRequiredHeight() -> CGFloat {
         /// If wallets prop is explicitly provided and maps to empty, height is zero
