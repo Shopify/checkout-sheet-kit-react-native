@@ -33,7 +33,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
 
 import type {ShopifyProduct} from '../../@types';
@@ -47,8 +46,7 @@ import {currency} from '../utils';
 type Props = NativeStackScreenProps<RootStackParamList, 'CatalogScreen'>;
 
 function CatalogScreen({navigation}: Props) {
-  const ShopifyCheckout = useShopifyCheckoutSheet();
-  const {checkoutURL, totalQuantity, addToCart, addingToCart} = useCart();
+  const {addToCart, addingToCart} = useCart();
   const {colors} = useTheme();
   const styles = createStyles(colors);
   const {queries} = useShopify();
@@ -58,12 +56,6 @@ function CatalogScreen({navigation}: Props) {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
-
-  const presentCheckout = async () => {
-    if (checkoutURL) {
-      ShopifyCheckout.present(checkoutURL);
-    }
-  };
 
   if (error) {
     return (
@@ -91,10 +83,11 @@ function CatalogScreen({navigation}: Props) {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.scrollView}>
         <View style={styles.productList}>
-          {data?.products.edges.map(({node}) => (
+          {data?.products.edges.map(({node}, index) => (
             <Product
               key={node.id}
               product={node}
+              testID={`product-${index}`}
               onPress={() => {
                 navigation.navigate('ProductDetails', {
                   product: node,
@@ -107,17 +100,6 @@ function CatalogScreen({navigation}: Props) {
           ))}
         </View>
       </ScrollView>
-      {totalQuantity > 0 && (
-        <Pressable
-          style={styles.cartButton}
-          disabled={totalQuantity === 0}
-          onPress={presentCheckout}>
-          <Text style={styles.cartButtonText}>Checkout</Text>
-          <Text style={styles.cartButtonTextSubtitle}>
-            {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}
-          </Text>
-        </Pressable>
-      )}
     </SafeAreaView>
   );
 }
@@ -131,11 +113,13 @@ function Product({
   onAddToCart,
   loading = false,
   onPress,
+  testID,
 }: {
   product: ShopifyProduct;
   loading?: boolean;
   onPress: () => void;
   onAddToCart: (variantId: string) => void;
+  testID: string;
 }) {
   const {colors} = useTheme();
   const styles = createStyles(colors);
@@ -143,7 +127,11 @@ function Product({
   const variant = getVariant(product);
 
   return (
-    <Pressable key={product.id} style={styles.productItem} onPress={onPress}>
+    <Pressable
+      key={product.id}
+      style={styles.productItem}
+      onPress={onPress}
+      testID={testID}>
       {image?.url && (
         <Image
           resizeMethod="resize"
