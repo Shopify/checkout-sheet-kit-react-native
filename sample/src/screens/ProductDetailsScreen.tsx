@@ -39,7 +39,6 @@ import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {RootStackParamList} from '../App';
-import {currency} from '../utils';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetails'>;
 
@@ -98,14 +97,16 @@ function ProductDetails({
           style={styles.productImage}
           alt={image?.altText}
           source={{
-            uri: image.thumbnailUrl,
+            uri: image.url,
           }}
         />
       )}
       <View style={styles.productText}>
         <View>
           <Text style={styles.productTitle}>{product.title}</Text>
-          <Text style={styles.productDescription}>{product.description}</Text>
+          <Text style={styles.productDescription}>
+            {product.description.slice(0, 100)}...
+          </Text>
         </View>
         <View style={styles.addToCartButtonContainer}>
           <Pressable
@@ -115,9 +116,10 @@ function ProductDetails({
             {loading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
-              <Text style={styles.addToCartButtonText}>
-                Add to cart &bull;{' '}
-                {currency(variant?.price.amount, variant?.price.currencyCode)}
+              <Text
+                testID="add-to-cart-button"
+                style={styles.addToCartButtonText}>
+                Add to cart
               </Text>
             )}
           </Pressable>
@@ -195,8 +197,8 @@ function createStyles(colors: Colors) {
       paddingVertical: 18,
     },
     addToCartButtonText: {
-      fontSize: 14,
-      lineHeight: 20,
+      fontSize: 20,
+      lineHeight: 24,
       color: colors.secondaryText,
       fontWeight: 'bold',
       textAlign: 'center',
