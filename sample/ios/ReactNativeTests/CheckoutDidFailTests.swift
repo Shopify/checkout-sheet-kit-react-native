@@ -67,7 +67,7 @@ class CheckoutDidFailTests: XCTestCase {
             return XCTFail("Event body was not available or not in the correct format")
         }
 
-        if case let .checkoutExpired(message, code, recoverable) = error {
+        if case .checkoutExpired = error {
             XCTAssertEqual(eventBody["__typename"] as? String, "CheckoutExpiredError")
             XCTAssertEqual(eventBody["message"] as? String, "expired")
             XCTAssertEqual(eventBody["code"] as? String, CheckoutErrorCode.cartExpired.rawValue)
