@@ -35,8 +35,6 @@ class AcceleratedCheckoutConfiguration {
     static let shared = AcceleratedCheckoutConfiguration()
     var configuration: ShopifyAcceleratedCheckouts.Configuration?
     var applePayConfiguration: ShopifyAcceleratedCheckouts.ApplePayConfiguration?
-
-    // TODO: Replace this with public defaults from the kit when available
     var defaultWallets: [Wallet] = [.applePay, .shopPay]
 
     var available: Bool {
@@ -375,7 +373,6 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
             return (CGFloat(numberOfWallets) * buttonHeight) + (CGFloat(numberOfWallets - 1) * gapHeight)
         }
 
-        // TODO: replace this with a default from the Swift SDK to avoid having two sources of truth for the defaults
         let numberOfWallets = AcceleratedCheckoutConfiguration.shared.defaultWallets.count
         let buttonHeight: CGFloat = 48
         let gapHeight: CGFloat = 8
