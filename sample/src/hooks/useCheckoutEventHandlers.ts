@@ -12,7 +12,6 @@ import type {
 import {Linking} from 'react-native';
 
 interface EventHandlers {
-  onPress?: () => void;
   onFail?: (error: CheckoutException) => void;
   onComplete?: (event: CheckoutCompletedEvent) => void;
   onCancel?: () => void;
@@ -28,9 +27,6 @@ export function useShopifyEventHandlers(name?: string): EventHandlers {
   return useMemo(() => {
     const log = createDebugLogger(name ?? '');
     return {
-      onPress: () => {
-        log('onPress');
-      },
       onFail: error => {
         log('onFail', error);
       },

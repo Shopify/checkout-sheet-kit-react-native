@@ -106,11 +106,6 @@ RCT_EXPORT_VIEW_PROPERTY(wallets, NSArray*)
 RCT_EXPORT_VIEW_PROPERTY(applePayLabel, NSString*)
 
 /**
- * Emitted when a button is pressed.
- */
-RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
-
-/**
  * Emitted when checkout fails. Payload contains a CheckoutException-like shape.
  */
 RCT_EXPORT_VIEW_PROPERTY(onFail, RCTBubblingEventBlock)

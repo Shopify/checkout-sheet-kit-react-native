@@ -178,7 +178,6 @@ describe('AcceleratedCheckoutButtons', () => {
 
     it('handles callbacks without throwing', () => {
       const mockCallbacks = {
-        onPress: jest.fn(),
         onFail: jest.fn(),
         onComplete: jest.fn(),
         onCancel: jest.fn(),

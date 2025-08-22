@@ -84,11 +84,6 @@ interface CommonAcceleratedCheckoutButtonsProps {
   applePayLabel?: ApplePayLabel;
 
   /**
-   * Called when the button is pressed
-   */
-  onPress?: () => void;
-
-  /**
    * Called when checkout fails
    */
   onFail?: (error: CheckoutException) => void;
@@ -153,7 +148,6 @@ interface NativeAcceleratedCheckoutButtonsProps {
   checkoutIdentifier: CheckoutIdentifier;
   cornerRadius?: number;
   wallets?: AcceleratedCheckoutWallet[];
-  onPress?: () => void;
   onFail?: (event: {nativeEvent: CheckoutException}) => void;
   onComplete?: (event: {nativeEvent: CheckoutCompletedEvent}) => void;
   onCancel?: () => void;
@@ -193,7 +187,6 @@ export const AcceleratedCheckoutButtons: React.FC<
   applePayLabel,
   cornerRadius,
   wallets,
-  // onPress,
   onFail,
   onComplete,
   onCancel,
@@ -207,9 +200,6 @@ export const AcceleratedCheckoutButtons: React.FC<
   const [dynamicHeight, setDynamicHeight] = useState<number | undefined>(
     undefined,
   );
-  // const handlePress = useCallback(() => {
-  //   onPress?.();
-  // }, [onPress]);
 
   const handleFail = useCallback(
     (event: {nativeEvent: CheckoutException}) => {
@@ -316,7 +306,6 @@ export const AcceleratedCheckoutButtons: React.FC<
       checkoutIdentifier={checkoutIdentifier}
       cornerRadius={cornerRadius}
       wallets={wallets}
-      // onPress={handlePress}
       onFail={handleFail}
       onComplete={handleComplete}
       onCancel={handleCancel}

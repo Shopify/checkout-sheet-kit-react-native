@@ -117,7 +117,6 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         }
     }
 
-    @objc var onPress: RCTBubblingEventBlock?
     @objc var onFail: RCTBubblingEventBlock?
     @objc var onComplete: RCTBubblingEventBlock?
     @objc var onCancel: RCTBubblingEventBlock?
