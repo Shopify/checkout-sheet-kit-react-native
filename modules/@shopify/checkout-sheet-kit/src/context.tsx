@@ -88,10 +88,10 @@ export function ShopifyCheckoutSheetProvider({
       }
 
       if (configuration.acceleratedCheckouts) {
-        const available = await instance.current?.configureAcceleratedCheckouts(
+        const ready = await instance.current?.configureAcceleratedCheckouts(
           configuration.acceleratedCheckouts,
         );
-        setAcceleratedCheckoutsAvailable(available);
+        setAcceleratedCheckoutsAvailable(ready);
       }
 
       instance.current?.setConfig(configuration);
