@@ -28,6 +28,21 @@ import ShopifyCheckoutSheetKit
 import SwiftUI
 import UIKit
 
+// MARK: - Runtime Support Override (for tests)
+
+enum AcceleratedCheckoutRuntime {
+    /// When nil, support is derived from OS availability. When set, forces supported/unsupported.
+    static var forceLegacy: Bool?
+
+    static var isSupported: Bool {
+        if let forceLegacy {
+            return !forceLegacy
+        }
+        if #available(iOS 16.0, *) { return true }
+        return false
+    }
+}
+
 // MARK: - AcceleratedCheckout Components
 
 @available(iOS 16.0, *)
