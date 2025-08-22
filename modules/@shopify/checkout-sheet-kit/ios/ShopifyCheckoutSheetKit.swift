@@ -223,34 +223,35 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         resolve: @escaping RCTPromiseResolveBlock,
         reject _: @escaping RCTPromiseRejectBlock
     ) {
-        if #available(iOS 16.0, *) {
-            let customer = ShopifyAcceleratedCheckouts.Customer(
-                email: customerEmail,
-                phoneNumber: customerPhoneNumber
-            )
-
-            acceleratedCheckoutsConfiguration = ShopifyAcceleratedCheckouts.Configuration(
-                storefrontDomain: storefrontDomain,
-                storefrontAccessToken: storefrontAccessToken,
-                customer: customer
-            )
-
-            if let merchantIdentifier = applePayMerchantIdentifier, let contactFields = applyPayContactFields {
-                acceleratedCheckoutsApplePayConfiguration = ShopifyAcceleratedCheckouts.ApplePayConfiguration(
-                    merchantIdentifier: merchantIdentifier,
-                    contactFields: contactFieldsToRequiredContactFields(contactFields)
-                )
-                AcceleratedCheckoutConfiguration.shared.applePayConfiguration = acceleratedCheckoutsApplePayConfiguration as? ShopifyAcceleratedCheckouts.ApplePayConfiguration
-            }
-
-            AcceleratedCheckoutConfiguration.shared.configuration = acceleratedCheckoutsConfiguration as? ShopifyAcceleratedCheckouts.Configuration
-
-            NotificationCenter.default.post(name: Notification.Name("AcceleratedCheckoutConfigurationUpdated"), object: nil)
-
-            resolve(true)
-        } else {
+        guard #available(iOS 16.0, *) else {
             resolve(false)
+            return
         }
+
+        let customer = ShopifyAcceleratedCheckouts.Customer(
+            email: customerEmail,
+            phoneNumber: customerPhoneNumber
+        )
+
+        acceleratedCheckoutsConfiguration = ShopifyAcceleratedCheckouts.Configuration(
+            storefrontDomain: storefrontDomain,
+            storefrontAccessToken: storefrontAccessToken,
+            customer: customer
+        )
+
+        if let merchantIdentifier = applePayMerchantIdentifier, let contactFields = applyPayContactFields {
+            acceleratedCheckoutsApplePayConfiguration = ShopifyAcceleratedCheckouts.ApplePayConfiguration(
+                merchantIdentifier: merchantIdentifier,
+                contactFields: contactFieldsToRequiredContactFields(contactFields)
+            )
+            AcceleratedCheckoutConfiguration.shared.applePayConfiguration = acceleratedCheckoutsApplePayConfiguration as? ShopifyAcceleratedCheckouts.ApplePayConfiguration
+        }
+
+        AcceleratedCheckoutConfiguration.shared.configuration = acceleratedCheckoutsConfiguration as? ShopifyAcceleratedCheckouts.Configuration
+
+        NotificationCenter.default.post(name: Notification.Name("AcceleratedCheckoutConfigurationUpdated"), object: nil)
+
+        resolve(true)
     }
 
     @objc func isAcceleratedCheckoutAvailable(

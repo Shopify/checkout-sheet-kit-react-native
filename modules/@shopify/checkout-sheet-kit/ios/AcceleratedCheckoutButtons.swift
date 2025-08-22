@@ -241,36 +241,27 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
     }
 
     private func updateView() {
-        /// A configuration is required to render
-        guard let config = configuration else {
-            /// If no configuration is set yet, show an empty view
-            renderEmptyView()
-            return
-        }
-
-        /// If the wallets property is not nil and an empty string, return empty view
-        if let wallets, wallets != nil, wallets.isEmpty {
+        guard
+            let config = configuration,
+            let wallets, wallets != nil, wallets.count > 0,
+            let checkoutIdentifierDictionary = checkoutIdentifier as? [String: Any]
+        else {
             renderEmptyView()
             return
         }
 
         /// Map wallets if provided; otherwise let the kit decide the defaults
-        let shopifyWallets = wallets.map(convertToShopifyWallets)
+        let shopifyWallets = convertToShopifyWallets(wallets)
 
         var buttons: AcceleratedCheckoutButtons
 
-        if let checkoutIdentifierDictionary = checkoutIdentifier as? [String: Any] {
-            if let cartIdentifier = extractCartIdentifier(from: checkoutIdentifierDictionary) {
-                buttons = AcceleratedCheckoutButtons(cartID: cartIdentifier)
-            } else if let productIdentifier = extractProductIdentifier(from: checkoutIdentifierDictionary) {
-                buttons = AcceleratedCheckoutButtons(
-                    variantID: productIdentifier.variantId,
-                    quantity: productIdentifier.quantity
-                )
-            } else {
-                renderEmptyView()
-                return
-            }
+        if let cartIdentifier = extractCartIdentifier(from: checkoutIdentifierDictionary) {
+            buttons = AcceleratedCheckoutButtons(cartID: cartIdentifier)
+        } else if let productIdentifier = extractProductIdentifier(from: checkoutIdentifierDictionary) {
+            buttons = AcceleratedCheckoutButtons(
+                variantID: productIdentifier.variantId,
+                quantity: productIdentifier.quantity
+            )
         } else {
             renderEmptyView()
             return
