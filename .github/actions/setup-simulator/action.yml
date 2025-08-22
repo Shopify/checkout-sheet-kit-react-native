@@ -1,5 +1,5 @@
-name: Setup
-description: Setup Node.js and install dependencies
+name: Setup iOS Simulator
+description: Prepare a simulator for a specific iOS major version
 
 runs:
   using: composite
@@ -10,7 +10,8 @@ runs:
         xcode-select -p
         xcrun xcodebuild -version
         xcrun simctl list runtimes
-        xcrun simctl list devicetypes
+        xcrun simctl list devicetypes | grep iPhone
         xcrun simctl delete all
+
         CURRENT_SIMULATOR_UUID=$(xcrun simctl create TestDevice "iPhone 16 Pro")
         echo "CURRENT_SIMULATOR_UUID=$CURRENT_SIMULATOR_UUID" >> $GITHUB_ENV
