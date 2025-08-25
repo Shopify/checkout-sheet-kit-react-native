@@ -28,6 +28,21 @@ import ShopifyCheckoutSheetKit
 import SwiftUI
 import UIKit
 
+// MARK: - Runtime Support Override (for tests)
+
+enum AcceleratedCheckoutRuntime {
+    /// When nil, support is derived from OS availability. When set, forces supported/unsupported.
+    static var forceLegacy: Bool?
+
+    static var isSupported: Bool {
+        if let forceLegacy = forceLegacy {
+            return !forceLegacy
+        }
+        if #available(iOS 16.0, *) { return true }
+        return false
+    }
+}
+
 // MARK: - AcceleratedCheckout Components
 
 @available(iOS 16.0, *)
@@ -57,11 +72,13 @@ class AcceleratedCheckoutConfiguration {
 @objc(RCTAcceleratedCheckoutButtonsManager)
 class RCTAcceleratedCheckoutButtonsManager: RCTViewManager {
     override func view() -> UIView! {
-        if #available(iOS 16.0, *) {
-            return RCTAcceleratedCheckoutButtonsView()
+        if AcceleratedCheckoutRuntime.isSupported {
+            if #available(iOS 16.0, *) {
+                return RCTAcceleratedCheckoutButtonsView()
+            }
         }
 
-        // Return an empty view for iOS < 17.0 (silent fallback)
+        // Return an empty view when unsupported (either due to OS or forced override)
         return UIView()
     }
 
