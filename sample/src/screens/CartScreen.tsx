@@ -157,14 +157,11 @@ function CartScreen(): React.JSX.Element {
 
         {totalQuantity > 0 && (
           <Pressable
+            testID="checkout-button"
             style={styles.cartButton}
             disabled={totalQuantity === 0}
             onPress={presentCheckout}>
             <Text style={styles.cartButtonText}>Checkout</Text>
-            <Text style={styles.cartButtonTextSubtitle}>
-              {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'} -{' '}
-              {price(data.cart.cost.totalAmount)}
-            </Text>
           </Pressable>
         )}
       </ScrollView>
@@ -256,18 +253,17 @@ function createStyles(colors: Colors) {
       position: 'absolute',
       width: 'auto',
       bottom: 10,
-      height: 55,
       left: 0,
       right: 0,
       borderRadius: 10,
       marginHorizontal: 20,
-      padding: 10,
+      paddingVertical: 18,
       backgroundColor: colors.secondary,
       fontWeight: 'bold',
     },
     cartButtonText: {
-      fontSize: 16,
-      lineHeight: 20,
+      fontSize: 20,
+      lineHeight: 24,
       textAlign: 'center',
       color: colors.secondaryText,
       fontWeight: 'bold',
