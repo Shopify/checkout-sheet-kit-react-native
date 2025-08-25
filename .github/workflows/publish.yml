@@ -17,6 +17,21 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Determine NPM tag
+        id: npm-tag
+        run: |
+          # For releases, check the target branch
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            if [[ "${{ github.event.release.target_commitish }}" == "release-candidate" ]]; then
+              echo "tag=next" >> $GITHUB_OUTPUT
+            else
+              echo "tag=latest" >> $GITHUB_OUTPUT
+            fi
+          else
+            # For manual workflow dispatch, default to latest
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          fi
+
       - name: Prepare release
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
@@ -24,6 +39,6 @@ jobs:
           yarn module clean
           yarn module build
           cd modules/@shopify/checkout-sheet-kit
-          npm publish --access public
+          npm publish --access public --tag ${{ steps.npm-tag.outputs.tag }}
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
