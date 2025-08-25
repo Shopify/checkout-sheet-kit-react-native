@@ -156,4 +156,20 @@ internal enum ShopifyEventSerialization {
             ]
         }
     }
+
+    /**
+     * Converts a RenderState enum to a string for React Native.
+     */
+    static func serialize(renderState state: RenderState) -> [String: String] {
+        switch state {
+        case .loading:
+            return ["state": "loading"]
+        case .rendered:
+            return ["state": "rendered"]
+        case .error:
+            return ["state": "error"]
+        @unknown default:
+            return ["state": "unknown"]
+        }
+    }
 }

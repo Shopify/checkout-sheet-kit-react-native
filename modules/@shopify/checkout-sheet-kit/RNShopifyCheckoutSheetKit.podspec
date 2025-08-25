@@ -20,7 +20,8 @@ Pod::Spec.new do |s|
   s.source_files = "ios/*.{h,m,mm,swift}"
 
 	s.dependency "React-Core"
-	s.dependency "ShopifyCheckoutSheetKit", "~> 3.3.0"
+	s.dependency "ShopifyCheckoutSheetKit", "~> 3.4.0-rc.5"
+	s.dependency "ShopifyCheckoutSheetKit/AcceleratedCheckouts", "~> 3.4.0-rc.5"
 
   if fabric_enabled
 		install_modules_dependencies(s)
@@ -38,5 +39,5 @@ Pod::Spec.new do |s|
 		s.dependency "RCTRequired"
 		s.dependency "RCTTypeSafety"
 		s.dependency "ReactCommon/turbomodule/core"
-   end
+  end
 end

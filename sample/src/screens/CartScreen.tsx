@@ -35,14 +35,19 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 
-import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
+import {
+  useShopifyCheckoutSheet,
+  AcceleratedCheckoutButtons,
+  ApplePayLabel,
+  AcceleratedCheckoutWallet,
+} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
-
-import type {CartLineItem, CartItem} from '../../@types';
+import type {CartLineItem} from '../../@types';
 import type {Colors} from '../context/Theme';
 import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 import {currency} from '../utils';
+import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
 
 function CartScreen(): React.JSX.Element {
   const ShopifyCheckout = useShopifyCheckoutSheet();
@@ -50,11 +55,14 @@ function CartScreen(): React.JSX.Element {
   const {cartId, checkoutURL, totalQuantity, removeFromCart, addingToCart} =
     useCart();
   const {queries} = useShopify();
+  const eventHandlers = useShopifyEventHandlers(
+    'Cart - AcceleratedCheckoutButtons',
+  );
 
   const [fetchCart, {data, loading, error}] = queries.cart;
 
-  const {colors} = useTheme();
-  const styles = createStyles(colors);
+  const {colors, cornerRadius} = useTheme();
+  const styles = createStyles(colors, cornerRadius);
 
   useEffect(() => {
     if (cartId) {
@@ -142,9 +150,7 @@ function CartScreen(): React.JSX.Element {
 
           <View style={styles.costBlock}>
             <Text style={styles.costBlockText}>Taxes</Text>
-            <Text style={styles.costBlockText}>
-              {price(data.cart.cost.totalTaxAmount)}
-            </Text>
+            <Text style={styles.costBlockText}>Estimated at checkout</Text>
           </View>
 
           <View style={styles.costBlock}>
@@ -155,17 +161,39 @@ function CartScreen(): React.JSX.Element {
           </View>
         </View>
 
-        {totalQuantity > 0 && (
-          <Pressable
-            style={styles.cartButton}
-            disabled={totalQuantity === 0}
-            onPress={presentCheckout}>
-            <Text style={styles.cartButtonText}>Checkout</Text>
-            <Text style={styles.cartButtonTextSubtitle}>
-              {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'} -{' '}
-              {price(data.cart.cost.totalAmount)}
-            </Text>
-          </Pressable>
+        {totalQuantity > 0 && cartId && (
+          <View>
+            <View style={styles.checkoutContainer}>
+              <AcceleratedCheckoutButtons
+                {...eventHandlers}
+                applePayLabel={ApplePayLabel.checkout}
+                cartId={cartId}
+                wallets={[
+                  AcceleratedCheckoutWallet.applePay,
+                  AcceleratedCheckoutWallet.shopPay,
+                ]}
+                cornerRadius={cornerRadius}
+              />
+
+              <Pressable
+                style={styles.cartButton}
+                disabled={totalQuantity === 0}
+                onPress={presentCheckout}>
+                <Text style={styles.cartButtonText}>Checkout</Text>
+                <Text style={styles.cartButtonTextSubtitle}>
+                  {price(data.cart.cost.totalAmount)}
+                </Text>
+              </Pressable>
+
+              {/* Empty wallets, should not render anything */}
+              <AcceleratedCheckoutButtons
+                {...eventHandlers}
+                applePayLabel={ApplePayLabel.checkout}
+                cartId={cartId}
+                wallets={[]}
+              />
+            </View>
+          </View>
         )}
       </ScrollView>
     </SafeAreaView>
@@ -192,8 +220,8 @@ function CartItem({
   loading?: boolean;
   onRemove: () => void;
 }) {
-  const {colors} = useTheme();
-  const styles = createStyles(colors);
+  const {colors, cornerRadius} = useTheme();
+  const styles = createStyles(colors, cornerRadius);
 
   return (
     <View
@@ -237,7 +265,7 @@ function CartItem({
   );
 }
 
-function createStyles(colors: Colors) {
+function createStyles(colors: Colors, cornerRadius: number) {
   return StyleSheet.create({
     loading: {
       flex: 1,
@@ -252,22 +280,27 @@ function createStyles(colors: Colors) {
     scrollView: {
       paddingBottom: 10,
     },
+    checkoutContainer: {
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      gap: 8,
+    },
     cartButton: {
-      position: 'absolute',
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       width: 'auto',
-      bottom: 10,
-      height: 55,
-      left: 0,
-      right: 0,
-      borderRadius: 10,
-      marginHorizontal: 20,
-      padding: 10,
+      height: 48,
+      borderRadius: cornerRadius,
+      paddingHorizontal: 30,
+      paddingVertical: 2,
       backgroundColor: colors.secondary,
       fontWeight: 'bold',
     },
     cartButtonText: {
-      fontSize: 16,
-      lineHeight: 20,
+      fontSize: 22,
+      lineHeight: 24,
       textAlign: 'center',
       color: colors.secondaryText,
       fontWeight: 'bold',
@@ -334,7 +367,7 @@ function createStyles(colors: Colors) {
       color: colors.textSubdued,
     },
     productImage: {
-      width: 40,
+      width: 60,
       height: 60,
       borderRadius: 6,
     },

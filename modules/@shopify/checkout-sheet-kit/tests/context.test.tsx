@@ -12,7 +12,6 @@ const config: Configuration = {
   colorScheme: ColorScheme.automatic,
 };
 
-// Use the shared manual mock. Individual tests can override if needed.
 jest.mock('react-native');
 
 // Helper component to test the hook
@@ -66,21 +65,17 @@ describe('ShopifyCheckoutSheetProvider', () => {
 
     expect(
       NativeModules.ShopifyCheckoutSheetKit.setConfig,
-    ).not.toHaveBeenCalled();
+    ).toHaveBeenCalledWith(config);
   });
 
   it('reuses the same instance across re-renders', () => {
     const component = create(<TestComponent>test</TestComponent>);
 
-    const firstCallCount =
-      NativeModules.ShopifyCheckoutSheetKit.setConfig.mock.calls.length;
-
     component.update(<TestComponent>updated</TestComponent>);
 
-    const secondCallCount =
-      NativeModules.ShopifyCheckoutSheetKit.setConfig.mock.calls.length;
-
-    expect(secondCallCount).toBe(firstCallCount);
+    expect(
+      NativeModules.ShopifyCheckoutSheetKit.setConfig.mock.calls,
+    ).toHaveLength(2);
   });
 });
 

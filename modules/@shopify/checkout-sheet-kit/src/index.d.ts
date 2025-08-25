@@ -117,8 +117,9 @@ interface CommonConfiguration {
   title?: string;
 }
 
-export type Configuration = CommonConfiguration &
-  (
+export type Configuration = CommonConfiguration & {
+  acceleratedCheckouts?: AcceleratedCheckoutConfiguration;
+} & (
     | {
         /**
          * The selected color scheme for the checkout. See README.md for more details.
@@ -174,6 +175,66 @@ export type CheckoutEventCallback =
   | CheckoutCompletedEventCallback
   | GeolocationRequestEventCallback
   | PixelEventCallback;
+
+/**
+ * Available wallet types for accelerated checkout
+ */
+export enum AcceleratedCheckoutWallet {
+  shopPay = 'shopPay',
+  applePay = 'applePay',
+}
+
+export enum ApplePayContactField {
+  email = 'email',
+  phone = 'phone',
+}
+
+/**
+ * Configuration for AcceleratedCheckouts
+ */
+export interface AcceleratedCheckoutConfiguration {
+  /**
+   * The storefront domain (e.g., "your-shop.myshopify.com")
+   */
+  storefrontDomain: string;
+
+  /**
+   * The storefront access token with `write_cart_wallet_payments` scope
+   */
+  storefrontAccessToken: string;
+
+  /**
+   * Customer information for personalized checkout
+   */
+  customer?: {
+    email?: string;
+    phoneNumber?: string;
+  };
+  /**
+   * Enable and configure accelerated checkout wallets.
+   */
+  wallets?: {
+    /**
+     * Apple Pay specific configuration.
+     * When provided, Apple Pay buttons can render and the Apple Pay sheet will
+     * request the specified buyer contact fields.
+     */
+    applePay?: {
+      /**
+       * Buyer contact fields to request in the Apple Pay sheet.
+       * Supported values:
+       *  - 'email': request the buyer's email address
+       *  - 'phone': request the buyer's phone number
+       */
+      contactFields: ApplePayContactField[];
+      /**
+       * The Apple Merchant Identifier used to sign Apple Pay payment requests on iOS.
+       * Example: 'merchant.com.yourcompany'
+       */
+      merchantIdentifier: string;
+    };
+  };
+}
 
 function addEventListener(
   event: 'close',
@@ -243,4 +304,16 @@ export interface ShopifyCheckoutSheetKit {
    * Cleans up any event callbacks to prevent memory leaks.
    */
   teardown(): void;
+
+  /**
+   * Configure AcceleratedCheckouts for Shop Pay and Apple Pay buttons
+   */
+  configureAcceleratedCheckouts(
+    config: AcceleratedCheckoutConfiguration,
+  ): Promise<boolean>;
+
+  /**
+   * Check if accelerated checkout is available for the given cart or product
+   */
+  isAcceleratedCheckoutAvailable(): Promise<boolean>;
 }

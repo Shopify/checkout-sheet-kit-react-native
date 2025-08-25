@@ -9,7 +9,7 @@ dest="$(get_sim_destination)"
 
 cd ios
 
-xcodebuild build-for-testing test \
+xcodebuild test \
     -workspace ReactNative.xcworkspace \
     -scheme ReactNative \
     -destination "$dest" \

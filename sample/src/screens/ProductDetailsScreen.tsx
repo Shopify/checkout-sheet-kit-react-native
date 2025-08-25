@@ -39,14 +39,20 @@ import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {RootStackParamList} from '../App';
-import {currency} from '../utils';
+import {
+  AcceleratedCheckoutButtons,
+  AcceleratedCheckoutWallet,
+  ApplePayLabel,
+  useShopifyCheckoutSheet,
+} from '@shopify/checkout-sheet-kit';
+import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetails'>;
 
 function ProductDetailsScreen({route}: Props) {
-  const {colors} = useTheme();
+  const {colors, cornerRadius} = useTheme();
   const {addToCart, addingToCart} = useCart();
-  const styles = createStyles(colors);
+  const styles = createStyles(colors, cornerRadius);
 
   if (!route?.params) {
     return null;
@@ -84,10 +90,15 @@ function ProductDetails({
   loading?: boolean;
   onAddToCart: (variantId: string) => void;
 }) {
-  const {colors} = useTheme();
-  const styles = createStyles(colors);
+  const {colors, cornerRadius} = useTheme();
+  const styles = createStyles(colors, cornerRadius);
   const image = product.images?.edges[0]?.node;
   const variant = getVariant(product);
+  const {acceleratedCheckoutsAvailable} = useShopifyCheckoutSheet();
+
+  const eventHandlers = useShopifyEventHandlers(
+    'PDP - AcceleratedCheckoutButtons',
+  );
 
   return (
     <View key={product.id} style={styles.productItem}>
@@ -98,16 +109,30 @@ function ProductDetails({
           style={styles.productImage}
           alt={image?.altText}
           source={{
-            uri: image.thumbnailUrl,
+            uri: image.url,
           }}
         />
       )}
       <View style={styles.productText}>
         <View>
           <Text style={styles.productTitle}>{product.title}</Text>
-          <Text style={styles.productDescription}>{product.description}</Text>
+          <Text style={styles.productDescription}>
+            {product.description.slice(0, 100)} ...
+          </Text>
         </View>
-        <View style={styles.addToCartButtonContainer}>
+
+        <View style={styles.buttonContainer}>
+          {acceleratedCheckoutsAvailable && variant?.id && (
+            <AcceleratedCheckoutButtons
+              {...eventHandlers}
+              applePayLabel={ApplePayLabel.order}
+              wallets={[AcceleratedCheckoutWallet.applePay]}
+              variantId={variant.id}
+              quantity={1}
+              cornerRadius={cornerRadius}
+            />
+          )}
+
           <Pressable
             disabled={loading}
             style={styles.addToCartButton}
@@ -115,10 +140,7 @@ function ProductDetails({
             {loading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
-              <Text style={styles.addToCartButtonText}>
-                Add to cart &bull;{' '}
-                {currency(variant?.price.amount, variant?.price.currencyCode)}
-              </Text>
+              <Text style={styles.addToCartButtonText}>Add to cart</Text>
             )}
           </Pressable>
         </View>
@@ -129,7 +151,7 @@ function ProductDetails({
 
 export default ProductDetailsScreen;
 
-function createStyles(colors: Colors) {
+function createStyles(colors: Colors, cornerRadius: number) {
   return StyleSheet.create({
     container: {
       maxHeight: '100%',
@@ -141,7 +163,7 @@ function createStyles(colors: Colors) {
       flex: 1,
       flexDirection: 'column',
       marginBottom: 10,
-      padding: 10,
+      padding: 20,
       backgroundColor: colors.backgroundSubdued,
       borderRadius: 5,
     },
@@ -180,22 +202,21 @@ function createStyles(colors: Colors) {
       width: '100%',
       height: 400,
       marginTop: 5,
-      borderRadius: 6,
+      borderRadius: cornerRadius,
     },
-    addToCartButtonContainer: {
-      marginHorizontal: 5,
+    buttonContainer: {
+      marginTop: 20,
+      gap: 8,
     },
     addToCartButton: {
-      borderRadius: 10,
-      fontSize: 8,
-      marginTop: 15,
-      marginBottom: 10,
+      borderRadius: cornerRadius,
       backgroundColor: colors.secondary,
       paddingHorizontal: 10,
-      paddingVertical: 18,
+      paddingVertical: 14,
+      height: 48,
     },
     addToCartButtonText: {
-      fontSize: 14,
+      fontSize: 20,
       lineHeight: 20,
       color: colors.secondaryText,
       fontWeight: 'bold',
