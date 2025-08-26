@@ -22,8 +22,10 @@
  */
 
 import Foundation
+import PassKit
 import React
 import ShopifyCheckoutSheetKit
+import SwiftUI
 import UIKit
 
 @objc(RCTShopifyCheckoutSheetKit)
@@ -31,6 +33,8 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     private var hasListeners = false
 
     internal var checkoutSheet: UIViewController?
+    private var acceleratedCheckoutsConfiguration: Any?
+    private var acceleratedCheckoutsApplePayConfiguration: Any?
 
     override var methodQueue: DispatchQueue! {
         return DispatchQueue.main
@@ -192,6 +196,8 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         if let closeButtonColorHex = iosConfig?["closeButtonColor"] as? String {
             ShopifyCheckoutSheetKit.configuration.closeButtonTintColor = UIColor(hex: closeButtonColorHex)
         }
+
+        NotificationCenter.default.post(name: Notification.Name("CheckoutKitConfigurationUpdated"), object: nil)
     }
 
     @objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
@@ -205,5 +211,98 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         ]
 
         resolve(config)
+    }
+
+    @objc func configureAcceleratedCheckouts(
+        _ storefrontDomain: String,
+        storefrontAccessToken: String,
+        customerEmail: String?,
+        customerPhoneNumber: String?,
+        applePayMerchantIdentifier: String?,
+        applyPayContactFields: [String]?,
+        resolve: @escaping RCTPromiseResolveBlock,
+        reject _: @escaping RCTPromiseRejectBlock
+    ) {
+        guard #available(iOS 16.0, *) else {
+            resolve(false)
+            return
+        }
+
+        let customer = ShopifyAcceleratedCheckouts.Customer(
+            email: customerEmail,
+            phoneNumber: customerPhoneNumber
+        )
+
+        acceleratedCheckoutsConfiguration = ShopifyAcceleratedCheckouts.Configuration(
+            storefrontDomain: storefrontDomain,
+            storefrontAccessToken: storefrontAccessToken,
+            customer: customer
+        )
+
+        if let merchantIdentifier = applePayMerchantIdentifier, let contactFields = applyPayContactFields {
+            do {
+                let fields = try contactFieldsToRequiredContactFields(contactFields)
+
+                acceleratedCheckoutsApplePayConfiguration = ShopifyAcceleratedCheckouts.ApplePayConfiguration(
+                    merchantIdentifier: merchantIdentifier,
+                    contactFields: fields
+                )
+
+                AcceleratedCheckoutConfiguration.shared.applePayConfiguration = acceleratedCheckoutsApplePayConfiguration as? ShopifyAcceleratedCheckouts.ApplePayConfiguration
+            } catch {
+                resolve(false)
+                return
+            }
+        }
+
+        AcceleratedCheckoutConfiguration.shared.configuration = acceleratedCheckoutsConfiguration as? ShopifyAcceleratedCheckouts.Configuration
+
+        NotificationCenter.default.post(name: Notification.Name("AcceleratedCheckoutConfigurationUpdated"), object: nil)
+
+        resolve(true)
+    }
+
+    @objc func isAcceleratedCheckoutAvailable(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        reject _: @escaping RCTPromiseRejectBlock
+    ) {
+        guard #available(iOS 16.0, *) else {
+            resolve(false)
+            return
+        }
+
+        resolve(AcceleratedCheckoutConfiguration.shared.available)
+    }
+
+    @objc func isApplePayAvailable(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        reject _: @escaping RCTPromiseRejectBlock
+    ) {
+        guard #available(iOS 16.0, *) else {
+            resolve(false)
+            return
+        }
+
+        let available = AcceleratedCheckoutConfiguration.shared.available && AcceleratedCheckoutConfiguration.shared.applePayAvailable
+
+        resolve(available)
+    }
+
+    // MARK: - Private
+
+    @available(iOS 16.0, *)
+    private func contactFieldsToRequiredContactFields(_ contactFields: [String]) throws -> [ShopifyAcceleratedCheckouts.RequiredContactFields] {
+        return try contactFields.compactMap {
+            switch $0 {
+            case "email":
+                return ShopifyAcceleratedCheckouts.RequiredContactFields.email
+            case "phone":
+                return ShopifyAcceleratedCheckouts.RequiredContactFields.phone
+            default:
+                let message = "Unknown contactField option: \(String(describing: $0))"
+                print("[ShopifyCheckoutSheetKit] \(message)")
+                throw NSError(domain: "ShopifyCheckoutSheetKit", code: 1, userInfo: ["message": message])
+            }
+        }
     }
 }

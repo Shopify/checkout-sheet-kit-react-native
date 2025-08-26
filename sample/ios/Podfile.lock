@@ -1654,9 +1654,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNShopifyCheckoutSheetKit (3.3.0):
+  - RNShopifyCheckoutSheetKit (3.4.0-rc.1):
     - React-Core
-    - ShopifyCheckoutSheetKit (~> 3.3.0)
+    - ShopifyCheckoutSheetKit (~> 3.4.0-rc.5)
+    - ShopifyCheckoutSheetKit/AcceleratedCheckouts (~> 3.4.0-rc.5)
   - RNVectorIcons (10.3.0):
     - DoubleConversion
     - glog
@@ -1678,9 +1679,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ShopifyCheckoutSheetKit (3.3.0)
+  - ShopifyCheckoutSheetKit (3.4.0-rc.5):
+    - ShopifyCheckoutSheetKit/Core (= 3.4.0-rc.5)
+  - ShopifyCheckoutSheetKit/AcceleratedCheckouts (3.4.0-rc.5):
+    - ShopifyCheckoutSheetKit/Core
+  - ShopifyCheckoutSheetKit/Core (3.4.0-rc.5)
   - SocketRocket (0.7.0)
-  - SwiftLint (0.59.1)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1755,14 +1759,12 @@ DEPENDENCIES:
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNShopifyCheckoutSheetKit (from `../../modules/@shopify/checkout-sheet-kit`)"
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
-  - SwiftLint
   - Yoga (from `../../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   trunk:
     - ShopifyCheckoutSheetKit
     - SocketRocket
-    - SwiftLint
 
 EXTERNAL SOURCES:
   boost:
@@ -1975,13 +1977,12 @@ SPEC CHECKSUMS:
   RNGestureHandler: 94ed503f49baffca0b1c048d5401c5a393a2660a
   RNReanimated: 9d34c9eb2e2265f66d0ca982f994088da24ca1f7
   RNScreens: 4a5ab20b324ed1e3fe3862796b8f8e0a6208c415
-  RNShopifyCheckoutSheetKit: 31d302a9150b461f5fac739bbdcc18cd0f750a6b
+  RNShopifyCheckoutSheetKit: 970346698720e3489cb6331263b076233d94799a
   RNVectorIcons: 18f6874f831ee0c755e31bb16b0f746c093fc0d8
-  ShopifyCheckoutSheetKit: 5ee0c9753132d79924089ddef7e73ba4aa84fe37
+  ShopifyCheckoutSheetKit: 0a0c5626057297d17ac47c39adb7672f40c5ac26
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  SwiftLint: 3d48e2fb2a3468fdaccf049e5e755df22fb40c2c
   Yoga: 1dd9dabb9df8fe08f12cd522eae04a2da0e252eb
 
-PODFILE CHECKSUM: 9efd19a381198fb46f36acf3d269233039fb9dc5
+PODFILE CHECKSUM: ef7c1248088910182f6b4aa083731a541b0da99f
 
 COCOAPODS: 1.15.2

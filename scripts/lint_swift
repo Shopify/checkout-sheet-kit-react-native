@@ -38,11 +38,11 @@ fi
 # Run SwiftLint
 if [[ "$MODE" == "check" ]]; then
     echo "🔄 Running SwiftLint in check mode..."
-    swiftlint lint --strict $DIR
+    swiftlint lint --strict $DIR --config .swiftlint.yml
     LINT_STATUS=$?
 else
     echo "🔄 Running SwiftLint in fix mode..."
-    swiftlint lint --fix $DIR
+    swiftlint lint --fix $DIR --config .swiftlint.yml
     LINT_STATUS=$?
 fi
 echo "SwiftLint exit status: $LINT_STATUS"
@@ -50,11 +50,11 @@ echo "SwiftLint exit status: $LINT_STATUS"
 # Run SwiftFormat
 if [[ "$MODE" == "check" ]]; then
     echo "🔄 Running SwiftFormat in check mode..."
-    swiftformat $DIR --lint
+    swiftformat $DIR --lint --config .swiftformat
     FORMAT_STATUS=$?
 else
     echo "🔄 Running SwiftFormat in fix mode..."
-    swiftformat $DIR
+    swiftformat $DIR --config .swiftformat
     FORMAT_STATUS=$?
 fi
 echo "SwiftFormat exit status: $FORMAT_STATUS"

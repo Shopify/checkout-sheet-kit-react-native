@@ -33,8 +33,9 @@ import type {
   PermissionStatus,
 } from 'react-native';
 import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
-import {ColorScheme} from './index.d';
+import {ApplePayContactField, ColorScheme} from './index.d';
 import type {
+  AcceleratedCheckoutConfiguration,
   CheckoutEvent,
   CheckoutEventCallback,
   Configuration,
@@ -43,6 +44,7 @@ import type {
   Maybe,
   ShopifyCheckoutSheetKit,
 } from './index.d';
+import {AcceleratedCheckoutWallet} from './index.d';
 import type {CheckoutException, CheckoutNativeError} from './errors.d';
 import {
   CheckoutExpiredError,
@@ -56,6 +58,8 @@ import {
 import {CheckoutErrorCode} from './errors.d';
 import type {CheckoutCompletedEvent} from './events.d';
 import type {CustomEvent, PixelEvent, StandardEvent} from './pixels.d';
+import {ApplePayLabel} from './components/AcceleratedCheckoutButtons';
+import type {RenderStateChangeEvent} from './components/AcceleratedCheckoutButtons';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
 
@@ -209,6 +213,53 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   }
 
   /**
+   * Configure AcceleratedCheckouts for Shop Pay and Apple Pay buttons
+   * @param config Configuration for AcceleratedCheckouts
+   */
+  public async configureAcceleratedCheckouts(
+    config: AcceleratedCheckoutConfiguration,
+  ): Promise<boolean> {
+    if (!this.acceleratedCheckoutsSupported) {
+      return false;
+    }
+
+    try {
+      this.validateAcceleratedCheckoutsConfiguration(config);
+
+      const configured =
+        await RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+          config.storefrontDomain,
+          config.storefrontAccessToken,
+          config.customer?.email || null,
+          config.customer?.phoneNumber || null,
+          config.wallets?.applePay?.merchantIdentifier || null,
+          config.wallets?.applePay?.contactFields || [],
+        );
+      return configured;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(
+        '[ShopifyCheckoutSheetKit] Failed to configure accelerated checkouts with',
+        error,
+      );
+      return false;
+    }
+  }
+
+  /**
+   * Check if accelerated checkout is available for the given cart or product
+   * @param options Options containing either cartId or variantId/quantity
+   * @returns Promise<boolean> indicating availability
+   */
+  public async isAcceleratedCheckoutAvailable(): Promise<boolean> {
+    if (!this.acceleratedCheckoutsSupported) {
+      return false;
+    }
+
+    return RNShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable();
+  }
+
+  /**
    * Initiates a geolocation request for Android devices
    * Only needed if features.handleGeolocationRequests is false
    */
@@ -218,7 +269,57 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     }
   }
 
-  // ---
+  // --- private
+
+  /**
+   * Accelerated Checkouts is only supported from iOS 16.0 onwards
+   */
+  private get acceleratedCheckoutsSupported(): boolean {
+    return Platform.OS === 'ios' && this.majorVersion >= 16;
+  }
+
+  private get majorVersion(): number {
+    return parseInt(String(Platform.Version), 10);
+  }
+
+  private validateAcceleratedCheckoutsConfiguration(
+    acceleratedCheckouts: Configuration['acceleratedCheckouts'],
+  ) {
+    /**
+     * Required Accelerated Checkouts configuration properties
+     */
+    if (!acceleratedCheckouts?.storefrontDomain) {
+      throw new Error('`storefrontDomain` is required');
+    }
+    if (!acceleratedCheckouts.storefrontAccessToken) {
+      throw new Error('`storefrontAccessToken` is required');
+    }
+
+    /**
+     * Validate Apple Pay config if available
+     */
+    if (acceleratedCheckouts.wallets?.applePay) {
+      if (!acceleratedCheckouts.wallets.applePay.merchantIdentifier) {
+        throw new Error('`wallets.applePay.merchantIdentifier` is required');
+      }
+
+      const expectedContactFields = Object.values(ApplePayContactField);
+      const hasInvalidContactFields =
+        Array.isArray(acceleratedCheckouts.wallets.applePay.contactFields) &&
+        acceleratedCheckouts.wallets.applePay.contactFields.some(
+          value =>
+            !expectedContactFields.includes(
+              value.toLowerCase() as ApplePayContactField,
+            ),
+        );
+
+      if (hasInvalidContactFields) {
+        throw new Error(
+          `'wallets.applePay.contactFields' contains unexpected values. Expected "${expectedContactFields.join(', ')}", received "${acceleratedCheckouts.wallets.applePay.contactFields}"`,
+        );
+      }
+    }
+  }
 
   /**
    * Checks if a specific feature is enabled in the configuration
@@ -375,6 +476,9 @@ export class LifecycleEventParseError extends Error {
 
 // API
 export {
+  ApplePayContactField,
+  ApplePayLabel,
+  AcceleratedCheckoutWallet,
   ColorScheme,
   ShopifyCheckoutSheet,
   ShopifyCheckoutSheetProvider,
@@ -405,4 +509,12 @@ export type {
   Features,
   PixelEvent,
   StandardEvent,
+  AcceleratedCheckoutConfiguration,
+  RenderStateChangeEvent,
 };
+
+// Components
+export {
+  AcceleratedCheckoutButtons,
+  RenderState,
+} from './components/AcceleratedCheckoutButtons';

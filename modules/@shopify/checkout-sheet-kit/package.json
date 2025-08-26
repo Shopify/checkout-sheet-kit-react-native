@@ -1,7 +1,7 @@
 {
   "name": "@shopify/checkout-sheet-kit",
   "license": "MIT",
-  "version": "3.3.0",
+  "version": "3.4.0-rc.1",
   "main": "lib/commonjs/index.js",
   "types": "src/index.ts",
   "source": "src/index.ts",
@@ -15,7 +15,6 @@
   "scripts": {
     "clean": "rm -rf lib",
     "build": "bob build",
-    "lint:swift": "./../../../sample/ios/Pods/SwiftLint/swiftlint --strict --quiet ios",
     "lint": "yarn typecheck && eslint src",
     "typecheck": "tsc --noEmit"
   },

@@ -23,10 +23,9 @@ runs:
       with:
         path: |
           sample/ios/Pods
-        key: ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock', 'package.json', 'sample/package.json', 'modules/@shopify/checkout-sheet-kit/package.json', 'yarn.lock') }}
+        key: ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock', 'sample/Gemfile', 'package.json', 'sample/package.json', 'modules/@shopify/checkout-sheet-kit/package.json', 'yarn.lock') }}
 
     - name: Install cocoapods
-      if: steps.cache-cocoapods.outputs.cache-hit != 'true'
       shell: bash
       env:
         NO_FLIPPER: "1"
@@ -36,5 +35,5 @@ runs:
         cd sample
         bundle install
         cd ios
-        NO_FLIPPER=1 bundle exec pod install --deployment --repo-update
+        bundle exec pod install --deployment --repo-update
         cd $ROOT

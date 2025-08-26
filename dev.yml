@@ -25,9 +25,10 @@ up:
 
 packages:
   - xcode
+  - swiftlint
 
 check:
-  lint_swift: yarn module lint:swift
+  lint_swift: ./scripts/lint_swift
   lint_module: yarn module lint
   lint_sample: yarn sample lint
 

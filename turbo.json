@@ -14,10 +14,12 @@
       "outputs": ["sample/ios/build"]
     },
     "test:ios": {
-      "dependsOn": ["build", "lint"]
+      "dependsOn": ["build", "lint"],
+      "cache": false
     },
     "test:android": {
-      "dependsOn": ["build", "lint"]
+      "dependsOn": ["build", "lint"],
+      "cache": false
     }
   }
 }

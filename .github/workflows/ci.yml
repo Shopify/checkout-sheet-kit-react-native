@@ -160,7 +160,5 @@ jobs:
           ruby-version: ${{ env.RUBY_VERSION }}
 
       - name: Run Swift tests
-        timeout-minutes: 15
-        # If turbo has already cached the build it will return instantly here
         run: |
-          yarn turbo run test:ios --cache-dir=".turbo" --no-daemon
+          yarn sample test:ios

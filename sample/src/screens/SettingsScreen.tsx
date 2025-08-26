@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import React, {useCallback, useMemo} from 'react';
 import {
-  Appearance,
   Pressable,
   SafeAreaView,
   SectionList,
@@ -40,7 +39,7 @@ import {
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
 import type {Colors} from '../context/Theme';
-import {darkColors, getColors, lightColors, useTheme} from '../context/Theme';
+import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 
 enum SectionType {
@@ -52,6 +51,7 @@ enum SectionType {
 interface SwitchItem {
   type: SectionType.Switch;
   title: string;
+  description?: string;
   value: boolean;
   handler: () => void;
 }
@@ -89,93 +89,72 @@ interface SectionData {
 function SettingsScreen() {
   const ShopifyCheckout = useShopifyCheckoutSheet();
   const {clearCart} = useCart();
-  const {config, appConfig, setConfig, setAppConfig} = useConfig();
-  const {colors} = useTheme();
+  const {appConfig, setAppConfig} = useConfig();
+  const {colors, setColorScheme} = useTheme();
   const styles = createStyles(colors);
 
-  const handleColorSchemeChange = (item: SingleSelectItem) => {
-    const updatedColors = getColors(item.value, Appearance.getColorScheme());
-
-    if (item.value === ColorScheme.automatic) {
-      setConfig({
-        colorScheme: ColorScheme.automatic,
-        colors: {
-          ios: {
-            backgroundColor: updatedColors.webviewBackgroundColor,
-            tintColor: updatedColors.webViewProgressIndicator,
-          },
-          android: {
-            light: {
-              backgroundColor: lightColors.webviewBackgroundColor,
-              progressIndicator: lightColors.webViewProgressIndicator,
-              headerBackgroundColor: lightColors.webviewBackgroundColor,
-              headerTextColor: lightColors.webviewHeaderTextColor,
-              closeButtonColor: lightColors.webviewCloseButtonColor,
-            },
-            dark: {
-              backgroundColor: darkColors.webviewBackgroundColor,
-              progressIndicator: darkColors.webViewProgressIndicator,
-              headerBackgroundColor: darkColors.webviewBackgroundColor,
-              headerTextColor: darkColors.webviewHeaderTextColor,
-              closeButtonColor: darkColors.webviewCloseButtonColor,
-            },
-          },
-        },
-      });
-    } else {
-      setConfig({
+  const handleColorSchemeChange = useCallback(
+    (item: SingleSelectItem) => {
+      setAppConfig({
+        ...appConfig,
         colorScheme: item.value,
-        colors: {
-          ios: {
-            backgroundColor: updatedColors.webviewBackgroundColor,
-            tintColor: updatedColors.webViewProgressIndicator,
-            closeButtonColor: updatedColors.webviewCloseButtonColor,
-          },
-          android: {
-            backgroundColor: updatedColors.webviewBackgroundColor,
-            progressIndicator: updatedColors.webViewProgressIndicator,
-            headerBackgroundColor: updatedColors.webviewBackgroundColor,
-            headerTextColor: updatedColors.webviewHeaderTextColor,
-            closeButtonColor: updatedColors.webviewCloseButtonColor,
-          },
-        },
       });
-    }
-  };
+      setColorScheme(item.value);
+    },
+    [appConfig, setAppConfig, setColorScheme],
+  );
 
   const handleTogglePreloading = useCallback(() => {
-    setConfig({
-      preloading: !config?.preloading,
+    setAppConfig({
+      ...appConfig,
+      enablePreloading: !appConfig.enablePreloading,
     });
-  }, [config?.preloading, setConfig]);
+  }, [appConfig, setAppConfig]);
 
   const handleTogglePrefill = useCallback(() => {
     clearCart();
     setAppConfig({
+      ...appConfig,
       prefillBuyerInformation: !appConfig.prefillBuyerInformation,
+      customerAuthenticated: !appConfig.customerAuthenticated,
     });
-  }, [appConfig.prefillBuyerInformation, clearCart, setAppConfig]);
+  }, [appConfig, clearCart, setAppConfig]);
+
+  const handleToggleCustomerAuthenticated = useCallback(() => {
+    setAppConfig({
+      ...appConfig,
+      customerAuthenticated: !appConfig.customerAuthenticated,
+    });
+  }, [appConfig, setAppConfig]);
 
   const configurationOptions: readonly SwitchItem[] = useMemo(
     () => [
       {
         title: 'Preload checkout',
         type: SectionType.Switch,
-        value: config?.preloading ?? false,
+        value: appConfig.enablePreloading,
         handler: handleTogglePreloading,
       },
       {
         title: 'Prefill buyer information',
         type: SectionType.Switch,
-        value: appConfig.prefillBuyerInformation ?? false,
+        value: appConfig.prefillBuyerInformation,
         handler: handleTogglePrefill,
+      },
+      {
+        title: 'Use authenticated customer',
+        description:
+          'When toggled on, customer information will be attached to cart from your app settings. When toggled off, customer information will be collected from the Apple Pay sheet.',
+        type: SectionType.Switch,
+        value: appConfig.customerAuthenticated,
+        handler: handleToggleCustomerAuthenticated,
       },
     ],
     [
-      appConfig.prefillBuyerInformation,
-      config?.preloading,
+      appConfig,
       handleTogglePrefill,
       handleTogglePreloading,
+      handleToggleCustomerAuthenticated,
     ],
   );
 
@@ -185,28 +164,28 @@ function SettingsScreen() {
         title: 'Automatic',
         type: SectionType.SingleSelect,
         value: ColorScheme.automatic,
-        selected: config?.colorScheme === ColorScheme.automatic,
+        selected: appConfig.colorScheme === ColorScheme.automatic,
       },
       {
         title: 'Light',
         type: SectionType.SingleSelect,
         value: ColorScheme.light,
-        selected: config?.colorScheme === ColorScheme.light,
+        selected: appConfig.colorScheme === ColorScheme.light,
       },
       {
         title: 'Dark',
         type: SectionType.SingleSelect,
         value: ColorScheme.dark,
-        selected: config?.colorScheme === ColorScheme.dark,
+        selected: appConfig.colorScheme === ColorScheme.dark,
       },
       {
         title: 'Web',
         type: SectionType.SingleSelect,
         value: ColorScheme.web,
-        selected: config?.colorScheme === ColorScheme.web,
+        selected: appConfig.colorScheme === ColorScheme.web,
       },
     ],
-    [config?.colorScheme],
+    [appConfig.colorScheme],
   );
 
   const informationalItems: readonly TextItem[] = useMemo(
@@ -225,11 +204,6 @@ function SettingsScreen() {
         title: 'Storefront Domain',
         type: SectionType.Text,
         value: Config.STOREFRONT_DOMAIN || 'undefined',
-      },
-      {
-        title: 'Storefront Access Token (last 4)',
-        type: SectionType.Text,
-        value: Config.STOREFRONT_ACCESS_TOKEN?.slice(-4) || 'undefined',
       },
     ],
     [ShopifyCheckout.version],
@@ -310,16 +284,21 @@ interface TextItemProps {
 
 function SwitchItem({item, styles, onChange}: SwitchItemProps) {
   return (
-    <View style={styles.listItem}>
-      <Text style={styles.listItemText}>{item.title}</Text>
-      <Switch
-        trackColor={{false: '#767577', true: '#81b0ff'}}
-        thumbColor="#fff"
-        ios_backgroundColor="#eee"
-        onValueChange={onChange}
-        value={item.value}
-        style={styles.listItemSwitch}
-      />
+    <View>
+      <View style={styles.listItem}>
+        <Text style={styles.listItemText}>{item.title}</Text>
+        <Switch
+          trackColor={{false: '#767577', true: '#81b0ff'}}
+          thumbColor="#fff"
+          ios_backgroundColor="#eee"
+          onValueChange={onChange}
+          value={item.value}
+          style={styles.listItemSwitch}
+        />
+      </View>
+      {item.description && (
+        <Text style={styles.listItemDescription}>{item.description}</Text>
+      )}
     </View>
   );
 }
@@ -364,8 +343,13 @@ function createStyles(colors: Colors) {
     listItemText: {
       flex: 1,
       fontSize: 16,
-      alignSelf: 'center',
       color: colors.text,
+    },
+    listItemDescription: {
+      color: colors.textSubdued,
+      fontSize: 12,
+      paddingHorizontal: 16,
+      paddingVertical: 10,
     },
     listItemSecondaryText: {
       color: colors.textSubdued,
