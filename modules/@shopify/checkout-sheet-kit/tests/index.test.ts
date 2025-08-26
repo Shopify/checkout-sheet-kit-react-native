@@ -1,4 +1,5 @@
 /* eslint-disable no-new */
+/* eslint-disable no-console */
 
 import {
   LifecycleEventParseError,
@@ -772,10 +773,15 @@ describe('ShopifyCheckoutSheetKit', () => {
           ...acceleratedConfig,
           storefrontDomain: '',
         };
+        const expectedError = new Error('`storefrontDomain` is required');
 
         await expect(
           instance.configureAcceleratedCheckouts(invalidConfig),
-        ).rejects.toThrow('storefrontDomain is required');
+        ).resolves.toBe(false);
+        expect(console.error).toHaveBeenCalledWith(
+          '[ShopifyCheckoutSheetKit] Failed to configure accelerated checkouts with',
+          expectedError,
+        );
       });
 
       it('validates required storefrontAccessToken', async () => {
@@ -785,9 +791,15 @@ describe('ShopifyCheckoutSheetKit', () => {
           storefrontAccessToken: '',
         };
 
+        const expectedError = new Error('`storefrontAccessToken` is required');
+
         await expect(
           instance.configureAcceleratedCheckouts(invalidConfig),
-        ).rejects.toThrow('storefrontAccessToken is required');
+        ).resolves.toBe(false);
+        expect(console.error).toHaveBeenCalledWith(
+          '[ShopifyCheckoutSheetKit] Failed to configure accelerated checkouts with',
+          expectedError,
+        );
       });
 
       it('validates required merchantIdentifier when Apple Pay is configured', async () => {
@@ -802,9 +814,42 @@ describe('ShopifyCheckoutSheetKit', () => {
           },
         };
 
+        const expectedError = new Error(
+          '`wallets.applePay.merchantIdentifier` is required',
+        );
+
         await expect(
           instance.configureAcceleratedCheckouts(invalidConfig),
-        ).rejects.toThrow('wallets.applePay.merchantIdentifier is required');
+        ).resolves.toBe(false);
+        expect(console.error).toHaveBeenCalledWith(
+          '[ShopifyCheckoutSheetKit] Failed to configure accelerated checkouts with',
+          expectedError,
+        );
+      });
+
+      it('validates required contactFields when Apple Pay is configured', async () => {
+        const instance = new ShopifyCheckoutSheet();
+        const invalidConfig = {
+          ...acceleratedConfig,
+          wallets: {
+            applePay: {
+              contactFields: ['invalid'],
+              merchantIdentifier: 'merchant.test.com',
+            },
+          },
+        };
+
+        const expectedError = new Error(
+          `'wallets.applePay.contactFields' contains unexpected values. Expected "email, phone", received "invalid"`,
+        );
+
+        await expect(
+          instance.configureAcceleratedCheckouts(invalidConfig as any),
+        ).resolves.toBe(false);
+        expect(console.error).toHaveBeenCalledWith(
+          '[ShopifyCheckoutSheetKit] Failed to configure accelerated checkouts with',
+          expectedError,
+        );
       });
 
       it('does not throw when Apple Pay wallet is not configured', async () => {

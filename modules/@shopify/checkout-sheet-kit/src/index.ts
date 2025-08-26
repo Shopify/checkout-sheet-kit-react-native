@@ -222,9 +222,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
       return false;
     }
 
-    this.validateAcceleratedCheckoutsConfiguration(config);
-
     try {
+      this.validateAcceleratedCheckoutsConfiguration(config);
+
       const configured =
         await RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
           config.storefrontDomain,
@@ -238,8 +238,8 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(
-        'Failed to configured accelerated checkouts with config:',
-        config,
+        '[ShopifyCheckoutSheetKit] Failed to configure accelerated checkouts with',
+        error,
       );
       return false;
     }
@@ -288,10 +288,10 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
      * Required Accelerated Checkouts configuration properties
      */
     if (!acceleratedCheckouts?.storefrontDomain) {
-      throw new Error('storefrontDomain is required');
+      throw new Error('`storefrontDomain` is required');
     }
     if (!acceleratedCheckouts.storefrontAccessToken) {
-      throw new Error('storefrontAccessToken is required');
+      throw new Error('`storefrontAccessToken` is required');
     }
 
     /**
@@ -299,7 +299,23 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
      */
     if (acceleratedCheckouts.wallets?.applePay) {
       if (!acceleratedCheckouts.wallets.applePay.merchantIdentifier) {
-        throw new Error('wallets.applePay.merchantIdentifier is required');
+        throw new Error('`wallets.applePay.merchantIdentifier` is required');
+      }
+
+      const expectedContactFields = Object.values(ApplePayContactField);
+      const hasInvalidContactFields =
+        Array.isArray(acceleratedCheckouts.wallets.applePay.contactFields) &&
+        acceleratedCheckouts.wallets.applePay.contactFields.some(
+          value =>
+            !expectedContactFields.includes(
+              value.toLowerCase() as ApplePayContactField,
+            ),
+        );
+
+      if (hasInvalidContactFields) {
+        throw new Error(
+          `'wallets.applePay.contactFields' contains unexpected values. Expected "${expectedContactFields.join(', ')}", received "${acceleratedCheckouts.wallets.applePay.contactFields}"`,
+        );
       }
     }
   }
