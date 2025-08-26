@@ -86,7 +86,11 @@ describe('ShopifyCheckoutSheetProvider', () => {
       acceleratedCheckouts: {
         storefrontDomain: 'test-shop.myshopify.com',
         storefrontAccessToken: 'shpat_test_token',
-        customer: {email: 'test@example.com', phoneNumber: '+123'},
+        customer: {
+          email: 'test@example.com',
+          phoneNumber: '+123',
+          accessToken: 'customer-access-token',
+        },
         wallets: {
           applePay: {
             merchantIdentifier: 'merchant.test',
@@ -113,6 +117,7 @@ describe('ShopifyCheckoutSheetProvider', () => {
       'shpat_test_token',
       'test@example.com',
       '+123',
+      'customer-access-token',
       'merchant.test',
       ['email'],
     );
