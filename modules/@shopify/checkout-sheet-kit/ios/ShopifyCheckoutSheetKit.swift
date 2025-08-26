@@ -218,6 +218,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         storefrontAccessToken: String,
         customerEmail: String?,
         customerPhoneNumber: String?,
+        customerAccessToken: String?,
         applePayMerchantIdentifier: String?,
         applyPayContactFields: [String]?,
         resolve: @escaping RCTPromiseResolveBlock,
@@ -230,7 +231,8 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
         let customer = ShopifyAcceleratedCheckouts.Customer(
             email: customerEmail,
-            phoneNumber: customerPhoneNumber
+            phoneNumber: customerPhoneNumber,
+            customerAccessToken: customerAccessToken
         )
 
         acceleratedCheckoutsConfiguration = ShopifyAcceleratedCheckouts.Configuration(

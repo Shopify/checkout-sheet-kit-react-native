@@ -209,6 +209,7 @@ export interface AcceleratedCheckoutConfiguration {
   customer?: {
     email?: string;
     phoneNumber?: string;
+    accessToken?: string;
   };
   /**
    * Enable and configure accelerated checkout wallets.

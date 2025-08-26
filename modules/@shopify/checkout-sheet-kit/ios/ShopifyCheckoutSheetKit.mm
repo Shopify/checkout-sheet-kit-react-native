@@ -62,8 +62,9 @@ RCT_EXTERN_METHOD(getConfig : (RCTPromiseResolveBlock)resolve reject : (RCTPromi
  */
 RCT_EXTERN_METHOD(configureAcceleratedCheckouts : (NSString*)storefrontDomain storefrontAccessToken : (
   NSString*)storefrontAccessToken customerEmail : (NSString*)customerEmail customerPhoneNumber : (NSString*)
-    customerPhoneNumber applePayMerchantIdentifier : (NSString*)applePayMerchantIdentifier applyPayContactFields : (
-      NSArray*)applyPayContactFields resolve : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject);
+    customerPhoneNumber customerAccessToken : (NSString*)customerAccessToken applePayMerchantIdentifier : (NSString*)
+      applePayMerchantIdentifier applyPayContactFields : (NSArray*)applyPayContactFields resolve : (
+        RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject);
 
 /**
  * Check if accelerated checkout is available
