@@ -59,6 +59,7 @@ import {CheckoutErrorCode} from './errors.d';
 import type {CheckoutCompletedEvent} from './events.d';
 import type {CustomEvent, PixelEvent, StandardEvent} from './pixels.d';
 import {ApplePayLabel} from './components/AcceleratedCheckoutButtons';
+import type {RenderStateChangeEvent} from './components/AcceleratedCheckoutButtons';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
 
@@ -509,6 +510,7 @@ export type {
   PixelEvent,
   StandardEvent,
   AcceleratedCheckoutConfiguration,
+  RenderStateChangeEvent,
 };
 
 // Components

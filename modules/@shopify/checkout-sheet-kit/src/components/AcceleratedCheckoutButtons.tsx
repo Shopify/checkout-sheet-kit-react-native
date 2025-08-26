@@ -38,6 +38,12 @@ export enum RenderState {
   Unknown = 'unknown',
 }
 
+export type RenderStateChangeEvent =
+  | {state: RenderState.Error; reason?: string}
+  | {state: RenderState.Loading}
+  | {state: RenderState.Rendered}
+  | {state: RenderState.Unknown};
+
 export enum ApplePayLabel {
   addMoney = 'addMoney',
   book = 'book',
@@ -103,13 +109,7 @@ interface CommonAcceleratedCheckoutButtonsProps {
    * Called when the render state changes
    * States from SDK: loading, rendered, error
    */
-  onRenderStateChange?: (
-    event:
-      | {state: RenderState.Error; reason?: string}
-      | {state: RenderState.Loading}
-      | {state: RenderState.Rendered}
-      | {state: RenderState.Unknown},
-  ) => void;
+  onRenderStateChange?: (event: RenderStateChangeEvent) => void;
 
   /**
    * Called when a web pixel event is triggered
