@@ -61,7 +61,7 @@ class RCTAcceleratedCheckoutButtonsManager: RCTViewManager {
             return RCTAcceleratedCheckoutButtonsView()
         }
 
-        // Return an empty view for iOS < 17.0 (silent fallback)
+        // Return an empty view for iOS < 16.0 (silent fallback)
         return UIView()
     }
 

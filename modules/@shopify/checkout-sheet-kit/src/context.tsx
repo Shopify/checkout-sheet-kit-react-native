@@ -82,7 +82,7 @@ export function ShopifyCheckoutSheetProvider({
   }
 
   useEffect(() => {
-    async function configureAcceleratedCheckouts() {
+    async function configureCheckoutKit() {
       if (!instance.current || !configuration) {
         return;
       }
@@ -97,7 +97,7 @@ export function ShopifyCheckoutSheetProvider({
       instance.current?.setConfig(configuration);
     }
 
-    configureAcceleratedCheckouts();
+    configureCheckoutKit();
   }, [configuration]);
 
   const addEventListener: AddEventListener = useCallback(

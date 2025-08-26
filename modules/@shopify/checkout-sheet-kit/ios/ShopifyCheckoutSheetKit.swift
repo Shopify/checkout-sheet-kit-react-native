@@ -240,11 +240,19 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         )
 
         if let merchantIdentifier = applePayMerchantIdentifier, let contactFields = applyPayContactFields {
-            acceleratedCheckoutsApplePayConfiguration = ShopifyAcceleratedCheckouts.ApplePayConfiguration(
-                merchantIdentifier: merchantIdentifier,
-                contactFields: contactFieldsToRequiredContactFields(contactFields)
-            )
-            AcceleratedCheckoutConfiguration.shared.applePayConfiguration = acceleratedCheckoutsApplePayConfiguration as? ShopifyAcceleratedCheckouts.ApplePayConfiguration
+            do {
+                let fields = try contactFieldsToRequiredContactFields(contactFields)
+
+                acceleratedCheckoutsApplePayConfiguration = ShopifyAcceleratedCheckouts.ApplePayConfiguration(
+                    merchantIdentifier: merchantIdentifier,
+                    contactFields: fields
+                )
+
+                AcceleratedCheckoutConfiguration.shared.applePayConfiguration = acceleratedCheckoutsApplePayConfiguration as? ShopifyAcceleratedCheckouts.ApplePayConfiguration
+            } catch {
+                resolve(false)
+                return
+            }
         }
 
         AcceleratedCheckoutConfiguration.shared.configuration = acceleratedCheckoutsConfiguration as? ShopifyAcceleratedCheckouts.Configuration
@@ -283,15 +291,17 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     // MARK: - Private
 
     @available(iOS 16.0, *)
-    private func contactFieldsToRequiredContactFields(_ contactFields: [String]) -> [ShopifyAcceleratedCheckouts.RequiredContactFields] {
-        return contactFields.compactMap {
+    private func contactFieldsToRequiredContactFields(_ contactFields: [String]) throws -> [ShopifyAcceleratedCheckouts.RequiredContactFields] {
+        return try contactFields.compactMap {
             switch $0 {
             case "email":
                 return ShopifyAcceleratedCheckouts.RequiredContactFields.email
             case "phone":
                 return ShopifyAcceleratedCheckouts.RequiredContactFields.phone
             default:
-                return nil
+                let message = "Unknown contactField option: \(String(describing: $0))"
+                print("[ShopifyCheckoutSheetKit] \(message)")
+                throw NSError(domain: "ShopifyCheckoutSheetKit", code: 1, userInfo: ["message": message])
             }
         }
     }

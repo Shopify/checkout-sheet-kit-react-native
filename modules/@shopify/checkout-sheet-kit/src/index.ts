@@ -224,17 +224,25 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
     this.validateAcceleratedCheckoutsConfiguration(config);
 
-    const configured =
-      await RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
-        config.storefrontDomain,
-        config.storefrontAccessToken,
-        config.customer?.email || null,
-        config.customer?.phoneNumber || null,
-        config.wallets?.applePay?.merchantIdentifier || null,
-        config.wallets?.applePay?.contactFields || [],
+    try {
+      const configured =
+        await RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+          config.storefrontDomain,
+          config.storefrontAccessToken,
+          config.customer?.email || null,
+          config.customer?.phoneNumber || null,
+          config.wallets?.applePay?.merchantIdentifier || null,
+          config.wallets?.applePay?.contactFields || [],
+        );
+      return configured;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(
+        'Failed to configured accelerated checkouts with config:',
+        config,
       );
-
-    return configured;
+      return false;
+    }
   }
 
   /**

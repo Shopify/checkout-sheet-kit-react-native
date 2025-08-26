@@ -35,6 +35,7 @@ export enum RenderState {
   Loading = 'loading',
   Rendered = 'rendered',
   Error = 'error',
+  Unknown = 'unknown',
 }
 
 export enum ApplePayLabel {
@@ -102,7 +103,13 @@ interface CommonAcceleratedCheckoutButtonsProps {
    * Called when the render state changes
    * States from SDK: loading, rendered, error
    */
-  onRenderStateChange?: (state: RenderState, reason?: string) => void;
+  onRenderStateChange?: (
+    event:
+      | {state: RenderState.Error; reason?: string}
+      | {state: RenderState.Loading}
+      | {state: RenderState.Rendered}
+      | {state: RenderState.Unknown},
+  ) => void;
 
   /**
    * Called when a web pixel event is triggered
@@ -151,7 +158,9 @@ interface NativeAcceleratedCheckoutButtonsProps {
   onFail?: (event: {nativeEvent: CheckoutException}) => void;
   onComplete?: (event: {nativeEvent: CheckoutCompletedEvent}) => void;
   onCancel?: () => void;
-  onRenderStateChange?: (event: {nativeEvent: {state: string}}) => void;
+  onRenderStateChange?: (event: {
+    nativeEvent: {state: string; reason?: string | undefined};
+  }) => void;
   onWebPixelEvent?: (event: {nativeEvent: PixelEvent}) => void;
   onClickLink?: (event: {nativeEvent: {url: string}}) => void;
   onSizeChange?: (event: {nativeEvent: {height: number}}) => void;
@@ -220,17 +229,14 @@ export const AcceleratedCheckoutButtons: React.FC<
   }, [onCancel]);
 
   const handleRenderStateChange = useCallback(
-    (event: {nativeEvent: {state: string; reason?: string}}) => {
-      if (event.nativeEvent?.state) {
-        if (isRenderStateError(event.nativeEvent.state)) {
-          onRenderStateChange?.(
-            event.nativeEvent.state,
-            event.nativeEvent.reason ?? '',
-          );
-          return;
-        }
+    (event: {nativeEvent: {state: string; reason?: string | undefined}}) => {
+      const state = validRenderState(event.nativeEvent.state);
+      const reason = event.nativeEvent.reason;
 
-        onRenderStateChange?.(event.nativeEvent.state as RenderState);
+      if (state === RenderState.Error) {
+        onRenderStateChange?.({state, reason});
+      } else {
+        onRenderStateChange?.({state});
       }
     },
     [onRenderStateChange],
@@ -319,8 +325,11 @@ export const AcceleratedCheckoutButtons: React.FC<
 
 export default AcceleratedCheckoutButtons;
 
-function isRenderStateError(state: string): state is RenderState.Error {
-  return state === RenderState.Error;
+function validRenderState(state: string): RenderState {
+  return (
+    Object.values(RenderState).find(renderState => renderState === state) ??
+    RenderState.Unknown
+  );
 }
 
 function isCartProps(
