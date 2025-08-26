@@ -190,6 +190,8 @@ const RCTAcceleratedCheckoutButtons =
  * />
  */
 
+const defaultStyles = {flex: 1};
+
 export const AcceleratedCheckoutButtons: React.FC<
   AcceleratedCheckoutButtonsProps
 > = ({
@@ -308,7 +310,7 @@ export const AcceleratedCheckoutButtons: React.FC<
   return (
     <RCTAcceleratedCheckoutButtons
       applePayLabel={applePayLabel}
-      style={dynamicHeight ? {height: dynamicHeight} : undefined}
+      style={{...defaultStyles, height: dynamicHeight}}
       checkoutIdentifier={checkoutIdentifier}
       cornerRadius={cornerRadius}
       wallets={wallets}
