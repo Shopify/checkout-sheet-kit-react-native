@@ -20,15 +20,15 @@ jobs:
       - name: Determine NPM tag
         id: npm-tag
         run: |
-          # For releases, check the target branch
-          if [[ "${{ github.event_name }}" == "release" ]]; then
-            if [[ "${{ github.event.release.target_commitish }}" == "next" ]]; then
-              echo "tag=next" >> $GITHUB_OUTPUT
-            else
-              echo "tag=latest" >> $GITHUB_OUTPUT
-            fi
+          # Read the version from package.json
+          VERSION=$(node -p "require('./modules/@shopify/checkout-sheet-kit/package.json').version")
+
+          # Check if it's a "beta" or "rc" version
+          if [[ "$VERSION" == *"-beta"* ]] || [[ "$VERSION" == *"-rc"* ]]; then
+            echo "Version $VERSION is a prerelease, using 'next' tag"
+            echo "tag=next" >> $GITHUB_OUTPUT
           else
-            # For manual workflow dispatch, default to latest
+            echo "Version $VERSION is a stable release, using 'latest' tag"
             echo "tag=latest" >> $GITHUB_OUTPUT
           fi
 
