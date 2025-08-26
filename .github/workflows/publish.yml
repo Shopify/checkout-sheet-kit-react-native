@@ -17,6 +17,21 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Determine NPM tag
+        id: npm-tag
+        run: |
+          # Read the version from package.json
+          VERSION=$(node -p "require('./modules/@shopify/checkout-sheet-kit/package.json').version")
+
+          # Check if it's a "beta" or "rc" version
+          if [[ "$VERSION" == *"-beta"* ]] || [[ "$VERSION" == *"-rc"* ]]; then
+            echo "Version $VERSION is a prerelease, using 'next' tag"
+            echo "tag=next" >> $GITHUB_OUTPUT
+          else
+            echo "Version $VERSION is a stable release, using 'latest' tag"
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          fi
+
       - name: Prepare release
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
@@ -24,6 +39,6 @@ jobs:
           yarn module clean
           yarn module build
           cd modules/@shopify/checkout-sheet-kit
-          npm publish --access public
+          npm publish --access public --tag ${{ steps.npm-tag.outputs.tag }}
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
