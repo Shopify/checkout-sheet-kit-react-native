@@ -296,7 +296,10 @@ describe('AcceleratedCheckoutButtons', () => {
         nativeComponent.props.onSizeChange({nativeEvent: {height: 42}});
       });
       nativeComponent = getByTestId('accelerated-checkout-buttons');
-      expect(nativeComponent.props.style).toEqual({height: 42});
+      expect(nativeComponent.props.style).toEqual({
+        flex: 1,
+        height: 42,
+      });
     });
 
     it('warns and returns null when missing identifiers in production', () => {
