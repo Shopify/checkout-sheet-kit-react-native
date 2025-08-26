@@ -295,16 +295,12 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     @available(iOS 16.0, *)
     private func contactFieldsToRequiredContactFields(_ contactFields: [String]) throws -> [ShopifyAcceleratedCheckouts.RequiredContactFields] {
         return try contactFields.compactMap {
-            switch $0 {
-            case "email":
-                return ShopifyAcceleratedCheckouts.RequiredContactFields.email
-            case "phone":
-                return ShopifyAcceleratedCheckouts.RequiredContactFields.phone
-            default:
+            guard let field = ShopifyAcceleratedCheckouts.RequiredContactFields(rawValue: $0), field != nil else {
                 let message = "Unknown contactField option: \(String(describing: $0))"
                 print("[ShopifyCheckoutSheetKit] \(message)")
                 throw NSError(domain: "ShopifyCheckoutSheetKit", code: 1, userInfo: ["message": message])
             }
+            return field
         }
     }
 }

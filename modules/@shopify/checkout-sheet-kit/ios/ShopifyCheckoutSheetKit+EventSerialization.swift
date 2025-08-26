@@ -166,10 +166,10 @@ internal enum ShopifyEventSerialization {
             return ["state": "loading"]
         case .rendered:
             return ["state": "rendered"]
-        case .error:
-            return ["state": "error"]
+        case let .error(reason):
+            return ["state": "error", "reason": reason]
         @unknown default:
-            return ["state": "unknown"]
+            return ["state": "error", "reason": "unknown"]
         }
     }
 }

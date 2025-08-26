@@ -250,7 +250,7 @@ describe('AcceleratedCheckoutButtons', () => {
         nativeEvent: {state: 'unexpected'},
       });
       expect(onRenderStateChange).toHaveBeenCalledWith({
-        state: RenderState.Unknown,
+        state: RenderState.Error,
       });
     });
 
