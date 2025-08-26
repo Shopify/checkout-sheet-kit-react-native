@@ -22,7 +22,7 @@ jobs:
         run: |
           # For releases, check the target branch
           if [[ "${{ github.event_name }}" == "release" ]]; then
-            if [[ "${{ github.event.release.target_commitish }}" == "release-candidate" ]]; then
+            if [[ "${{ github.event.release.target_commitish }}" == "next" ]]; then
               echo "tag=next" >> $GITHUB_OUTPUT
             else
               echo "tag=latest" >> $GITHUB_OUTPUT
