@@ -32,7 +32,15 @@ function createMockEmitter() {
 
 const requireNativeComponent = (..._args: any[]) => {
   const React = require('react');
-  return (props: any) => React.createElement('View', props);
+  return (props: any) =>
+    React.createElement('View', {
+      ...props,
+      testID: props?.testID ?? 'accelerated-checkout-buttons',
+    });
+};
+
+const StyleSheet = {
+  flatten: jest.fn(style => style),
 };
 
 const exampleConfig = {preloading: true};
@@ -66,4 +74,5 @@ module.exports = {
       eventEmitter: createMockEmitter(),
     },
   },
+  StyleSheet,
 };
