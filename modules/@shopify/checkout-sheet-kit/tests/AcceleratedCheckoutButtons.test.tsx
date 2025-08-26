@@ -35,6 +35,7 @@ jest.mock('react-native', () => {
   return {
     Platform: {
       OS: 'ios',
+      Version: '16.0',
     },
     requireNativeComponent: mockRequireNativeComponent,
     NativeModules: {
@@ -65,6 +66,72 @@ describe('AcceleratedCheckoutButtons', () => {
   describe('iOS Platform', () => {
     beforeEach(() => {
       Platform.OS = 'ios';
+      // Default to iOS 16 for most tests
+      (Platform as any).Version = '16.0';
+    });
+
+    describe('iOS Version Compatibility', () => {
+      it('returns null on iOS versions below 16', () => {
+        (Platform as any).Version = '15.5';
+
+        const component = renderer.create(
+          <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
+        );
+
+        expect(component.toJSON()).toBeNull();
+      });
+
+      it('returns null on iOS 14', () => {
+        (Platform as any).Version = '14.0';
+
+        const component = renderer.create(
+          <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
+        );
+
+        expect(component.toJSON()).toBeNull();
+      });
+
+      it('renders on iOS 16', () => {
+        (Platform as any).Version = '16.0';
+
+        const component = renderer.create(
+          <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
+        );
+
+        expect(component.toJSON()).toBeTruthy();
+      });
+
+      it('renders on iOS 17', () => {
+        (Platform as any).Version = '17.0';
+
+        const component = renderer.create(
+          <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
+        );
+
+        expect(component.toJSON()).toBeTruthy();
+      });
+
+      it('handles iOS version with decimal correctly', () => {
+        (Platform as any).Version = '16.4.1';
+
+        const component = renderer.create(
+          <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
+        );
+
+        expect(component.toJSON()).toBeTruthy();
+      });
+
+      it('does not warn when returning null for iOS < 16', () => {
+        (Platform as any).Version = '15.0';
+
+        const component = renderer.create(
+          <AcceleratedCheckoutButtons cartId={'gid://shopify/Cart/123'} />,
+        );
+
+        expect(component.toJSON()).toBeNull();
+        expect(mockLog).not.toHaveBeenCalled();
+        expect(mockError).not.toHaveBeenCalled();
+      });
     });
 
     it('renders without crashing with cartId', () => {

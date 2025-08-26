@@ -271,7 +271,7 @@ export const AcceleratedCheckoutButtons: React.FC<
   }, [isCart, isVariant, props]);
 
   // Only render on iOS for now since ShopifyAcceleratedCheckouts is iOS-only
-  if (Platform.OS !== 'ios') {
+  if (Platform.OS !== 'ios' || parseInt(Platform.Version, 10) < 16) {
     return null;
   }
 
