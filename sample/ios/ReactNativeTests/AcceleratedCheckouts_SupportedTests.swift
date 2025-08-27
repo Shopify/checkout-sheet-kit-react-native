@@ -286,17 +286,12 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     func testApplePayLabelMapping_knownAndUnknownKeys() throws {
-        let knownKeys = [
-            "addMoney", "book", "buy", "checkout", "continue", "contribute", "donate",
-            "inStore", "order", "plain", "reload", "rent", "setUp", "subscribe",
-            "support", "tip", "topUp"
-        ]
-
-        for key in knownKeys {
-            XCTAssertNotNil(PayWithApplePayButtonLabel(fromString: key))
-        }
-
-        XCTAssertNil(PayWithApplePayButtonLabel(fromString: "unknown"))
+        XCTAssertTrue(PayWithApplePayButtonLabel.from("buy") == .buy)
+        XCTAssertTrue(PayWithApplePayButtonLabel.from("checkout") == .checkout)
+        XCTAssertTrue(PayWithApplePayButtonLabel.from("continue") == .continue)
+        XCTAssertTrue(PayWithApplePayButtonLabel.from("plain") == .plain)
+        XCTAssertTrue(PayWithApplePayButtonLabel.from("unknown") == .plain)
+        XCTAssertTrue(PayWithApplePayButtonLabel.from("unknown", fallback: .buy) == .buy)
     }
 }
 
