@@ -7921,10 +7921,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.8.1":
-  version: 16.8.1
-  resolution: "graphql@npm:16.8.1"
-  checksum: 10c0/129c318156b466f440914de80dbf7bc67d17f776f2a088a40cb0da611d19a97c224b1c6d2b13cbcbc6e5776e45ed7468b8432f9c3536724e079b44f1a3d57a8a
+"graphql@npm:^16.8.2":
+  version: 16.11.0
+  resolution: "graphql@npm:16.11.0"
+  checksum: 10c0/124da7860a2292e9acf2fed0c71fc0f6a9b9ca865d390d112bdd563c1f474357141501c12891f4164fe984315764736ad67f705219c62f7580681d431a85db88
   languageName: node
   linkType: hard
 
@@ -11862,7 +11862,7 @@ __metadata:
     "@shopify/checkout-sheet-kit": "link:../modules/@shopify/checkout-sheet-kit"
     "@types/react-native-vector-icons": "npm:^6.4.18"
     babel-plugin-module-resolver: "npm:^5.0.0"
-    graphql: "npm:^16.8.1"
+    graphql: "npm:^16.8.2"
     jotai: "npm:^2.13.1"
     react-native-config: "npm:^1.5.7"
     react-native-dotenv: "npm:^3.4.11"
