@@ -130,8 +130,6 @@ jobs:
           echo "Xcode Version: $(xcrun xcodebuild -version)"
       - name: Setup iOS Simulator
         uses: ./.github/actions/setup-simulator
-        with:
-          major: 15
 
       - name: Setup
         uses: ./.github/actions/setup
