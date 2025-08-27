@@ -13,6 +13,8 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		6A1F48E72B16900600BA591C /* ShopifyCheckoutSheetKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1F48E62B16900600BA591C /* ShopifyCheckoutSheetKitTests.swift */; };
 		6A86196D2BF36EB900E5EE1A /* CheckoutDidFailTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A86196C2BF36EB900E5EE1A /* CheckoutDidFailTests.swift */; };
+		6AEEAAB22C00010100E5EE1B /* AcceleratedCheckouts_SupportedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AEEAAB02C00010100E5EE1B /* AcceleratedCheckouts_SupportedTests.swift */; };
+		6AEEAAB32C00010100E5EE1B /* AcceleratedCheckouts_UnsupportedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AEEAAB12C00010100E5EE1B /* AcceleratedCheckouts_UnsupportedTests.swift */; };
 		6AFAD2D22BA9DEF8001F9644 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 6AFAD2D12BA9DEF8001F9644 /* Localizable.xcstrings */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9403907249B4B6D988902B48 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1939D329B2C035D1A15E316B /* PrivacyInfo.xcprivacy */; };
@@ -47,6 +49,8 @@
 		6A8D64CF2AF25C1200FE4E4A /* ReactNative.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ReactNative.entitlements; path = ReactNative/ReactNative.entitlements; sourceTree = "<group>"; };
 		6AABC1942B17417E008240EB /* OpenSSL.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OpenSSL.xcframework; path = "Pods/OpenSSL-Universal/Frameworks/OpenSSL.xcframework"; sourceTree = "<group>"; };
 		6AAEC3572B067AD500C7099B /* Entypo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
+		6AEEAAB02C00010100E5EE1B /* AcceleratedCheckouts_SupportedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcceleratedCheckouts_SupportedTests.swift; sourceTree = "<group>"; };
+		6AEEAAB12C00010100E5EE1B /* AcceleratedCheckouts_UnsupportedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcceleratedCheckouts_UnsupportedTests.swift; sourceTree = "<group>"; };
 		6AF2B3762B0BCA6600C6CE4F /* ReactNative-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ReactNative-Bridging-Header.h"; sourceTree = "<group>"; };
 		6AFAD2D12BA9DEF8001F9644 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = Localizable.xcstrings; path = ReactNative/Localizable.xcstrings; sourceTree = "<group>"; };
 		6AFC2CB62B0D5814003B5A63 /* libShopifyCheckoutSheetKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libShopifyCheckoutSheetKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -82,6 +86,8 @@
 				00E356F01AD99517003FC87E /* Supporting Files */,
 				6A1F48E62B16900600BA591C /* ShopifyCheckoutSheetKitTests.swift */,
 				6A86196C2BF36EB900E5EE1A /* CheckoutDidFailTests.swift */,
+				6AEEAAB02C00010100E5EE1B /* AcceleratedCheckouts_SupportedTests.swift */,
+				6AEEAAB12C00010100E5EE1B /* AcceleratedCheckouts_UnsupportedTests.swift */,
 			);
 			path = ReactNativeTests;
 			sourceTree = "<group>";
@@ -415,6 +421,8 @@
 			files = (
 				6A1F48E72B16900600BA591C /* ShopifyCheckoutSheetKitTests.swift in Sources */,
 				6A86196D2BF36EB900E5EE1A /* CheckoutDidFailTests.swift in Sources */,
+				6AEEAAB22C00010100E5EE1B /* AcceleratedCheckouts_SupportedTests.swift in Sources */,
+				6AEEAAB32C00010100E5EE1B /* AcceleratedCheckouts_UnsupportedTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

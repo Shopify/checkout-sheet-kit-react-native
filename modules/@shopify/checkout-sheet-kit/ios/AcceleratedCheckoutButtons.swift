@@ -56,9 +56,14 @@ class AcceleratedCheckoutConfiguration {
 
 @objc(RCTAcceleratedCheckoutButtonsManager)
 class RCTAcceleratedCheckoutButtonsManager: RCTViewManager {
+    /// Internal property used in tests to simulate legacy devices
+    internal var supported: Bool = true
+
     override func view() -> UIView! {
-        if #available(iOS 16.0, *) {
-            return RCTAcceleratedCheckoutButtonsView()
+        if supported {
+            if #available(iOS 16.0, *) {
+                return RCTAcceleratedCheckoutButtonsView()
+            }
         }
 
         // Return an empty view for iOS < 16.0 (silent fallback)

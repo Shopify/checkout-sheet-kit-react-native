@@ -11,18 +11,6 @@ env:
   JAVA_VERSION: '22'
 
 jobs:
-  lint-swift:
-    name: Lint Swift code
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-
-      - name: Run SwiftLint
-        uses: norio-nomura/action-swiftlint@9f4dcd7fd46b4e75d7935cf2f4df406d5cae3684 # 3.2.1
-        with:
-          args: --strict
-
   license:
     name: Verify license headers
     runs-on: ubuntu-latest
@@ -55,6 +43,11 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Run SwiftLint
+        uses: norio-nomura/action-swiftlint@9f4dcd7fd46b4e75d7935cf2f4df406d5cae3684 # 3.2.1
+        with:
+          args: --strict
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -123,10 +116,10 @@ jobs:
           yarn sample test:android --no-daemon
 
   test-ios:
-    name: Run iOS Tests
-    runs-on: macos-15-xlarge
+    name: Run Swift Tests
+    runs-on: macos-15
     timeout-minutes: 20
-    needs: [lint, lint-swift, test]
+    needs: [lint, test]
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -144,15 +137,6 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup
-
-      - name: Check turbo cache
-        uses: ./.github/actions/use-turbo-cache
-
-      - name: Check build cache
-        run: |
-          CACHE_STATUS=$(./scripts/check_cache sample test:ios)
-          echo "[sample] build:ios - $CACHE_STATUS"
-          echo "turbo_cache_hit=$CACHE_STATUS" >> $GITHUB_ENV
 
       - name: Install cocoapods
         uses: ./.github/actions/install-cocoapods

@@ -37,13 +37,8 @@ extension PayWithApplePayButtonLabel {
         return map[string] ?? .plain
     }
 
-    init?(fromString string: String?) {
-        guard let string,
-              let label = Self.map[string]
-        else {
-            return nil
-        }
-        self = label
+    public static func == (lhs: PayWithApplePayButtonLabel, rhs: PayWithApplePayButtonLabel) -> Bool {
+        return String(describing: lhs) == String(describing: rhs)
     }
 
     private static let map: [String: PayWithApplePayButtonLabel] = [
