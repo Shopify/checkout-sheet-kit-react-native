@@ -28,19 +28,18 @@ import SwiftUI
 @testable import ShopifyCheckoutSheetKit
 import XCTest
 
+@available(iOS 16.0, *)
 class AcceleratedCheckouts_SupportedTests: XCTestCase {
     private var shopifyCheckoutSheetKit: RCTShopifyCheckoutSheetKit!
 
     override func setUp() {
         super.setUp()
-        guard #available(iOS 16.0, *) else { return }
         shopifyCheckoutSheetKit = RCTShopifyCheckoutSheetKit()
         resetSharedConfigurations()
         resetCheckoutKitDefaults()
     }
 
     override func tearDown() {
-        guard #available(iOS 16.0, *) else { return }
         resetSharedConfigurations()
         shopifyCheckoutSheetKit = nil
         super.tearDown()
@@ -59,7 +58,6 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     private func configureAcceleratedCheckouts(includeApplePay: Bool) {
-        guard #available(iOS 16.0, *) else { return }
         let expectation = self.expectation(description: "configureAcceleratedCheckouts")
 
         let storefrontDomain = "example.myshopify.com"
@@ -84,7 +82,6 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     func testConfigureAcceleratedCheckoutsSetsSharedConfigsOnIOS16() throws {
-        guard #available(iOS 16.0, *) else { throw XCTSkip("Requires iOS 16+") }
         let notificationExpectation = expectation(forNotification: Notification.Name("AcceleratedCheckoutConfigurationUpdated"), object: nil, handler: nil)
         configureAcceleratedCheckouts(includeApplePay: true)
         wait(for: [notificationExpectation], timeout: 2)
@@ -93,7 +90,6 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     func testIsAcceleratedCheckoutAvailableBeforeAndAfterConfig() throws {
-        guard #available(iOS 16.0, *) else { throw XCTSkip("Requires iOS 16+") }
         let beforeExpectation = expectation(description: "isAcceleratedCheckoutAvailable before")
         var beforeValue: Bool = true
         shopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable({ value in
@@ -116,7 +112,6 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     func testIsApplePayAvailableRequiresApplePayConfig() throws {
-        guard #available(iOS 16.0, *) else { throw XCTSkip("Requires iOS 16+") }
         let beforeExpectation = expectation(description: "isApplePayAvailable before")
         var beforeValue: Bool = true
         shopifyCheckoutSheetKit.isApplePayAvailable({ value in
@@ -150,7 +145,6 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     func testButtonsViewHeightZeroWhenWalletsExplicitEmpty() throws {
-        guard #available(iOS 16.0, *) else { throw XCTSkip("Requires iOS 16+") }
         configureAcceleratedCheckouts(includeApplePay: false)
 
         let viewExpectation = expectation(description: "onSizeChange height 0 for empty wallets")
@@ -170,7 +164,6 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     func testButtonsViewHeightReflectsWalletCountWhenWalletsProvided() throws {
-        guard #available(iOS 16.0, *) else { throw XCTSkip("Requires iOS 16+") }
         configureAcceleratedCheckouts(includeApplePay: false)
 
         let expectedHeight: Double = (48 * 2 + 8).doubleValue
@@ -194,7 +187,6 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     func testButtonsViewIgnoresUnknownWallets() throws {
-        guard #available(iOS 16.0, *) else { throw XCTSkip("Requires iOS 16+") }
         configureAcceleratedCheckouts(includeApplePay: false)
 
         let expectedHeight: Double = (48 * 2 + 8).doubleValue
@@ -218,7 +210,6 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     func testButtonsViewEmptyWhenCheckoutIdentifierMissingOrInvalid() throws {
-        guard #available(iOS 16.0, *) else { throw XCTSkip("Requires iOS 16+") }
         configureAcceleratedCheckouts(includeApplePay: false)
 
         let missingExpectation = expectation(description: "height 0 when identifier missing")
@@ -248,7 +239,6 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     func testButtonsViewAcceptsCartIdWithWhitespace() throws {
-        guard #available(iOS 16.0, *) else { throw XCTSkip("Requires iOS 16+") }
         configureAcceleratedCheckouts(includeApplePay: false)
 
         let expectedHeight: Double = (48 * 2 + 8).doubleValue
@@ -271,7 +261,6 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     func testButtonsViewAcceptsVariantAndQuantity() throws {
-        guard #available(iOS 16.0, *) else { throw XCTSkip("Requires iOS 16+") }
         configureAcceleratedCheckouts(includeApplePay: false)
 
         let expectedHeight: Double = (48 * 2 + 8).doubleValue
@@ -297,7 +286,6 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     func testApplePayLabelMapping_knownAndUnknownKeys() throws {
-        guard #available(iOS 16.0, *) else { throw XCTSkip("Requires iOS 16+") }
         let knownKeys = [
             "addMoney", "book", "buy", "checkout", "continue", "contribute", "donate",
             "inStore", "order", "plain", "reload", "rent", "setUp", "subscribe",
