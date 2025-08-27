@@ -28,6 +28,12 @@ import SwiftUI
 @testable import ShopifyCheckoutSheetKit
 import XCTest
 
+struct WalletButtons {
+  static let zero = Double(0)
+  static let one = Double(48)
+  static let two = Double(104)
+}
+
 @available(iOS 16.0, *)
 class AcceleratedCheckouts_SupportedTests: XCTestCase {
     private var shopifyCheckoutSheetKit: RCTShopifyCheckoutSheetKit!
@@ -45,7 +51,6 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         super.tearDown()
     }
 
-    @available(iOS 16.0, *)
     private func resetSharedConfigurations() {
         AcceleratedCheckoutConfiguration.shared.configuration = nil
         AcceleratedCheckoutConfiguration.shared.applePayConfiguration = nil
@@ -172,7 +177,7 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         view.onSizeChange = { payload in
             guard let payload = payload else { return }
             let height = (payload["height"] as? NSNumber)?.doubleValue ?? 0
-            if height == 0 {
+            if height == WalletButtons.zero {
                 viewExpectation.fulfill()
             }
         }
@@ -184,7 +189,6 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     func testButtonsViewHeightReflectsWalletCountWhenWalletsProvided() throws {
         configureAcceleratedCheckouts(includeApplePay: false)
 
-        let expectedHeight: Double = (48 * 2 + 8).doubleValue
         let viewExpectation = expectation(description: "onSizeChange height for two wallets")
         var fulfilled = false
 
@@ -193,8 +197,10 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         view.onSizeChange = { payload in
             if fulfilled { return }
             guard let payload = payload else { return }
+
             let height = (payload["height"] as? NSNumber)?.doubleValue ?? -1
-            if height == expectedHeight {
+
+            if height == WalletButtons.two {
                 fulfilled = true
                 viewExpectation.fulfill()
             }
@@ -204,11 +210,10 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         wait(for: [viewExpectation], timeout: 2)
     }
 
-    func testButtonsViewIgnoresUnknownWallets() throws {
+    func testButtonsViewEmptyWhenContainingUnknownWallets() throws {
         configureAcceleratedCheckouts(includeApplePay: false)
 
-        let expectedHeight: Double = (48 * 2 + 8).doubleValue
-        let viewExpectation = expectation(description: "onSizeChange height ignores unknown wallets")
+        let viewExpectation = expectation(description: "onSizeChange height 0 when contains unknown wallet")
         var fulfilled = false
 
         let view = RCTAcceleratedCheckoutButtonsView()
@@ -216,8 +221,10 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         view.onSizeChange = { payload in
             if fulfilled { return }
             guard let payload = payload else { return }
+
             let height = (payload["height"] as? NSNumber)?.doubleValue ?? -1
-            if height == expectedHeight {
+
+            if height == WalletButtons.zero {
                 fulfilled = true
                 viewExpectation.fulfill()
             }
@@ -225,6 +232,7 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         view.wallets = ["applePay", "bogus", "shopPay"]
 
         wait(for: [viewExpectation], timeout: 2)
+        XCTAssertNil(view.instance)
     }
 
     func testButtonsViewEmptyWhenCheckoutIdentifierMissingOrInvalid() throws {
@@ -259,16 +267,16 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     func testButtonsViewAcceptsCartIdWithWhitespace() throws {
         configureAcceleratedCheckouts(includeApplePay: false)
 
-        let expectedHeight: Double = (48 * 2 + 8).doubleValue
-        let viewExpectation = expectation(description: "cartId trimmed renders non-zero height")
+        let viewExpectation = expectation(description: "trimmed cartId renders non-zero height")
         var fulfilledCart = false
 
         let view = RCTAcceleratedCheckoutButtonsView()
+        view.wallets = ["applePay", "shopPay"]
         view.onSizeChange = { payload in
             if fulfilledCart { return }
             guard let payload = payload else { return }
             let height = (payload["height"] as? NSNumber)?.doubleValue ?? -1
-            if height == expectedHeight {
+            if height == WalletButtons.two {
                 fulfilledCart = true
                 viewExpectation.fulfill()
             }
@@ -276,12 +284,12 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         view.checkoutIdentifier = ["cartId": "  gid://shopify/Cart/1  "]
 
         wait(for: [viewExpectation], timeout: 2)
+        XCTAssertNotNil(view.instance)
     }
 
-    func testButtonsViewAcceptsVariantAndQuantity() throws {
+    func testButtonsViewAcceptsVariantAndQuantity_withDefaultWallets() throws {
         configureAcceleratedCheckouts(includeApplePay: false)
 
-        let expectedHeight: Double = (48 * 2 + 8).doubleValue
         let viewExpectation = expectation(description: "variant + quantity renders non-zero height")
         var fulfilledVariant = false
 
@@ -289,8 +297,11 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         view.onSizeChange = { payload in
             if fulfilledVariant { return }
             guard let payload = payload else { return }
+
             let height = (payload["height"] as? NSNumber)?.doubleValue ?? -1
-            if height == expectedHeight {
+
+            /// "Wallets" prop is nil, so default rendered (2 buttons)
+            if height == WalletButtons.two {
                 fulfilledVariant = true
                 viewExpectation.fulfill()
             }
@@ -301,6 +312,76 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         ]
 
         wait(for: [viewExpectation], timeout: 2)
+        XCTAssertNotNil(view.instance)
+    }
+
+    func testButtonsViewAcceptsVariantAndQuantity_withExplicitWallets() throws {
+        configureAcceleratedCheckouts(includeApplePay: false)
+
+        let viewExpectation = expectation(description: "variant + quantity renders non-zero height")
+        var fulfilledVariant = false
+
+        let view = RCTAcceleratedCheckoutButtonsView()
+        view.wallets = ["shopPay"]
+        view.onSizeChange = { payload in
+            if fulfilledVariant { return }
+            guard let payload = payload else { return }
+
+            let height = (payload["height"] as? NSNumber)?.doubleValue ?? -1
+
+            /// Wallets prop is explicitly set, so must be respected
+            if height == WalletButtons.one {
+                fulfilledVariant = true
+                viewExpectation.fulfill()
+            }
+        }
+        view.checkoutIdentifier = [
+            "variantId": "gid://shopify/ProductVariant/123",
+            "quantity": NSNumber(value: 2)
+        ]
+
+        wait(for: [viewExpectation], timeout: 2)
+        XCTAssertNotNil(view.instance)
+    }
+
+    func testButtonsViewRendersEmptyWhenWalletsArrayIsEmpty() throws {
+        configureAcceleratedCheckouts(includeApplePay: false)
+
+        let viewExpectation = expectation(description: "variant + quantity renders non-zero height")
+        var fulfilledVariant = false
+
+        let view = RCTAcceleratedCheckoutButtonsView()
+        view.wallets = []
+        view.onSizeChange = { payload in
+            if fulfilledVariant { return }
+            guard let payload = payload else { return }
+
+            let height = (payload["height"] as? NSNumber)?.doubleValue ?? -1
+
+            /// Wallets prop is explicitly set, so must be respected
+            if height == WalletButtons.zero {
+                fulfilledVariant = true
+                viewExpectation.fulfill()
+            }
+        }
+        view.checkoutIdentifier = [
+            "variantId": "gid://shopify/ProductVariant/123",
+            "quantity": NSNumber(value: 2)
+        ]
+
+        wait(for: [viewExpectation], timeout: 2)
+        XCTAssertNil(view.instance)
+    }
+
+    func testButtonsViewHeightZeroWhenWalletsMapToEmptyUnknowns() throws {
+        configureAcceleratedCheckouts(includeApplePay: false)
+
+        let view = RCTAcceleratedCheckoutButtonsView()
+        view.wallets = ["bogus", "unknown", "invalid"]
+
+        let height = view.intrinsicContentSize.height
+        XCTAssertEqual(height, WalletButtons.zero)
+        XCTAssertNil(view.instance)
     }
 
     func testApplePayLabelMapping_knownAndUnknownKeys() throws {
@@ -310,6 +391,32 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         XCTAssertTrue(PayWithApplePayButtonLabel.from("plain") == .plain)
         XCTAssertTrue(PayWithApplePayButtonLabel.from("unknown") == .plain)
         XCTAssertTrue(PayWithApplePayButtonLabel.from("unknown", fallback: .buy) == .buy)
+    }
+
+    func testConfigureAcceleratedCheckoutsResolvesFalseForInvalidApplePayContactField() throws {
+        let expectation = self.expectation(description: "configureAcceleratedCheckouts invalid contact field resolves false")
+        var resolved: Bool = true
+
+        let storefrontDomain = "example.myshopify.com"
+        let accessToken = "shpat_test_token"
+
+        shopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+            storefrontDomain,
+            storefrontAccessToken: accessToken,
+            customerEmail: nil,
+            customerPhoneNumber: nil,
+            customerAccessToken: nil,
+            applePayMerchantIdentifier: "merchant.com.shopify.reactnative.tests",
+            applyPayContactFields: ["email", "not_a_field"],
+            resolve: { value in
+                resolved = (value as? Bool) ?? true
+                expectation.fulfill()
+            },
+            reject: { _, _, _ in }
+        )
+
+        wait(for: [expectation], timeout: 2)
+        XCTAssertEqual(resolved, false)
     }
 }
 

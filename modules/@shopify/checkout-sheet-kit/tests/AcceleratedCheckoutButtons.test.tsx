@@ -250,7 +250,7 @@ describe('AcceleratedCheckoutButtons', () => {
         nativeEvent: {state: 'unexpected'},
       });
       expect(onRenderStateChange).toHaveBeenCalledWith({
-        state: RenderState.Unknown,
+        state: RenderState.Error,
       });
     });
 
@@ -367,6 +367,20 @@ describe('AcceleratedCheckoutButtons', () => {
       expect(RenderState.Loading).toBe('loading');
       expect(RenderState.Rendered).toBe('rendered');
       expect(RenderState.Error).toBe('error');
+    });
+
+    it('logs unexpected render states', async () => {
+      const {getByTestId} = render(
+        <AcceleratedCheckoutButtons cartId="gid://shopify/Cart/123" />,
+      );
+      const nativeComponent = getByTestId('accelerated-checkout-buttons');
+      nativeComponent.props.onRenderStateChange({
+        nativeEvent: {state: 'unexpected'},
+      });
+
+      expect(mockError).toHaveBeenCalledWith(
+        '[ShopifyAcceleratedCheckouts] Invalid render state: unexpected',
+      );
     });
   });
 });

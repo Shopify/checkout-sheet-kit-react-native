@@ -35,14 +35,11 @@ export enum RenderState {
   Loading = 'loading',
   Rendered = 'rendered',
   Error = 'error',
-  Unknown = 'unknown',
 }
 
 export type RenderStateChangeEvent =
   | {state: RenderState.Error; reason?: string}
-  | {state: RenderState.Loading}
-  | {state: RenderState.Rendered}
-  | {state: RenderState.Unknown};
+  | {state: Omit<RenderState, 'Error'>};
 
 export enum ApplePayLabel {
   addMoney = 'addMoney',
@@ -328,10 +325,20 @@ export const AcceleratedCheckoutButtons: React.FC<
 export default AcceleratedCheckoutButtons;
 
 function validRenderState(state: string): RenderState {
-  return (
-    Object.values(RenderState).find(renderState => renderState === state) ??
-    RenderState.Unknown
-  );
+  switch (state) {
+    case RenderState.Loading:
+      return RenderState.Loading;
+    case RenderState.Rendered:
+      return RenderState.Rendered;
+    case RenderState.Error:
+      return RenderState.Error;
+    default:
+      // eslint-disable-next-line no-console
+      console.error(
+        `[ShopifyAcceleratedCheckouts] Invalid render state: ${state}`,
+      );
+      return RenderState.Error;
+  }
 }
 
 function isCartProps(
