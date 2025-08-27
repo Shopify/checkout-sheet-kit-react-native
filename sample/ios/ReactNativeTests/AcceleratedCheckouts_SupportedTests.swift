@@ -57,7 +57,7 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         ShopifyCheckoutSheetKit.configuration.closeButtonTintColor = nil
     }
 
-    private func configureAcceleratedCheckouts(includeApplePay: Bool) {
+    private func configureAcceleratedCheckouts(includeApplePay: Bool, customerAccessToken: String? = nil) {
         let expectation = self.expectation(description: "configureAcceleratedCheckouts")
 
         let storefrontDomain = "example.myshopify.com"
@@ -72,6 +72,7 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
             storefrontAccessToken: accessToken,
             customerEmail: email,
             customerPhoneNumber: phone,
+            customerAccessToken: customerAccessToken,
             applePayMerchantIdentifier: merchantIdentifier,
             applyPayContactFields: contactFields,
             resolve: { _ in expectation.fulfill() },
@@ -142,6 +143,23 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         }, reject: { _, _, _ in })
         wait(for: [afterExpectation], timeout: 2)
         XCTAssertEqual(afterValue, true)
+    }
+
+    func testConfigureAcceleratedCheckoutsStoresCustomerAccessToken() throws {
+        let token = "customer-access-token-123"
+        configureAcceleratedCheckouts(includeApplePay: false, customerAccessToken: token)
+        guard let config = AcceleratedCheckoutConfiguration.shared.configuration else {
+          return XCTFail("configuration missing")
+        }
+        XCTAssertEqual(config.customer?.copy().customerAccessToken, token)
+    }
+
+    func testConfigureAcceleratedCheckoutsWithNilCustomerAccessToken() throws {
+        configureAcceleratedCheckouts(includeApplePay: false, customerAccessToken: nil)
+        guard let config = AcceleratedCheckoutConfiguration.shared.configuration else {
+          return XCTFail("configuration missing")
+        }
+        XCTAssertNil(config.customer?.copy().customerAccessToken)
     }
 
     func testButtonsViewHeightZeroWhenWalletsExplicitEmpty() throws {

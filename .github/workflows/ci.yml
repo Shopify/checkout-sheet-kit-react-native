@@ -117,7 +117,7 @@ jobs:
 
   test-ios:
     name: Run Swift Tests
-    runs-on: macos-15
+    runs-on: macos-15-xlarge
     timeout-minutes: 20
     needs: [lint, test]
     steps:

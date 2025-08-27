@@ -691,6 +691,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       customer: {
         email: 'test@example.com',
         phoneNumber: '+1234567890',
+        accessToken: 'customer-access-token',
       },
       wallets: {
         applePay: {
@@ -725,6 +726,7 @@ describe('ShopifyCheckoutSheetKit', () => {
           'shpat_test_token',
           'test@example.com',
           '+1234567890',
+          'customer-access-token',
           'merchant.com.test',
           ['email', 'phone'],
         );
@@ -747,6 +749,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         ).toHaveBeenCalledWith(
           'test-shop.myshopify.com',
           'shpat_test_token',
+          null,
           null,
           null,
           null,

@@ -232,6 +232,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
           config.storefrontAccessToken,
           config.customer?.email || null,
           config.customer?.phoneNumber || null,
+          config.customer?.accessToken || null,
           config.wallets?.applePay?.merchantIdentifier || null,
           config.wallets?.applePay?.contactFields || [],
         );
