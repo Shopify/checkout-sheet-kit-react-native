@@ -4483,18 +4483,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-navigation/elements@npm:^1.3.22":
-  version: 1.3.22
-  resolution: "@react-navigation/elements@npm:1.3.22"
-  peerDependencies:
-    "@react-navigation/native": ^6.0.0
-    react: "*"
-    react-native: "*"
-    react-native-safe-area-context: ">= 3.0.0"
-  checksum: 10c0/e927e817df87145c9d3ef719d01bc1f2b8a3ecfa334a2803f6d47563e865a9c5f49c8f4ca63fbe45904cc08558e0b70bbc11d71cd62f9bff9d9724ea6a8a857d
-  languageName: node
-  linkType: hard
-
 "@react-navigation/elements@npm:^1.3.31":
   version: 1.3.31
   resolution: "@react-navigation/elements@npm:1.3.31"
@@ -4547,11 +4535,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-navigation/stack@npm:^6.3.21":
-  version: 6.3.21
-  resolution: "@react-navigation/stack@npm:6.3.21"
+"@react-navigation/stack@npm:^6.3.29":
+  version: 6.4.1
+  resolution: "@react-navigation/stack@npm:6.4.1"
   dependencies:
-    "@react-navigation/elements": "npm:^1.3.22"
+    "@react-navigation/elements": "npm:^1.3.31"
     color: "npm:^4.2.3"
     warn-once: "npm:^0.1.0"
   peerDependencies:
@@ -4561,7 +4549,7 @@ __metadata:
     react-native-gesture-handler: ">= 1.0.0"
     react-native-safe-area-context: ">= 3.0.0"
     react-native-screens: ">= 3.0.0"
-  checksum: 10c0/c976c410e099e580ca5da752942ed5aa2214deaa8a176143dfc7629796c448f800ac2ed7c3957f7df6e665ab299c11f1cb4a69a85cf5d5911fac2e118c5722ed
+  checksum: 10c0/6bc28e5e4e99161a538c1cb9752d70727704ca7b4137e71a44992dfe2ff6e0a3028353184424af1457ec59a4ea6ef9757fc99203280fd7339f36e61b80c9050a
   languageName: node
   linkType: hard
 
@@ -11858,7 +11846,7 @@ __metadata:
     "@react-navigation/bottom-tabs": "npm:^6.5.11"
     "@react-navigation/native": "npm:^6.1.10"
     "@react-navigation/native-stack": "npm:^6.11.0"
-    "@react-navigation/stack": "npm:^6.3.21"
+    "@react-navigation/stack": "npm:^6.3.29"
     "@shopify/checkout-sheet-kit": "link:../modules/@shopify/checkout-sheet-kit"
     "@types/react-native-vector-icons": "npm:^6.4.18"
     babel-plugin-module-resolver: "npm:^5.0.0"
