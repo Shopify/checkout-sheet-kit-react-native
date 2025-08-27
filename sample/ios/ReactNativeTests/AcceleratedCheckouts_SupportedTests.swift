@@ -210,10 +210,10 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         wait(for: [viewExpectation], timeout: 2)
     }
 
-    func testButtonsViewIgnoresUnknownWallets() throws {
+    func testButtonsViewEmptyWhenContainingUnknownWallets() throws {
         configureAcceleratedCheckouts(includeApplePay: false)
 
-        let viewExpectation = expectation(description: "onSizeChange height ignores unknown wallets")
+        let viewExpectation = expectation(description: "onSizeChange height 0 when contains unknown wallet")
         var fulfilled = false
 
         let view = RCTAcceleratedCheckoutButtonsView()
@@ -224,7 +224,7 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
 
             let height = (payload["height"] as? NSNumber)?.doubleValue ?? -1
 
-            if height == WalletButtons.two {
+            if height == WalletButtons.zero {
                 fulfilled = true
                 viewExpectation.fulfill()
             }
@@ -232,6 +232,7 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         view.wallets = ["applePay", "bogus", "shopPay"]
 
         wait(for: [viewExpectation], timeout: 2)
+        XCTAssertNil(view.instance)
     }
 
     func testButtonsViewEmptyWhenCheckoutIdentifierMissingOrInvalid() throws {

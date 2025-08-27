@@ -330,7 +330,13 @@ function validRenderState(state: string): RenderState {
       return RenderState.Loading;
     case RenderState.Rendered:
       return RenderState.Rendered;
+    case RenderState.Error:
+      return RenderState.Error;
     default:
+      // eslint-disable-next-line no-console
+      console.error(
+        `[ShopifyAcceleratedCheckouts] Invalid render state: ${state}`,
+      );
       return RenderState.Error;
   }
 }

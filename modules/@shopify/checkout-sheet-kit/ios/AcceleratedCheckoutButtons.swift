@@ -134,7 +134,11 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
     /// If `wallets` is provided and empty, render nothing. No fallback here; SDK provides defaults.
     private var shopifyWallets: [Wallet] {
         guard let providedWallets = wallets else { return [] }
-        return convertToShopifyWallets(providedWallets)
+        do {
+            return try convertToShopifyWallets(providedWallets)
+        } catch {
+            return []
+        }
     }
 
     override init(frame: CGRect) {
@@ -369,21 +373,23 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         onSizeChange?(["height": 0])
     }
 
+    /// Cases for returning 0 height
+    /// - No buttons instance available
+    /// - Wallets is explicitly an empty array
+    /// - OR wallets is provided and maps to empty
     private func calculateRequiredHeight() -> CGFloat {
-        /// If wallets prop is explicitly provided and maps to empty, height is zero
-        if wallets != nil, shopifyWallets.isEmpty, instance == nil {
+        guard
+            let instance,
+            wallets?.isEmpty != true,
+            !(wallets != nil && shopifyWallets.isEmpty)
+        else {
             return 0
         }
 
-        /// If wallets are provided and non-empty, use their count
-        if wallets != nil, !shopifyWallets.isEmpty {
-            let numberOfWallets = max(shopifyWallets.count, 1)
-            let buttonHeight: CGFloat = 48
-            let gapHeight: CGFloat = 8
-            return (CGFloat(numberOfWallets) * buttonHeight) + (CGFloat(numberOfWallets - 1) * gapHeight)
-        }
+        let numberOfWallets = shopifyWallets.isEmpty
+            ? instance.wallets.count
+            : max(shopifyWallets.count, 1)
 
-        let numberOfWallets = instance?.wallets.count ?? 0
         let buttonHeight: CGFloat = 48
         let gapHeight: CGFloat = 8
         return (CGFloat(numberOfWallets) * buttonHeight) + (CGFloat(numberOfWallets - 1) * gapHeight)
@@ -400,9 +406,15 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         }
     }
 
-    private func convertToShopifyWallets(_ walletStrings: [String]) -> [Wallet] {
-        return walletStrings.compactMap { walletString in
-            return Wallet(rawValue: walletString)
+    private func convertToShopifyWallets(_ walletStrings: [String]) throws -> [Wallet] {
+        return try walletStrings.compactMap { walletString in
+            guard let wallet = Wallet(rawValue: walletString), wallet != nil else {
+                let message = "Unknown wallet option: \(String(describing: walletString))"
+                print("[ShopifyAcceleratedCheckouts] \(message)")
+                throw NSError(domain: "ShopifyAcceleratedCheckouts", code: 1, userInfo: ["message": message])
+            }
+
+            return wallet
         }
     }
 }
