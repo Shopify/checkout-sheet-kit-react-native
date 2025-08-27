@@ -124,6 +124,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
+      - name: Switch to Xcode 16.4
+        run: |
+          sudo xcode-select --switch /Applications/Xcode_16.4.app
+
       - name: Display Current Xcode Information
         run: |
           echo "Xcode Path: $(xcode-select -p)"
@@ -133,15 +137,6 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup
-
-      - name: Check turbo cache
-        uses: ./.github/actions/use-turbo-cache
-
-      - name: Check build cache
-        run: |
-          CACHE_STATUS=$(./scripts/check_cache sample test:ios)
-          echo "[sample] test:ios - $CACHE_STATUS"
-          echo "turbo_cache_hit=$CACHE_STATUS" >> $GITHUB_ENV
 
       - name: Install cocoapods
         uses: ./.github/actions/install-cocoapods
