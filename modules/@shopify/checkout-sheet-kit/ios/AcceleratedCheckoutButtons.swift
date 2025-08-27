@@ -83,7 +83,7 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
     private var hostingController: UIHostingController<AnyView>?
     private var configuration: ShopifyAcceleratedCheckouts.Configuration?
     private weak var parentViewController: UIViewController?
-    private var instance: AcceleratedCheckoutButtons?
+    internal var instance: AcceleratedCheckoutButtons?
 
     @objc var onSizeChange: RCTDirectEventBlock?
 
@@ -132,7 +132,7 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
 
     /// Compute the wallets to render based on the `wallets` prop.
     /// If `wallets` is provided and empty, render nothing. No fallback here; SDK provides defaults.
-    private var walletsToRender: [Wallet] {
+    private var shopifyWallets: [Wallet] {
         guard let providedWallets = wallets else { return [] }
         return convertToShopifyWallets(providedWallets)
     }
@@ -244,17 +244,19 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
     }
 
     private func updateView() {
+        let walletsEmpty = wallets != nil && shopifyWallets.isEmpty
+
         guard
             let config = configuration,
-            let wallets, wallets != nil, wallets.count > 0,
-            let checkoutIdentifierDictionary = checkoutIdentifier as? [String: Any]
+            let checkoutIdentifierDictionary = checkoutIdentifier as? [String: Any],
+            !walletsEmpty
         else {
             renderEmptyView()
             return
         }
 
         /// Map wallets if provided; otherwise let the kit decide the defaults
-        let shopifyWallets = convertToShopifyWallets(wallets)
+        let shopifyWallets: [Wallet]? = wallets != nil ? shopifyWallets : nil
 
         var buttons: AcceleratedCheckoutButtons
 
@@ -369,13 +371,13 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
 
     private func calculateRequiredHeight() -> CGFloat {
         /// If wallets prop is explicitly provided and maps to empty, height is zero
-        if wallets != nil, walletsToRender.isEmpty, instance == nil {
+        if wallets != nil, shopifyWallets.isEmpty, instance == nil {
             return 0
         }
 
         /// If wallets are provided and non-empty, use their count
-        if wallets != nil, !walletsToRender.isEmpty {
-            let numberOfWallets = max(walletsToRender.count, 1)
+        if wallets != nil, !shopifyWallets.isEmpty {
+            let numberOfWallets = max(shopifyWallets.count, 1)
             let buttonHeight: CGFloat = 48
             let gapHeight: CGFloat = 8
             return (CGFloat(numberOfWallets) * buttonHeight) + (CGFloat(numberOfWallets - 1) * gapHeight)

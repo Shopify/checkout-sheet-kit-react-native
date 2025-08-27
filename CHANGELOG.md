@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.4.0-rc.1 - Aug 27, 2025
+
+- Adds support for Accelerated Checkouts on iOS devices
+
 ## 3.3.0 - Aug 12, 2025
 
 - Upgrades Swift dependency to 3.3.0
