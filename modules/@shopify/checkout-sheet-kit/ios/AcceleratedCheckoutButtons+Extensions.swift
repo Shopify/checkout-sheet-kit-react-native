@@ -37,7 +37,7 @@ extension PayWithApplePayButtonLabel {
         return map[string] ?? .plain
     }
 
-    public static func ==(lhs: PayWithApplePayButtonLabel, rhs: PayWithApplePayButtonLabel) -> Bool {
+    public static func == (lhs: PayWithApplePayButtonLabel, rhs: PayWithApplePayButtonLabel) -> Bool {
         return String(describing: lhs) == String(describing: rhs)
     }
 

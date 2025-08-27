@@ -27,24 +27,24 @@ import XCTest
 
 class AcceleratedCheckouts_UnsupportedTests: XCTestCase {
     private var module: RCTShopifyCheckoutSheetKit!
+    private var manager: RCTAcceleratedCheckoutButtonsManager!
 
     override func setUp() {
         super.setUp()
         module = RCTShopifyCheckoutSheetKit()
-        // Force runtime to behave as unsupported regardless of OS version
-        AcceleratedCheckoutRuntime.forceLegacy = true
+        manager = RCTAcceleratedCheckoutButtonsManager()
+        manager.supported = false
     }
 
     override func tearDown() {
-        AcceleratedCheckoutRuntime.forceLegacy = nil
         module = nil
+        manager = nil
         super.tearDown()
     }
 
     func testManagerReturnsFallbackViewOnPreIOS16() throws {
-        let manager = RCTAcceleratedCheckoutButtonsManager()
         let view = manager.view()
-        XCTAssertNotNil(view)
+        XCTAssertEqual(String(describing: type(of: view!)), "UIView")
     }
 
     func testAvailabilityAPIsReturnFalseOnPreIOS16() throws {
