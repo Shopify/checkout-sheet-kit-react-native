@@ -176,6 +176,7 @@ function CartScreen(): React.JSX.Element {
               />
 
               <Pressable
+                testID="checkout-button"
                 style={styles.cartButton}
                 disabled={totalQuantity === 0}
                 onPress={presentCheckout}>

@@ -293,7 +293,7 @@ function CartIcon() {
   const theme = useTheme();
 
   return (
-    <Link to="/CartModal">
+    <Link to="/CartModal" testID="header-cart-icon">
       <Icon name="shopping-basket" size={24} color={theme.colors.secondary} />
     </Link>
   );
@@ -451,6 +451,7 @@ function Routes() {
         component={CatalogStack}
         options={{
           headerShown: false,
+          tabBarTestID: 'catalog-tab',
           tabBarIcon: createNavigationIcon('shop'),
         }}
       />
@@ -458,6 +459,7 @@ function Routes() {
         name="Cart"
         component={CartScreen}
         options={{
+          tabBarTestID: 'cart-tab',
           tabBarIcon: createNavigationIcon('shopping-bag'),
           tabBarBadge: totalQuantity > 0 ? totalQuantity : undefined,
         }}
@@ -466,6 +468,7 @@ function Routes() {
         name="Settings"
         component={SettingsScreen}
         options={{
+          tabBarTestID: 'settings-tab',
           tabBarIcon: createNavigationIcon('cog'),
         }}
       />

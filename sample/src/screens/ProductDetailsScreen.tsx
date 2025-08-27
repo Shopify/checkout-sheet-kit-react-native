@@ -117,7 +117,7 @@ function ProductDetails({
         <View>
           <Text style={styles.productTitle}>{product.title}</Text>
           <Text style={styles.productDescription}>
-            {product.description.slice(0, 100)} ...
+            {product.description.slice(0, 100)}...
           </Text>
         </View>
 
@@ -140,7 +140,11 @@ function ProductDetails({
             {loading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
-              <Text style={styles.addToCartButtonText}>Add to cart</Text>
+              <Text
+                testID="add-to-cart-button"
+                style={styles.addToCartButtonText}>
+                Add to cart
+              </Text>
             )}
           </Pressable>
         </View>
@@ -217,7 +221,7 @@ function createStyles(colors: Colors, cornerRadius: number) {
     },
     addToCartButtonText: {
       fontSize: 20,
-      lineHeight: 20,
+      lineHeight: 24,
       color: colors.secondaryText,
       fontWeight: 'bold',
       textAlign: 'center',
