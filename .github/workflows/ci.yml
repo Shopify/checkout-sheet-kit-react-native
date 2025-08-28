@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize]
 
 env:
-  RUBY_VERSION: '3.1.2'
+  RUBY_VERSION: '3.3.6'
   JAVA_VERSION: '22'
 
 jobs:
