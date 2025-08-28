@@ -1,20 +1,14 @@
 name: Cocoapods
 description: Install cocoapods for sample app
 
-inputs:
-  ruby-version:
-    description: 'Ruby version to use'
-    required: false
-    default: '3.1.2'
-
 runs:
   using: composite
   steps:
     - name: Setup Ruby
       uses: ruby/setup-ruby@829114fc20da43a41d27359103ec7a63020954d4 # v1.255.0
       with:
+        ruby-version: 3.3.6
         bundler-cache: true
-        ruby-version: ${{ inputs.ruby-version }}
         working-directory: sample
 
     - name: Cache cocoapods
@@ -23,7 +17,7 @@ runs:
       with:
         path: |
           sample/ios/Pods
-        key: ${{ runner.os }}-cocoapods-ruby-${{ inputs.ruby-version }}-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock', 'sample/Gemfile', 'package.json', 'sample/package.json', 'modules/@shopify/checkout-sheet-kit/package.json', 'yarn.lock') }}
+        key: ${{ runner.os }}-cocoapods-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock', 'sample/Gemfile', 'package.json', 'sample/package.json', 'modules/@shopify/checkout-sheet-kit/package.json', 'yarn.lock') }}
 
     - name: Install cocoapods
       shell: bash
