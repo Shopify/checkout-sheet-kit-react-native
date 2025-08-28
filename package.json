@@ -18,7 +18,7 @@
     "clean": "watchman watch-del .",
     "sample": "yarn workspace sample",
     "module": "yarn workspace @shopify/checkout-sheet-kit",
-    "pod-install": "(cd sample/ios && bundle install && bundle exec pod repo update && bundle exec pod cache clean --all && NO_FLIPPER=1 bundle exec pod install --repo-update)",
+    "pod-install": "(cd sample/ios && bundle install && bundle exec pod repo update && bundle exec pod cache clean --all && bundle exec pod install --repo-update)",
     "snapshot": "./scripts/create_snapshot",
     "compare-snapshot": "./scripts/compare_snapshot",
     "turbo": "turbo",
