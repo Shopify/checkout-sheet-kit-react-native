@@ -74,8 +74,7 @@ function quote(str: string | undefined) {
   return `"${str}"`;
 }
 
-log('--------------------------------');
-log('Using the following env');
+console.groupCollapsed('ENV');
 log('STOREFRONT_DOMAIN:', quote(env.STOREFRONT_DOMAIN));
 log(
   'STOREFRONT_ACCESS_TOKEN:',
@@ -88,7 +87,7 @@ log(
 );
 log('EMAIL:', quote(env.EMAIL));
 log('PHONE:', quote(env.PHONE));
-log('--------------------------------');
+console.groupEnd();
 
 export type RootStackParamList = {
   Catalog: undefined;

@@ -42,15 +42,9 @@ export function createBuyerIdentityCartInput(appConfig: AppConfig) {
   };
 }
 
+const fallbackLocale = 'en-CA';
 export function getLocale(): string {
-  const fallbackLocale = 'en_CA';
-
-  return (
-    (Platform.OS === 'ios'
-      ? NativeModules.SettingsManager?.settings.AppleLocale ||
-        NativeModules.SettingsManager?.settings.AppleLanguages[0]
-      : NativeModules.I18nManager?.localeIdentifier) ?? fallbackLocale
-  );
+  return Intl.DateTimeFormat().resolvedOptions().locale ?? fallbackLocale;
 }
 
 export function currency(amount?: string, currency?: string): string {
@@ -58,17 +52,15 @@ export function currency(amount?: string, currency?: string): string {
     return '';
   }
 
-  const currencyCode = currency ? ` ${currency}` : '';
-
   try {
     const locale = getLocale();
-    return (
-      new Intl.NumberFormat(locale.replace(/_/, '-'), {
-        style: 'currency',
-        currency: currency,
-      }).format(Number(amount ?? 0)) + currencyCode
-    );
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currency,
+    }).format(Number(amount ?? 0));
   } catch (error) {
+    console.error(error);
+    const currencyCode = currency ? ` ${currency}` : '';
     return `${Number(amount ?? 0).toFixed(2)}` + currencyCode;
   }
 }

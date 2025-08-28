@@ -56,7 +56,9 @@ export const ConfigProvider: React.FC<
     [appConfig, setAppConfig],
   );
 
-  console.log('[APP CONFIG]', appConfig);
+  console.groupCollapsed('APP CONFIG UPDATE');
+  console.log(appConfig);
+  console.groupEnd();
 
   return (
     <ConfigContext.Provider value={value}>{children}</ConfigContext.Provider>
