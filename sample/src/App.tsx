@@ -23,9 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import type {PropsWithChildren, ReactNode} from 'react';
 import React, {useEffect, useMemo, useState} from 'react';
-import {Appearance, Linking, StatusBar} from 'react-native';
+import {Appearance, Linking, Pressable, StatusBar} from 'react-native';
 import {
-  Link,
   NavigationContainer,
   useNavigation,
   type NavigationProp,
@@ -253,10 +252,17 @@ function AppWithContext({children}: PropsWithChildren) {
 function CatalogStack() {
   return (
     <Stack.Navigator
-      screenOptions={{
+      screenOptions={({navigation}) => ({
         headerBackTitle: 'Back',
-        headerRight: CartIcon,
-      }}>
+        // eslint-disable-next-line react/no-unstable-nested-components
+        headerRight: () => (
+          <CartIcon
+            onPress={() =>
+              navigation.getParent()?.navigate('Catalog', {screen: 'CartModal'})
+            }
+          />
+        ),
+      })}>
       <Stack.Screen
         name="CatalogScreen"
         component={CatalogScreen}
@@ -288,13 +294,13 @@ function CatalogStack() {
   );
 }
 
-function CartIcon() {
+function CartIcon({onPress}: {onPress: () => void}) {
   const theme = useTheme();
 
   return (
-    <Link to="/CartModal">
+    <Pressable onPress={onPress}>
       <Icon name="shopping-basket" size={24} color={theme.colors.secondary} />
-    </Link>
+    </Pressable>
   );
 }
 

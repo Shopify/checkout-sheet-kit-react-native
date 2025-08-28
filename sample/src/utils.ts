@@ -1,5 +1,4 @@
 import Config from 'react-native-config';
-import {NativeModules, Platform} from 'react-native';
 import type {AppConfig} from './context/Config';
 
 const {
