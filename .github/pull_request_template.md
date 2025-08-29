@@ -16,8 +16,8 @@
 > _Releasing a new version of the kit?_
 >
 > - [ ] I have bumped the version number in the [`package.json` file](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/modules/%40shopify/checkout-sheet-kit/package.json#L4).
-> - [ ] I have added a [Changelog](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/CHANGELOG.md) entry.
 
+---
 
 > [!TIP]
 > See the [Contributing documentation](https://github.com/shopify/checkout-sheet-kit-react-native/blob/main/.github/CONTRIBUTING.md#releasing-a-new-version) for instructions on how to publish a new version of the library.
