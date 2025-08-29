@@ -2,6 +2,7 @@ import type {PropsWithChildren} from 'react';
 import React, {createContext, useCallback, useMemo, useState} from 'react';
 import type {ColorSchemeName} from 'react-native';
 import {Appearance, useColorScheme} from 'react-native';
+import type {Theme} from '@react-navigation/native';
 import {DarkTheme, DefaultTheme} from '@react-navigation/native';
 import {ColorScheme} from '@shopify/checkout-sheet-kit';
 
@@ -95,7 +96,7 @@ export interface Colors {
 export function getNavigationTheme(
   colorScheme: ColorScheme,
   preference: ColorSchemeName,
-) {
+): Theme {
   const colors = getColors(colorScheme, preference);
   const primary = '#0087ff';
 
@@ -128,6 +129,7 @@ export function getNavigationTheme(
   };
 
   const web = {
+    ...DefaultTheme,
     dark: false,
     colors: {
       ...DefaultTheme.colors,

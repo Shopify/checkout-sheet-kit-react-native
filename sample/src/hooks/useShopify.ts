@@ -186,7 +186,7 @@ const REMOVE_FROM_CART_MUTATION = gql`
 `;
 
 function useShopify() {
-  const [, country] = getLocale().split('_');
+  const [, country] = getLocale().split('-');
   const includeCountry = {
     variables: {
       country,
@@ -194,7 +194,9 @@ function useShopify() {
   };
   const products = useLazyQuery<{products: Edges<ShopifyProduct>}>(
     PRODUCTS_QUERY,
-    includeCountry,
+    {
+      ...includeCountry,
+    },
   );
   const cart = useLazyQuery<{cart: ShopifyCart}>(CART_QUERY, {
     fetchPolicy: 'network-only',

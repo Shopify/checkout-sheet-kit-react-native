@@ -23,9 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import type {PropsWithChildren, ReactNode} from 'react';
 import React, {useEffect, useMemo, useState} from 'react';
-import {Appearance, Linking, StatusBar} from 'react-native';
+import {Appearance, Linking, Pressable, StatusBar} from 'react-native';
 import {
-  Link,
   NavigationContainer,
   useNavigation,
   type NavigationProp,
@@ -74,8 +73,7 @@ function quote(str: string | undefined) {
   return `"${str}"`;
 }
 
-log('--------------------------------');
-log('Using the following env');
+console.groupCollapsed('ENV');
 log('STOREFRONT_DOMAIN:', quote(env.STOREFRONT_DOMAIN));
 log(
   'STOREFRONT_ACCESS_TOKEN:',
@@ -88,7 +86,7 @@ log(
 );
 log('EMAIL:', quote(env.EMAIL));
 log('PHONE:', quote(env.PHONE));
-log('--------------------------------');
+console.groupEnd();
 
 export type RootStackParamList = {
   Catalog: undefined;
@@ -254,10 +252,17 @@ function AppWithContext({children}: PropsWithChildren) {
 function CatalogStack() {
   return (
     <Stack.Navigator
-      screenOptions={{
+      screenOptions={({navigation}) => ({
         headerBackTitle: 'Back',
-        headerRight: CartIcon,
-      }}>
+        // eslint-disable-next-line react/no-unstable-nested-components
+        headerRight: () => (
+          <CartIcon
+            onPress={() =>
+              navigation.getParent()?.navigate('Catalog', {screen: 'CartModal'})
+            }
+          />
+        ),
+      })}>
       <Stack.Screen
         name="CatalogScreen"
         component={CatalogScreen}
@@ -289,13 +294,13 @@ function CatalogStack() {
   );
 }
 
-function CartIcon() {
+function CartIcon({onPress}: {onPress: () => void}) {
   const theme = useTheme();
 
   return (
-    <Link to="/CartModal">
+    <Pressable onPress={onPress}>
       <Icon name="shopping-basket" size={24} color={theme.colors.secondary} />
-    </Link>
+    </Pressable>
   );
 }
 
