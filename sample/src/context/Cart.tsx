@@ -45,7 +45,7 @@ const cartIdState = atom<Context['cartId']>(defaultCartId);
 const totalQuantityState = atom<Context['totalQuantity']>(defaultTotalQuantity);
 
 export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
-  const ShopifyCheckout = useShopifyCheckoutSheet();
+  const shopify = useShopifyCheckoutSheet();
   // Reuse the same cart ID for the lifetime of the app
   const [checkoutURL, setCheckoutURL] = useAtom(checkoutURLState);
   // Reuse the same cart ID for the lifetime of the app
@@ -84,13 +84,13 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   }, [setCartId, setCheckoutURL, setTotalQuantity]);
 
   useEffect(() => {
-    const subscription = ShopifyCheckout.addEventListener('completed', () => {
+    const subscription = shopify.addEventListener('completed', () => {
       // Clear the cart ID and checkout URL when the checkout is completed
       clearCart();
     });
 
     return subscription?.remove;
-  }, [ShopifyCheckout, clearCart, setCartId, setCheckoutURL, setTotalQuantity]);
+  }, [shopify, clearCart, setCartId, setCheckoutURL, setTotalQuantity]);
 
   useEffect(() => {
     async function getCart() {
@@ -140,7 +140,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setTotalQuantity(data.cartLinesAdd.cart.totalQuantity);
 
       if (data.cartLinesAdd.cart.checkoutUrl) {
-        ShopifyCheckout.preload(data.cartLinesAdd.cart.checkoutUrl);
+        shopify.preload(data.cartLinesAdd.cart.checkoutUrl);
       }
 
       if (id) {
@@ -159,7 +159,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       appConfig,
       createCart,
       setCartId,
-      ShopifyCheckout,
+      shopify,
       fetchCart,
     ],
   );
@@ -183,7 +183,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setTotalQuantity(data.cartLinesRemove.cart.totalQuantity);
 
       if (checkoutURL) {
-        ShopifyCheckout.preload(checkoutURL);
+        shopify.preload(checkoutURL);
       }
 
       if (cartId) {
@@ -202,7 +202,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setCheckoutURL,
       setTotalQuantity,
       checkoutURL,
-      ShopifyCheckout,
+      shopify,
       fetchCart,
     ],
   );

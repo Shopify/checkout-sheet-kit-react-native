@@ -37,6 +37,7 @@ local.properties
 *.keystore
 !debug.keystore
 upload-keystore.jks
+.kotlin/
 
 # node.js
 #
