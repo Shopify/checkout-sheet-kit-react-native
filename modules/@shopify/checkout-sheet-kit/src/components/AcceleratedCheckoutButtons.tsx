@@ -143,7 +143,7 @@ interface VariantProps {
   quantity: number;
 }
 
-type AcceleratedCheckoutButtonsProps = (CartProps | VariantProps) &
+export type AcceleratedCheckoutButtonsProps = (CartProps | VariantProps) &
   CommonAcceleratedCheckoutButtonsProps;
 
 interface NativeAcceleratedCheckoutButtonsProps {

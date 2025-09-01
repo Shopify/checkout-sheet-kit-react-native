@@ -59,7 +59,10 @@ import {CheckoutErrorCode} from './errors.d';
 import type {CheckoutCompletedEvent} from './events.d';
 import type {CustomEvent, PixelEvent, StandardEvent} from './pixels.d';
 import {ApplePayLabel} from './components/AcceleratedCheckoutButtons';
-import type {RenderStateChangeEvent} from './components/AcceleratedCheckoutButtons';
+import type {
+  AcceleratedCheckoutButtonsProps,
+  RenderStateChangeEvent,
+} from './components/AcceleratedCheckoutButtons';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
 
@@ -477,9 +480,9 @@ export class LifecycleEventParseError extends Error {
 
 // API
 export {
+  AcceleratedCheckoutWallet,
   ApplePayContactField,
   ApplePayLabel,
-  AcceleratedCheckoutWallet,
   ColorScheme,
   ShopifyCheckoutSheet,
   ShopifyCheckoutSheetProvider,
@@ -500,18 +503,19 @@ export {
 
 // Types
 export type {
+  AcceleratedCheckoutButtonsProps,
+  AcceleratedCheckoutConfiguration,
   CheckoutCompletedEvent,
   CheckoutEvent,
   CheckoutEventCallback,
   CheckoutException,
   Configuration,
   CustomEvent,
-  GeolocationRequestEvent,
   Features,
+  GeolocationRequestEvent,
   PixelEvent,
-  StandardEvent,
-  AcceleratedCheckoutConfiguration,
   RenderStateChangeEvent,
+  StandardEvent,
 };
 
 // Components
