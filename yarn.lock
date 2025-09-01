@@ -4584,7 +4584,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@shopify/checkout-sheet-kit@workspace:modules/@shopify/checkout-sheet-kit"
   dependencies:
-    react-native-builder-bob: "npm:^0.23.1"
+    react-native-builder-bob: "npm:^0.23.2"
     typescript: "npm:^5.9.2"
   peerDependencies:
     react: "*"
@@ -11049,9 +11049,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-builder-bob@npm:^0.23.1":
-  version: 0.23.1
-  resolution: "react-native-builder-bob@npm:0.23.1"
+"react-native-builder-bob@npm:^0.23.2":
+  version: 0.23.2
+  resolution: "react-native-builder-bob@npm:0.23.2"
   dependencies:
     "@babel/core": "npm:^7.18.5"
     "@babel/plugin-proposal-class-properties": "npm:^7.17.12"
@@ -11074,7 +11074,7 @@ __metadata:
     yargs: "npm:^17.5.1"
   bin:
     bob: bin/bob
-  checksum: 10c0/8fb3a602c8d8fd2ac7bf4770fd69c718ff9988ef7b644070b6f7f5aef8dfe87d8914ffa016583114a4873f3d7842326920245fb02d206c2132170d545fedad50
+  checksum: 10c0/b5e8943ce011e43dbd75c04a96a27464ad7820aaed0b35a50cabbefeb5292de0cdea8b505364bddda045a5cf0e9d72c1bf7ac0cea9c0c6e33b574b8d64c65817
   languageName: node
   linkType: hard
 
