@@ -2245,7 +2245,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNGestureHandler (2.26.0):
+  - RNGestureHandler (2.28.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2274,7 +2274,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNReanimated (3.18.0):
+  - RNReanimated (3.19.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2301,11 +2301,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 3.18.0)
-    - RNReanimated/worklets (= 3.18.0)
+    - RNReanimated/reanimated (= 3.19.1)
+    - RNReanimated/worklets (= 3.19.1)
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated (3.18.0):
+  - RNReanimated/reanimated (3.19.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2332,10 +2332,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 3.18.0)
+    - RNReanimated/reanimated/apple (= 3.19.1)
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated/apple (3.18.0):
+  - RNReanimated/reanimated/apple (3.19.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2364,7 +2364,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNReanimated/worklets (3.18.0):
+  - RNReanimated/worklets (3.19.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2391,10 +2391,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/worklets/apple (= 3.18.0)
+    - RNReanimated/worklets/apple (= 3.19.1)
     - SocketRocket
     - Yoga
-  - RNReanimated/worklets/apple (3.18.0):
+  - RNReanimated/worklets/apple (3.19.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2879,8 +2879,8 @@ SPEC CHECKSUMS:
   ReactCodegen: 37cf3321221b0c4f89b0750dbaf466bc99de7a57
   ReactCommon: 592ef441605638b95e533653259254b4bd35ff4f
   RNCMaskedView: 7e0ce15656772a939ff0d269100bca3a182163c8
-  RNGestureHandler: eeb622199ef1fb3a076243131095df1c797072f0
-  RNReanimated: 288616f9c66ff4b0911f3862ffcf4104482a2adc
+  RNGestureHandler: db29d3e7edf41a11d133cc3ffd4029762376ed1a
+  RNReanimated: 7e1500bf2058454a0dfdb9fb7a342ef55c518b84
   RNScreens: 26bb60cdb2ef2ca06fd87feefc495072f25982a7
   RNShopifyCheckoutSheetKit: 123b2f5948dd4223ffd7d0b318e09c653afd3c0d
   RNVectorIcons: be4d047a76ad307ffe54732208fb0498fcb8477f

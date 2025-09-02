@@ -163,7 +163,7 @@ interface NativeAcceleratedCheckoutButtonsProps {
   onSizeChange?: (event: {nativeEvent: {height: number}}) => void;
 }
 
-const NativeAcceleratedCheckoutButtons =
+const LegacyAcceleratedCheckoutButtons =
   requireNativeComponent<NativeAcceleratedCheckoutButtonsProps>(
     'RCTAcceleratedCheckoutButtons',
   );
@@ -304,7 +304,8 @@ export const AcceleratedCheckoutButtons: React.FC<
     }
   }
 
-  const NativeComponent = NativeAcceleratedCheckoutButtons;
+  // Use legacy view manager; RN 0.80 interop bridges it under Fabric when enabled
+  const NativeComponent = LegacyAcceleratedCheckoutButtons;
 
   return (
     <NativeComponent
