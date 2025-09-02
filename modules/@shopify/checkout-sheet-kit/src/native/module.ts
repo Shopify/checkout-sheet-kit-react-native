@@ -58,9 +58,9 @@ export function getShopifyCheckoutNativeModule():
   try {
     // Dynamically require to avoid throwing when codegen isn't wired yet.
     // If the generated spec is present, default export should be the TurboModule proxy.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const turbo: NativeShopifyCheckoutSheetKit =
       require('./NativeShopifyCheckoutSheetKit').default;
+
     if (turbo != null) {
       return turbo;
     }
@@ -71,6 +71,7 @@ export function getShopifyCheckoutNativeModule():
   const legacy = (NativeModules as any).ShopifyCheckoutSheetKit as
     | NativeShopifyCheckoutSheetKit
     | undefined;
+
   return legacy;
 }
 
