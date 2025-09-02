@@ -102,6 +102,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         ]
     }
 
+    @objc func getVersion() -> String {
+        return ShopifyCheckoutSheetKit.version
+    }
+
     static func getRootViewController() -> UIViewController? {
         return (UIApplication.shared.connectedScenes
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene)?.windows

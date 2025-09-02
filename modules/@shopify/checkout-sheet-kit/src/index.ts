@@ -109,7 +109,11 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     }
   }
 
-  public readonly version: string = RNShopifyCheckoutSheetKit.version;
+  public readonly version: string =
+    // Prefer constant; fallback to sync getter if provided by TurboModule.
+    (RNShopifyCheckoutSheetKit as any).version ??
+    (RNShopifyCheckoutSheetKit as any).getVersion?.() ??
+    'unknown';
 
   /**
    * Dismisses the currently displayed checkout sheet

@@ -75,7 +75,9 @@ RCT_EXTERN_METHOD(
 /**
  * Check if Apple Pay is available
  */
-RCT_EXTERN_METHOD(isApplePayAvailable : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject);
+RCT_EXTERN_METHOD(isApplePayAvailable : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN__BLOCKING_SYNCHRONOUS_METHOD(getVersion)
 
 @end
 
