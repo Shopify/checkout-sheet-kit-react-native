@@ -7,7 +7,6 @@ on:
     types: [opened, synchronize]
 
 env:
-  RUBY_VERSION: '3.1.2'
   JAVA_VERSION: '22'
 
 jobs:
@@ -140,8 +139,6 @@ jobs:
 
       - name: Install cocoapods
         uses: ./.github/actions/install-cocoapods
-        with:
-          ruby-version: ${{ env.RUBY_VERSION }}
 
       - name: Run Swift tests
         run: |
