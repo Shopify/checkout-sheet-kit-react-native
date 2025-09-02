@@ -30,6 +30,57 @@ import androidx.annotation.NonNull;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+#if RCT_NEW_ARCH_ENABLED
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.module.annotations.ReactModuleList;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.fabric.events.EventDispatcher;
+import com.facebook.react.uimanager.events.EventDispatcherImpl;
+import com.facebook.react.codegen.module.JavaModuleWrapper;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
+import com.facebook.react.bridge.NoSuchKeyException;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.facebook.jni.HybridData;
+import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.proguard.annotations.DoNotStripAny;
+import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.common.MapBuilder;
+import com.facebook.react.codegen.ReactNativeFeatureFlags;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
+import com.facebook.react.bridge.Callback;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.ActivityEventListener;
+import com.facebook.react.bridge.BaseJavaModule;
+import com.facebook.react.bridge.LifecycleEventListener;
+// Generated spec
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.module.annotations.ReactModuleList;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.arguments;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+#endif
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -39,7 +90,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
+public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule implements TurboModule {
   private static final String MODULE_NAME = "ShopifyCheckoutSheetKit";
 
   public static Configuration checkoutConfig = new Configuration();
