@@ -21,12 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import {
-  NativeModules,
-  NativeEventEmitter,
-  PermissionsAndroid,
-  Platform,
-} from 'react-native';
+import {NativeEventEmitter, PermissionsAndroid, Platform} from 'react-native';
+import type {NativeModule} from 'react-native';
 import type {
   EmitterSubscription,
   EventSubscription,
@@ -64,14 +60,19 @@ import type {
   RenderStateChangeEvent,
 } from './components/AcceleratedCheckoutButtons';
 
-const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
+import {getShopifyCheckoutNativeModule} from './native/module';
+import type {NativeShopifyCheckoutSheetKit} from './native/module';
 
-if (!('ShopifyCheckoutSheetKit' in NativeModules)) {
+const __maybeNative: NativeShopifyCheckoutSheetKit | undefined =
+  getShopifyCheckoutNativeModule();
+if (__maybeNative == null) {
   throw new Error(`
   "@shopify/checkout-sheet-kit" is not correctly linked.
 
   If you are building for iOS, make sure to run "pod install" first and restart the metro server.`);
 }
+const RNShopifyCheckoutSheetKit =
+  __maybeNative as NativeShopifyCheckoutSheetKit;
 
 const defaultFeatures: Features = {
   handleGeolocationRequests: true,
@@ -79,7 +80,7 @@ const defaultFeatures: Features = {
 
 class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   private static eventEmitter: NativeEventEmitter = new NativeEventEmitter(
-    RNShopifyCheckoutSheetKit,
+    RNShopifyCheckoutSheetKit as unknown as NativeModule,
   );
 
   private features: Features;
@@ -230,7 +231,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
       this.validateAcceleratedCheckoutsConfiguration(config);
 
       const configured =
-        await RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+        await RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts?.(
           config.storefrontDomain,
           config.storefrontAccessToken,
           config.customer?.email || null,
@@ -239,7 +240,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
           config.wallets?.applePay?.merchantIdentifier || null,
           config.wallets?.applePay?.contactFields || [],
         );
-      return configured;
+      return configured ?? false;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(
@@ -260,7 +261,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
       return false;
     }
 
-    return RNShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable();
+    return (
+      RNShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable?.() ?? false
+    );
   }
 
   /**

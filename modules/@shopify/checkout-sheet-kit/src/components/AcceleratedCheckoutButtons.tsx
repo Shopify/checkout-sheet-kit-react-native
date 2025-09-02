@@ -163,7 +163,7 @@ interface NativeAcceleratedCheckoutButtonsProps {
   onSizeChange?: (event: {nativeEvent: {height: number}}) => void;
 }
 
-const RCTAcceleratedCheckoutButtons =
+const NativeAcceleratedCheckoutButtons =
   requireNativeComponent<NativeAcceleratedCheckoutButtonsProps>(
     'RCTAcceleratedCheckoutButtons',
   );
@@ -304,8 +304,10 @@ export const AcceleratedCheckoutButtons: React.FC<
     }
   }
 
+  const NativeComponent = NativeAcceleratedCheckoutButtons;
+
   return (
-    <RCTAcceleratedCheckoutButtons
+    <NativeComponent
       applePayLabel={applePayLabel}
       style={{...defaultStyles, height: dynamicHeight}}
       checkoutIdentifier={checkoutIdentifier}
