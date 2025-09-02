@@ -66,6 +66,7 @@ import ErrorBoundary from './ErrorBoundary';
 import env from 'react-native-config';
 import {createDebugLogger} from './utils';
 import {useShopifyEventHandlers} from './hooks/useCheckoutEventHandlers';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 const log = createDebugLogger('ENV');
 
@@ -485,13 +486,15 @@ const checkoutKitFeatures: Partial<Features> = {
 function App() {
   return (
     <ErrorBoundary>
-      <AppWithTheme>
-        <AppWithContext>
-          <AppWithNavigation>
-            <Routes />
-          </AppWithNavigation>
-        </AppWithContext>
-      </AppWithTheme>
+      <SafeAreaProvider>
+        <AppWithTheme>
+          <AppWithContext>
+            <AppWithNavigation>
+              <Routes />
+            </AppWithNavigation>
+          </AppWithContext>
+        </AppWithTheme>
+      </SafeAreaProvider>
     </ErrorBoundary>
   );
 }

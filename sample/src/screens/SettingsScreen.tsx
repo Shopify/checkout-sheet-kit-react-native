@@ -24,7 +24,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 import React, {useCallback, useMemo} from 'react';
 import {
   Pressable,
-  SafeAreaView,
   SectionList,
   StyleSheet,
   Switch,
@@ -41,6 +40,7 @@ import {
 import type {Colors} from '../context/Theme';
 import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 enum SectionType {
   Switch = 'switch',
@@ -92,6 +92,7 @@ function SettingsScreen() {
   const {appConfig, setAppConfig} = useConfig();
   const {colors, setColorScheme} = useTheme();
   const styles = createStyles(colors);
+  const safeAreaInsets = useSafeAreaInsets();
 
   const handleColorSchemeChange = useCallback(
     (item: SingleSelectItem) => {
@@ -228,7 +229,7 @@ function SettingsScreen() {
   );
 
   return (
-    <SafeAreaView>
+    <View style={safeAreaInsets}>
       <SectionList
         sections={sections}
         keyExtractor={item => item.title}
@@ -261,7 +262,7 @@ function SettingsScreen() {
           </View>
         )}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 

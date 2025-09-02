@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import React from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   View,
   StyleSheet,
@@ -46,6 +45,7 @@ import {
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
 import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetails'>;
 
@@ -53,13 +53,14 @@ function ProductDetailsScreen({route}: Props) {
   const {colors, cornerRadius} = useTheme();
   const {addToCart, addingToCart} = useCart();
   const styles = createStyles(colors, cornerRadius);
+  const safeAreaInsets = useSafeAreaInsets();
 
   if (!route?.params) {
     return null;
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, safeAreaInsets]}>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.scrollView}>
@@ -73,7 +74,7 @@ function ProductDetailsScreen({route}: Props) {
           }
         />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

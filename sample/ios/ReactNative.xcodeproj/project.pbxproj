@@ -21,21 +21,10 @@
 		B347434AEAC8EA85AFA07E62 /* libPods-ReactNative-ReactNativeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EE1BFA6683BBD8EDBBDD2598 /* libPods-ReactNative-ReactNativeTests.a */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		00E356F41AD99517003FC87E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
-			remoteInfo = ReactNative;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		00E356EE1AD99517003FC87E /* ReactNativeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ReactNativeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* ReactNative.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReactNative.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ReactNative/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ReactNative/Info.plist; sourceTree = "<group>"; };
 		1939D329B2C035D1A15E316B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = ReactNative/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		4EF1B8B6CA16C991C5BEE2F2 /* Pods-ReactNative.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNative.release.xcconfig"; path = "Target Support Files/Pods-ReactNative/Pods-ReactNative.release.xcconfig"; sourceTree = "<group>"; };
 		6A1F48E62B16900600BA591C /* ShopifyCheckoutSheetKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopifyCheckoutSheetKitTests.swift; sourceTree = "<group>"; };
@@ -81,7 +70,6 @@
 		00E356EF1AD99517003FC87E /* ReactNativeTests */ = {
 			isa = PBXGroup;
 			children = (
-				00E356F01AD99517003FC87E /* Supporting Files */,
 				6A1F48E62B16900600BA591C /* ShopifyCheckoutSheetKitTests.swift */,
 				6A86196C2BF36EB900E5EE1A /* CheckoutDidFailTests.swift */,
 				6AEEAAB02C00010100E5EE1B /* AcceleratedCheckouts_SupportedTests.swift */,
@@ -89,13 +77,6 @@
 				6AF1E0022C00010100E5EE1B /* EventSerializationTests.swift */,
 			);
 			path = ReactNativeTests;
-			sourceTree = "<group>";
-		};
-		00E356F01AD99517003FC87E /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		13B07FAE1A68108700A75B9A /* ReactNative */ = {
@@ -106,7 +87,6 @@
 				6AAEC3572B067AD500C7099B /* Entypo.ttf */,
 				6A8D64CF2AF25C1200FE4E4A /* ReactNative.entitlements */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
-				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				6AFAD2D12BA9DEF8001F9644 /* Localizable.xcstrings */,
 				1939D329B2C035D1A15E316B /* PrivacyInfo.xcprivacy */,
@@ -185,14 +165,12 @@
 				13CD11EE2D19D04D273718C4 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
-				00E356EC1AD99517003FC87E /* Resources */,
 				E5E915CDFAA811FAB9901380 /* [CP] Embed Pods Frameworks */,
 				9AFB0C7130B040CD3FA60D21 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				00E356F51AD99517003FC87E /* PBXTargetDependency */,
 			);
 			name = ReactNativeTests;
 			productName = ReactNativeTests;
@@ -259,13 +237,6 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		00E356EC1AD99517003FC87E /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		13B07F8E1A680F5B00A75B9A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -432,14 +403,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 13B07F861A680F5B00A75B9A /* ReactNative */;
-			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {

@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import React, {useEffect} from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   View,
   StyleSheet,
@@ -43,6 +42,7 @@ import {useCart} from '../context/Cart';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {RootStackParamList} from '../App';
 import {currency} from '../utils';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CatalogScreen'>;
 
@@ -52,6 +52,7 @@ function CatalogScreen({navigation}: Props) {
   const {colors} = useTheme();
   const styles = createStyles(colors);
   const {queries} = useShopify();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const [fetchProducts, {loading, data, error}] = queries.products;
 
@@ -86,7 +87,7 @@ function CatalogScreen({navigation}: Props) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, safeAreaInsets]}>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.scrollView}>
@@ -118,7 +119,7 @@ function CatalogScreen({navigation}: Props) {
           </Text>
         </Pressable>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 

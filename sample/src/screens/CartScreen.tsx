@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import React, {useCallback, useEffect} from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   View,
   StyleSheet,
@@ -48,6 +47,7 @@ import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 import {currency} from '../utils';
 import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 function CartScreen(): React.JSX.Element {
   const ShopifyCheckout = useShopifyCheckoutSheet();
@@ -58,6 +58,7 @@ function CartScreen(): React.JSX.Element {
   const eventHandlers = useShopifyEventHandlers(
     'Cart - AcceleratedCheckoutButtons',
   );
+  const safeAreaInsets = useSafeAreaInsets();
 
   const [fetchCart, {data, loading, error}] = queries.cart;
 
@@ -121,7 +122,7 @@ function CartScreen(): React.JSX.Element {
   }
 
   return (
-    <SafeAreaView>
+    <View style={safeAreaInsets}>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.scrollView}
@@ -196,7 +197,7 @@ function CartScreen(): React.JSX.Element {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
