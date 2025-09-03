@@ -16,8 +16,5 @@ module.exports = {
     '@shopify/checkout-sheet-kit': {
       root: path.resolve(root, 'modules', '@shopify/checkout-sheet-kit'),
     },
-    ...(process.env.NO_FLIPPER
-      ? {'react-native-flipper': {platforms: {ios: null}}}
-      : {}),
   },
 };
