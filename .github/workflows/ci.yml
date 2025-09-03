@@ -91,9 +91,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - arch: Legacy Arch
+          - arch: Legacy arch
             new_arch_enabled: 'false'
-          - arch: New Arch
+          - arch: New arch
             new_arch_enabled: 'true'
     steps:
       - name: Checkout
@@ -132,9 +132,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - arch: legacy
+          - arch: Legacy arch
             new_arch_enabled: 'false'
-          - arch: new-arch
+          - arch: New arch
             new_arch_enabled: 'true'
     steps:
       - name: Checkout
