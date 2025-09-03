@@ -1,7 +1,10 @@
 #!/bin/bash
 
 FILENAME="modules/@shopify/checkout-sheet-kit/package.snapshot.json"
-TMP_SNAPSHOT_FILENAME="snapshot.json"
+TMP_SNAPSHOT_FILENAME="/tmp/snapshot.json"
+
+# Always remove the temporary snapshot on exit
+trap 'rm -f "$TMP_SNAPSHOT_FILENAME"' EXIT
 
 # Set up some colors to use later
 red=$(tput setaf 1)
@@ -30,11 +33,9 @@ else
     If it NOT intentional, please manually check the diff below to discern if the file(s) should be included in the public package or not:
 
 
-${green}EXISTING SNAPSHOT${reset}                                                      ${red}NEW SNAPSHOT${reset}
+${green}EXISTING SNAPSHOT${reset}                                               ${red}NEW SNAPSHOT${reset}
     "
     diff --color --side-by-side $FILENAME $TMP_SNAPSHOT_FILENAME
 
     exit 1
 fi
-
-rm $TMP_SNAPSHOT_FILENAME

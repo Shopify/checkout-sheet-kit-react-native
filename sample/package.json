@@ -14,7 +14,8 @@
     "start": "react-native start -- --simulator 'iPhone 15 Pro' --reset-cache",
     "typecheck": "tsc --noEmit",
     "test:ios": "sh ./scripts/test_ios",
-    "test:android": "sh ./scripts/test_android"
+    "test:android": "sh ./scripts/test_android",
+    "test:android:legacy": "ORG_GRADLE_PROJECT_newArchEnabled=false sh ./scripts/test_android"
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",
