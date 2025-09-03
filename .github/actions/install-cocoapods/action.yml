@@ -21,8 +21,6 @@ runs:
 
     - name: Install cocoapods
       shell: bash
-      env:
-        NO_FLIPPER: "1"
       run: |
         set -euo pipefail
         ROOT=$(pwd)
