@@ -83,10 +83,18 @@ jobs:
           create-new-comment: false
 
   test-android:
-    name: Run Android Tests
+    name: Run Android Tests (${{ matrix.arch }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [lint, test]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: Legacy Arch
+            new_arch_enabled: 'false'
+          - arch: New Arch
+            new_arch_enabled: 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -101,11 +109,12 @@ jobs:
           distribution: 'zulu'
           java-version: ${{ env.JAVA_VERSION }}
 
-      - name: Run Android tests
+      - name: Run Android tests (${{ matrix.arch }})
         timeout-minutes: 20
         env:
           GRADLE_OPTS: -Xmx4g -XX:MaxMetaspaceSize=768m
           JAVA_HOME: ${{ steps.setup-java.outputs.path }}
+          ORG_GRADLE_PROJECT_newArchEnabled: ${{ matrix.new_arch_enabled }}
         run: |
           echo "JAVA_HOME: $JAVA_HOME"
           java -version
@@ -115,10 +124,18 @@ jobs:
           yarn sample test:android --no-daemon
 
   test-ios:
-    name: Run Swift Tests
+    name: Run Swift Tests (${{ matrix.arch }})
     runs-on: macos-15-xlarge
     timeout-minutes: 20
     needs: [lint, test]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: legacy
+            new_arch_enabled: 'false'
+          - arch: new-arch
+            new_arch_enabled: 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -139,7 +156,11 @@ jobs:
 
       - name: Install cocoapods
         uses: ./.github/actions/install-cocoapods
+        env:
+          RCT_NEW_ARCH_ENABLED: ${{ matrix.new_arch_enabled }}
 
-      - name: Run Swift tests
+      - name: Run Swift tests (${{ matrix.arch }})
+        env:
+          RCT_NEW_ARCH_ENABLED: ${{ matrix.new_arch_enabled }}
         run: |
           yarn sample test:ios
