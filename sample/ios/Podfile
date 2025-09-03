@@ -25,7 +25,7 @@ target 'ReactNative' do
     :path => config[:reactNativePath],
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/..",
-    :new_arch_enabled => true
+    :new_arch_enabled => (ENV['RCT_NEW_ARCH_ENABLED'] == '1' || ENV['RCT_NEW_ARCH_ENABLED']&.downcase == 'true')
   )
 
   target 'ReactNativeTests' do
