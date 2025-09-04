@@ -47,7 +47,7 @@
     "@babel/plugin-transform-shorthand-properties": "^7.23.3",
     "@babel/plugin-transform-template-literals": "^7.23.3",
     "@babel/preset-env": "^7.20.0",
-    "@babel/runtime": "^7.27.6",
+    "@babel/runtime": "^7.28.2",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@types/react-native-vector-icons": "^6.4.18",
     "@types/setimmediate": "^1",
