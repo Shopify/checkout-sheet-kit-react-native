@@ -8,6 +8,11 @@ up:
       version: v20.11.1
       yarn: 1.22.22
   - custom:
+      name: Install NPM dependencies
+      met?: ls -l | grep node_modules
+      meet: |
+        yarn
+  - custom:
       name: Install gems
       met?: (cd sample/ios && bundle check)
       meet: |
@@ -49,9 +54,9 @@ commands:
   clean:
     desc: 'rm -rf all generated directories'
     run: |
-      yarn clean
       yarn module clean
       yarn sample clean
+      yarn clean
       echo "✅ Cleaned root, module and sample workspaces"
 
   fix:
