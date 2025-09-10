@@ -4,4 +4,4 @@ set -ex
 
 cd android
 
-./gradlew assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a
+./gradlew assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a -PnewArchEnabled=${ORG_GRADLE_PROJECT_newArchEnabled:-true}

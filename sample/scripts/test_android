@@ -2,6 +2,14 @@
 
 set -e
 
+NEW_ARCH_ENABLED=${ORG_GRADLE_PROJECT_newArchEnabled:-true}
+
 cd android
 
-./gradlew clean generateAndroidManifestFromTemplate test --no-daemon --console=plain -Dorg.gradle.workers.max=1 -PreactNativeArchitectures=arm64-v8a
+if [ "$NEW_ARCH_ENABLED" = "false" ]; then
+  echo "-> Running tests with Legacy Architecture"
+else
+  echo "-> Running tests with New Architecture"
+fi
+
+./gradlew clean generateAndroidManifestFromTemplate test --no-daemon --console=plain -Dorg.gradle.workers.max=1 -PreactNativeArchitectures=arm64-v8a -PnewArchEnabled=$NEW_ARCH_ENABLED

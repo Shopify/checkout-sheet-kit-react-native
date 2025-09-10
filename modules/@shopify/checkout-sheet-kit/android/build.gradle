@@ -80,6 +80,17 @@ android {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
   }
+
+  // Note: this is where the module class is chosen, based on the RN architecture
+  sourceSets {
+    main.java.srcDirs += ["src/shared/java"]
+
+    if (isNewArchitectureEnabled()) {
+      main.java.srcDirs += ["src/newarch/java"]
+    } else {
+      main.java.srcDirs += ["src/legacy/java"]
+    }
+  }
 }
 
 repositories {

@@ -25,7 +25,7 @@ SOFTWARE.
 #import <React/RCTBridgeModule.h>
 #import <React/RCTViewManager.h>
 
-@interface RCT_EXTERN_MODULE (RCTShopifyCheckoutSheetKit, NSObject)
+@interface RCT_EXTERN_REMAP_MODULE (ShopifyCheckoutSheetKit, RCTShopifyCheckoutSheetKit, NSObject)
 
 /**
  * Present checkout
@@ -75,7 +75,9 @@ RCT_EXTERN_METHOD(
 /**
  * Check if Apple Pay is available
  */
-RCT_EXTERN_METHOD(isApplePayAvailable : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject);
+RCT_EXTERN_METHOD(isApplePayAvailable : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN__BLOCKING_SYNCHRONOUS_METHOD(getVersion)
 
 @end
 
