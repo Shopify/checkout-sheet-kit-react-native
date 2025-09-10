@@ -304,8 +304,7 @@ function CartIcon({onPress}: {onPress: () => void}) {
   );
 }
 
-function AppWithNavigation({children}: PropsWithChildren) {
-  const {colorScheme, preference} = useTheme();
+function AppWithCheckoutKit({children}: PropsWithChildren) {
   const {appConfig} = useConfig();
 
   const updatedColors = getColors(
@@ -399,10 +398,17 @@ function AppWithNavigation({children}: PropsWithChildren) {
     <ShopifyCheckoutSheetProvider
       configuration={checkoutKitConfig}
       features={checkoutKitFeatures}>
-      <NavigationContainer theme={getNavigationTheme(colorScheme, preference)}>
-        {children}
-      </NavigationContainer>
+      {children}
     </ShopifyCheckoutSheetProvider>
+  );
+}
+
+function AppWithNavigation(props: {children: React.ReactNode}) {
+  const {colorScheme, preference} = useTheme();
+  return (
+    <NavigationContainer theme={getNavigationTheme(colorScheme, preference)}>
+      {props.children}
+    </NavigationContainer>
   );
 }
 
@@ -486,11 +492,13 @@ function App() {
   return (
     <ErrorBoundary>
       <AppWithTheme>
-        <AppWithContext>
-          <AppWithNavigation>
-            <Routes />
-          </AppWithNavigation>
-        </AppWithContext>
+        <AppWithCheckoutKit>
+          <AppWithContext>
+            <AppWithNavigation>
+              <Routes />
+            </AppWithNavigation>
+          </AppWithContext>
+        </AppWithCheckoutKit>
       </AppWithTheme>
     </ErrorBoundary>
   );

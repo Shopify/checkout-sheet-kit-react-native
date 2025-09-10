@@ -48,20 +48,9 @@ interface Context {
   version: Maybe<string>;
 }
 
-const noop = () => undefined;
-
-const ShopifyCheckoutSheetContext = React.createContext<Context>({
-  acceleratedCheckoutsAvailable: false,
-  addEventListener: noop,
-  removeEventListeners: noop,
-  setConfig: noop,
-  getConfig: async () => undefined,
-  preload: noop,
-  present: noop,
-  invalidate: noop,
-  dismiss: noop,
-  version: undefined,
-});
+const ShopifyCheckoutSheetContext = React.createContext<Context>(
+  null as unknown as Context,
+);
 
 interface Props {
   features?: Partial<Features>;
@@ -172,7 +161,13 @@ export function ShopifyCheckoutSheetProvider({
 }
 
 export function useShopifyCheckoutSheet() {
-  return React.useContext(ShopifyCheckoutSheetContext);
+  const context = React.useContext(ShopifyCheckoutSheetContext);
+  if (!context) {
+    throw new Error(
+      'useShopifyCheckoutSheet must be used from within a ShopifyCheckoutSheetContext',
+    );
+  }
+  return context;
 }
 
 export default ShopifyCheckoutSheetContext;
