@@ -6104,7 +6104,7 @@ __metadata:
     react: "npm:19.1.0"
     react-native: "npm:0.80.2"
     react-native-dotenv: "npm:^3.4.9"
-    react-native-gesture-handler: "npm:2.25.0"
+    react-native-gesture-handler: "npm:2.26.0"
     react-native-gradle-plugin: "npm:^0.71.19"
     react-test-renderer: "npm:19.1.0"
     ts-jest: "npm:^29.4.1"
@@ -11100,9 +11100,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:2.25.0":
-  version: 2.25.0
-  resolution: "react-native-gesture-handler@npm:2.25.0"
+"react-native-gesture-handler@npm:2.26.0":
+  version: 2.26.0
+  resolution: "react-native-gesture-handler@npm:2.26.0"
   dependencies:
     "@egjs/hammerjs": "npm:^2.0.17"
     hoist-non-react-statics: "npm:^3.3.0"
@@ -11110,7 +11110,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/95eccc67fb07418ef76b84bcee4b29c16865e78afa367ec82d94b08554cfa7337158ab23937b785bd9a732e62c9c815b294a93d1b2c2cbdc7a8a1e7029f2ba35
+  checksum: 10c0/43aee4f0aeb7be9e2e72a9abaeaff38104c188a44ffc1a5634940a851adca5f10ee3a8d1b4828eb654574d4d45aa0f0c2af5a7b4ed2e9bca4e76d0d932f13955
   languageName: node
   linkType: hard
 
