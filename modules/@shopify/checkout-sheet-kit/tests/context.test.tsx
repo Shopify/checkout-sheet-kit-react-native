@@ -389,27 +389,13 @@ describe('useShopifyCheckoutSheet', () => {
 });
 
 describe('ShopifyCheckoutSheetContext without provider', () => {
-  it('uses default context values when no provider is present', async () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
-
-    render(<HookTestComponent onHookValue={onHookValue} />);
-
-    const config = await hookValue.getConfig();
-    expect(config).toBeUndefined();
-
-    // Test all the noop functions to ensure they don't throw
-    expect(() => hookValue.addEventListener('close', jest.fn())).not.toThrow();
-    expect(() => hookValue.removeEventListeners('close')).not.toThrow();
-    expect(() =>
-      hookValue.setConfig({colorScheme: ColorScheme.automatic}),
-    ).not.toThrow();
-    expect(() => hookValue.preload('test-url')).not.toThrow();
-    expect(() => hookValue.present('test-url')).not.toThrow();
-    expect(() => hookValue.invalidate()).not.toThrow();
-    expect(() => hookValue.dismiss()).not.toThrow();
-    expect(hookValue.version).toBeUndefined();
+  it('throws error when hook is used without provider', () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation();
+    
+    expect(() => {
+      render(<HookTestComponent onHookValue={() => {}} />);
+    }).toThrow('useShopifyCheckoutSheet must be used from within a ShopifyCheckoutSheetContext');
+    
+    errorSpy.mockRestore();
   });
 });
