@@ -15,7 +15,7 @@
     "modules/**/*"
   ],
   "scripts": {
-    "clean": "watchman watch-del .",
+    "clean": "rm -rf node_modules; watchman watch-del . || true",
     "sample": "yarn workspace sample",
     "module": "yarn workspace @shopify/checkout-sheet-kit",
     "pod-install": "(cd sample/ios && bundle install && bundle exec pod repo update && bundle exec pod cache clean --all && bundle exec pod install --repo-update)",
