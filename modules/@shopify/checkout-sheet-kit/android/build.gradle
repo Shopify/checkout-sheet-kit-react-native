@@ -97,7 +97,7 @@ dependencies {
   //  implementation("com.facebook.react:react-android:+")
 
   implementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.12.5")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.12.7.2")
   debugImplementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
 }
 
