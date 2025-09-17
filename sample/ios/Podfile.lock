@@ -47,7 +47,6 @@ PODS:
     - React-RCTText (= 0.80.2)
     - React-RCTVibration (= 0.80.2)
   - React-callinvoker (0.80.2)
-  - React-Codegen (0.1.0)
   - React-Core (0.80.2):
     - boost
     - DoubleConversion
@@ -2496,7 +2495,6 @@ PODS:
     - RCT-Folly/Fabric
     - RCTRequired
     - RCTTypeSafety
-    - React-Codegen
     - React-Core
     - React-debug
     - React-Fabric
@@ -2640,7 +2638,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - React-Codegen
     - ShopifyCheckoutSheetKit
     - SocketRocket
 
@@ -2821,7 +2818,6 @@ SPEC CHECKSUMS:
   RCTTypeSafety: cb974efcdc6695deedf7bf1eb942f2a0603a063f
   React: e7a4655b09d0e17e54be188cc34c2f3e2087318a
   React-callinvoker: 62192daaa2f30c3321fc531e4f776f7b09cf892b
-  React-Codegen: 4b8b4817cea7a54b83851d4c1f91f79aa73de30a
   React-Core: b23cdaaa9d76389d958c06af3c57aa6ad611c542
   React-CoreModules: 8e0f562e5695991e455abbebe1e968af71d52553
   React-cxxreact: 6ccbe0cc2c652b29409b14b23cfb3cd74e084691
@@ -2886,7 +2882,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: fabb15d507aebf871bf391ec1cdded706c58688b
   RNReanimated: 288616f9c66ff4b0911f3862ffcf4104482a2adc
   RNScreens: 26bb60cdb2ef2ca06fd87feefc495072f25982a7
-  RNShopifyCheckoutSheetKit: 1c83a5e93cd76358d40a5ecdeaff7075772d35d8
+  RNShopifyCheckoutSheetKit: 5f795d995c1dce7393436edb3d4b2cdab86e5c2a
   RNVectorIcons: be4d047a76ad307ffe54732208fb0498fcb8477f
   ShopifyCheckoutSheetKit: 17677d042e5bae7cf330abc6ea09c165a37526e7
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
