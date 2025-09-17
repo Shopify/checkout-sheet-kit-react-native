@@ -65,6 +65,12 @@ function CatalogScreen({navigation}: Props) {
     }
   };
 
+  const presentCheckoutStack = async () => {
+    if (checkoutURL) {
+      navigation.navigate('BuyNow', {url: checkoutURL});
+    }
+  };
+
   if (error) {
     return (
       <View style={styles.loading}>
@@ -111,8 +117,8 @@ function CatalogScreen({navigation}: Props) {
         <Pressable
           style={styles.cartButton}
           disabled={totalQuantity === 0}
-          onPress={presentCheckout}>
-          <Text style={styles.cartButtonText}>Checkout</Text>
+          onPress={presentCheckoutStack}>
+          <Text style={styles.cartButtonText}>Amazon Checkout</Text>
           <Text style={styles.cartButtonTextSubtitle}>
             {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}
           </Text>
@@ -198,7 +204,7 @@ function createStyles(colors: Colors) {
       color: colors.text,
     },
     scrollView: {
-      paddingBottom: 55,
+      paddingBottom: 110,
     },
     cartButton: {
       position: 'absolute',

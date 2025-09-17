@@ -14,7 +14,7 @@ import {Button} from 'react-native';
 
 type RouteID = {id: string};
 export type CheckoutStackParamList = {
-  CheckoutWebView: undefined;
+  CheckoutWebView: {url: string};
   Address: RouteID;
   Payment: RouteID;
 };
@@ -56,9 +56,23 @@ export function useCheckoutContext() {
   return context;
 }
 
+function WebviewComponent(props: any) {
+  console.log(props);
+  return (
+    config: NativeStackScreenProps<CheckoutStackParamList, 'CheckoutWebView'>,
+  ) => (
+    <CheckoutWebView
+      url={props.route.params.url}
+      outerNavigation={props.navigation}
+      {...config}
+    />
+  );
+}
+
 export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
   return function NavigationStack(props: {
     navigation: NativeStackNavigationProp<ParamListBase>;
+    route: any;
   }) {
     const [address, setAddress] = useState<Record<string, any>>({});
     const [payments, setPayments] = useState<Record<string, any>>({});
@@ -85,13 +99,7 @@ export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
               }}>
               <Stack.Screen
                 name="CheckoutWebView"
-                // eslint-disable-next-line react/no-unstable-nested-components
-                component={config => (
-                  <CheckoutWebView
-                    outerNavigation={props.navigation}
-                    {...config}
-                  />
-                )}
+                component={WebviewComponent(props)}
                 options={{
                   title: 'Shopify Checkout',
                   headerBackVisible: true,

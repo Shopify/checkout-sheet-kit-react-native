@@ -523,3 +523,8 @@ export {
   AcceleratedCheckoutButtons,
   RenderState,
 } from './components/AcceleratedCheckoutButtons';
+export {
+  CheckoutWebViewController,
+  type CheckoutWebViewControllerProps,
+  type CheckoutWebViewControllerHandle,
+} from './components/CheckoutWebViewController';

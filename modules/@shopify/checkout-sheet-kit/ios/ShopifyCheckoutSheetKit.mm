@@ -80,6 +80,58 @@ RCT_EXTERN_METHOD(isApplePayAvailable : (RCTPromiseResolveBlock)resolve reject :
 @end
 
 /**
+ * CheckoutWebView View Manager
+ */
+@interface RCT_EXTERN_MODULE (RCTCheckoutWebViewManager, RCTViewManager)
+
+/**
+ * The checkout URL to load
+ */
+RCT_EXPORT_VIEW_PROPERTY(checkoutUrl, NSString*)
+
+/**
+ * Emitted when the webview loads
+ */
+RCT_EXPORT_VIEW_PROPERTY(onLoad, RCTDirectEventBlock)
+
+/**
+ * Emitted when checkout fails
+ */
+RCT_EXPORT_VIEW_PROPERTY(onError, RCTDirectEventBlock)
+
+/**
+ * Emitted when checkout completes successfully
+ */
+RCT_EXPORT_VIEW_PROPERTY(onComplete, RCTBubblingEventBlock)
+
+/**
+ * Emitted when checkout is cancelled
+ */
+RCT_EXPORT_VIEW_PROPERTY(onCancel, RCTBubblingEventBlock)
+
+/**
+ * Emitted when a web pixel event occurs
+ */
+RCT_EXPORT_VIEW_PROPERTY(onPixelEvent, RCTBubblingEventBlock)
+
+/**
+ * Emitted when a link is clicked
+ */
+RCT_EXPORT_VIEW_PROPERTY(onClickLink, RCTBubblingEventBlock)
+
+/**
+ * Emitted when the view is attached
+ */
+RCT_EXPORT_VIEW_PROPERTY(onViewAttached, RCTDirectEventBlock)
+
+/**
+ * Reload the webview
+ */
+RCT_EXTERN_METHOD(reload : (nonnull NSNumber*)node)
+
+@end
+
+/**
  * AcceleratedCheckoutButtons View Manager
  */
 @interface RCT_EXTERN_MODULE (RCTAcceleratedCheckoutButtonsManager, RCTViewManager)

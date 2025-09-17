@@ -332,10 +332,6 @@ function CatalogStack() {
       screenOptions={({navigation}) => ({
         headerBackTitle: 'Back',
         // eslint-disable-next-line react/no-unstable-nested-components
-        headerLeft: () => (
-          <CartIcon onPress={() => navigation.navigate('BuyNow')} />
-        ),
-        // eslint-disable-next-line react/no-unstable-nested-components
         headerRight: () => (
           <CartIcon
             onPress={() =>
