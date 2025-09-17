@@ -111,7 +111,7 @@ export type RootStackParamList = {
   Cart: undefined;
   CartModal: undefined;
   Settings: undefined;
-  BuyNow: undefined;
+  BuyNow: {url: string};
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
