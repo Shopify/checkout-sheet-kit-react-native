@@ -6,6 +6,7 @@ import {
 } from '@react-navigation/native-stack';
 import {
   NavigationContainer,
+  NavigationIndependentTree,
   type ParamListBase,
 } from '@react-navigation/native';
 import {CheckoutWebView} from './CheckoutWebView';
@@ -73,52 +74,50 @@ export function createShopifyCheckoutNavigation(props: RenderProps) {
     };
 
     return (
-      <NavigationContainer>
-        <CheckoutContext.Provider
-          value={{
-            address,
-            payments,
-            setAddressData,
-            setPaymentData,
-          }}>
-          <Stack.Navigator
-            initialRouteName="CheckoutWebView"
-            screenOptions={{
-              headerStyle: {backgroundColor: '#95bf47'},
-              headerTintColor: '#fff',
-              headerTitleStyle: {fontWeight: 'bold'},
-            }}>
-            <Stack.Screen
-              name="CheckoutWebView"
-              component={CheckoutWebView}
-              options={{
-                title: 'Shopify Checkout',
-                headerBackVisible: true,
-                headerLeft() {
-                  return (
-                    <Button
-                      title="cancel"
-                      onPress={() => navigation.goBack()}
-                    />
-                  );
-                },
-              }}
-            />
+      <NavigationIndependentTree>
+        <NavigationContainer>
+          <CheckoutContext.Provider
+            value={{address, payments, setAddressData, setPaymentData}}>
+            <Stack.Navigator
+              initialRouteName="CheckoutWebView"
+              screenOptions={{
+                headerStyle: {backgroundColor: '#95bf47'},
+                headerTintColor: '#fff',
+                headerTitleStyle: {fontWeight: 'bold'},
+              }}>
+              <Stack.Screen
+                name="CheckoutWebView"
+                component={CheckoutWebView}
+                options={{
+                  title: 'Shopify Checkout',
+                  headerBackVisible: true,
+                  // eslint-disable-next-line react/no-unstable-nested-components
+                  headerLeft() {
+                    return (
+                      <Button
+                        title="cancel"
+                        onPress={() => navigation.goBack()}
+                      />
+                    );
+                  },
+                }}
+              />
 
-            <Stack.Screen
-              name="Address"
-              component={props.renderAddressScreen}
-              options={{title: 'Shipping Address'}}
-            />
+              <Stack.Screen
+                name="Address"
+                component={props.renderAddressScreen}
+                options={{title: 'Shipping Address'}}
+              />
 
-            <Stack.Screen
-              name="Payment"
-              component={props.renderPaymentScreen}
-              options={{title: 'Payment Details'}}
-            />
-          </Stack.Navigator>
-        </CheckoutContext.Provider>
-      </NavigationContainer>
+              <Stack.Screen
+                name="Payment"
+                component={props.renderPaymentScreen}
+                options={{title: 'Payment Details'}}
+              />
+            </Stack.Navigator>
+          </CheckoutContext.Provider>
+        </NavigationContainer>
+      </NavigationIndependentTree>
     );
   };
 }
@@ -138,6 +137,7 @@ export function useShopifyEvent(eventID: string): RespondableEvent {
         setPaymentData(eventID, body);
       }
       // navigation.goBack();
+      // navigation.getParent().goBack(); ?
     },
   };
 }

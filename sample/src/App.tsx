@@ -82,6 +82,7 @@ import {useShopifyEventHandlers} from './hooks/useCheckoutEventHandlers';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import {createDebugLogger} from './utils';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 const log = createDebugLogger('ENV');
 
@@ -111,7 +112,7 @@ export type RootStackParamList = {
   Cart: undefined;
   CartModal: undefined;
   Settings: undefined;
-  CheckoutWebview: undefined;
+  BuyNow: undefined;
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -332,6 +333,10 @@ function CatalogStack() {
       screenOptions={({navigation}) => ({
         headerBackTitle: 'Back',
         // eslint-disable-next-line react/no-unstable-nested-components
+        headerLeft: () => (
+          <CartIcon onPress={() => navigation.navigate('BuyNow')} />
+        ),
+        // eslint-disable-next-line react/no-unstable-nested-components
         headerRight: () => (
           <CartIcon
             onPress={() =>
@@ -368,7 +373,7 @@ function CatalogStack() {
         }}
       />
       <Stack.Screen
-        name="CheckoutWebview"
+        name="BuyNow"
         component={ShopifyNavigationStack}
         options={{
           title: 'Checkout',
@@ -576,17 +581,19 @@ const checkoutKitFeatures: Partial<Features> = {
 
 function App() {
   return (
-    <ErrorBoundary>
-      <AppWithTheme>
-        <AppWithCheckoutKit>
-          <AppWithContext>
-            <AppWithNavigation>
-              <Routes />
-            </AppWithNavigation>
-          </AppWithContext>
-        </AppWithCheckoutKit>
-      </AppWithTheme>
-    </ErrorBoundary>
+    <SafeAreaProvider>
+      <ErrorBoundary>
+        <AppWithTheme>
+          <AppWithCheckoutKit>
+            <AppWithContext>
+              <AppWithNavigation>
+                <Routes />
+              </AppWithNavigation>
+            </AppWithContext>
+          </AppWithCheckoutKit>
+        </AppWithTheme>
+      </ErrorBoundary>
+    </SafeAreaProvider>
   );
 }
 
