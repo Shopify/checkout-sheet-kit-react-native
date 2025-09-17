@@ -21,34 +21,53 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import type {PropsWithChildren, ReactNode} from 'react';
-import React, {useEffect, useMemo, useState} from 'react';
-import {Appearance, Linking, Pressable, StatusBar} from 'react-native';
+import {ApolloClient, ApolloProvider, InMemoryCache} from '@apollo/client';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
   NavigationContainer,
   useNavigation,
   type NavigationProp,
 } from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
+import type {PropsWithChildren, ReactNode} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
+import {
+  Appearance,
+  Button,
+  Linking,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 
 import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
 
-import type {Configuration, Features} from '@shopify/checkout-sheet-kit';
+import type {
+  CheckoutCompletedEvent,
+  CheckoutException,
+  Configuration,
+  Features,
+  PixelEvent,
+} from '@shopify/checkout-sheet-kit';
 import {
   ApplePayContactField,
   ColorScheme,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
-import type {
-  CheckoutCompletedEvent,
-  CheckoutException,
-  PixelEvent,
-} from '@shopify/checkout-sheet-kit';
+import {
+  createShopifyCheckoutNavigation,
+  useShopifyEvent,
+  type AddressScreenProps,
+  type PaymentScreenProps,
+} from '@shopify/checkout-sheet-kit/src/components/Navigation';
+import env from 'react-native-config';
+import type {ProductVariant, ShopifyProduct} from '../@types';
+import {CartProvider, useCart} from './context/Cart';
 import {ConfigProvider, useConfig} from './context/Config';
 import {
   ThemeProvider,
@@ -58,14 +77,11 @@ import {
   lightColors,
   useTheme,
 } from './context/Theme';
-import {CartProvider, useCart} from './context/Cart';
+import ErrorBoundary from './ErrorBoundary';
+import {useShopifyEventHandlers} from './hooks/useCheckoutEventHandlers';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
-import type {ProductVariant, ShopifyProduct} from '../@types';
-import ErrorBoundary from './ErrorBoundary';
-import env from 'react-native-config';
 import {createDebugLogger} from './utils';
-import {useShopifyEventHandlers} from './hooks/useCheckoutEventHandlers';
 
 const log = createDebugLogger('ENV');
 
@@ -95,6 +111,7 @@ export type RootStackParamList = {
   Cart: undefined;
   CartModal: undefined;
   Settings: undefined;
+  CheckoutWebview: undefined;
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -249,6 +266,66 @@ function AppWithContext({children}: PropsWithChildren) {
   );
 }
 
+export function AddressScreen(props: AddressScreenProps) {
+  const event = useShopifyEvent(props.route.params.id);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Address Screen</Text>
+      <Text>{event.id}</Text>
+      <Text>Enter your shipping address</Text>
+      <Button
+        title="Complete"
+        onPress={() => {
+          event.respondWith({address1: '1234 Road', country: 'USA'});
+          props.navigation.goBack();
+        }}
+      />
+    </View>
+  );
+}
+
+export function PaymentScreen(props: PaymentScreenProps) {
+  const event = useShopifyEvent(props.route.params.id);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Payment Screen</Text>
+      <Text>{event.id}</Text>
+      <Text>Enter your payment details</Text>
+      <Button
+        title="Complete"
+        onPress={() => {
+          event.respondWith({lastFourDigits: '1234', cardNetwork: 'Visa'});
+          props.navigation.goBack();
+        }}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    gap: 10,
+  },
+});
+const ShopifyNavigationStack = createShopifyCheckoutNavigation({
+  renderAddressScreen: AddressScreen,
+  renderPaymentScreen: PaymentScreen,
+});
+
 function CatalogStack() {
   return (
     <Stack.Navigator
@@ -288,6 +365,15 @@ function CatalogStack() {
           title: 'Cart',
           presentation: 'modal',
           headerRight: undefined,
+        }}
+      />
+      <Stack.Screen
+        name="CheckoutWebview"
+        component={ShopifyNavigationStack}
+        options={{
+          title: 'Checkout',
+          headerShown: false,
+          presentation: 'containedModal',
         }}
       />
     </Stack.Navigator>
