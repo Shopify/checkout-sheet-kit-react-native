@@ -21,6 +21,7 @@ type CheckoutScreenProps = NativeStackScreenProps<
 // const paymentid = 'payment-change-id:123';
 
 export function CheckoutWebView(props: CheckoutScreenProps) {
+  console.log('internal props', props.url);
   // const {address, payments} = useCheckoutContext();
   const checkoutRef = useRef<CheckoutWebViewControllerHandle>(null);
 
@@ -33,6 +34,12 @@ export function CheckoutWebView(props: CheckoutScreenProps) {
         <CheckoutWebViewController
           ref={checkoutRef}
           checkoutUrl={props.url}
+          onViewAttached={() => {
+            console.log('Native webview attached!');
+          }}
+          onLoad={(event) => {
+            console.log('Native webview loaded with URL:', event.url);
+          }}
           onComplete={(event: CheckoutCompletedEvent) => {
             // eslint-disable-next-line no-console
             console.log('Order completed!', event.orderDetails);
@@ -50,7 +57,7 @@ export function CheckoutWebView(props: CheckoutScreenProps) {
           onPixelEvent={event => {
             console.log('---event', event);
           }}
-          style={{flex: 1}}
+          style={{flex: 1, minHeight: 400}}
         />
       </View>
     </View>

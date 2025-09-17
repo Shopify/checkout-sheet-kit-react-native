@@ -72,13 +72,20 @@ class RCTCheckoutWebView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        print("[CheckoutWebView] layoutSubviews called, bounds: \(bounds)")
         checkoutWebViewController?.view.frame = bounds
+        if let webView = checkoutWebViewController?.view {
+            print("[CheckoutWebView] WebView frame set to: \(webView.frame)")
+        }
     }
 
     override func didMoveToWindow() {
         super.didMoveToWindow()
         if window != nil && checkoutWebViewController == nil && currentURL != nil {
-            updateCheckout()
+            // Delay to ensure view hierarchy is fully established
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                self?.updateCheckout()
+            }
         }
     }
     
@@ -98,28 +105,50 @@ class RCTCheckoutWebView: UIView {
     private func setupCheckoutWebViewController(with url: URL) {
         removeCheckout()
 
-        let webViewController = CheckoutWebViewController(checkoutURL: url, delegate: self)
-
-        if let parentVC = findParentViewController() ?? self.window?.rootViewController {
-            parentVC.addChild(webViewController)
-
-            if let view = webViewController.view {
-                view.translatesAutoresizingMaskIntoConstraints = false
-                addSubview(view)
-
-                NSLayoutConstraint.activate([
-                    view.topAnchor.constraint(equalTo: topAnchor),
-                    view.leadingAnchor.constraint(equalTo: leadingAnchor),
-                    view.trailingAnchor.constraint(equalTo: trailingAnchor),
-                    view.bottomAnchor.constraint(equalTo: bottomAnchor)
-                ])
+        // Try to find parent VC, if not found, retry with delay
+        guard let parentVC = findParentViewController() ?? self.window?.rootViewController else {
+            print("[CheckoutWebView] Parent VC not found yet, retrying...")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                guard let self = self else { return }
+                // Try one more time
+                if let parentVC = self.findParentViewController() ?? self.window?.rootViewController {
+                    print("[CheckoutWebView] Found parent VC on retry: \(parentVC)")
+                    self.createAndAttachWebView(with: url, to: parentVC)
+                } else {
+                    print("[CheckoutWebView] ERROR: Could not find parent view controller after retry")
+                }
             }
-
-            webViewController.didMove(toParent: parentVC)
-            parentViewController = parentVC
+            return
         }
 
+        print("[CheckoutWebView] Found parent VC immediately: \(parentVC)")
+        createAndAttachWebView(with: url, to: parentVC)
+    }
+
+    private func createAndAttachWebView(with url: URL, to parentVC: UIViewController) {
+        let webViewController = CheckoutWebViewController(checkoutURL: url, delegate: self)
+
+        parentVC.addChild(webViewController)
+
+        if let view = webViewController.view {
+            print("[CheckoutWebView] Adding webview to view hierarchy")
+            view.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(view)
+
+            NSLayoutConstraint.activate([
+                view.topAnchor.constraint(equalTo: topAnchor),
+                view.leadingAnchor.constraint(equalTo: leadingAnchor),
+                view.trailingAnchor.constraint(equalTo: trailingAnchor),
+                view.bottomAnchor.constraint(equalTo: bottomAnchor)
+            ])
+
+            print("[CheckoutWebView] Constraints activated, frame: \(self.frame)")
+        }
+
+        webViewController.didMove(toParent: parentVC)
+        parentViewController = parentVC
         checkoutWebViewController = webViewController
+
         onViewAttached?([:])
         onLoad?(["url": url.absoluteString])
     }
