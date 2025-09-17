@@ -6,7 +6,9 @@ import {useCheckoutContext, type CheckoutStackParamList} from './Navigation';
 type CheckoutScreenProps = NativeStackScreenProps<
   CheckoutStackParamList,
   'CheckoutWebView'
->;
+> & {
+  outerNavigation: any;
+};
 
 const addressid = 'address-change-id:123';
 const paymentid = 'payment-change-id:123';
@@ -34,7 +36,7 @@ export function CheckoutWebView(props: CheckoutScreenProps) {
         </View>
       </Pressable>
 
-      <Button title="Pay" onPress={() => props.navigation.goBack()} />
+      <Button title="Pay" onPress={() => props.outerNavigation.goBack()} />
     </View>
   );
 }
