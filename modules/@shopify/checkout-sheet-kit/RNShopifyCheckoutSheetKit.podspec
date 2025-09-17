@@ -23,7 +23,17 @@ Pod::Spec.new do |s|
 	s.dependency "ShopifyCheckoutSheetKit", "~> 3.3.1"
 
   if fabric_enabled
-		install_modules_dependencies(s)
+		# Use React Native's helper if available, otherwise add dependencies directly
+		if defined?(install_modules_dependencies)
+			install_modules_dependencies(s)
+		else
+			# Fallback: manually specify dependencies for New Architecture
+			s.dependency "React-Codegen"
+			s.dependency "RCT-Folly", :modular_headers => true
+			s.dependency "RCTRequired"
+			s.dependency "RCTTypeSafety"
+			s.dependency "ReactCommon/turbomodule/core"
+		end
 
 		s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
 
@@ -38,5 +48,5 @@ Pod::Spec.new do |s|
 		s.dependency "RCTRequired"
 		s.dependency "RCTTypeSafety"
 		s.dependency "ReactCommon/turbomodule/core"
-   end
+  end
 end
