@@ -56,10 +56,8 @@ export function useCheckoutContext() {
   return context;
 }
 
-export function createShopifyCheckoutNavigation(props: RenderProps) {
-  return function NavigationStack({
-    navigation,
-  }: {
+export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
+  return function NavigationStack(props: {
     navigation: NativeStackNavigationProp<ParamListBase>;
   }) {
     const [address, setAddress] = useState<Record<string, any>>({});
@@ -87,7 +85,13 @@ export function createShopifyCheckoutNavigation(props: RenderProps) {
               }}>
               <Stack.Screen
                 name="CheckoutWebView"
-                component={CheckoutWebView}
+                // eslint-disable-next-line react/no-unstable-nested-components
+                component={config => (
+                  <CheckoutWebView
+                    outerNavigation={props.navigation}
+                    {...config}
+                  />
+                )}
                 options={{
                   title: 'Shopify Checkout',
                   headerBackVisible: true,
@@ -96,7 +100,7 @@ export function createShopifyCheckoutNavigation(props: RenderProps) {
                     return (
                       <Button
                         title="cancel"
-                        onPress={() => navigation.goBack()}
+                        onPress={() => props.navigation.goBack()}
                       />
                     );
                   },
@@ -105,13 +109,13 @@ export function createShopifyCheckoutNavigation(props: RenderProps) {
 
               <Stack.Screen
                 name="Address"
-                component={props.renderAddressScreen}
+                component={renderProps.renderAddressScreen}
                 options={{title: 'Shipping Address'}}
               />
 
               <Stack.Screen
                 name="Payment"
-                component={props.renderPaymentScreen}
+                component={renderProps.renderPaymentScreen}
                 options={{title: 'Payment Details'}}
               />
             </Stack.Navigator>
