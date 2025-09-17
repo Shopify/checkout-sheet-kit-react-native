@@ -82,7 +82,6 @@ import {useShopifyEventHandlers} from './hooks/useCheckoutEventHandlers';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import {createDebugLogger} from './utils';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 const log = createDebugLogger('ENV');
 
@@ -581,19 +580,17 @@ const checkoutKitFeatures: Partial<Features> = {
 
 function App() {
   return (
-    <SafeAreaProvider>
-      <ErrorBoundary>
-        <AppWithTheme>
-          <AppWithCheckoutKit>
-            <AppWithContext>
-              <AppWithNavigation>
-                <Routes />
-              </AppWithNavigation>
-            </AppWithContext>
-          </AppWithCheckoutKit>
-        </AppWithTheme>
-      </ErrorBoundary>
-    </SafeAreaProvider>
+    <ErrorBoundary>
+      <AppWithTheme>
+        <AppWithCheckoutKit>
+          <AppWithContext>
+            <AppWithNavigation>
+              <Routes />
+            </AppWithNavigation>
+          </AppWithContext>
+        </AppWithCheckoutKit>
+      </AppWithTheme>
+    </ErrorBoundary>
   );
 }
 
