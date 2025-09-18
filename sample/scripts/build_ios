@@ -3,6 +3,19 @@
 set -ex
 set -eo pipefail
 
+# Add ccache to PATH if available for faster compilation outside of CI environments
+# Can be disabled with CCACHE=false for debugging or matching CI behavior locally
+if [ "$CI" = "true" ] || [ "$CCACHE" = "false" ]; then
+    # CI detected or ccache explicitly disabled - skipping ccache for clean builds
+    if command -v ccache >/dev/null 2>&1; then
+        ccache -C
+    fi
+else
+    if [ -d "/opt/homebrew/opt/ccache/libexec" ]; then
+        export PATH="/opt/homebrew/opt/ccache/libexec:$PATH"
+    fi
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/simulator"
 dest="$(get_sim_destination)"

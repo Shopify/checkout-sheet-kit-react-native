@@ -4,6 +4,11 @@ type: node
 
 up:
   - ruby
+  - xcode:
+      version: '26.0'
+      runtimes:
+        ios:
+          - '26.0'
   - node:
       version: v20.11.1
       yarn: 1.22.22
@@ -22,6 +27,11 @@ up:
       met?: (cd sample/ios && bundle exec pod check --ignore-dev-pods)
       meet: |
         yarn pod-install
+  - custom:
+      name: Install ccache
+      met?: which ccache
+      meet: |
+        brew install ccache
   - custom:
       name: Build node module
       met?: (cd modules/@shopify/checkout-sheet-kit && ls -l | grep lib)
@@ -57,6 +67,9 @@ commands:
       yarn module clean
       yarn sample clean
       yarn clean
+      if command -v ccache >/dev/null 2>&1; then
+        ccache -C
+      fi
       echo "✅ Cleaned root, module and sample workspaces"
 
   fix:
