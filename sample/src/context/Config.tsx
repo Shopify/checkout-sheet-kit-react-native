@@ -24,7 +24,7 @@ interface Context {
 const defaultAppConfig: AppConfig = {
   colorScheme: ColorScheme.automatic,
   enablePreloading: true,
-  prefillBuyerInformation: false,
+  prefillBuyerInformation: true,
   customerAuthenticated: false,
 };
 

@@ -253,7 +253,7 @@ function AppWithContext({children}: PropsWithChildren) {
         colorScheme:
           checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
         enablePreloading: checkoutKitConfigDefaults.preloading ?? true,
-        prefillBuyerInformation: false,
+        prefillBuyerInformation: true,
         customerAuthenticated: false,
       }}>
       <ApolloProvider client={client}>

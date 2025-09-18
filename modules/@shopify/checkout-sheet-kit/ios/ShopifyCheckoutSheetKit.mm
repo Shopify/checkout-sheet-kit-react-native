@@ -114,6 +114,8 @@ RCT_EXPORT_VIEW_PROPERTY(onCancel, RCTBubblingEventBlock)
  */
 RCT_EXPORT_VIEW_PROPERTY(onPixelEvent, RCTBubblingEventBlock)
 
+
+RCT_EXPORT_VIEW_PROPERTY(onAddressChangeIntent, RCTBubblingEventBlock)
 /**
  * Emitted when a link is clicked
  */
