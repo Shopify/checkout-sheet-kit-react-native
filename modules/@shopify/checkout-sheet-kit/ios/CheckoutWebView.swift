@@ -30,13 +30,13 @@ class RCTCheckoutWebView: UIView {
     private var checkoutWebViewController: CheckoutWebViewController?
     private var currentURL: URL?
     private weak var parentViewController: UIViewController?
-    
+
     @objc var checkoutUrl: String? {
         didSet {
             updateCheckout()
         }
     }
-    
+
     @objc var onLoad: RCTDirectEventBlock?
     @objc var onError: RCTBubblingEventBlock?
     @objc var onComplete: RCTBubblingEventBlock?
@@ -45,17 +45,17 @@ class RCTCheckoutWebView: UIView {
     @objc var onClickLink: RCTBubblingEventBlock?
     @objc var onViewAttached: RCTDirectEventBlock?
     @objc var onAddressChangeIntent: RCTBubblingEventBlock?
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
     }
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupView()
     }
-    
+
     private func setupView() {
         backgroundColor = UIColor.clear
     }
@@ -70,7 +70,7 @@ class RCTCheckoutWebView: UIView {
         }
         return nil
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         checkoutWebViewController?.view.frame = bounds
@@ -85,20 +85,20 @@ class RCTCheckoutWebView: UIView {
             }
         }
     }
-    
+
     private func updateCheckout() {
         guard let urlString = checkoutUrl,
               let url = URL(string: urlString) else {
             removeCheckout()
             return
         }
-        
+
         if url != currentURL {
             currentURL = url
             setupCheckoutWebViewController(with: url)
         }
     }
-    
+
     private func setupCheckoutWebViewController(with url: URL) {
         removeCheckout()
 
@@ -157,7 +157,7 @@ class RCTCheckoutWebView: UIView {
         onLoad?(["url": url.absoluteString])
         print("[CheckoutWebView] Checkout URL loaded: \(url.absoluteString)")
     }
-    
+
     private func removeCheckout() {
         checkoutWebViewController?.willMove(toParent: nil)
         checkoutWebViewController?.view.removeFromSuperview()
@@ -165,13 +165,13 @@ class RCTCheckoutWebView: UIView {
         checkoutWebViewController = nil
         currentURL = nil
     }
-    
+
     @objc func reload() {
         if let url = currentURL {
             setupCheckoutWebViewController(with: url)
         }
     }
-    
+
     override func removeFromSuperview() {
         removeCheckout()
         super.removeFromSuperview()
@@ -183,33 +183,37 @@ extension RCTCheckoutWebView: CheckoutDelegate {
       print("[RCTCheckoutWebView] checkoutDidComplete called with event: \(event)")
         onComplete?(ShopifyEventSerialization.serialize(checkoutCompletedEvent: event))
     }
-    
+
     func checkoutDidCancel() {
         print("[RCTCheckoutWebView] checkoutDidCancel called")
         onCancel?([:])
     }
-    
+
     func checkoutDidFail(error: ShopifyCheckoutSheetKit.CheckoutError) {
         print("[RCTCheckoutWebView] checkoutDidFail called with error: \(error)")
         onError?(ShopifyEventSerialization.serialize(checkoutError: error))
     }
-    
+
     func checkoutDidEmitWebPixelEvent(event: ShopifyCheckoutSheetKit.PixelEvent) {
         print("[RCTCheckoutWebView] checkoutDidEmitWebPixelEvent called with event: \(event)")
         onPixelEvent?(ShopifyEventSerialization.serialize(pixelEvent: event))
     }
-    
+
     func checkoutDidClickLink(url: URL) {
         print("[RCTCheckoutWebView] checkoutDidClickLink called with url: \(url)")
         onClickLink?(["url": url.absoluteString])
     }
-  
+
     func shouldRecoverFromError(error: CheckoutError) -> Bool {
         return error.isRecoverable
     }
 
     func checkoutDidRequestAddressChange(event: CheckoutAddressChangeIntentEvent) {
-        print("[RCTCheckoutWebView] checkoutDidRequestAddressChange called with addressType: \(event.addressType)")
-        onAddressChangeIntent?(["addressType": event.addressType])
+        print("[RCTCheckoutWebView] checkoutDidRequestAddressChange called with addressType: \(event)")
+        onAddressChangeIntent?([
+          "id": event.id,
+          "type": "addressChangeIntent",
+          "addressType": event.addressType
+        ])
     }
 }

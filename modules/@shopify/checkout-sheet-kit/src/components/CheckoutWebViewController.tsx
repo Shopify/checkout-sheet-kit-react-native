@@ -80,7 +80,7 @@ export interface CheckoutWebViewControllerProps {
   /**
    * Called when checkout requests an address change (e.g., for native address picker)
    */
-  onAddressChangeIntent?: (addressId: string) => void;
+  onAddressChangeIntent?: (event: {id: string, type: string, addressType: string}) => void;
 
   /**
    * Style for the webview container
@@ -105,7 +105,11 @@ interface NativeCheckoutWebViewProps {
   onPixelEvent?: (event: {nativeEvent: PixelEvent}) => void;
   onClickLink?: (event: {nativeEvent: {url: string}}) => void;
   onViewAttached?: () => void;
-  onAddressChangeIntent?: (event: {nativeEvent: {addressType: string}}) => void;
+  onAddressChangeIntent?: (event: {nativeEvent: {
+    id: string,
+    type: string,
+    addressType: string
+  }}) => void;
 }
 
 const RCTCheckoutWebView =
@@ -206,9 +210,9 @@ export const CheckoutWebViewController = forwardRef<
     }, [onViewAttached]);
 
     const handleAddressChangeIntent = useCallback(
-      (event: {nativeEvent: {addressType: string}}) => {
-        if (event.nativeEvent?.addressType) {
-          onAddressChangeIntent?.(event.nativeEvent.addressType);
+      (event: {nativeEvent: {id: string, type: string, addressType: string}}) => {
+        if (event.nativeEvent) {
+          onAddressChangeIntent?.(event.nativeEvent);
         }
       },
       [onAddressChangeIntent],
