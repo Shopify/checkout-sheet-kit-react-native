@@ -44,6 +44,7 @@ class RCTCheckoutWebView: UIView {
     @objc var onPixelEvent: RCTBubblingEventBlock?
     @objc var onClickLink: RCTBubblingEventBlock?
     @objc var onViewAttached: RCTDirectEventBlock?
+    @objc var onAddressChangeIntent: RCTBubblingEventBlock?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -72,11 +73,7 @@ class RCTCheckoutWebView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        print("[CheckoutWebView] layoutSubviews called, bounds: \(bounds)")
         checkoutWebViewController?.view.frame = bounds
-        if let webView = checkoutWebViewController?.view {
-            print("[CheckoutWebView] WebView frame set to: \(webView.frame)")
-        }
     }
 
     override func didMoveToWindow() {
@@ -107,12 +104,10 @@ class RCTCheckoutWebView: UIView {
 
         // Try to find parent VC, if not found, retry with delay
         guard let parentVC = findParentViewController() ?? self.window?.rootViewController else {
-            print("[CheckoutWebView] Parent VC not found yet, retrying...")
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
                 guard let self = self else { return }
                 // Try one more time
                 if let parentVC = self.findParentViewController() ?? self.window?.rootViewController {
-                    print("[CheckoutWebView] Found parent VC on retry: \(parentVC)")
                     self.createAndAttachWebView(with: url, to: parentVC)
                 } else {
                     print("[CheckoutWebView] ERROR: Could not find parent view controller after retry")
@@ -121,17 +116,16 @@ class RCTCheckoutWebView: UIView {
             return
         }
 
-        print("[CheckoutWebView] Found parent VC immediately: \(parentVC)")
         createAndAttachWebView(with: url, to: parentVC)
     }
 
     private func createAndAttachWebView(with url: URL, to parentVC: UIViewController) {
         let webViewController = CheckoutWebViewController(checkoutURL: url, delegate: self)
+        print("[CheckoutWebView] Creating CheckoutWebViewController with delegate: \(String(describing: self))")
 
         parentVC.addChild(webViewController)
 
         if let view = webViewController.view {
-            print("[CheckoutWebView] Adding webview to view hierarchy")
             view.translatesAutoresizingMaskIntoConstraints = false
             addSubview(view)
 
@@ -142,15 +136,26 @@ class RCTCheckoutWebView: UIView {
                 view.bottomAnchor.constraint(equalTo: bottomAnchor)
             ])
 
-            print("[CheckoutWebView] Constraints activated, frame: \(self.frame)")
         }
 
         webViewController.didMove(toParent: parentVC)
         parentViewController = parentVC
         checkoutWebViewController = webViewController
 
+        print("[CheckoutWebView] CheckoutWebViewController stored, view attached")
+
+        // Test if delegate is working by checking if we can call a method
+        if let testDelegate = webViewController as? CheckoutWebViewController {
+            print("[CheckoutWebView] WebViewController confirmed as CheckoutWebViewController")
+        }
+
+        // Notify that the checkout has been presented - this is required for events to work
+        webViewController.notifyPresented()
+        print("[CheckoutWebView] Called notifyPresented() to enable event handling")
+
         onViewAttached?([:])
         onLoad?(["url": url.absoluteString])
+        print("[CheckoutWebView] Checkout URL loaded: \(url.absoluteString)")
     }
     
     private func removeCheckout() {
@@ -175,26 +180,36 @@ class RCTCheckoutWebView: UIView {
 
 extension RCTCheckoutWebView: CheckoutDelegate {
     func checkoutDidComplete(event: CheckoutCompletedEvent) {
+      print("[RCTCheckoutWebView] checkoutDidComplete called with event: \(event)")
         onComplete?(ShopifyEventSerialization.serialize(checkoutCompletedEvent: event))
     }
     
     func checkoutDidCancel() {
+        print("[RCTCheckoutWebView] checkoutDidCancel called")
         onCancel?([:])
     }
     
     func checkoutDidFail(error: ShopifyCheckoutSheetKit.CheckoutError) {
+        print("[RCTCheckoutWebView] checkoutDidFail called with error: \(error)")
         onError?(ShopifyEventSerialization.serialize(checkoutError: error))
     }
     
     func checkoutDidEmitWebPixelEvent(event: ShopifyCheckoutSheetKit.PixelEvent) {
+        print("[RCTCheckoutWebView] checkoutDidEmitWebPixelEvent called with event: \(event)")
         onPixelEvent?(ShopifyEventSerialization.serialize(pixelEvent: event))
     }
     
     func checkoutDidClickLink(url: URL) {
+        print("[RCTCheckoutWebView] checkoutDidClickLink called with url: \(url)")
         onClickLink?(["url": url.absoluteString])
     }
-    
+  
     func shouldRecoverFromError(error: CheckoutError) -> Bool {
         return error.isRecoverable
+    }
+
+    func checkoutDidRequestAddressChange(event: CheckoutAddressChangeIntentEvent) {
+        print("[RCTCheckoutWebView] checkoutDidRequestAddressChange called with addressType: \(event.addressType)")
+        onAddressChangeIntent?(["addressType": event.addressType])
     }
 }

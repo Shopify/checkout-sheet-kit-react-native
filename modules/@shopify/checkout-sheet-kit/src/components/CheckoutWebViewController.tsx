@@ -78,6 +78,11 @@ export interface CheckoutWebViewControllerProps {
   onViewAttached?: () => void;
 
   /**
+   * Called when checkout requests an address change (e.g., for native address picker)
+   */
+  onAddressChangeIntent?: (addressId: string) => void;
+
+  /**
    * Style for the webview container
    */
   style?: ViewStyle;
@@ -100,6 +105,7 @@ interface NativeCheckoutWebViewProps {
   onPixelEvent?: (event: {nativeEvent: PixelEvent}) => void;
   onClickLink?: (event: {nativeEvent: {url: string}}) => void;
   onViewAttached?: () => void;
+  onAddressChangeIntent?: (event: {nativeEvent: {addressType: string}}) => void;
 }
 
 const RCTCheckoutWebView =
@@ -147,6 +153,7 @@ export const CheckoutWebViewController = forwardRef<
       onPixelEvent,
       onClickLink,
       onViewAttached,
+      onAddressChangeIntent,
       style,
     },
     ref,
@@ -198,6 +205,15 @@ export const CheckoutWebViewController = forwardRef<
       onViewAttached?.();
     }, [onViewAttached]);
 
+    const handleAddressChangeIntent = useCallback(
+      (event: {nativeEvent: {addressType: string}}) => {
+        if (event.nativeEvent?.addressType) {
+          onAddressChangeIntent?.(event.nativeEvent.addressType);
+        }
+      },
+      [onAddressChangeIntent],
+    );
+
     const reload = useCallback(() => {
       if (Platform.OS === 'ios' && webViewRef.current) {
         const handle = findNodeHandle(webViewRef.current);
@@ -239,6 +255,7 @@ export const CheckoutWebViewController = forwardRef<
         onPixelEvent={handlePixelEvent}
         onClickLink={handleClickLink}
         onViewAttached={handleViewAttached}
+        onAddressChangeIntent={handleAddressChangeIntent}
       />
     );
   },
