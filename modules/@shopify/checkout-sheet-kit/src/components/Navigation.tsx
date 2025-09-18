@@ -11,6 +11,7 @@ import {
 } from '@react-navigation/native';
 import {CheckoutWebView} from './CheckoutWebView';
 import {Button} from 'react-native';
+import {CheckoutEventProvider} from '../CheckoutEventProvider';
 
 type RouteID = {id: string};
 export type CheckoutStackParamList = {
@@ -90,56 +91,58 @@ export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
     };
 
     return (
-      <NavigationIndependentTree>
-        <NavigationContainer>
-          <CheckoutContext.Provider
-            value={{address, payments, setAddressData, setPaymentData}}>
-            <Stack.Navigator
-              initialRouteName="CheckoutWebView"
-              screenOptions={{
-                headerStyle: {backgroundColor: '#95bf47'},
-                headerTintColor: '#fff',
-                headerTitleStyle: {fontWeight: 'bold'},
-              }}>
-              <Stack.Screen
-                name="CheckoutWebView"
-                options={{
-                  title: 'Shopify Checkout',
-                  headerBackVisible: true,
-                  // eslint-disable-next-line react/no-unstable-nested-components
-                  headerLeft() {
-                    return (
-                      <Button
-                        title="cancel"
-                        onPress={() => props.navigation.goBack()}
-                      />
-                    );
-                  },
+      <CheckoutEventProvider>
+        <NavigationIndependentTree>
+          <NavigationContainer>
+            <CheckoutContext.Provider
+              value={{address, payments, setAddressData, setPaymentData}}>
+              <Stack.Navigator
+                initialRouteName="CheckoutWebView"
+                screenOptions={{
+                  headerStyle: {backgroundColor: '#95bf47'},
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {fontWeight: 'bold'},
                 }}>
-                {screenProps => (
-                  <WebviewComponent
-                    {...screenProps}
-                    outerNavigation={props.navigation}
-                    outerRoute={props.route}
-                  />
-                )}
-              </Stack.Screen>
+                <Stack.Screen
+                  name="CheckoutWebView"
+                  options={{
+                    title: 'Shopify Checkout',
+                    headerBackVisible: true,
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    headerLeft() {
+                      return (
+                        <Button
+                          title="cancel"
+                          onPress={() => props.navigation.goBack()}
+                        />
+                      );
+                    },
+                  }}>
+                  {screenProps => (
+                    <WebviewComponent
+                      {...screenProps}
+                      outerNavigation={props.navigation}
+                      outerRoute={props.route}
+                    />
+                  )}
+                </Stack.Screen>
 
-              <Stack.Screen
-                name="Address"
-                component={renderProps.renderAddressScreen}
-                options={{title: 'Shipping Address'}}
-              />
+                <Stack.Screen
+                  name="Address"
+                  component={renderProps.renderAddressScreen}
+                  options={{title: 'Shipping Address'}}
+                />
 
-              <Stack.Screen
-                name="Payment"
-                component={renderProps.renderPaymentScreen}
-                options={{title: 'Payment Details'}}
-              />
-            </Stack.Navigator>
-          </CheckoutContext.Provider>
-        </NavigationContainer>
-      </NavigationIndependentTree>
+                <Stack.Screen
+                  name="Payment"
+                  component={renderProps.renderPaymentScreen}
+                  options={{title: 'Payment Details'}}
+                />
+              </Stack.Navigator>
+            </CheckoutContext.Provider>
+          </NavigationContainer>
+        </NavigationIndependentTree>
+      </CheckoutEventProvider>
     );
   };
 }
