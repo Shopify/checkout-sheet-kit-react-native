@@ -26,6 +26,7 @@ import React, {
   useCallback,
   useImperativeHandle,
   forwardRef,
+  useEffect,
 } from 'react';
 import {
   requireNativeComponent,
@@ -35,6 +36,7 @@ import {
 } from 'react-native';
 import type {ViewStyle} from 'react-native';
 import type {CheckoutCompletedEvent, CheckoutException, PixelEvent} from '..';
+import {useCheckoutEvents} from '../CheckoutEventProvider';
 
 export interface CheckoutWebViewControllerProps {
   /**
@@ -163,6 +165,22 @@ export const CheckoutWebViewController = forwardRef<
     ref,
   ) => {
     const webViewRef = useRef<any>(null);
+    const eventContext = useCheckoutEvents();
+    const { registerWebView, unregisterWebView } = eventContext || {
+      registerWebView: () => {},
+      unregisterWebView: () => {},
+    };
+
+    // Register webview reference with the event provider
+    useEffect(() => {
+      if (eventContext) {
+        registerWebView(webViewRef);
+        return () => {
+          unregisterWebView();
+        };
+      }
+      return undefined;
+    }, [registerWebView, unregisterWebView, eventContext]);
 
     const handleLoad = useCallback(
       (event: {nativeEvent: {url: string}}) => {

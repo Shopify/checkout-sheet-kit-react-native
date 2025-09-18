@@ -144,22 +144,3 @@ export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
   };
 }
 
-type RespondableEvent = {id: string; respondWith: (body: unknown) => void};
-export function useShopifyEvent(eventID: string): RespondableEvent {
-  //const navigation = useNavigation();
-
-  const {setAddressData, setPaymentData} = useCheckoutContext();
-
-  return {
-    id: eventID,
-    respondWith: (body: unknown) => {
-      if (eventID.includes('address')) {
-        setAddressData(eventID, body);
-      } else if (eventID.includes('payment')) {
-        setPaymentData(eventID, body);
-      }
-      // navigation.goBack();
-      // navigation.getParent().goBack(); ?
-    },
-  };
-}

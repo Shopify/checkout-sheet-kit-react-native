@@ -40,6 +40,7 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 
@@ -60,8 +61,11 @@ import {
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
 import {
-  createShopifyCheckoutNavigation,
+  CheckoutEventProvider,
   useShopifyEvent,
+} from '@shopify/checkout-sheet-kit/src/CheckoutEventProvider';
+import {
+  createShopifyCheckoutNavigation,
   type AddressScreenProps,
   type PaymentScreenProps,
 } from '@shopify/checkout-sheet-kit/src/components/Navigation';
@@ -268,35 +272,96 @@ function AppWithContext({children}: PropsWithChildren) {
 
 export function AddressScreen(props: AddressScreenProps) {
   const event = useShopifyEvent(props.route.params.id);
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
+
+  const addressOptions = [
+    {
+      label: '620 King Street West',
+      address: {
+        firstName: 'John',
+        lastName: 'Doe',
+        address1: '620 King Street West',
+        address2: '',
+        city: 'Toronto',
+        provinceCode: 'ON',
+        countryCode: 'CA',
+        zip: 'M6K 0C6',
+        phone: '+441792547555'
+      }
+    },
+    {
+      label: '1234 Queen Street East',
+      address: {
+        firstName: 'John',
+        lastName: 'Doe',
+        address1: '1234 Queen Street East',
+        address2: 'Apt 5B',
+        city: 'Toronto',
+        provinceCode: 'ON',
+        countryCode: 'CA',
+        zip: 'M4L 1C9',
+        phone: '+441792547555'
+      }
+    },
+    {
+      label: '567 Bloor Street West',
+      address: {
+        firstName: 'John',
+        lastName: 'Doe',
+        address1: '567 Bloor Street West',
+        address2: 'Unit 12',
+        city: 'Toronto',
+        provinceCode: 'ON',
+        countryCode: 'CA',
+        zip: 'M5S 1Y2',
+        phone: '+441792547555'
+      }
+    }
+  ];
+
+  const handleAddressSelection = () => {
+    const selectedAddress = addressOptions[selectedAddressIndex];
+    event.respondWith({
+      delivery: {
+        addresses: [{
+          address: selectedAddress!.address
+        }]
+      }
+    });
+    props.navigation.goBack();
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Address Screen</Text>
-      <Text>{event.id}</Text>
-      <Text>Enter your shipping address</Text>
-      <Button
-        title="Complete"
-        onPress={() => {
-          event.respondWith({
-            delivery: {
-              addresses: [{
-                address: {
-                  firstName: 'John',
-                  lastName: 'Doe',
-                  address1: '620 King Street West',
-                  address2: '',
-                  city: 'Toronto',
-                  provinceCode: 'ON',
-                  countryCode: 'CA',
-                  zip: 'M6K 0C6',
-                  phone: '+441792547555'
-                }
-              }]
-            }
-          });
-          props.navigation.goBack();
-        }}
-      />
+      <View style={styles.addressList}>
+        {addressOptions.map((option, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.addressOption,
+              selectedAddressIndex === index && styles.selectedAddress
+            ]}
+            onPress={() => setSelectedAddressIndex(index)}
+          >
+            <View style={styles.radioButton}>
+              {selectedAddressIndex === index && <View style={styles.radioButtonSelected} />}
+            </View>
+            <View style={styles.addressInfo}>
+              <Text style={styles.addressLabel}>{option.label}</Text>
+              <Text style={styles.addressDetails}>
+                {option.address.city}, {option.address.provinceCode} {option.address.zip}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Use Selected Address"
+          onPress={handleAddressSelection}
+        />
+      </View>
     </View>
   );
 }
@@ -325,22 +390,86 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     padding: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 30,
+    textAlign: 'center',
+  },
+  addressList: {
+    width: '100%',
+    marginBottom: 30,
+  },
+  addressOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  selectedAddress: {
+    backgroundColor: '#e3f2fd',
+    borderColor: '#2196f3',
+  },
+  radioButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#ccc',
+    marginRight: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioButtonSelected: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#2196f3',
+  },
+  addressInfo: {
+    flex: 1,
+  },
+  addressLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+  },
+  addressDetails: {
+    fontSize: 14,
+    color: '#666',
   },
   buttonContainer: {
     gap: 10,
+    width: '100%',
   },
 });
-const ShopifyNavigationStack = createShopifyCheckoutNavigation({
+const ShopifyNavigationStackComponent = createShopifyCheckoutNavigation({
   renderAddressScreen: AddressScreen,
   renderPaymentScreen: PaymentScreen,
 });
+
+// Wrapper to provide CheckoutEventProvider context
+function ShopifyNavigationStack(props: any) {
+  return (
+    <CheckoutEventProvider>
+      <ShopifyNavigationStackComponent {...props} />
+    </CheckoutEventProvider>
+  );
+}
 
 function CatalogStack() {
   return (

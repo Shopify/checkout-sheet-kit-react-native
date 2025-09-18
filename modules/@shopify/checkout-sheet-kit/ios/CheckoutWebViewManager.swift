@@ -27,19 +27,26 @@ import ShopifyCheckoutSheetKit
 
 @objc(RCTCheckoutWebViewManager)
 class RCTCheckoutWebViewManager: RCTViewManager {
-    
+
     override func view() -> UIView! {
         return RCTCheckoutWebView()
     }
-    
+
     override static func requiresMainQueueSetup() -> Bool {
         return true
     }
-    
+
     @objc func reload(_ node: NSNumber) {
         DispatchQueue.main.async {
             let component = self.bridge.uiManager.view(forReactTag: node) as? RCTCheckoutWebView
             component?.reload()
+        }
+    }
+
+    @objc func respondToEvent(_ node: NSNumber, eventId: String, responseData: String) {
+        DispatchQueue.main.async {
+            let component = self.bridge.uiManager.view(forReactTag: node) as? RCTCheckoutWebView
+            component?.respondToEvent(eventId: eventId, responseData: responseData)
         }
     }
 }

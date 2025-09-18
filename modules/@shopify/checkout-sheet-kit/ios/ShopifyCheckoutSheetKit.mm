@@ -131,6 +131,11 @@ RCT_EXPORT_VIEW_PROPERTY(onViewAttached, RCTDirectEventBlock)
  */
 RCT_EXTERN_METHOD(reload : (nonnull NSNumber*)node)
 
+/**
+ * Respond to a checkout event with data
+ */
+RCT_EXTERN_METHOD(respondToEvent : (nonnull NSNumber*)node eventId : (NSString*)eventId responseData : (NSString*)responseData)
+
 @end
 
 /**

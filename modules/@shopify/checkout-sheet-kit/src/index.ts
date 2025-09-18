@@ -528,3 +528,9 @@ export {
   type CheckoutWebViewControllerProps,
   type CheckoutWebViewControllerHandle,
 } from './components/CheckoutWebViewController';
+export {
+  CheckoutEventProvider,
+  useCheckoutEvents,
+  useShopifyEvent,
+  type CheckoutEventProviderProps,
+} from './CheckoutEventProvider';
