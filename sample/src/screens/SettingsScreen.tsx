@@ -116,7 +116,6 @@ function SettingsScreen() {
     setAppConfig({
       ...appConfig,
       prefillBuyerInformation: !appConfig.prefillBuyerInformation,
-      customerAuthenticated: !appConfig.customerAuthenticated,
     });
   }, [appConfig, clearCart, setAppConfig]);
 
