@@ -61,7 +61,6 @@ import {
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
 import {
-  CheckoutEventProvider,
   useShopifyEvent,
 } from '@shopify/checkout-sheet-kit/src/CheckoutEventProvider';
 import {
@@ -304,16 +303,16 @@ export function AddressScreen(props: AddressScreenProps) {
       }
     },
     {
-      label: '567 Bloor Street West',
+      label: '10 Sunningdale Ave',
       address: {
         firstName: 'John',
         lastName: 'Doe',
-        address1: '567 Bloor Street West',
-        address2: 'Unit 12',
-        city: 'Toronto',
-        provinceCode: 'ON',
-        countryCode: 'CA',
-        zip: 'M5S 1Y2',
+        address1: '10 Sunningdale Ave',
+        address2: '',
+        city: 'Swansea',
+        provinceCode: 'WAL',
+        countryCode: 'GB',
+        zip: 'SA3 5HP',
         phone: '+441792547555'
       }
     }
@@ -333,6 +332,9 @@ export function AddressScreen(props: AddressScreenProps) {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Select Shipping Address</Text>
+      <Text style={styles.subtitle}>Event ID: {event.id}</Text>
+
       <View style={styles.addressList}>
         {addressOptions.map((option, index) => (
           <TouchableOpacity
@@ -457,19 +459,10 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 });
-const ShopifyNavigationStackComponent = createShopifyCheckoutNavigation({
+const ShopifyNavigationStack = createShopifyCheckoutNavigation({
   renderAddressScreen: AddressScreen,
   renderPaymentScreen: PaymentScreen,
 });
-
-// Wrapper to provide CheckoutEventProvider context
-function ShopifyNavigationStack(props: any) {
-  return (
-    <CheckoutEventProvider>
-      <ShopifyNavigationStackComponent {...props} />
-    </CheckoutEventProvider>
-  );
-}
 
 function CatalogStack() {
   return (
