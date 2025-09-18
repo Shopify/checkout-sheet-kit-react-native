@@ -57,9 +57,9 @@ export function CheckoutWebView(props: CheckoutScreenProps) {
           onPixelEvent={event => {
             console.log('---event', event);
           }}
-          onAddressChangeIntent={(addressId) => {
-            console.log('Address change requested:', addressId);
-            props.navigation.navigate('Address', {id: addressId});
+          onAddressChangeIntent={(event) => {
+            console.log('Address change requested:', event);
+            props.navigation.navigate('Address', {id: event.id});
           }}
           style={{flex: 1, minHeight: 400}}
         />

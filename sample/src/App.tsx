@@ -277,7 +277,23 @@ export function AddressScreen(props: AddressScreenProps) {
       <Button
         title="Complete"
         onPress={() => {
-          event.respondWith({address1: '1234 Road', country: 'USA'});
+          event.respondWith({
+            delivery: {
+              addresses: [{
+                address: {
+                  firstName: 'John',
+                  lastName: 'Doe',
+                  address1: '620 King Street West',
+                  address2: '',
+                  city: 'Toronto',
+                  provinceCode: 'ON',
+                  countryCode: 'CA',
+                  zip: 'M6K 0C6',
+                  phone: '+441792547555'
+                }
+              }]
+            }
+          });
           props.navigation.goBack();
         }}
       />
