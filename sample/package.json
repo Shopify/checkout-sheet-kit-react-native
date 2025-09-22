@@ -19,7 +19,6 @@
   "dependencies": {
     "@apollo/client": "^3.13.9",
     "@react-navigation/bottom-tabs": "^7.4.6",
-
     "@react-navigation/stack": "^7.4.8",
     "@shopify/checkout-sheet-kit": "link:../modules/@shopify/checkout-sheet-kit",
     "graphql": "^16.8.2",
