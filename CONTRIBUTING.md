@@ -44,6 +44,28 @@ yarn sample start
 This command will start the Metro server. Follow the steps given by Metro to
 open both the iOS and Android simulators/emulators respectively.
 
+## Optional: Speed up builds with ccache
+
+For faster native compilation (especially on incremental builds), you can install [ccache](https://ccache.dev/), a compiler cache:
+
+```sh
+# macOS (using Homebrew)
+brew install ccache
+
+# Ubuntu/Debian
+sudo apt-get install ccache
+
+# Other systems: see https://ccache.dev/download.html
+```
+
+The build scripts will automatically detect and use ccache if available. If you encounter any build issues, you can temporarily disable it:
+
+```sh
+# Disable ccache for a single build
+CCACHE=false yarn sample ios
+CCACHE=false yarn sample android
+```
+
 ## Making changes to the Native Module
 
 If your intentions are to modify the TS code for the Native Module under

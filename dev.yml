@@ -1,9 +1,19 @@
 name: checkout-sheet-kit-react-native
 
+edition: 2024
+
 type: node
 
 up:
+  - packages:
+    - swiftlint
+    - ccache
   - ruby
+  - xcode:
+      version: '26.0'
+      runtimes:
+        ios:
+          - '26.0'
   - node:
       version: v20.11.1
       yarn: 1.22.22
@@ -27,10 +37,6 @@ up:
       met?: (cd modules/@shopify/checkout-sheet-kit && ls -l | grep lib)
       meet: |
         yarn module build
-
-packages:
-  - xcode
-  - swiftlint
 
 check:
   lint_swift: ./scripts/lint_swift
@@ -57,6 +63,9 @@ commands:
       yarn module clean
       yarn sample clean
       yarn clean
+      if command -v ccache >/dev/null 2>&1; then
+        ccache -C
+      fi
       echo "✅ Cleaned root, module and sample workspaces"
 
   fix:
