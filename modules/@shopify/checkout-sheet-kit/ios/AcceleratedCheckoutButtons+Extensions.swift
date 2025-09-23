@@ -31,14 +31,11 @@ import SwiftUI
 @available(iOS 16.0, *)
 extension PayWithApplePayButtonLabel {
     static func from(_ string: String?, fallback: PayWithApplePayButtonLabel = .plain) -> PayWithApplePayButtonLabel {
-        guard let string else {
-            return fallback
+        guard let string, let value = map[string] else {
+          return fallback
         }
-        return map[string] ?? .plain
-    }
 
-    public static func == (lhs: PayWithApplePayButtonLabel, rhs: PayWithApplePayButtonLabel) -> Bool {
-        return String(describing: lhs) == String(describing: rhs)
+        return value
     }
 
     private static let map: [String: PayWithApplePayButtonLabel] = [
