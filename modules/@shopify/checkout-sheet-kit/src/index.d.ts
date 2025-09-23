@@ -233,6 +233,12 @@ export interface AcceleratedCheckoutConfiguration {
        * Example: 'merchant.com.yourcompany'
        */
       merchantIdentifier: string;
+      /**
+       * Restrict the countries available for shipping during the Apple Pay flow.
+       * Expects ISO 3166-1 alpha-2 country codes (e.g., "US", "CA", "GB").
+       * @default null (all countries supported, as per Shop configuration)
+       */
+      supportedShippingCountries?: string[];
     };
   };
 }

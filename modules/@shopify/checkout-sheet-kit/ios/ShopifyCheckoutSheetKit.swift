@@ -221,6 +221,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         customerAccessToken: String?,
         applePayMerchantIdentifier: String?,
         applyPayContactFields: [String]?,
+        supportedShippingCountries: [String]?,
         resolve: @escaping RCTPromiseResolveBlock,
         reject _: @escaping RCTPromiseRejectBlock
     ) {
@@ -247,7 +248,8 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
                 acceleratedCheckoutsApplePayConfiguration = ShopifyAcceleratedCheckouts.ApplePayConfiguration(
                     merchantIdentifier: merchantIdentifier,
-                    contactFields: fields
+                    contactFields: fields,
+                    supportedShippingCountries: Set(supportedShippingCountries ?? [])
                 )
 
                 AcceleratedCheckoutConfiguration.shared.applePayConfiguration = acceleratedCheckoutsApplePayConfiguration as? ShopifyAcceleratedCheckouts.ApplePayConfiguration

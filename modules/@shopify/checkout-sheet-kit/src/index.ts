@@ -238,6 +238,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
           config.customer?.accessToken || null,
           config.wallets?.applePay?.merchantIdentifier || null,
           config.wallets?.applePay?.contactFields || [],
+          config.wallets?.applePay?.supportedShippingCountries || [],
         );
       return configured;
     } catch (error) {
@@ -289,28 +290,38 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   private validateAcceleratedCheckoutsConfiguration(
     acceleratedCheckouts: Configuration['acceleratedCheckouts'],
   ) {
+    if (!acceleratedCheckouts) {
+      return;
+    }
+
+    const {storefrontDomain, storefrontAccessToken, wallets} =
+      acceleratedCheckouts;
+
     /**
      * Required Accelerated Checkouts configuration properties
      */
-    if (!acceleratedCheckouts?.storefrontDomain) {
+    if (!storefrontDomain) {
       throw new Error('`storefrontDomain` is required');
     }
-    if (!acceleratedCheckouts.storefrontAccessToken) {
+    if (!storefrontAccessToken) {
       throw new Error('`storefrontAccessToken` is required');
     }
 
     /**
      * Validate Apple Pay config if available
      */
-    if (acceleratedCheckouts.wallets?.applePay) {
-      if (!acceleratedCheckouts.wallets.applePay.merchantIdentifier) {
+    if (wallets?.applePay) {
+      const {merchantIdentifier, contactFields, supportedShippingCountries} =
+        wallets.applePay;
+
+      if (!merchantIdentifier) {
         throw new Error('`wallets.applePay.merchantIdentifier` is required');
       }
 
       const expectedContactFields = Object.values(ApplePayContactField);
       const hasInvalidContactFields =
-        Array.isArray(acceleratedCheckouts.wallets.applePay.contactFields) &&
-        acceleratedCheckouts.wallets.applePay.contactFields.some(
+        Array.isArray(contactFields) &&
+        contactFields.some(
           value =>
             !expectedContactFields.includes(
               value.toLowerCase() as ApplePayContactField,
@@ -319,7 +330,16 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
       if (hasInvalidContactFields) {
         throw new Error(
-          `'wallets.applePay.contactFields' contains unexpected values. Expected "${expectedContactFields.join(', ')}", received "${acceleratedCheckouts.wallets.applePay.contactFields}"`,
+          `'wallets.applePay.contactFields' contains unexpected values. Expected "${expectedContactFields.join(', ')}", received "${contactFields}"`,
+        );
+      }
+
+      if (
+        Array.isArray(supportedShippingCountries) &&
+        supportedShippingCountries?.some(country => typeof country !== 'string')
+      ) {
+        throw new Error(
+          `'wallets.applePay.supportedShippingCountries' contains unexpected values. Expects ISO 3166-1 alpha-2 country codes (e.g., "US", "CA", "GB").`,
         );
       }
     }
