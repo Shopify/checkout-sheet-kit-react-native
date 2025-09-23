@@ -32,7 +32,7 @@ import SwiftUI
 extension PayWithApplePayButtonLabel {
     static func from(_ string: String?, fallback: PayWithApplePayButtonLabel = .plain) -> PayWithApplePayButtonLabel {
         guard let string, let value = map[string] else {
-          return fallback
+            return fallback
         }
 
         return value
