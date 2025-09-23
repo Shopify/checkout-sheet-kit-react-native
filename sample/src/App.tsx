@@ -271,28 +271,28 @@ function AppWithContext({children}: PropsWithChildren) {
 
 export function AddressScreen(props: AddressScreenProps) {
   const event = useShopifyEvent(props.route.params.id);
-  const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
+  const {selectedAddressIndex, setSelectedAddressIndex} = useCart();
 
   const addressOptions = [
     {
-      label: '620 King Street West',
+      label: '650 King Street West',
       address: {
-        firstName: 'John',
-        lastName: 'Doe',
-        address1: '620 King Street West',
+        firstName: 'Evelyn',
+        lastName: 'Hartley',
+        address1: '650 King Street West',
         address2: '',
         city: 'Toronto',
         provinceCode: 'ON',
         countryCode: 'CA',
-        zip: 'M6K 0C6',
-        phone: '+441792547555'
+        zip: 'M5V 1M7',
+        phone: '+1-888-746-7439'
       }
     },
     {
       label: '1234 Queen Street East',
       address: {
-        firstName: 'John',
-        lastName: 'Doe',
+        firstName: 'Evelyn',
+        lastName: 'Hartley',
         address1: '1234 Queen Street East',
         address2: 'Apt 5B',
         city: 'Toronto',
@@ -305,13 +305,13 @@ export function AddressScreen(props: AddressScreenProps) {
     {
       label: '10 Sunningdale Ave',
       address: {
-        firstName: 'John',
-        lastName: 'Doe',
-        address1: '10 Sunningdale Ave',
-        address2: '',
-        city: 'Swansea',
-        provinceCode: 'WAL',
-        countryCode: 'GB',
+        firstName: 'Evelyn',
+        lastName: 'Hartley',
+        address1: '1234 Queen Street East',
+        address2: 'Apt 5B',
+        city: 'Toronto',
+        provinceCode: 'ON',
+        countryCode: 'CA',
         zip: 'SA3 5HP',
         phone: '+441792547555'
       }

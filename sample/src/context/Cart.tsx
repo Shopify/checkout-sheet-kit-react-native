@@ -17,23 +17,28 @@ interface Context {
   checkoutURL: string | undefined;
   totalQuantity: number;
   addingToCart: Set<string>;
+  selectedAddressIndex: number;
   clearCart: () => void;
   addToCart: (variantId: string) => Promise<void>;
   removeFromCart: (variantId: string) => Promise<void>;
+  setSelectedAddressIndex: (index: number) => void;
 }
 
 const defaultCartId = undefined;
 const defaultCheckoutURL = undefined;
 const defaultTotalQuantity = 0;
+const defaultSelectedAddressIndex = 0;
 
 const CartContext = createContext<Context>({
   cartId: defaultCartId,
   checkoutURL: undefined,
   totalQuantity: 0,
   addingToCart: new Set(),
+  selectedAddressIndex: defaultSelectedAddressIndex,
   addToCart: async () => {},
   removeFromCart: async () => {},
   clearCart: () => {},
+  setSelectedAddressIndex: () => {},
 });
 
 type AddingToCartAction =
@@ -43,6 +48,7 @@ type AddingToCartAction =
 const checkoutURLState = atom<Context['checkoutURL']>(defaultCheckoutURL);
 const cartIdState = atom<Context['cartId']>(defaultCartId);
 const totalQuantityState = atom<Context['totalQuantity']>(defaultTotalQuantity);
+const selectedAddressIndexState = atom<Context['selectedAddressIndex']>(defaultSelectedAddressIndex);
 
 export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const shopify = useShopifyCheckoutSheet();
@@ -52,6 +58,8 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const [cartId, setCartId] = useAtom(cartIdState);
   // Keep track of the number of items in the cart
   const [totalQuantity, setTotalQuantity] = useAtom(totalQuantityState);
+  // Keep track of the selected address index
+  const [selectedAddressIndex, setSelectedAddressIndex] = useAtom(selectedAddressIndexState);
   // Maintain a loading state for items being added to the cart
   const addingToCartReducer = (
     state: Set<string>,
@@ -81,7 +89,8 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
     setCartId(defaultCartId);
     setCheckoutURL(undefined);
     setTotalQuantity(0);
-  }, [setCartId, setCheckoutURL, setTotalQuantity]);
+    setSelectedAddressIndex(defaultSelectedAddressIndex);
+  }, [setCartId, setCheckoutURL, setTotalQuantity, setSelectedAddressIndex]);
 
   useEffect(() => {
     const subscription = shopify.addEventListener('completed', () => {
@@ -216,6 +225,8 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       totalQuantity,
       addingToCart,
       clearCart,
+      selectedAddressIndex,
+      setSelectedAddressIndex,
     }),
     [
       cartId,
@@ -225,6 +236,8 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       totalQuantity,
       addingToCart,
       clearCart,
+      selectedAddressIndex,
+      setSelectedAddressIndex,
     ],
   );
 
