@@ -163,7 +163,7 @@ interface NativeAcceleratedCheckoutButtonsProps {
   onSizeChange?: (event: {nativeEvent: {height: number}}) => void;
 }
 
-const RCTAcceleratedCheckoutButtons =
+const LegacyAcceleratedCheckoutButtons =
   requireNativeComponent<NativeAcceleratedCheckoutButtonsProps>(
     'RCTAcceleratedCheckoutButtons',
   );
@@ -304,8 +304,24 @@ export const AcceleratedCheckoutButtons: React.FC<
     }
   }
 
+  /**
+   * Renderer note: Paper (old renderer) vs Fabric (new renderer).
+   *
+   * We intentionally keep supporting both:
+   * - When Fabric is enabled (RN 0.80+), the Legacy ViewManager Interop layer auto-registers
+   *   an interop component that proxies mount/prop updates/events to our existing Paper
+   *   `RCTViewManager` (`RCTAcceleratedCheckoutButtons`). No dedicated Fabric ComponentView
+   *   is required for this path to work.
+   * - When Fabric is disabled, this goes through the classic Paper UIManager path.
+   *
+   * This preserves the public API while we migrate. When we switch to a true Fabric component
+   * (codegen + `RCTViewComponentView`), we can replace this with the generated component and
+   * remove the interop/legacy manager entirely.
+   */
+  const NativeComponent = LegacyAcceleratedCheckoutButtons;
+
   return (
-    <RCTAcceleratedCheckoutButtons
+    <NativeComponent
       applePayLabel={applePayLabel}
       style={{...defaultStyles, height: dynamicHeight}}
       checkoutIdentifier={checkoutIdentifier}

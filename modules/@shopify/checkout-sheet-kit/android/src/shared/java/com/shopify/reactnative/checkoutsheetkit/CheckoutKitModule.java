@@ -20,17 +20,14 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-
 package com.shopify.reactnative.checkoutsheetkit;
 
 import android.app.Activity;
-import android.content.Context;
 import androidx.activity.ComponentActivity;
-import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.shopify.checkoutsheetkit.*;
@@ -39,9 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
-  private static final String MODULE_NAME = "ShopifyCheckoutSheetKit";
-
+public final class CheckoutKitModule implements CheckoutKitDelegate {
   public static Configuration checkoutConfig = new Configuration();
 
   private final ReactApplicationContext reactContext;
@@ -50,10 +45,8 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
   private CustomCheckoutEventProcessor checkoutEventProcessor;
 
-  public ShopifyCheckoutSheetKitModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-
-    this.reactContext = reactContext;
+  public CheckoutKitModule(ReactApplicationContext ctx) {
+    this.reactContext = ctx;
 
     ShopifyCheckoutSheetKit.configure(configuration -> {
       configuration.setPlatform(Platform.REACT_NATIVE);
@@ -61,10 +54,9 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     });
   }
 
-  @NonNull
   @Override
   public String getName() {
-    return MODULE_NAME;
+    return "ShopifyCheckoutSheetKit";
   }
 
   @Override
@@ -74,29 +66,34 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     return constants;
   }
 
-  @ReactMethod
+  @Override
+  public String getVersion() {
+    return ShopifyCheckoutSheetKit.version;
+  }
+
+  @Override
   public void addListener(String eventName) {
     // No-op but required for RN to register module
   }
 
-  @ReactMethod
-  public void removeListeners(Integer count) {
+  @Override
+  public void removeListeners(double count) {
     // No-op but required for RN to register module
   }
 
-  @ReactMethod
-  public void present(String checkoutURL) {
+  @Override
+  public void present(String checkoutUrl) {
     Activity currentActivity = getCurrentActivity();
     if (currentActivity instanceof ComponentActivity) {
       checkoutEventProcessor = new CustomCheckoutEventProcessor(currentActivity, this.reactContext);
       currentActivity.runOnUiThread(() -> {
-        checkoutSheet = ShopifyCheckoutSheetKit.present(checkoutURL, (ComponentActivity) currentActivity,
+        checkoutSheet = ShopifyCheckoutSheetKit.present(checkoutUrl, (ComponentActivity) currentActivity,
             checkoutEventProcessor);
       });
     }
   }
 
-  @ReactMethod
+  @Override
   public void dismiss() {
     if (checkoutSheet != null) {
       checkoutSheet.dismiss();
@@ -104,21 +101,20 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
-  public void preload(String checkoutURL) {
+  @Override
+  public void preload(String checkoutUrl) {
     Activity currentActivity = getCurrentActivity();
-
     if (currentActivity instanceof ComponentActivity) {
-      ShopifyCheckoutSheetKit.preload(checkoutURL, (ComponentActivity) currentActivity);
+      ShopifyCheckoutSheetKit.preload(checkoutUrl, (ComponentActivity) currentActivity);
     }
   }
 
-  @ReactMethod
+  @Override
   public void invalidateCache() {
     ShopifyCheckoutSheetKit.invalidate();
   }
 
-  @ReactMethod
+  @Override
   public void getConfig(Promise promise) {
     WritableNativeMap resultConfig = new WritableNativeMap();
 
@@ -128,10 +124,8 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     promise.resolve(resultConfig);
   }
 
-  @ReactMethod
+  @Override
   public void setConfig(ReadableMap config) {
-    Context context = getReactApplicationContext();
-
     ShopifyCheckoutSheetKit.configure(configuration -> {
       if (config.hasKey("preloading")) {
         configuration.setPreloading(new Preloading(config.getBoolean("preloading")));
@@ -162,14 +156,34 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     });
   }
 
-  @ReactMethod
-  public void initiateGeolocationRequest(Boolean allow) {
+  @Override
+  public void initiateGeolocationRequest(boolean allow) {
     if (checkoutEventProcessor != null) {
       checkoutEventProcessor.invokeGeolocationCallback(allow);
     }
   }
 
+  @Override
+  public void isAcceleratedCheckoutAvailable(Promise promise) {
+    promise.resolve(false);
+  }
+
+  @Override
+  public void isApplePayAvailable(Promise promise) {
+    promise.resolve(false);
+  }
+
+  @Override
+  public void configureAcceleratedCheckouts(String domain, String token, String email, String phone,
+      String customerToken, String applePayMerchantId, ReadableArray contactFields, Promise promise) {
+    promise.resolve(false);
+  }
+
   // Private
+
+  private Activity getCurrentActivity() {
+    return reactContext.getCurrentActivity();
+  }
 
   private ColorScheme getColorScheme(String colorScheme) {
     switch (colorScheme) {
@@ -257,10 +271,10 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
           headerBackground,
           headerFont,
           progressIndicator,
-          // Parameter allows passing a custom drawable, we'll just support custom color for now
+          // Parameter allows passing a custom drawable, we'll just support custom color
+          // for now
           null,
-          closeButtonColor
-        );
+          closeButtonColor);
     }
 
     return null;

@@ -17,7 +17,7 @@ runs:
       with:
         path: |
           sample/ios/Pods
-        key: ${{ runner.os }}-cocoapods-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock', 'sample/Gemfile', 'package.json', 'sample/package.json', 'modules/@shopify/checkout-sheet-kit/package.json', 'yarn.lock') }}
+        key: ${{ runner.os }}-cocoapods-na-${{ env.RCT_NEW_ARCH_ENABLED }}-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock', 'sample/Gemfile', 'package.json', 'sample/package.json', 'modules/@shopify/checkout-sheet-kit/package.json', 'yarn.lock') }}
 
     - name: Install cocoapods
       shell: bash
@@ -27,5 +27,6 @@ runs:
         cd sample
         bundle install
         cd ios
-        bundle exec pod install --deployment --repo-update
+        echo "RCT_NEW_ARCH_ENABLED: ${{ env.RCT_NEW_ARCH_ENABLED }}"
+        bundle exec pod install --repo-update
         cd $ROOT
