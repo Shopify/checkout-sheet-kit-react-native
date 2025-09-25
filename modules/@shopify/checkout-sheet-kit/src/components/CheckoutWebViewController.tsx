@@ -37,6 +37,7 @@ import {
 import type {ViewStyle} from 'react-native';
 import type {CheckoutCompletedEvent, CheckoutException, PixelEvent} from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
+import type {CheckoutAddressChangeIntent} from '../events';
 
 export interface CheckoutWebViewControllerProps {
   /**
@@ -82,7 +83,7 @@ export interface CheckoutWebViewControllerProps {
   /**
    * Called when checkout requests an address change (e.g., for native address picker)
    */
-  onAddressChangeIntent?: (event: {id: string, type: string, addressType: string}) => void;
+  onAddressChangeIntent?: (event: CheckoutAddressChangeIntent) => void;
 
   /**
    * Style for the webview container
@@ -107,11 +108,13 @@ interface NativeCheckoutWebViewProps {
   onPixelEvent?: (event: {nativeEvent: PixelEvent}) => void;
   onClickLink?: (event: {nativeEvent: {url: string}}) => void;
   onViewAttached?: () => void;
-  onAddressChangeIntent?: (event: {nativeEvent: {
-    id: string,
-    type: string,
-    addressType: string
-  }}) => void;
+  onAddressChangeIntent?: (event: {
+    nativeEvent: {
+      id: string;
+      type: string;
+      addressType: string;
+    };
+  }) => void;
 }
 
 const RCTCheckoutWebView =
@@ -166,7 +169,7 @@ export const CheckoutWebViewController = forwardRef<
   ) => {
     const webViewRef = useRef<any>(null);
     const eventContext = useCheckoutEvents();
-    const { registerWebView, unregisterWebView } = eventContext || {
+    const {registerWebView, unregisterWebView} = eventContext || {
       registerWebView: () => {},
       unregisterWebView: () => {},
     };
@@ -228,7 +231,9 @@ export const CheckoutWebViewController = forwardRef<
     }, [onViewAttached]);
 
     const handleAddressChangeIntent = useCallback(
-      (event: {nativeEvent: {id: string, type: string, addressType: string}}) => {
+      (event: {
+        nativeEvent: {id: string; type: string; addressType: string};
+      }) => {
         if (event.nativeEvent) {
           onAddressChangeIntent?.(event.nativeEvent);
         }

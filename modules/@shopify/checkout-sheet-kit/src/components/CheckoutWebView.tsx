@@ -4,86 +4,88 @@ import {View} from 'react-native';
 import {type CheckoutStackParamList} from './Navigation';
 import {
   CheckoutWebViewController,
-  type CheckoutWebViewControllerHandle,
-  type CheckoutCompletedEvent,
   type CheckoutException,
+  type CheckoutWebViewControllerHandle,
+  type CheckoutWebViewControllerProps,
 } from '..';
+import type {CheckoutAddressChangeIntent} from '../events';
 
-type CheckoutScreenProps = NativeStackScreenProps<
+type CheckoutDelegateEvents = Pick<
+  CheckoutWebViewControllerProps,
+  | 'onPixelEvent'
+  | 'onComplete'
+  | 'onCancel'
+  | 'onClickLink'
+  | 'onError'
+  | 'onAddressChangeIntent'
+>;
+type NavigationProps = NativeStackScreenProps<
   CheckoutStackParamList,
   'CheckoutWebView'
-> & {
-  outerNavigation: any;
-  url: string;
-};
+>;
+type CheckoutWebViewProps = NavigationProps &
+  CheckoutDelegateEvents & {
+    url: URL;
+    auth: string;
+    goBack: () => void;
+  };
 
-// const addressid = 'address-change-id:123';
-// const paymentid = 'payment-change-id:123';
-
-export function CheckoutWebView(props: CheckoutScreenProps) {
-  console.log('internal props', props.url);
-  // const {address, payments} = useCheckoutContext();
+export function CheckoutWebView(props: CheckoutWebViewProps) {
   const checkoutRef = useRef<CheckoutWebViewControllerHandle>(null);
+  const delegate = useCheckoutDelegate(props, checkoutRef);
 
-  // onPress={() => props.navigation.navigate('Address', {id: addressid})}>
-  // onPress={() => props.navigation.navigate('Payment', {id: paymentid})}>
-  //  <Button title="Pay" onPress={() => props.outerNavigation.goBack()} />
+  const url = new URL(props.url.toString());
+  url.searchParams.append('embed', props.auth); // Mock implementation
+
   return (
     <View style={{flex: 1}}>
-      <View style={{flex: 1, backgroundColor: '#f5f5f5'}}>
+      <View style={{flex: 1}}>
         <CheckoutWebViewController
           ref={checkoutRef}
-          checkoutUrl={props.url}
-          onViewAttached={() => {
-            console.log('Native webview attached!');
-          }}
-          onLoad={(event) => {
-            console.log('Native webview loaded with URL:', event.url);
-          }}
-          onComplete={(event: CheckoutCompletedEvent) => {
-            // eslint-disable-next-line no-console
-            console.log('Order completed!', event.orderDetails);
-          }}
-          onError={(error: CheckoutException) => {
-            // eslint-disable-next-line no-console
-            console.error('Checkout failed:', error);
-            // Optionally reload on error
-            checkoutRef.current?.reload();
-          }}
-          onCancel={() => {
-            // eslint-disable-next-line no-console
-            console.log('Checkout cancelled');
-          }}
-          onPixelEvent={event => {
-            console.log('---event', event);
-          }}
-          onAddressChangeIntent={(event) => {
-            console.log('Address change requested:', event);
-            props.navigation.navigate('Address', {id: event.id});
-          }}
+          checkoutUrl={url.toString()}
           style={{flex: 1, minHeight: 400}}
+          onAddressChangeIntent={delegate.onAddressChangeIntent}
+          onCancel={delegate.onCancel}
+          onComplete={delegate.onComplete}
+          onError={delegate.onError}
+          onPixelEvent={delegate.onPixelEvent}
+
+          // Used for debugging setting up the component, will remove after refactors to native code
+          // onViewAttached={() => {
+          //    console.log('Native webview attached!');
+          // }}
+          // onLoad={event => {
+          //    console.log('Native webview loaded with URL:', event.url);
+          // }}
         />
       </View>
     </View>
   );
 }
 
-// const styles = StyleSheet.create({
-//   card: {
-//     backgroundColor: '#ffffff',
-//     borderRadius: 12,
-//     padding: 16,
-//     marginHorizontal: 16,
-//     marginVertical: 8,
-//     shadowColor: '#000',
-//     shadowOffset: {
-//       width: 0,
-//       height: 2,
-//     },
-//     shadowOpacity: 0.1,
-//     shadowRadius: 3.84,
-//     elevation: 5,
-//     borderWidth: 1,
-//     borderColor: '#e0e0e0',
-//   },
-// });
+function useCheckoutDelegate(
+  props: CheckoutWebViewProps,
+  checkoutRef: React.RefObject<CheckoutWebViewControllerHandle | null>,
+): CheckoutDelegateEvents {
+  const onAddressChangeIntent = (event: CheckoutAddressChangeIntent) => {
+    props.onAddressChangeIntent?.(event);
+    props.navigation.navigate('Address', {id: event.id});
+  };
+
+  const onCancel = () => {
+    props.onCancel?.();
+    props.goBack();
+  };
+
+  const onError = (error: CheckoutException) => {
+    props.onError?.(error);
+    checkoutRef.current?.reload();
+  };
+
+  return {
+    ...props,
+    onAddressChangeIntent,
+    onError,
+    onCancel,
+  };
+}

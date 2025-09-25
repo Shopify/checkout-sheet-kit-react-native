@@ -110,3 +110,8 @@ namespace CheckoutCompletedEvent {
 export interface CheckoutCompletedEvent {
   orderDetails: CheckoutCompletedEvent.OrderDetails;
 }
+export interface CheckoutAddressChangeIntent {
+  id: string;
+  type: string;
+  addressType: string;
+}

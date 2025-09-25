@@ -57,23 +57,6 @@ export function useCheckoutContext() {
   return context;
 }
 
-function WebviewComponent(
-  props: NativeStackScreenProps<CheckoutStackParamList, 'CheckoutWebView'> & {
-    outerNavigation: NativeStackNavigationProp<ParamListBase>;
-    outerRoute: any;
-  },
-) {
-  console.log('props', props);
-  return (
-    <CheckoutWebView
-      url={props.outerRoute.params.url}
-      outerNavigation={props.outerNavigation}
-      navigation={props.navigation}
-      route={props.route}
-    />
-  );
-}
-
 export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
   return function NavigationStack(props: {
     navigation: NativeStackNavigationProp<ParamListBase>;
@@ -119,10 +102,11 @@ export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
                     },
                   }}>
                   {screenProps => (
-                    <WebviewComponent
+                    <CheckoutWebView
                       {...screenProps}
-                      outerNavigation={props.navigation}
-                      outerRoute={props.route}
+                      url={new URL(screenProps.route.params.url)}
+                      auth={''}
+                      goBack={props.navigation.goBack}
                     />
                   )}
                 </Stack.Screen>
@@ -146,4 +130,3 @@ export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
     );
   };
 }
-
