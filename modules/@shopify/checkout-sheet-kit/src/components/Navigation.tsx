@@ -91,19 +91,12 @@ export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
                   options={{
                     title: 'Shopify Checkout',
                     headerBackVisible: true,
-                    // eslint-disable-next-line react/no-unstable-nested-components
-                    headerLeft() {
-                      return (
-                        <Button
-                          title="cancel"
-                          onPress={() => props.navigation.goBack()}
-                        />
-                      );
-                    },
+                    headerRight: CancelButton(props),
                   }}>
                   {screenProps => (
                     <CheckoutWebView
                       {...screenProps}
+                      // TODO: we shouldnt be dependent on their navigation objects being react-navigation
                       url={new URL(props.route.params.url)}
                       auth={'ey49mock'}
                       goBack={props.navigation.goBack}
@@ -114,13 +107,19 @@ export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
                 <Stack.Screen
                   name="Address"
                   component={renderProps.renderAddressScreen}
-                  options={{title: 'Shipping Address'}}
+                  options={{
+                    title: 'Shipping Address',
+                    headerLeft: BackButton(props),
+                  }}
                 />
 
                 <Stack.Screen
                   name="Payment"
                   component={renderProps.renderPaymentScreen}
-                  options={{title: 'Payment Details'}}
+                  options={{
+                    title: 'Payment Details',
+                    headerLeft: BackButton(props),
+                  }}
                 />
               </Stack.Navigator>
             </CheckoutContext.Provider>
@@ -129,4 +128,18 @@ export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
       </CheckoutEventProvider>
     );
   };
+}
+
+function CancelButton(props: {
+  navigation: NativeStackNavigationProp<ParamListBase>;
+  route: any;
+}) {
+  return () => <Button title="x" onPress={() => props.navigation.goBack()} />;
+}
+
+function BackButton(props: {
+  navigation: NativeStackNavigationProp<ParamListBase>;
+  route: any;
+}) {
+  return () => <Button title="<-" onPress={() => props.navigation.goBack()} />;
 }
