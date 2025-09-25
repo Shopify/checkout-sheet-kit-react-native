@@ -1,17 +1,19 @@
-import React, {createContext, useContext, useState} from 'react';
+import {
+  NavigationContainer,
+  NavigationIndependentTree,
+  type ParamListBase,
+  type RouteProp,
+} from '@react-navigation/native';
 import {
   createNativeStackNavigator,
   type NativeStackNavigationProp,
   type NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import {
-  NavigationContainer,
-  NavigationIndependentTree,
-  type ParamListBase,
-} from '@react-navigation/native';
-import {CheckoutWebView} from './CheckoutWebView';
+import React from 'react';
 import {Button} from 'react-native';
 import {CheckoutEventProvider} from '../CheckoutEventProvider';
+import {CheckoutContextProvider} from './CheckoutContext';
+import {CheckoutWebView} from './CheckoutWebView';
 
 type RouteID = {id: string};
 export type CheckoutStackParamList = {
@@ -36,49 +38,18 @@ type RenderProps = {
   renderPaymentScreen: (props: PaymentScreenProps) => React.ReactNode;
 };
 
-type CheckoutContextData = {
-  address: Record<string, any>;
-  payments: Record<string, any>;
-  setAddressData: (id: string, data: any) => void;
-  setPaymentData: (id: string, data: any) => void;
-};
-
-const CheckoutContext = createContext<CheckoutContextData | undefined>(
-  undefined,
-);
-
-export function useCheckoutContext() {
-  const context = useContext(CheckoutContext);
-  if (!context) {
-    throw new Error(
-      'useCheckoutContext must be used within CheckoutContextProvider',
-    );
-  }
-  return context;
-}
+export {useCheckoutContext} from './CheckoutContext';
 
 export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
   return function NavigationStack(props: {
     navigation: NativeStackNavigationProp<ParamListBase>;
     route: any;
   }) {
-    const [address, setAddress] = useState<Record<string, any>>({});
-    const [payments, setPayments] = useState<Record<string, any>>({});
-
-    const setAddressData = (id: string, data: any) => {
-      setAddress(prev => ({...prev, [id]: data}));
-    };
-
-    const setPaymentData = (id: string, data: any) => {
-      setPayments(prev => ({...prev, [id]: data}));
-    };
-
     return (
       <CheckoutEventProvider>
         <NavigationIndependentTree>
           <NavigationContainer>
-            <CheckoutContext.Provider
-              value={{address, payments, setAddressData, setPaymentData}}>
+            <CheckoutContextProvider>
               <Stack.Navigator
                 initialRouteName="CheckoutWebView"
                 screenOptions={{
@@ -107,22 +78,22 @@ export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
                 <Stack.Screen
                   name="Address"
                   component={renderProps.renderAddressScreen}
-                  options={{
+                  options={props => ({
                     title: 'Shipping Address',
                     headerLeft: BackButton(props),
-                  }}
+                  })}
                 />
 
                 <Stack.Screen
                   name="Payment"
                   component={renderProps.renderPaymentScreen}
-                  options={{
+                  options={props => ({
                     title: 'Payment Details',
                     headerLeft: BackButton(props),
-                  }}
+                  })}
                 />
               </Stack.Navigator>
-            </CheckoutContext.Provider>
+            </CheckoutContextProvider>
           </NavigationContainer>
         </NavigationIndependentTree>
       </CheckoutEventProvider>
@@ -132,14 +103,14 @@ export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
 
 function CancelButton(props: {
   navigation: NativeStackNavigationProp<ParamListBase>;
-  route: any;
+  route: RouteProp<ParamListBase>;
 }) {
   return () => <Button title="x" onPress={() => props.navigation.goBack()} />;
 }
 
 function BackButton(props: {
   navigation: NativeStackNavigationProp<ParamListBase>;
-  route: any;
+  route: RouteProp<ParamListBase>;
 }) {
   return () => <Button title="<-" onPress={() => props.navigation.goBack()} />;
 }
