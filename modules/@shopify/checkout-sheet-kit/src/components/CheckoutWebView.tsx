@@ -1,7 +1,6 @@
 import {type NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useRef} from 'react';
-import {View} from 'react-native';
-import {type CheckoutStackParamList} from './Navigation';
+import {StyleSheet} from 'react-native';
 import {
   CheckoutWebViewController,
   type CheckoutException,
@@ -9,6 +8,7 @@ import {
   type CheckoutWebViewControllerProps,
 } from '..';
 import type {CheckoutAddressChangeIntent} from '../events';
+import {type CheckoutStackParamList} from './Navigation';
 
 type CheckoutDelegateEvents = Pick<
   CheckoutWebViewControllerProps,
@@ -31,41 +31,48 @@ type CheckoutWebViewProps = NavigationProps &
   };
 
 export function CheckoutWebView(props: CheckoutWebViewProps) {
-  const checkoutRef = useRef<CheckoutWebViewControllerHandle>(null);
-  const delegate = useCheckoutDelegate(props, checkoutRef);
+  const ref = useRef<CheckoutWebViewControllerHandle>(null);
+  const events = useCheckoutEvents(props, ref);
 
-  const url = new URL(props.url.toString());
-  url.searchParams.append('embed', props.auth); // Mock implementation
+  const url = getAuthUrl(props.url, props.auth); // Mock implementation
 
   return (
-    <View style={{flex: 1}}>
-      <View style={{flex: 1}}>
-        <CheckoutWebViewController
-          ref={checkoutRef}
-          checkoutUrl={url.toString()}
-          style={{flex: 1, minHeight: 400}}
-          onAddressChangeIntent={delegate.onAddressChangeIntent}
-          onCancel={delegate.onCancel}
-          onComplete={delegate.onComplete}
-          onError={delegate.onError}
-          onPixelEvent={delegate.onPixelEvent}
+    <CheckoutWebViewController
+      ref={ref}
+      checkoutUrl={url.toString()}
+      style={styles.container}
+      onAddressChangeIntent={events.onAddressChangeIntent}
+      onCancel={events.onCancel}
+      onComplete={events.onComplete}
+      onError={events.onError}
+      onPixelEvent={events.onPixelEvent}
 
-          // Used for debugging setting up the component, will remove after refactors to native code
-          // onViewAttached={() => {
-          //    console.log('Native webview attached!');
-          // }}
-          // onLoad={event => {
-          //    console.log('Native webview loaded with URL:', event.url);
-          // }}
-        />
-      </View>
-    </View>
+      // Used for debugging setting up the component, will remove after refactors to native code
+      // onViewAttached={() => {
+      //    console.log('Native webview attached!');
+      // }}
+      // onLoad={event => {
+      //    console.log('Native webview loaded with URL:', event.url);
+      // }}
+    />
   );
 }
 
-function useCheckoutDelegate(
+function getAuthUrl(
+  url: CheckoutWebViewProps['url'],
+  auth: CheckoutWebViewProps['auth'],
+) {
+  const authUrl = new URL(url.toString());
+
+  // TODO; Mock implementation
+  authUrl.searchParams.append('embed', auth);
+
+  return authUrl;
+}
+
+function useCheckoutEvents(
   props: CheckoutWebViewProps,
-  checkoutRef: React.RefObject<CheckoutWebViewControllerHandle | null>,
+  ref: React.RefObject<CheckoutWebViewControllerHandle | null>,
 ): CheckoutDelegateEvents {
   const onAddressChangeIntent = (event: CheckoutAddressChangeIntent) => {
     props.onAddressChangeIntent?.(event);
@@ -79,7 +86,7 @@ function useCheckoutDelegate(
 
   const onError = (error: CheckoutException) => {
     props.onError?.(error);
-    checkoutRef.current?.reload();
+    ref.current?.reload();
   };
 
   return {
@@ -89,3 +96,7 @@ function useCheckoutDelegate(
     onCancel,
   };
 }
+
+const styles = StyleSheet.create({
+  container: {flex: 1},
+});

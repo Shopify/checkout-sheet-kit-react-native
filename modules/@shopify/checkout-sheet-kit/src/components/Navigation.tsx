@@ -104,8 +104,8 @@ export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
                   {screenProps => (
                     <CheckoutWebView
                       {...screenProps}
-                      url={new URL(screenProps.route.params.url)}
-                      auth={''}
+                      url={new URL(props.route.params.url)}
+                      auth={'ey49mock'}
                       goBack={props.navigation.goBack}
                     />
                   )}
