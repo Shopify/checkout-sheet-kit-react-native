@@ -1,12 +1,9 @@
 import {
   NavigationContainer,
   NavigationIndependentTree,
-  type ParamListBase,
-  type RouteProp,
 } from '@react-navigation/native';
 import {
   createNativeStackNavigator,
-  type NativeStackNavigationProp,
   type NativeStackScreenProps,
 } from '@react-navigation/native-stack';
 import React from 'react';
@@ -14,10 +11,13 @@ import {Button} from 'react-native';
 import {CheckoutEventProvider} from '../CheckoutEventProvider';
 import {CheckoutContextProvider} from './CheckoutContext';
 import {CheckoutWebView} from './CheckoutWebView';
+export {useCheckoutContext} from './CheckoutContext';
 
 type RouteID = {id: string};
 export type CheckoutStackParamList = {
-  CheckoutWebView: {url: string};
+  // Initial page navigated to by host app so no params
+  CheckoutWebView: undefined;
+  // The pages are navigated to internally by CheckoutWebView so we can provide params
   Address: RouteID;
   Payment: RouteID;
 };
@@ -33,18 +33,18 @@ export type PaymentScreenProps = NativeStackScreenProps<
   'Payment'
 >;
 
-type RenderProps = {
+type NavigationConfig = {
   renderAddressScreen: (props: AddressScreenProps) => React.ReactNode;
   renderPaymentScreen: (props: PaymentScreenProps) => React.ReactNode;
 };
 
-export {useCheckoutContext} from './CheckoutContext';
-
-export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
-  return function NavigationStack(props: {
-    navigation: NativeStackNavigationProp<ParamListBase>;
-    route: any;
-  }) {
+type NavigationStackProps = {
+  url: URL
+  auth: string
+  goBack: () => void;
+}
+export function createShopifyCheckoutNavigation(config: NavigationConfig) {
+  return function ShopifyNavigationStack(props: NavigationStackProps) {
     return (
       <CheckoutEventProvider>
         <NavigationIndependentTree>
@@ -68,28 +68,30 @@ export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
                     <CheckoutWebView
                       {...screenProps}
                       // TODO: we shouldnt be dependent on their navigation objects being react-navigation
-                      url={new URL(props.route.params.url)}
-                      auth={'ey49mock'}
-                      goBack={props.navigation.goBack}
+                      url={props.url}
+                      auth={props.auth}
+                      goBack={props.goBack}
                     />
                   )}
                 </Stack.Screen>
 
                 <Stack.Screen
                   name="Address"
-                  component={renderProps.renderAddressScreen}
-                  options={props => ({
+                  component={config.renderAddressScreen}
+                  options={screenProps => ({
                     title: 'Shipping Address',
-                    headerLeft: BackButton(props),
+                    headerLeft: BackButton({goBack: screenProps.navigation.goBack}),
+                    headerStyle: {backgroundColor: '#F69400'},
                   })}
                 />
 
                 <Stack.Screen
                   name="Payment"
-                  component={renderProps.renderPaymentScreen}
-                  options={props => ({
+                  component={config.renderPaymentScreen}
+                  options={screenProps=> ({
                     title: 'Payment Details',
-                    headerLeft: BackButton(props),
+                    headerLeft: BackButton({goBack: screenProps.navigation.goBack}),
+                    headerStyle: {backgroundColor: '#F69400'},
                   })}
                 />
               </Stack.Navigator>
@@ -101,16 +103,10 @@ export function createShopifyCheckoutNavigation(renderProps: RenderProps) {
   };
 }
 
-function CancelButton(props: {
-  navigation: NativeStackNavigationProp<ParamListBase>;
-  route: RouteProp<ParamListBase>;
-}) {
-  return () => <Button title="x" onPress={() => props.navigation.goBack()} />;
+function CancelButton(props: Pick<NavigationStackProps, 'goBack'>) {
+  return () => <Button title="Cancel" onPress={props.goBack} />;
 }
 
-function BackButton(props: {
-  navigation: NativeStackNavigationProp<ParamListBase>;
-  route: RouteProp<ParamListBase>;
-}) {
-  return () => <Button title="<-" onPress={() => props.navigation.goBack()} />;
+function BackButton(props: Pick<NavigationStackProps, 'goBack'>) {
+  return () => <Button title="Back" onPress={props.goBack} />;
 }

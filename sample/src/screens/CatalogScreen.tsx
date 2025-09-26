@@ -33,7 +33,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-// import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
+import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
 
 import type {ShopifyProduct} from '../../@types';
@@ -47,7 +47,7 @@ import {currency} from '../utils';
 type Props = NativeStackScreenProps<RootStackParamList, 'CatalogScreen'>;
 
 function CatalogScreen({navigation}: Props) {
-  // const ShopifyCheckout = useShopifyCheckoutSheet();
+  const ShopifyCheckout = useShopifyCheckoutSheet();
   const {checkoutURL, totalQuantity, addToCart, addingToCart} = useCart();
   const {colors} = useTheme();
   const styles = createStyles(colors);
@@ -59,17 +59,12 @@ function CatalogScreen({navigation}: Props) {
     fetchProducts();
   }, [fetchProducts]);
 
-  // const presentCheckout = async () => {
-  //   if (checkoutURL) {
-  //     ShopifyCheckout.present(checkoutURL);
-  //   }
-  // };
-
-  const presentCheckoutStack = async () => {
+  const presentCheckout = async () => {
     if (checkoutURL) {
-      navigation.navigate('BuyNow', {url: checkoutURL});
+      ShopifyCheckout.present(checkoutURL);
     }
   };
+
 
   if (error) {
     return (
@@ -117,7 +112,7 @@ function CatalogScreen({navigation}: Props) {
         <Pressable
           style={styles.cartButton}
           disabled={totalQuantity === 0}
-          onPress={presentCheckoutStack}>
+          onPress={presentCheckout}>
           <Text style={styles.cartButtonText}>Amazon Checkout</Text>
           <Text style={styles.cartButtonTextSubtitle}>
             {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}
