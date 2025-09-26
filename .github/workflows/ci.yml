@@ -116,16 +116,12 @@ jobs:
 
   test-ios:
     name: Run Swift Tests
-    runs-on: macos-15-xlarge
+    runs-on: macos-26-xlarge
     timeout-minutes: 20
     needs: [lint, test]
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-
-      - name: Switch to Xcode 16.4
-        run: |
-          sudo xcode-select --switch /Applications/Xcode_16.4.app
 
       - name: Display Current Xcode Information
         run: |

@@ -120,6 +120,7 @@ describe('ShopifyCheckoutSheetProvider', () => {
       'customer-access-token',
       'merchant.test',
       ['email'],
+      [],
     );
   });
 
@@ -391,11 +392,13 @@ describe('useShopifyCheckoutSheet', () => {
 describe('ShopifyCheckoutSheetContext without provider', () => {
   it('throws error when hook is used without provider', () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation();
-    
+
     expect(() => {
       render(<HookTestComponent onHookValue={() => {}} />);
-    }).toThrow('useShopifyCheckoutSheet must be used from within a ShopifyCheckoutSheetContext');
-    
+    }).toThrow(
+      'useShopifyCheckoutSheet must be used from within a ShopifyCheckoutSheetContext',
+    );
+
     errorSpy.mockRestore();
   });
 });
