@@ -2813,7 +2813,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:^7.18.2, @babel/preset-env@npm:^7.20.0":
+"@babel/preset-env@npm:^7.18.2":
   version: 7.23.3
   resolution: "@babel/preset-env@npm:7.23.3"
   dependencies:
@@ -2903,7 +2903,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:^7.25.3":
+"@babel/preset-env@npm:^7.23.9":
   version: 7.28.3
   resolution: "@babel/preset-env@npm:7.28.3"
   dependencies:
@@ -6102,7 +6102,7 @@ __metadata:
   resolution: "checkout-sheet-kit-react-native@workspace:."
   dependencies:
     "@babel/core": "npm:^7.25.2"
-    "@babel/preset-env": "npm:^7.25.3"
+    "@babel/preset-env": "npm:^7.23.9"
     "@babel/runtime": "npm:^7.25.0"
     "@react-native-community/cli": "npm:19.1.1"
     "@react-native-community/cli-platform-android": "npm:19.1.1"
@@ -11713,7 +11713,7 @@ __metadata:
     "@babel/plugin-transform-arrow-functions": "npm:^7.27.1"
     "@babel/plugin-transform-shorthand-properties": "npm:^7.23.3"
     "@babel/plugin-transform-template-literals": "npm:^7.23.3"
-    "@babel/preset-env": "npm:^7.20.0"
+    "@babel/preset-env": "npm:^7.23.9"
     "@babel/runtime": "npm:^7.27.6"
     "@react-native-masked-view/masked-view": "npm:^0.3.2"
     "@react-navigation/bottom-tabs": "npm:^7.4.6"
