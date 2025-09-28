@@ -76,14 +76,10 @@ export function ShopifyCheckoutSheetProvider({
         return;
       }
 
-      if (configuration.acceleratedCheckouts) {
-        const ready = await instance.current?.configureAcceleratedCheckouts(
-          configuration.acceleratedCheckouts,
-        );
-        setAcceleratedCheckoutsAvailable(ready);
-      }
-
-      instance.current?.setConfig(configuration);
+      await instance.current?.setConfig(configuration);
+      setAcceleratedCheckoutsAvailable(
+        instance.current.acceleratedCheckoutsReady,
+      );
     }
 
     configureCheckoutKit();
