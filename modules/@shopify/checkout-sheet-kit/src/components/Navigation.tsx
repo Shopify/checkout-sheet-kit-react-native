@@ -11,6 +11,7 @@ import {Button} from 'react-native';
 import {CheckoutEventProvider} from '../CheckoutEventProvider';
 import {CheckoutContextProvider} from './CheckoutContext';
 import {CheckoutWebView} from './CheckoutWebView';
+import type {CheckoutWebViewControllerProps} from './CheckoutWebViewController';
 export {useCheckoutContext} from './CheckoutContext';
 
 type RouteID = {id: string};
@@ -23,27 +24,40 @@ export type CheckoutStackParamList = {
 };
 
 const Stack = createNativeStackNavigator<CheckoutStackParamList>();
+type GoBack = () => void;
 
-export type AddressScreenProps = NativeStackScreenProps<
-  CheckoutStackParamList,
-  'Address'
->;
-export type PaymentScreenProps = NativeStackScreenProps<
-  CheckoutStackParamList,
-  'Payment'
->;
+interface RouteProps<T> {
+  params: T;
+  navigateBack: GoBack;
+}
+
+export type AddressScreenProps = RouteProps<{id: string}>;
+export type PaymentScreenProps = RouteProps<{id: string}>;
 
 type NavigationConfig = {
   renderAddressScreen: (props: AddressScreenProps) => React.ReactNode;
   renderPaymentScreen: (props: PaymentScreenProps) => React.ReactNode;
 };
-
+type CheckoutDelegateEvents = Pick<
+  CheckoutWebViewControllerProps,
+  | 'onPixelEvent'
+  | 'onComplete'
+  | 'onCancel'
+  | 'onClickLink'
+  | 'onError'
+  | 'onAddressChangeIntent'
+>;
 type NavigationStackProps = {
-  url: URL
-  auth: string
-  goBack: () => void;
-}
+  url: URL;
+  auth: string;
+  navigateBack: GoBack;
+} & CheckoutDelegateEvents;
+
 export function createShopifyCheckoutNavigation(config: NavigationConfig) {
+  const {
+    renderAddressScreen: AddressScreen,
+    renderPaymentScreen: PaymentScreen,
+  } = config;
   return function ShopifyNavigationStack(props: NavigationStackProps) {
     return (
       <CheckoutEventProvider>
@@ -61,39 +75,57 @@ export function createShopifyCheckoutNavigation(config: NavigationConfig) {
                   name="CheckoutWebView"
                   options={{
                     title: 'Shopify Checkout',
-                    headerBackVisible: true,
                     headerRight: CancelButton(props),
                   }}>
                   {screenProps => (
                     <CheckoutWebView
+                      // TODO; do we need full navigation/route here?
                       {...screenProps}
-                      // TODO: we shouldnt be dependent on their navigation objects being react-navigation
                       url={props.url}
                       auth={props.auth}
-                      goBack={props.goBack}
+                      onComplete={props.onComplete}
+                      onCancel={props.onCancel}
+                      onClickLink={props.onClickLink}
+                      onError={props.onError}
+                      onPixelEvent={props.onPixelEvent}
+                      // New Props
+                      onAddressChangeIntent={props.onAddressChangeIntent}
+                      goBack={props.navigateBack}
                     />
                   )}
                 </Stack.Screen>
 
-                <Stack.Screen
-                  name="Address"
-                  component={config.renderAddressScreen}
-                  options={screenProps => ({
-                    title: 'Shipping Address',
-                    headerLeft: BackButton({goBack: screenProps.navigation.goBack}),
+                <Stack.Group
+                  screenOptions={({navigation}) => ({
+                    headerLeft: BackButton({navigateBack: navigation.goBack}),
                     headerStyle: {backgroundColor: '#F69400'},
-                  })}
-                />
+                  })}>
+                  <Stack.Screen
+                    name="Address"
+                    options={{title: 'Shipping Address'}}>
+                    {({route, navigation}) => (
+                      <AddressScreen
+                        params={route.params}
+                        navigateBack={navigation.goBack}
+                      />
+                    )}
+                  </Stack.Screen>
 
-                <Stack.Screen
-                  name="Payment"
-                  component={config.renderPaymentScreen}
-                  options={screenProps=> ({
-                    title: 'Payment Details',
-                    headerLeft: BackButton({goBack: screenProps.navigation.goBack}),
-                    headerStyle: {backgroundColor: '#F69400'},
-                  })}
-                />
+                  <Stack.Screen
+                    name="Payment"
+                    options={{title: 'Payment Details'}}>
+                    {/*
+                      TODO: Ensure we memoize / use context to remove this callback for performance
+                     @see: https://reactnavigation.org/docs/hello-react-navigation/?config=dynamic#passing-additional-props
+                   */}
+                    {({route, navigation}) => (
+                      <PaymentScreen
+                        params={route.params}
+                        navigateBack={navigation.goBack}
+                      />
+                    )}
+                  </Stack.Screen>
+                </Stack.Group>
               </Stack.Navigator>
             </CheckoutContextProvider>
           </NavigationContainer>
@@ -103,10 +135,10 @@ export function createShopifyCheckoutNavigation(config: NavigationConfig) {
   };
 }
 
-function CancelButton(props: Pick<NavigationStackProps, 'goBack'>) {
-  return () => <Button title="Cancel" onPress={props.goBack} />;
+function CancelButton(props: Pick<NavigationStackProps, 'navigateBack'>) {
+  return () => <Button title="Cancel" onPress={props.navigateBack} />;
 }
 
-function BackButton(props: Pick<NavigationStackProps, 'goBack'>) {
-  return () => <Button title="Back" onPress={props.goBack} />;
+function BackButton(props: Pick<NavigationStackProps, 'navigateBack'>) {
+  return () => <Button title="Back" onPress={props.navigateBack} />;
 }

@@ -15,10 +15,8 @@ interface BuyNowButtonProps {
 }
 
 const CREATE_CART_WITH_LINE_MUTATION = gql`
-  mutation CreateCartWithLine(
-    $input: CartInput!
-    $country: CountryCode = CA
-  ) @inContext(country: $country) {
+  mutation CreateCartWithLine($input: CartInput!, $country: CountryCode = CA)
+  @inContext(country: $country) {
     cartCreate(input: $input) {
       cart {
         id
@@ -30,16 +28,14 @@ const CREATE_CART_WITH_LINE_MUTATION = gql`
 `;
 
 export function BuyNowButton({variantId, disabled}: BuyNowButtonProps) {
-  const {colors, cornerRadius} = useTheme();
+  const {cornerRadius} = useTheme();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const {appConfig} = useConfig();
   const [loading, setLoading] = useState(false);
   const [, country] = getLocale().split('-');
 
   const [createCartWithLine] = useMutation(CREATE_CART_WITH_LINE_MUTATION, {
-    variables: {
-      country,
-    },
+    variables: {country},
   });
 
   const handleBuyNow = async () => {
@@ -59,16 +55,16 @@ export function BuyNowButton({variantId, disabled}: BuyNowButtonProps) {
       };
 
       const {data} = await createCartWithLine({
-        variables: {
-          input: cartInput,
-        },
+        variables: {input: cartInput},
       });
 
       const checkoutUrl = data?.cartCreate?.cart?.checkoutUrl;
 
-      if (checkoutUrl) {
-        navigation.navigate('BuyNow', {url: checkoutUrl});
+      if (!checkoutUrl) {
+        throw new Error('No CheckoutURL');
       }
+
+      navigation.navigate('BuyNow', {url: checkoutUrl});
     } catch (error) {
       console.error('Error creating buy now cart:', error);
     } finally {
@@ -76,7 +72,7 @@ export function BuyNowButton({variantId, disabled}: BuyNowButtonProps) {
     }
   };
 
-  const styles = createStyles(colors, cornerRadius);
+  const styles = createStyles(cornerRadius);
 
   return (
     <Pressable
@@ -92,7 +88,7 @@ export function BuyNowButton({variantId, disabled}: BuyNowButtonProps) {
   );
 }
 
-function createStyles(colors: any, cornerRadius: number) {
+function createStyles(cornerRadius: number) {
   return StyleSheet.create({
     buyNowButton: {
       borderRadius: cornerRadius,

@@ -21,17 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {ApolloClient, ApolloProvider, InMemoryCache} from '@apollo/client';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
   NavigationContainer,
   useNavigation,
   type NavigationProp,
   type RouteProp,
 } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import type { PropsWithChildren, ReactNode } from 'react';
-import React, { useEffect, useMemo, useState } from 'react';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import type {PropsWithChildren, ReactNode} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   Appearance,
   Button,
@@ -61,18 +61,16 @@ import {
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
-import {
-  useShopifyEvent,
-} from '@shopify/checkout-sheet-kit/src/CheckoutEventProvider';
+import {useShopifyEvent} from '@shopify/checkout-sheet-kit/src/CheckoutEventProvider';
 import {
   createShopifyCheckoutNavigation,
   type AddressScreenProps,
   type PaymentScreenProps,
 } from '@shopify/checkout-sheet-kit/src/components/Navigation';
 import env from 'react-native-config';
-import type { ProductVariant, ShopifyProduct } from '../@types';
-import { CartProvider, useCart } from './context/Cart';
-import { ConfigProvider, useConfig } from './context/Config';
+import type {ProductVariant, ShopifyProduct} from '../@types';
+import {CartProvider, useCart} from './context/Cart';
+import {ConfigProvider, useConfig} from './context/Config';
 import {
   ThemeProvider,
   darkColors,
@@ -82,10 +80,10 @@ import {
   useTheme,
 } from './context/Theme';
 import ErrorBoundary from './ErrorBoundary';
-import { useShopifyEventHandlers } from './hooks/useCheckoutEventHandlers';
+import {useShopifyEventHandlers} from './hooks/useCheckoutEventHandlers';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
-import { createDebugLogger } from './utils';
+import {createDebugLogger} from './utils';
 
 const log = createDebugLogger('ENV');
 
@@ -111,11 +109,11 @@ console.groupEnd();
 export type RootStackParamList = {
   Catalog: undefined;
   CatalogScreen: undefined;
-  ProductDetails: { product: ShopifyProduct; variant?: ProductVariant };
+  ProductDetails: {product: ShopifyProduct; variant?: ProductVariant};
   Cart: undefined;
   CartModal: undefined;
   Settings: undefined;
-  BuyNow: { url: string };
+  BuyNow: {url: string};
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -133,8 +131,8 @@ const client = new ApolloClient({
   connectToDevTools: __DEV__,
 });
 
-function AppWithTheme({ children }: PropsWithChildren) {
-  const { colorScheme } = useTheme();
+function AppWithTheme({children}: PropsWithChildren) {
+  const {colorScheme} = useTheme();
 
   return (
     <ThemeProvider cornerRadius={30} defaultValue={colorScheme}>
@@ -145,19 +143,19 @@ function AppWithTheme({ children }: PropsWithChildren) {
 
 const createNavigationIcon =
   (name: string) =>
-    ({
-      color,
-      size,
-    }: {
-      color: string;
-      size: number;
-      focused?: boolean;
-    }): ReactNode => {
-      return <Icon name={name} color={color} size={size} />;
-    };
+  ({
+    color,
+    size,
+  }: {
+    color: string;
+    size: number;
+    focused?: boolean;
+  }): ReactNode => {
+    return <Icon name={name} color={color} size={size} />;
+  };
 
 // See https://reactnative.dev/docs/linking#get-the-deep-link for more information
-const useInitialURL = (): { url: string | null } => {
+const useInitialURL = (): {url: string | null} => {
   const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -216,7 +214,7 @@ const checkoutKitConfigDefaults: Configuration = {
   },
 };
 
-function AppWithContext({ children }: PropsWithChildren) {
+function AppWithContext({children}: PropsWithChildren) {
   const shopify = useShopifyCheckoutSheet();
   const eventHandlers = useShopifyEventHandlers();
 
@@ -271,64 +269,66 @@ function AppWithContext({ children }: PropsWithChildren) {
 }
 
 export function AddressScreen(props: AddressScreenProps) {
-  const event = useShopifyEvent(props.route.params.id);
-  const { selectedAddressIndex, setSelectedAddressIndex } = useCart();
+  const event = useShopifyEvent(props.params.id);
+  const {selectedAddressIndex, setSelectedAddressIndex} = useCart();
 
   const addressOptions = [
     {
-      label: '650 King Street West',
+      label: 'Default',
       address: {
         firstName: 'Evelyn',
         lastName: 'Hartley',
-        address1: '650 King Street West',
+        address1: 'Default',
         address2: '',
         city: 'Toronto',
         provinceCode: 'ON',
         countryCode: 'CA',
         zip: 'M5V 1M7',
-        phone: '+1-888-746-7439'
-      }
+        phone: '+1-888-746-7439',
+      },
     },
     {
-      label: '1234 Queen Street East',
+      label: 'Happy path lane',
       address: {
         firstName: 'Evelyn',
         lastName: 'Hartley',
-        address1: '1234 Queen Street East',
+        address1: 'Happy path lane',
         address2: 'Apt 5B',
         city: 'Toronto',
         provinceCode: 'ON',
         countryCode: 'CA',
         zip: 'M4L 1C9',
-        phone: '+441792547555'
-      }
+        phone: '+441792547555',
+      },
     },
     {
-      label: '10 Sunningdale Ave',
+      label: 'Broken Ave',
       address: {
         firstName: 'Evelyn',
         lastName: 'Hartley',
-        address1: '1234 Queen Street East',
+        address1: 'Broken Ave',
         address2: 'Apt 5B',
         city: 'Toronto',
         provinceCode: 'ON',
         countryCode: 'CA',
         zip: 'SA3 5HP',
-        phone: '+441792547555'
-      }
-    }
+        phone: '+441792547555',
+      },
+    },
   ];
 
   const handleAddressSelection = () => {
     const selectedAddress = addressOptions[selectedAddressIndex];
     event.respondWith({
       delivery: {
-        addresses: [{
-          address: selectedAddress!.address
-        }]
-      }
+        addresses: [
+          {
+            address: selectedAddress!.address,
+          },
+        ],
+      },
     });
-    props.navigation.goBack();
+    props.navigateBack();
   };
 
   return (
@@ -342,17 +342,19 @@ export function AddressScreen(props: AddressScreenProps) {
             key={index}
             style={[
               styles.addressOption,
-              selectedAddressIndex === index && styles.selectedAddress
+              selectedAddressIndex === index && styles.selectedAddress,
             ]}
-            onPress={() => setSelectedAddressIndex(index)}
-          >
+            onPress={() => setSelectedAddressIndex(index)}>
             <View style={styles.radioButton}>
-              {selectedAddressIndex === index && <View style={styles.radioButtonSelected} />}
+              {selectedAddressIndex === index && (
+                <View style={styles.radioButtonSelected} />
+              )}
             </View>
             <View style={styles.addressInfo}>
               <Text style={styles.addressLabel}>{option.label}</Text>
               <Text style={styles.addressDetails}>
-                {option.address.city}, {option.address.provinceCode} {option.address.zip}
+                {option.address.city}, {option.address.provinceCode}{' '}
+                {option.address.zip}
               </Text>
             </View>
           </TouchableOpacity>
@@ -360,17 +362,14 @@ export function AddressScreen(props: AddressScreenProps) {
       </View>
 
       <View style={styles.buttonContainer}>
-        <Button
-          title="Use Selected Address"
-          onPress={handleAddressSelection}
-        />
+        <Button title="Use Selected Address" onPress={handleAddressSelection} />
       </View>
     </View>
   );
 }
 
 export function PaymentScreen(props: PaymentScreenProps) {
-  const event = useShopifyEvent(props.route.params.id);
+  const event = useShopifyEvent(props.params.id);
 
   return (
     <View style={styles.container}>
@@ -380,8 +379,8 @@ export function PaymentScreen(props: PaymentScreenProps) {
       <Button
         title="Complete"
         onPress={() => {
-          event.respondWith({ lastFourDigits: '1234', cardNetwork: 'Visa' });
-          props.navigation.goBack();
+          event.respondWith({lastFourDigits: '1234', cardNetwork: 'Visa'});
+          props.navigateBack();
         }}
       />
     </View>
@@ -469,19 +468,18 @@ const ShopifyNavigationStack = createShopifyCheckoutNavigation({
 function AmazonAppStack() {
   return (
     <Stack.Navigator
-      initialRouteName='CatalogScreen'
-      screenOptions={({ navigation }) => ({
+      initialRouteName="CatalogScreen"
+      screenOptions={({navigation}) => ({
         headerBackTitle: 'Back',
         // eslint-disable-next-line react/no-unstable-nested-components
         headerRight: () => (
           <CartIcon
             onPress={() =>
-              navigation.getParent()?.navigate('Catalog', { screen: 'CartModal' })
+              navigation.getParent()?.navigate('Catalog', {screen: 'CartModal'})
             }
           />
         ),
       })}>
-
       <Stack.Screen
         name="BuyNow"
         component={BuyNowScreen}
@@ -504,7 +502,7 @@ function AmazonAppStack() {
         <Stack.Screen
           name="ProductDetails"
           component={ProductDetailsScreen}
-          options={({ route }) => ({
+          options={({route}) => ({
             headerTitle: route.params.product.title,
             headerShown: true,
             headerBackVisible: true,
@@ -525,20 +523,23 @@ function AmazonAppStack() {
   );
 }
 
-function BuyNowScreen(props: { route: RouteProp<RootStackParamList, 'BuyNow'> }) {
-  const navigation = useNavigation()
+function BuyNowScreen(props: {route: RouteProp<RootStackParamList, 'BuyNow'>}) {
+  const navigation = useNavigation();
 
   return (
     <ShopifyNavigationStack
-      goBack={navigation.goBack}
+      navigateBack={navigation.goBack}
       url={new URL(props.route.params.url)}
-      auth='ey69mock123'
-    // onComplete={()=>{}}
+      auth="ey69mock123"
+      onComplete={() => navigation.goBack()}
+      onError={() => navigation.goBack()}
+      onCancel={() => navigation.goBack()}
+      onPixelEvent={event => console.log(event.name)}
     />
   );
 }
 
-function CartIcon({ onPress }: { onPress: () => void }) {
+function CartIcon({onPress}: {onPress: () => void}) {
   const theme = useTheme();
 
   return (
@@ -548,8 +549,8 @@ function CartIcon({ onPress }: { onPress: () => void }) {
   );
 }
 
-function AppWithCheckoutKit({ children }: PropsWithChildren) {
-  const { appConfig } = useConfig();
+function AppWithCheckoutKit({children}: PropsWithChildren) {
+  const {appConfig} = useConfig();
 
   const updatedColors = getColors(
     appConfig.colorScheme,
@@ -618,9 +619,9 @@ function AppWithCheckoutKit({ children }: PropsWithChildren) {
          */
         customer: appConfig.customerAuthenticated
           ? {
-            email: env.EMAIL!,
-            phoneNumber: env.PHONE!,
-          }
+              email: env.EMAIL!,
+              phoneNumber: env.PHONE!,
+            }
           : undefined,
         wallets: {
           applePay: {
@@ -647,8 +648,8 @@ function AppWithCheckoutKit({ children }: PropsWithChildren) {
   );
 }
 
-function AppWithNavigation(props: { children: React.ReactNode }) {
-  const { colorScheme, preference } = useTheme();
+function AppWithNavigation(props: {children: React.ReactNode}) {
+  const {colorScheme, preference} = useTheme();
   return (
     <NavigationContainer theme={getNavigationTheme(colorScheme, preference)}>
       {props.children}
@@ -657,9 +658,9 @@ function AppWithNavigation(props: { children: React.ReactNode }) {
 }
 
 function Routes() {
-  const { totalQuantity } = useCart();
+  const {totalQuantity} = useCart();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const { url: initialUrl } = useInitialURL();
+  const {url: initialUrl} = useInitialURL();
   const shopify = useShopifyCheckoutSheet();
 
   useEffect(() => {
@@ -690,7 +691,7 @@ function Routes() {
     }
 
     // Subscribe to universal links
-    const subscription = Linking.addEventListener('url', ({ url }) => {
+    const subscription = Linking.addEventListener('url', ({url}) => {
       handleUniversalLink(url);
     });
 
