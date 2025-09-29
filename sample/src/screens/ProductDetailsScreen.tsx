@@ -48,7 +48,7 @@ import {
 import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
 import {BuyNowButton, type Partner} from '../components/BuyNowButton';
 
-const Partners: Partner[] = ['microsoft', 'openai', 'google', 'amazon'];
+const Partners: Partner[] = ['amazon', 'microsoft', 'google', 'openai' ];
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetails'>;
 
