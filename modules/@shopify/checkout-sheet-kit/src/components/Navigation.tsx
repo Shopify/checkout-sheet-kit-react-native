@@ -65,8 +65,8 @@ export function createShopifyCheckoutNavigation(config: NavigationConfig) {
               <Stack.Navigator
                 initialRouteName="CheckoutWebView"
                 screenOptions={{
-                  headerStyle: {backgroundColor: '#95bf47'},
-                  headerTintColor: '#fff',
+                  headerStyle: {backgroundColor: '#ffffff'},
+                  headerTintColor: '#000',
                   headerTitleStyle: {fontWeight: 'bold'},
                 }}>
                 <Stack.Screen
@@ -96,7 +96,8 @@ export function createShopifyCheckoutNavigation(config: NavigationConfig) {
                 <Stack.Group
                   screenOptions={({navigation}) => ({
                     headerLeft: BackButton({navigateBack: navigation.goBack}),
-                    headerStyle: {backgroundColor: '#F69400'},
+                    headerStyle: {backgroundColor: '#ffffff'},
+                    headerTintColor: '#000',
                   })}>
                   <Stack.Screen
                     name="Address"
