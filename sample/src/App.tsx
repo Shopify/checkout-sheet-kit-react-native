@@ -298,7 +298,7 @@ function CartIcon({onPress}: {onPress: () => void}) {
   const theme = useTheme();
 
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={onPress} testID="header-cart-icon">
       <Icon name="shopping-basket" size={24} color={theme.colors.secondary} />
     </Pressable>
   );
@@ -462,6 +462,7 @@ function Routes() {
         component={CatalogStack}
         options={{
           headerShown: false,
+          tabBarButtonTestID: 'catalog-tab',
           tabBarIcon: createNavigationIcon('shop'),
         }}
       />
@@ -469,6 +470,7 @@ function Routes() {
         name="Cart"
         component={CartScreen}
         options={{
+          tabBarButtonTestID: 'cart-tab',
           tabBarIcon: createNavigationIcon('shopping-bag'),
           tabBarBadge: totalQuantity > 0 ? totalQuantity : undefined,
         }}
@@ -477,6 +479,7 @@ function Routes() {
         name="Settings"
         component={SettingsScreen}
         options={{
+          tabBarButtonTestID: 'settings-tab',
           tabBarIcon: createNavigationIcon('cog'),
         }}
       />
