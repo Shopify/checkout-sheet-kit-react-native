@@ -2,10 +2,7 @@ import {
   NavigationContainer,
   NavigationIndependentTree,
 } from '@react-navigation/native';
-import {
-  createNativeStackNavigator,
-  type NativeStackScreenProps,
-} from '@react-navigation/native-stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {Button} from 'react-native';
 import {CheckoutEventProvider} from '../CheckoutEventProvider';
@@ -26,13 +23,14 @@ export type CheckoutStackParamList = {
 const Stack = createNativeStackNavigator<CheckoutStackParamList>();
 type GoBack = () => void;
 
+// TODO: if we dont need unique props per page, remove generic
 interface RouteProps<T> {
   params: T;
   navigateBack: GoBack;
 }
 
-export type AddressScreenProps = RouteProps<{id: string}>;
-export type PaymentScreenProps = RouteProps<{id: string}>;
+export type AddressScreenProps = RouteProps<RouteID>;
+export type PaymentScreenProps = RouteProps<RouteID>;
 
 type NavigationConfig = {
   renderAddressScreen: (props: AddressScreenProps) => React.ReactNode;

@@ -1,5 +1,11 @@
 import React, {useState} from 'react';
-import {Pressable, Text, ActivityIndicator, StyleSheet} from 'react-native';
+import {
+  Pressable,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  Image,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NavigationProp} from '@react-navigation/native';
 import {useMutation} from '@apollo/client';
@@ -26,6 +32,36 @@ const CREATE_CART_WITH_LINE_MUTATION = gql`
     }
   }
 `;
+type Partner = 'microsoft' | 'openai' | 'google' | 'amazon';
+
+type EmbedPartner = {
+  type: Partner;
+  color: string;
+  image: any;
+};
+
+const Partners: EmbedPartner[] = [
+  {
+    type: 'microsoft',
+    color: 'white',
+    image: require('./microsoft.png'),
+  },
+  {
+    type: 'openai',
+    color: 'white',
+    image: require('./openai.png'),
+  },
+  {
+    type: 'google',
+    color: 'white',
+    image: require('./google.png'),
+  },
+  {
+    type: 'amazon',
+    color: 'white',
+    image: require('./amazon.png'),
+  },
+];
 
 export function BuyNowButton({variantId, disabled}: BuyNowButtonProps) {
   const {cornerRadius} = useTheme();
@@ -38,7 +74,7 @@ export function BuyNowButton({variantId, disabled}: BuyNowButtonProps) {
     variables: {country},
   });
 
-  const handleBuyNow = async () => {
+  const handleBuyNow = async (partner: Partner) => {
     if (!variantId || disabled) return;
 
     setLoading(true);
@@ -64,7 +100,11 @@ export function BuyNowButton({variantId, disabled}: BuyNowButtonProps) {
         throw new Error('No CheckoutURL');
       }
 
-      navigation.navigate('BuyNow', {url: checkoutUrl});
+      const url = new URL(checkoutUrl);
+      url.searchParams.append('partner', partner);
+      console.log(url.toString());
+
+      navigation.navigate('BuyNow', {url: url.toString()});
     } catch (error) {
       console.error('Error creating buy now cart:', error);
     } finally {
@@ -75,16 +115,24 @@ export function BuyNowButton({variantId, disabled}: BuyNowButtonProps) {
   const styles = createStyles(cornerRadius);
 
   return (
-    <Pressable
-      disabled={loading || disabled}
-      style={styles.buyNowButton}
-      onPress={handleBuyNow}>
-      {loading ? (
-        <ActivityIndicator size="small" color="black" />
-      ) : (
-        <Text style={styles.buyNowButtonText}>Buy Now</Text>
-      )}
-    </Pressable>
+    <>
+      {Partners.map(partner => (
+        <Pressable
+          key={partner.type}
+          disabled={loading || disabled}
+          style={{...styles.buyNowButton, backgroundColor: partner.color}}
+          onPress={() => handleBuyNow(partner.type)}>
+          {loading ? (
+            <ActivityIndicator size="small" color="black" />
+          ) : (
+            <>
+              <Text style={styles.buyNowButtonText}>Buy Now </Text>
+              <Image source={partner.image} style={{height: 24, width: 24}} />
+            </>
+          )}
+        </Pressable>
+      ))}
+    </>
   );
 }
 
@@ -92,10 +140,13 @@ function createStyles(cornerRadius: number) {
   return StyleSheet.create({
     buyNowButton: {
       borderRadius: cornerRadius,
-      backgroundColor: '#FFD814',
       paddingHorizontal: 10,
       paddingVertical: 14,
       height: 48,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 8,
     },
     buyNowButtonText: {
       fontSize: 20,
