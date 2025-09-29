@@ -15,9 +15,12 @@ import {useTheme} from '../context/Theme';
 import {createBuyerIdentityCartInput, getLocale} from '../utils';
 import type {RootStackParamList} from '../App';
 
+export type Partner = 'microsoft' | 'openai' | 'google' | 'amazon';
+
 interface BuyNowButtonProps {
   variantId: string;
   disabled?: boolean;
+  type: Partner;
 }
 
 const CREATE_CART_WITH_LINE_MUTATION = gql`
@@ -32,7 +35,6 @@ const CREATE_CART_WITH_LINE_MUTATION = gql`
     }
   }
 `;
-type Partner = 'microsoft' | 'openai' | 'google' | 'amazon';
 
 type EmbedPartner = {
   type: Partner;
@@ -40,30 +42,34 @@ type EmbedPartner = {
   image: any;
 };
 
-const Partners: EmbedPartner[] = [
-  {
+const PartnerConfig: Record<Partner, EmbedPartner> = {
+  microsoft: {
     type: 'microsoft',
     color: 'white',
     image: require('./microsoft.png'),
   },
-  {
+  openai: {
     type: 'openai',
     color: 'white',
     image: require('./openai.png'),
   },
-  {
+  google: {
     type: 'google',
     color: 'white',
     image: require('./google.png'),
   },
-  {
+  amazon: {
     type: 'amazon',
     color: 'white',
     image: require('./amazon.png'),
   },
-];
+};
 
-export function BuyNowButton({variantId, disabled}: BuyNowButtonProps) {
+export function BuyNowButton({
+  variantId,
+  disabled,
+  type,
+}: BuyNowButtonProps) {
   const {cornerRadius} = useTheme();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const {appConfig} = useConfig();
@@ -74,7 +80,7 @@ export function BuyNowButton({variantId, disabled}: BuyNowButtonProps) {
     variables: {country},
   });
 
-  const handleBuyNow = async (partner: Partner) => {
+  const handleBuyNow = async () => {
     if (!variantId || disabled) return;
 
     setLoading(true);
@@ -101,7 +107,7 @@ export function BuyNowButton({variantId, disabled}: BuyNowButtonProps) {
       }
 
       const url = new URL(checkoutUrl);
-      url.searchParams.append('partner', partner);
+      url.searchParams.append('partner', type);
       console.log(url.toString());
 
       navigation.navigate('BuyNow', {url: url.toString()});
@@ -113,26 +119,22 @@ export function BuyNowButton({variantId, disabled}: BuyNowButtonProps) {
   };
 
   const styles = createStyles(cornerRadius);
+  const partner = PartnerConfig[type];
 
   return (
-    <>
-      {Partners.map(partner => (
-        <Pressable
-          key={partner.type}
-          disabled={loading || disabled}
-          style={{...styles.buyNowButton, backgroundColor: partner.color}}
-          onPress={() => handleBuyNow(partner.type)}>
-          {loading ? (
-            <ActivityIndicator size="small" color="black" />
-          ) : (
-            <>
-              <Text style={styles.buyNowButtonText}>Buy Now </Text>
-              <Image source={partner.image} style={{height: 24, width: 24}} />
-            </>
-          )}
-        </Pressable>
-      ))}
-    </>
+    <Pressable
+      disabled={loading || disabled}
+      style={{...styles.buyNowButton, backgroundColor: partner.color}}
+      onPress={handleBuyNow}>
+      {loading ? (
+        <ActivityIndicator size="small" color="black" />
+      ) : (
+        <>
+          <Text style={styles.buyNowButtonText}>Buy Now </Text>
+          <Image source={partner.image} style={styles.partnerImage} />
+        </>
+      )}
+    </Pressable>
   );
 }
 
@@ -155,5 +157,6 @@ function createStyles(cornerRadius: number) {
       fontWeight: 'bold',
       textAlign: 'center',
     },
+    partnerImage: {height: 24, width: 24},
   });
 }

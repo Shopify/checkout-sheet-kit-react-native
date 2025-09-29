@@ -46,7 +46,9 @@ import {
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
 import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
-import {BuyNowButton} from '../components/BuyNowButton';
+import {BuyNowButton, type Partner} from '../components/BuyNowButton';
+
+const Partners: Partner[] = ['microsoft', 'openai', 'google', 'amazon'];
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetails'>;
 
@@ -145,9 +147,15 @@ function ProductDetails({
             )}
           </Pressable>
 
-          {variant?.id && (
-            <BuyNowButton variantId={variant.id} disabled={loading} />
-          )}
+          {variant?.id &&
+            Partners.map(partner => (
+              <BuyNowButton
+                key={partner}
+                type={partner}
+                variantId={variant.id}
+                disabled={loading}
+              />
+            ))}
         </View>
       </View>
     </View>
