@@ -122,15 +122,11 @@ class RCTCheckoutWebView: UIView {
     checkoutWebViewController = webViewController
     checkoutWebViewController?.view.frame = bounds
 
-    print("[CheckoutWebView] CheckoutWebViewController stored, view attached")
-
     // Notify that the checkout has been presented - this is required for events to work
     webViewController.notifyPresented()
-    print("[CheckoutWebView] Called notifyPresented() to enable event handling")
-
+    // TODO; NEEDED?
     onViewAttached?([:])
     onLoad?(["url": url.absoluteString])
-    print("[CheckoutWebView] Checkout URL loaded: \(url.absoluteString)")
   }
 
   private func removeCheckout() {
