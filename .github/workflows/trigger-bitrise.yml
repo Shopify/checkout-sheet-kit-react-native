@@ -1,0 +1,73 @@
+name: Trigger Bitrise Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      # Only trigger when sample app or dependencies change
+      - "sample/**"
+      - "modules/**"
+      - "package.json"
+      - "yarn.lock"
+      - ".github/workflows/trigger-bitrise-build.yml"
+
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  trigger-bitrise:
+    name: Trigger Bitrise Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Bitrise Pipeline
+        env:
+          BITRISE_APP_SLUG: ${{ secrets.BITRISE_APP_SLUG }}
+          BITRISE_API_TOKEN: ${{ secrets.BITRISE_API_TOKEN }}
+        run: |
+          echo "🚀 Triggering Bitrise build for React Native sample app..."
+
+          RESPONSE=$(curl -X POST \
+            "https://app.bitrise.io/app/$BITRISE_APP_SLUG/build/start.json" \
+            -H "Authorization: token $BITRISE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d @- <<EOF
+          {
+            "hook_info": {
+              "type": "bitrise"
+            },
+            "build_params": {
+              "branch": "${{ github.ref_name }}",
+              "commit_hash": "${{ github.sha }}",
+              "commit_message": $(echo '${{ github.event.head_commit.message }}' | jq -Rs .),
+              "workflow_id": "build_ios_sample_app"
+            }
+          }
+          EOF
+          )
+
+          echo "Response: $RESPONSE"
+
+          # Extract build slug and URL
+          BUILD_SLUG=$(echo "$RESPONSE" | jq -r '.build_slug // empty')
+          BUILD_URL=$(echo "$RESPONSE" | jq -r '.build_url // empty')
+
+          if [ -n "$BUILD_SLUG" ]; then
+            echo "✅ Bitrise build triggered successfully!"
+            echo "   Build URL: $BUILD_URL"
+            echo "   Build Slug: $BUILD_SLUG"
+          else
+            echo "❌ Failed to trigger Bitrise build"
+            echo "$RESPONSE"
+            exit 1
+          fi
+
+      - name: Comment on PR (if applicable)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              body: '🚀 Bitrise build triggered for sample app changes.\n\n[View build on Bitrise](https://app.bitrise.io/build/${{ env.BUILD_SLUG }})'
+            })
