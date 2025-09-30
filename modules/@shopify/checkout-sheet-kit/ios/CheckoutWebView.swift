@@ -25,52 +25,20 @@ import UIKit
 import ShopifyCheckoutSheetKit
 import React
 
-// Global registry to track events across all webview instances
-private class EventRegistry {
-    struct EventInfo {
-        let event: CheckoutAddressChangeIntentEvent
-        weak var webView: RCTCheckoutWebView?
-    }
+private class Events {
+  typealias Event = CheckoutAddressChangeIntentEvent
+    var events: [String:CheckoutAddressChangeIntentEvent] = [:]
+  
+    func store(eventId: String, event: Event) { events[eventId] = event }
 
-    static let shared = EventRegistry()
-    private var events: [String: EventInfo] = [:]
-    private let lock = NSLock()
+    func remove(eventId: String) { events.removeValue(forKey: eventId) }
 
-    private init() {} // Singleton
-
-    func store(eventId: String, event: CheckoutAddressChangeIntentEvent, webView: RCTCheckoutWebView) {
-        lock.lock()
-        defer { lock.unlock() }
-        events[eventId] = EventInfo(event: event, webView: webView)
-    }
-
-    func remove(eventId: String) {
-        lock.lock()
-        defer { lock.unlock() }
-        events.removeValue(forKey: eventId)
-    }
-
-    func get(eventId: String) -> EventInfo? {
-        lock.lock()
-        defer { lock.unlock() }
-        return events[eventId]
-    }
+    func get(eventId: String) -> Event? { events[eventId] }
 
     func cleanup() {
-        lock.lock()
-        defer { lock.unlock() }
-        // Remove entries where webView is nil (deallocated)
-        events = events.compactMapValues { eventInfo in
-            eventInfo.webView != nil ? eventInfo : nil
-        }
-    }
-
-    func cleanupForWebView(_ webView: RCTCheckoutWebView) {
-        lock.lock()
-        defer { lock.unlock() }
-        // Remove all events associated with this specific webview
-        events = events.compactMapValues { eventInfo in
-            eventInfo.webView === webView ? nil : eventInfo
+        events = events.compactMapValues { event in
+          // TODO; ANY CLEANUP NEEDED?
+          event
         }
     }
 }
@@ -80,7 +48,8 @@ class RCTCheckoutWebView: UIView {
     private var checkoutWebViewController: CheckoutWebViewController?
     private var currentURL: URL?
     private weak var parentViewController: UIViewController?
-
+    private var events: Events = .init()
+  
     @objc var checkoutUrl: String? {
         didSet {
             updateCheckout()
@@ -194,11 +163,6 @@ class RCTCheckoutWebView: UIView {
 
         print("[CheckoutWebView] CheckoutWebViewController stored, view attached")
 
-        // Test if delegate is working by checking if we can call a method
-        if let testDelegate = webViewController as? CheckoutWebViewController {
-            print("[CheckoutWebView] WebViewController confirmed as CheckoutWebViewController")
-        }
-
         // Notify that the checkout has been presented - this is required for events to work
         webViewController.notifyPresented()
         print("[CheckoutWebView] Called notifyPresented() to enable event handling")
@@ -226,20 +190,13 @@ class RCTCheckoutWebView: UIView {
         print("[CheckoutWebView] Responding to event: \(eventId) with data: \(responseData)")
 
         // Look up the event in the global registry
-        guard let eventInfo = EventRegistry.shared.get(eventId: eventId) else {
+      guard let event = self.events.get(eventId: eventId) else {
             print("[CheckoutWebView] Event not found in registry: \(eventId)")
             return
         }
 
-        // Verify the webview still exists
-        guard let targetWebView = eventInfo.webView else {
-            print("[CheckoutWebView] Target webview no longer exists for event: \(eventId)")
-            EventRegistry.shared.remove(eventId: eventId)
-            return
-        }
-
         // Call the instance method on the correct webview
-        targetWebView.handleEventResponse(eventId: eventId, event: eventInfo.event, responseData: responseData)
+        self.handleEventResponse(eventId: eventId, event: event, responseData: responseData)
     }
 
     private func handleEventResponse(eventId: String, event: CheckoutAddressChangeIntentEvent, responseData: String) {
@@ -252,23 +209,20 @@ class RCTCheckoutWebView: UIView {
             event.respondWith(result: payload)
             print("[CheckoutWebView] Successfully responded to event: \(eventId)")
 
-            // Remove the event from global registry after responding
-            EventRegistry.shared.remove(eventId: eventId)
+            self.events.remove(eventId: eventId)
         } catch {
             print("[CheckoutWebView] Error responding to event: \(error)")
         }
     }
 
     deinit {
-        // Clean up any events associated with this webview instance
-        EventRegistry.shared.cleanupForWebView(self)
+      self.events.cleanup()
     }
 
     override func removeFromSuperview() {
         removeCheckout()
         super.removeFromSuperview()
-        // Clean up events when webview is removed
-        EventRegistry.shared.cleanupForWebView(self)
+        self.events.cleanup()
     }
 }
 
@@ -305,8 +259,7 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     func checkoutDidRequestAddressChange(event: CheckoutAddressChangeIntentEvent) {
         print("[RCTCheckoutWebView] checkoutDidRequestAddressChange called with addressType: \(event)")
 
-        // Store the event in global registry with reference to this webview instance
-        EventRegistry.shared.store(eventId: event.id, event: event, webView: self)
+        self.events.store(eventId: event.id, event: event)
         print("[RCTCheckoutWebView] Stored event with ID: \(event.id) in global registry")
 
         onAddressChangeIntent?([
