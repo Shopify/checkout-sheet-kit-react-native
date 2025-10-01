@@ -31,20 +31,22 @@ class RCTCheckoutWebView: UIView {
   private var currentURL: URL?
 
   private struct EventBus {
-    typealias Event = CheckoutAddressChangeIntentEvent
-    var events: [String: CheckoutAddressChangeIntentEvent] = [:]
+    var events: [String: RespondableEventBase] = [:]
 
-    mutating func store(eventId: String, event: Event) { events[eventId] = event }
+    mutating func store(eventId: String, event: RespondableEventBase) {
+      events[eventId] = event
+    }
 
-    mutating func remove(eventId: String) { events.removeValue(forKey: eventId) }
+    mutating func remove(eventId: String) {
+      events.removeValue(forKey: eventId)
+    }
 
-    func get(eventId: String) -> Event? { events[eventId] }
+    func get(eventId: String) -> RespondableEventBase? {
+      events[eventId]
+    }
 
     mutating func cleanup() {
-      events = events.compactMapValues { event in
-        // TODO; ANY CLEANUP NEEDED?
-        event
-      }
+      events.removeAll()
     }
   }
 
@@ -122,9 +124,7 @@ class RCTCheckoutWebView: UIView {
     checkoutWebViewController = webViewController
     checkoutWebViewController?.view.frame = bounds
 
-    // Notify that the checkout has been presented - this is required for events to work
     webViewController.notifyPresented()
-    // TODO; NEEDED?
     onViewAttached?([:])
     onLoad?(["url": url.absoluteString])
   }
@@ -146,34 +146,60 @@ class RCTCheckoutWebView: UIView {
   @objc func respondToEvent(eventId: String, responseData: String) {
     print("[CheckoutWebView] Responding to event: \(eventId) with data: \(responseData)")
 
-    // Look up the event in the global registry
     guard let event = self.events.get(eventId: eventId) else {
       print("[CheckoutWebView] Event not found in registry: \(eventId)")
       return
     }
 
-    // Call the instance method on the correct webview
-    self.handleEventResponse(eventId: eventId, event: event, responseData: responseData)
+    handleEventResponse(eventId: eventId, event: event, responseData: responseData)
   }
 
   private func handleEventResponse(
     eventId: String,
-    event: CheckoutAddressChangeIntentEvent,
+    event: RespondableEventBase,
     responseData: String
   ) {
     do {
-      guard let data = responseData.data(using: .utf8) else {
-        print("[CheckoutWebView] Failed to convert response data to UTF-8")
-        return
-      }
-      let payload = try JSONDecoder().decode(DeliveryAddressChangePayload.self, from: data)
-      event.respondWith(result: payload)
+      try event.decodeAndRespond(from: responseData)
       print("[CheckoutWebView] Successfully responded to event: \(eventId)")
-
       self.events.remove(eventId: eventId)
+    } catch let error as EventResponseError {
+      print("[CheckoutWebView] Event response error: \(error)")
+      handleEventError(eventId: eventId, error: error)
     } catch {
-      print("[CheckoutWebView] Error responding to event: \(error)")
+      print("[CheckoutWebView] Unexpected error responding to event: \(error)")
+      handleEventError(eventId: eventId, error: error)
     }
+  }
+
+  private func handleEventError(eventId: String, error: Error) {
+    let errorMessage: String
+    let errorCode: String
+
+    if let eventError = error as? EventResponseError {
+      switch eventError {
+      case .invalidEncoding:
+        errorMessage = "Invalid response data encoding"
+        errorCode = "ENCODING_ERROR"
+      case .decodingFailed(let details):
+        errorMessage = "Failed to decode address response: \(details)"
+        errorCode = "DECODING_ERROR"
+      case .validationFailed(let details):
+        errorMessage = "Invalid address data: \(details)"
+        errorCode = "VALIDATION_ERROR"
+      }
+    } else {
+      errorMessage = error.localizedDescription
+      errorCode = "UNKNOWN_ERROR"
+    }
+
+    onError?([
+      "error": errorMessage,
+      "eventId": eventId,
+      "code": errorCode,
+    ])
+
+    self.events.remove(eventId: eventId)
   }
 
   override func removeFromSuperview() {
