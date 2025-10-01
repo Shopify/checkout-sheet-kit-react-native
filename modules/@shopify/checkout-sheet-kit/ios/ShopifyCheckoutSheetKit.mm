@@ -79,6 +79,7 @@ RCT_EXTERN_METHOD(isApplePayAvailable : (RCTPromiseResolveBlock)resolve reject :
 
 @end
 
+#if RN_SHOPIFY_CHECKOUT_ACCELERATED_CHECKOUTS
 /**
  * AcceleratedCheckoutButtons View Manager
  */
@@ -147,3 +148,4 @@ RCT_EXPORT_VIEW_PROPERTY(onClickLink, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onSizeChange, RCTDirectEventBlock)
 
 @end
+#endif

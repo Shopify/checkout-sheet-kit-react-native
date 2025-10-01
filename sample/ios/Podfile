@@ -56,4 +56,4 @@ target 'ReactNative' do
   end
 end
 
-pod "RNShopifyCheckoutSheetKit", :path => "../../modules/@shopify/checkout-sheet-kit"
+pod "RNShopifyCheckoutSheetKit/AcceleratedCheckouts", :path => "../../modules/@shopify/checkout-sheet-kit"

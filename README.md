@@ -118,6 +118,48 @@ minimum version number is at least `13`.
 + platform :ios, 13
 ```
 
+### 4. Optional: Accelerated Checkout Buttons (iOS only)
+
+By default, the iOS native module includes only the core checkout functionality. If you want to use the `AcceleratedCheckoutButtons` component (for Shop Pay and Apple Pay buttons), you need to explicitly include it.
+
+#### Bare React Native or Expo Bare Workflow
+
+Add the `AcceleratedCheckouts` subspec to your `ios/Podfile`:
+
+```ruby
+# ios/Podfile
+pod "RNShopifyCheckoutSheetKit/AcceleratedCheckouts", :path => "../node_modules/@shopify/checkout-sheet-kit"
+```
+
+#### Expo Managed Workflow
+
+For Expo managed apps, use the provided config plugin to enable AcceleratedCheckouts. In your `app.json` or `app.config.js`:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "@shopify/checkout-sheet-kit",
+        {
+          "enableAcceleratedCheckouts": true
+        }
+      ]
+    ]
+  }
+}
+```
+
+The config plugin will automatically update your iOS Podfile to include the `AcceleratedCheckouts` subspec. After adding the plugin, run:
+
+```sh
+npx expo prebuild --clean
+```
+
+To disable AcceleratedCheckouts, set `enableAcceleratedCheckouts` to `false` or omit it entirely.
+
+If you only need the default checkout experience, no additional configuration is required.
+
 ## Basic Usage
 
 Once the SDK has been added as a package dependency and the minimum platform
