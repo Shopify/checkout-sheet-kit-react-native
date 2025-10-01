@@ -46,14 +46,6 @@ export function CheckoutWebView(props: CheckoutWebViewProps) {
       onComplete={events.onComplete}
       onError={events.onError}
       onPixelEvent={events.onPixelEvent}
-
-      // Used for debugging setting up the component, will remove after refactors to native code
-      // onViewAttached={() => {
-      //    console.log('Native webview attached!');
-      // }}
-      // onLoad={event => {
-      //    console.log('Native webview loaded with URL:', event.url);
-      // }}
     />
   );
 }

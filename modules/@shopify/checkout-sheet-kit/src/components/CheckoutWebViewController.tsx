@@ -76,11 +76,6 @@ export interface CheckoutWebViewControllerProps {
   onClickLink?: (url: string) => void;
 
   /**
-   * Called when the webview is attached
-   */
-  onViewAttached?: () => void;
-
-  /**
    * Called when checkout requests an address change (e.g., for native address picker)
    */
   onAddressChangeIntent?: (event: CheckoutAddressChangeIntent) => void;
@@ -107,7 +102,6 @@ interface NativeCheckoutWebViewProps {
   onCancel?: () => void;
   onPixelEvent?: (event: {nativeEvent: PixelEvent}) => void;
   onClickLink?: (event: {nativeEvent: {url: string}}) => void;
-  onViewAttached?: () => void;
   onAddressChangeIntent?: (event: {
     nativeEvent: {
       id: string;
@@ -161,7 +155,6 @@ export const CheckoutWebViewController = forwardRef<
       onCancel,
       onPixelEvent,
       onClickLink,
-      onViewAttached,
       onAddressChangeIntent,
       style,
     },
@@ -226,10 +219,6 @@ export const CheckoutWebViewController = forwardRef<
       [onClickLink],
     );
 
-    const handleViewAttached = useCallback(() => {
-      onViewAttached?.();
-    }, [onViewAttached]);
-
     const handleAddressChangeIntent = useCallback(
       (event: {
         nativeEvent: {id: string; type: string; addressType: string};
@@ -281,7 +270,6 @@ export const CheckoutWebViewController = forwardRef<
         onCancel={handleCancel}
         onPixelEvent={handlePixelEvent}
         onClickLink={handleClickLink}
-        onViewAttached={handleViewAttached}
         onAddressChangeIntent={handleAddressChangeIntent}
       />
     );

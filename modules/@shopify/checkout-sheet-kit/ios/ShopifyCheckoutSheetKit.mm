@@ -114,16 +114,15 @@ SOFTWARE.
     RCT_EXPORT_VIEW_PROPERTY(onPixelEvent, RCTBubblingEventBlock)
 
 
+    /**
+     * Emitted when checkout is moving to address selection screen
+     */
     RCT_EXPORT_VIEW_PROPERTY(onAddressChangeIntent, RCTBubblingEventBlock)
+
     /**
      * Emitted when a link is clicked
      */
     RCT_EXPORT_VIEW_PROPERTY(onClickLink, RCTBubblingEventBlock)
-
-    /**
-     * Emitted when the view is attached
-     */
-    RCT_EXPORT_VIEW_PROPERTY(onViewAttached, RCTDirectEventBlock)
 
     /**
      * Reload the webview

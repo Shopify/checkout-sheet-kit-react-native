@@ -31,18 +31,18 @@ class RCTCheckoutWebView: UIView {
   private var currentURL: URL?
 
   private struct EventBus {
-    var events: [String: RespondableEventBase] = [:]
+    var events: [String: any RespondableEvent] = [:]
 
-    mutating func store(eventId: String, event: RespondableEventBase) {
-      events[eventId] = event
+    mutating func store(key: String, event: any RespondableEvent) {
+      events[key] = event
     }
 
-    mutating func remove(eventId: String) {
-      events.removeValue(forKey: eventId)
+    mutating func remove(key: String) {
+      events.removeValue(forKey: key)
     }
 
-    func get(eventId: String) -> RespondableEventBase? {
-      events[eventId]
+    func get(key: String) -> (any RespondableEvent)? {
+      events[key]
     }
 
     mutating func cleanup() {
@@ -60,7 +60,6 @@ class RCTCheckoutWebView: UIView {
   @objc var onCancel: RCTBubblingEventBlock?
   @objc var onPixelEvent: RCTBubblingEventBlock?
   @objc var onClickLink: RCTBubblingEventBlock?
-  @objc var onViewAttached: RCTDirectEventBlock?
   @objc var onAddressChangeIntent: RCTBubblingEventBlock?
 
   override init(frame: CGRect) {
@@ -125,7 +124,6 @@ class RCTCheckoutWebView: UIView {
     checkoutWebViewController?.view.frame = bounds
 
     webViewController.notifyPresented()
-    onViewAttached?([:])
     onLoad?(["url": url.absoluteString])
   }
 
@@ -143,36 +141,36 @@ class RCTCheckoutWebView: UIView {
     }
   }
 
-  @objc func respondToEvent(eventId: String, responseData: String) {
-    print("[CheckoutWebView] Responding to event: \(eventId) with data: \(responseData)")
+  @objc func respondToEvent(eventId id: String, responseData: String) {
+    print("[CheckoutWebView] Responding to event: \(id) with data: \(responseData)")
 
-    guard let event = self.events.get(eventId: eventId) else {
-      print("[CheckoutWebView] Event not found in registry: \(eventId)")
+    guard let event = self.events.get(key: id) else {
+      print("[CheckoutWebView] Event not found in registry: \(id)")
       return
     }
 
-    handleEventResponse(eventId: eventId, event: event, responseData: responseData)
+    handleEventResponse(eventId: id, event: event, responseData: responseData)
   }
 
   private func handleEventResponse(
-    eventId: String,
-    event: RespondableEventBase,
+    eventId id: String,
+    event: any RespondableEvent,
     responseData: String
   ) {
     do {
-      try event.decodeAndRespond(from: responseData)
-      print("[CheckoutWebView] Successfully responded to event: \(eventId)")
-      self.events.remove(eventId: eventId)
+      try event.respondWith(json: responseData)
+      print("[CheckoutWebView] Successfully responded to event: \(id)")
+      self.events.remove(key: id)
     } catch let error as EventResponseError {
       print("[CheckoutWebView] Event response error: \(error)")
-      handleEventError(eventId: eventId, error: error)
+      handleEventError(eventId: id, error: error)
     } catch {
       print("[CheckoutWebView] Unexpected error responding to event: \(error)")
-      handleEventError(eventId: eventId, error: error)
+      handleEventError(eventId: id, error: error)
     }
   }
 
-  private func handleEventError(eventId: String, error: Error) {
+  private func handleEventError(eventId id: String, error: Error) {
     let errorMessage: String
     let errorCode: String
 
@@ -195,11 +193,11 @@ class RCTCheckoutWebView: UIView {
 
     onError?([
       "error": errorMessage,
-      "eventId": eventId,
+      "eventId": id,
       "code": errorCode,
     ])
 
-    self.events.remove(eventId: eventId)
+    self.events.remove(key: id)
   }
 
   override func removeFromSuperview() {
@@ -242,7 +240,7 @@ extension RCTCheckoutWebView: CheckoutDelegate {
   func checkoutDidRequestAddressChange(event: CheckoutAddressChangeIntentEvent) {
     print("[RCTCheckoutWebView] checkoutDidRequestAddressChange called with addressType: \(event)")
 
-    self.events.store(eventId: event.id, event: event)
+    self.events.store(key: event.id, event: event)
     print("[RCTCheckoutWebView] Stored event with ID: \(event.id) in global registry")
 
     onAddressChangeIntent?([
