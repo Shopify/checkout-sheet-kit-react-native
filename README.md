@@ -67,8 +67,6 @@ experiences.
 - **React Native** - Minimum version `0.70`
 - **iOS** - Minimum version iOS 13
 - **Android** - Minimum Java 11 & Android SDK version `23`
-- **Shopify** - This package is _**not**_ compatible with checkout.liquid. Your
-  Shopify Store must be migrated for extensibility.
 
 ## Getting Started
 
