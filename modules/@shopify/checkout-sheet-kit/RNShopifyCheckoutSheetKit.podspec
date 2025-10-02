@@ -16,12 +16,24 @@ Pod::Spec.new do |s|
 
   s.platforms    = { :ios => "13.0" }
   s.source       = { :git => "https://github.com/Shopify/checkout-sheet-kit-react-native.git", :tag => "#{s.version}" }
+  s.swift_version = '5.0'
 
-  s.source_files = "ios/*.{h,m,mm,swift}"
+  s.default_subspec = 'Core'
 
-	s.dependency "React-Core"
-	s.dependency "ShopifyCheckoutSheetKit", "~> 3.4.0-rc.9"
-	s.dependency "ShopifyCheckoutSheetKit/AcceleratedCheckouts", "~> 3.4.0-rc.9"
+  s.subspec 'Core' do |ss|
+    ss.source_files = "ios/ShopifyCheckoutSheetKit*.{h,m,mm,swift}"
+    ss.dependency "React-Core"
+    ss.dependency "ShopifyCheckoutSheetKit", "~> 3.4.0-rc.9"
+  end
+
+  s.subspec 'AcceleratedCheckouts' do |ss|
+    ss.source_files = "ios/AcceleratedCheckout*.swift"
+    ss.dependency "RNShopifyCheckoutSheetKit/Core"
+    ss.dependency "ShopifyCheckoutSheetKit/AcceleratedCheckouts", "~> 3.4.0-rc.9"
+    ss.pod_target_xcconfig = {
+      'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) RN_SHOPIFY_CHECKOUT_ACCELERATED_CHECKOUTS=1'
+    }
+  end
 
   if fabric_enabled
 		# Use React Native's helper if available, otherwise add dependencies directly

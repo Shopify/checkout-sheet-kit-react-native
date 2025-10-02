@@ -33,8 +33,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     private var hasListeners = false
 
     internal var checkoutSheet: UIViewController?
+    #if RN_SHOPIFY_CHECKOUT_ACCELERATED_CHECKOUTS
     private var acceleratedCheckoutsConfiguration: Any?
     private var acceleratedCheckoutsApplePayConfiguration: Any?
+    #endif
 
     override var methodQueue: DispatchQueue! {
         return DispatchQueue.main
@@ -213,6 +215,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         resolve(config)
     }
 
+    #if RN_SHOPIFY_CHECKOUT_ACCELERATED_CHECKOUTS
     @objc func configureAcceleratedCheckouts(
         _ storefrontDomain: String,
         storefrontAccessToken: String,
@@ -305,4 +308,34 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
             return field
         }
     }
+    #else
+    @objc func configureAcceleratedCheckouts(
+        _ storefrontDomain: String,
+        storefrontAccessToken: String,
+        customerEmail: String?,
+        customerPhoneNumber: String?,
+        customerAccessToken: String?,
+        applePayMerchantIdentifier: String?,
+        applyPayContactFields: [String]?,
+        supportedShippingCountries: [String]?,
+        resolve: @escaping RCTPromiseResolveBlock,
+        reject _: @escaping RCTPromiseRejectBlock
+    ) {
+        resolve(false)
+    }
+
+    @objc func isAcceleratedCheckoutAvailable(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        reject _: @escaping RCTPromiseRejectBlock
+    ) {
+        resolve(false)
+    }
+
+    @objc func isApplePayAvailable(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        reject _: @escaping RCTPromiseRejectBlock
+    ) {
+        resolve(false)
+    }
+    #endif
 }
