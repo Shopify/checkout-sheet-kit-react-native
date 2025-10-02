@@ -31,9 +31,14 @@ class RCTCheckoutWebView: UIView {
   private var currentURL: URL?
 
   private struct EventBus {
-    var events: [String: any RespondableEvent] = [:]
+    typealias Event = any RPCRequest
+    private var events: [String: Event] = [:]
 
-    mutating func store(key: String, event: any RespondableEvent) {
+    func get(key: String) -> Event? {
+      events[key]
+    }
+    
+    mutating func set(key: String, event: Event) {
       events[key] = event
     }
 
@@ -41,11 +46,7 @@ class RCTCheckoutWebView: UIView {
       events.removeValue(forKey: key)
     }
 
-    func get(key: String) -> (any RespondableEvent)? {
-      events[key]
-    }
-
-    mutating func cleanup() {
+    mutating func removeAll() {
       events.removeAll()
     }
   }
@@ -71,7 +72,7 @@ class RCTCheckoutWebView: UIView {
   }
 
   deinit {
-    self.events.cleanup()
+    self.events.removeAll()
   }
 
   private func setup() {
@@ -149,14 +150,15 @@ class RCTCheckoutWebView: UIView {
       return
     }
 
-    handleEventResponse(eventId: id, event: event, responseData: responseData)
+    handleEventResponse(for: event, with: responseData)
   }
 
   private func handleEventResponse(
-    eventId id: String,
-    event: any RespondableEvent,
-    responseData: String
+    for event: any RPCRequest,
+    with responseData: String
   ) {
+    guard let id = event.id else { return }
+
     do {
       try event.respondWith(json: responseData)
       print("[CheckoutWebView] Successfully responded to event: \(id)")
@@ -203,64 +205,44 @@ class RCTCheckoutWebView: UIView {
   override func removeFromSuperview() {
     removeCheckout()
     super.removeFromSuperview()
-    self.events.cleanup()
+    self.events.removeAll()
   }
 }
 
 extension RCTCheckoutWebView: CheckoutDelegate {
   func checkoutDidComplete(event: CheckoutCompletedEvent) {
-    print("[RCTCheckoutWebView] checkoutDidComplete called with event: \(event)")
     onComplete?(ShopifyEventSerialization.serialize(checkoutCompletedEvent: event))
   }
 
   func checkoutDidCancel() {
-    print("[RCTCheckoutWebView] checkoutDidCancel called")
     onCancel?([:])
   }
 
   func checkoutDidFail(error: ShopifyCheckoutSheetKit.CheckoutError) {
-    print("[RCTCheckoutWebView] checkoutDidFail called with error: \(error)")
     onError?(ShopifyEventSerialization.serialize(checkoutError: error))
   }
 
   func checkoutDidEmitWebPixelEvent(event: ShopifyCheckoutSheetKit.PixelEvent) {
-    print("[RCTCheckoutWebView] checkoutDidEmitWebPixelEvent called with event: \(event)")
     onPixelEvent?(ShopifyEventSerialization.serialize(pixelEvent: event))
   }
 
   func checkoutDidClickLink(url: URL) {
-    print("[RCTCheckoutWebView] checkoutDidClickLink called with url: \(url)")
     onClickLink?(["url": url.absoluteString])
   }
 
   func shouldRecoverFromError(error: CheckoutError) -> Bool {
-    return error.isRecoverable
+    error.isRecoverable
   }
 
-  func checkoutDidRequestAddressChange(event: CheckoutAddressChangeIntentEvent) {
-    print("[RCTCheckoutWebView] checkoutDidRequestAddressChange called with addressType: \(event)")
+  func checkoutDidRequestAddressChange(event: AddressChangeRequest) {
+    guard let id = event.id else { return }
 
-    self.events.store(key: event.id, event: event)
-    print("[RCTCheckoutWebView] Stored event with ID: \(event.id) in global registry")
+    self.events.set(key: id, event: event)
 
     onAddressChangeIntent?([
       "id": event.id,
       "type": "addressChangeIntent",
       "addressType": event.addressType,
     ])
-  }
-}
-
-extension UIView {
-  var parentViewController: UIViewController? {
-    // Starts from next (As we know self is not a UIViewController).
-    var parentResponder: UIResponder? = self.next
-    while parentResponder != nil {
-      if let viewController = parentResponder as? UIViewController {
-        return viewController
-      }
-      parentResponder = parentResponder?.next
-    }
-    return nil
   }
 }
