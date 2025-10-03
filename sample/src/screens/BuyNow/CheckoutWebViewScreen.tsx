@@ -24,7 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 import type {NavigationProp, RouteProp} from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
 import React, {useRef} from 'react';
-import {CheckoutWebViewController} from '@shopify/checkout-sheet-kit/src/components/CheckoutWebViewController';
+import {Checkout} from '@shopify/checkout-sheet-kit';
 import type {BuyNowStackParamList} from './types';
 
 function getAuthUrl(url: string, auth: string) {
@@ -64,7 +64,7 @@ export default function CheckoutWebViewScreen(props: {
   };
 
   return (
-    <CheckoutWebViewController
+    <Checkout
       ref={ref}
       checkoutUrl={url.toString()}
       style={{flex: 1}}

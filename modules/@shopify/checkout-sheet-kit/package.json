@@ -43,26 +43,8 @@
     "checkout"
   ],
   "peerDependencies": {
-    "@react-navigation/native": "^7.0.0",
-    "@react-navigation/native-stack": "^7.0.0",
     "react": "*",
-    "react-native": "*",
-    "react-native-safe-area-context": "^5.0.0",
-    "react-native-screens": "^4.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@react-navigation/native": {
-      "optional": true
-    },
-    "@react-navigation/native-stack": {
-      "optional": true
-    },
-    "react-native-safe-area-context": {
-      "optional": true
-    },
-    "react-native-screens": {
-      "optional": true
-    }
+    "react-native": "*"
   },
   "devDependencies": {
     "react-native-builder-bob": "^0.23.2",

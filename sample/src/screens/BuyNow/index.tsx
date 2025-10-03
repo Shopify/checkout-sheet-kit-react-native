@@ -32,8 +32,7 @@ import AddressScreen from './AddressScreen';
 import PaymentScreen from './PaymentScreen';
 import type {BuyNowStackParamList} from './types';
 
-const BuyNowStackNavigator =
-  createNativeStackNavigator<BuyNowStackParamList>();
+const BuyNowStackNavigator = createNativeStackNavigator<BuyNowStackParamList>();
 
 type BuyNowProps = {
   route: RouteProp<RootStackParamList, 'BuyNow'>;
@@ -51,6 +50,7 @@ export default function BuyNowStack(props: BuyNowProps) {
           headerRight: () => (
             <Button
               title="Cancel"
+              color="black"
               onPress={() => navigation.getParent()?.goBack()}
             />
           ),

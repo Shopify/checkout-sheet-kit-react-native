@@ -39,7 +39,7 @@ import type {CheckoutCompletedEvent, CheckoutException, PixelEvent} from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
 import type {CheckoutAddressChangeIntent} from '../events';
 
-export interface CheckoutWebViewControllerProps {
+export interface CheckoutProps {
   /**
    * The checkout URL to load in the webview
    */
@@ -86,7 +86,7 @@ export interface CheckoutWebViewControllerProps {
   style?: ViewStyle;
 }
 
-export interface CheckoutWebViewControllerHandle {
+export interface CheckoutHandle {
   /**
    * Reload the current checkout page
    */
@@ -115,7 +115,7 @@ const RCTCheckoutWebView =
   requireNativeComponent<NativeCheckoutWebViewProps>('RCTCheckoutWebView');
 
 /**
- * CheckoutWebViewController provides a native webview component for displaying
+ * Checkout provides a native webview component for displaying
  * Shopify checkout pages directly within your React Native app.
  *
  * This component uses the native CheckoutWebViewController from ShopifyCheckoutSheetKit
@@ -123,7 +123,7 @@ const RCTCheckoutWebView =
  * including Shop Pay, Apple Pay, and other payment methods.
  *
  * @example
- * <CheckoutWebViewController
+ * <Checkout
  *   checkoutUrl="https://shop.example.com/checkouts/cn/123"
  *   onComplete={(event) => console.log('Checkout completed!', event.orderDetails)}
  *   onError={(error) => console.error('Checkout failed:', error.message)}
@@ -131,9 +131,9 @@ const RCTCheckoutWebView =
  * />
  *
  * @example Using with ref to reload
- * const checkoutRef = useRef<CheckoutWebViewControllerHandle>(null);
+ * const checkoutRef = useRef<CheckoutHandle>(null);
  *
- * <CheckoutWebViewController
+ * <Checkout
  *   ref={checkoutRef}
  *   checkoutUrl={url}
  *   onError={() => {
@@ -142,9 +142,9 @@ const RCTCheckoutWebView =
  *   }}
  * />
  */
-export const CheckoutWebViewController = forwardRef<
-  CheckoutWebViewControllerHandle,
-  CheckoutWebViewControllerProps
+export const Checkout = forwardRef<
+  CheckoutHandle,
+  CheckoutProps
 >(
   (
     {
@@ -276,6 +276,6 @@ export const CheckoutWebViewController = forwardRef<
   },
 );
 
-CheckoutWebViewController.displayName = 'CheckoutWebViewController';
+Checkout.displayName = 'Checkout';
 
-export default CheckoutWebViewController;
+export default Checkout;
