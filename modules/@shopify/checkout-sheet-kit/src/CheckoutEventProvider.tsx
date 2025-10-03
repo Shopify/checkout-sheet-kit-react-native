@@ -30,7 +30,9 @@ interface CheckoutEventContextType {
   respondToEvent: (eventId: string, response: any) => Promise<boolean>;
 }
 
-const CheckoutEventContext = createContext<CheckoutEventContextType | null>(null);
+const CheckoutEventContext = createContext<CheckoutEventContextType | null>(
+  null,
+);
 
 export interface CheckoutEventProviderProps {
   children: React.ReactNode;
@@ -40,7 +42,9 @@ export interface CheckoutEventProviderProps {
  * CheckoutEventProvider manages active checkout events and provides methods to respond to them.
  * This provider maintains references to active events and the webview to enable native callbacks.
  */
-export const CheckoutEventProvider = ({ children }: CheckoutEventProviderProps) => {
+export const CheckoutEventProvider = ({
+  children,
+}: CheckoutEventProviderProps) => {
   const webViewRef = useRef<React.RefObject<any> | null>(null);
 
   const registerWebView = useCallback((ref: React.RefObject<any>) => {
@@ -51,34 +55,38 @@ export const CheckoutEventProvider = ({ children }: CheckoutEventProviderProps) 
     webViewRef.current = null;
   }, []);
 
-  const respondToEvent = useCallback(async (eventId: string, response: any): Promise<boolean> => {
-    if (!webViewRef.current?.current) {
-      return false;
-    }
-
-    if (Platform.OS !== 'ios') {
-      return false;
-    }
-
-    try {
-      const handle = findNodeHandle(webViewRef.current.current);
-      if (!handle) {
+  const respondToEvent = useCallback(
+    async (eventId: string, response: any): Promise<boolean> => {
+      if (!webViewRef.current?.current) {
         return false;
       }
 
-      // Call the native method to respond to the event
-      // Native side will handle event lookup and validation
-      UIManager.dispatchViewManagerCommand(
-        handle,
-        UIManager.getViewManagerConfig('RCTCheckoutWebView')?.Commands?.respondToEvent ?? 'respondToEvent',
-        [eventId, JSON.stringify(response)]
-      );
+      if (Platform.OS !== 'ios') {
+        return false;
+      }
 
-      return true;
-    } catch (error) {
-      return false;
-    }
-  }, []);
+      try {
+        const handle = findNodeHandle(webViewRef.current.current);
+        if (!handle) {
+          return false;
+        }
+
+        // Call the native method to respond to the event
+        // Native side will handle event lookup and validation
+        UIManager.dispatchViewManagerCommand(
+          handle,
+          UIManager.getViewManagerConfig('RCTCheckoutWebView')?.Commands
+            ?.respondToEvent ?? 'respondToEvent',
+          [eventId, JSON.stringify(response)],
+        );
+
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    [],
+  );
 
   const contextValue: CheckoutEventContextType = {
     registerWebView,
@@ -107,18 +115,17 @@ export function useCheckoutEvents(): CheckoutEventContextType | null {
  */
 export function useShopifyEvent(eventId: string) {
   const eventContext = useCheckoutEvents();
-  const { respondToEvent } = eventContext || {
-    respondToEvent: async () => false,
-  };
 
   return {
     id: eventId,
-    respondWith: useCallback(async (response: any) => {
-      if (!eventContext) {
-        return false;
-      }
-      const success = await respondToEvent(eventId, response);
-      return success;
-    }, [eventId, respondToEvent, eventContext]),
+    respondWith: useCallback(
+      async (response: any) => {
+        if (!eventContext) {
+          return false;
+        }
+        return await eventContext.respondToEvent(eventId, response);
+      },
+      [eventId, eventContext],
+    ),
   };
 }

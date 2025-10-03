@@ -68,6 +68,7 @@ const initialState: CheckoutState = {
 
 export function CheckoutContextProvider({children}: PropsWithChildren) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  console.log({state});
 
   return (
     <CheckoutContext.Provider value={{state, dispatch}}>
