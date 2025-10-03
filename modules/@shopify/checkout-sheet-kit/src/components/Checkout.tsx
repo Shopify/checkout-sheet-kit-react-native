@@ -39,7 +39,7 @@ import type {CheckoutCompletedEvent, CheckoutException, PixelEvent} from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
 import type {CheckoutAddressChangeIntent} from '../events';
 
-export interface CheckoutWebViewControllerProps {
+export interface CheckoutProps {
   /**
    * The checkout URL to load in the webview
    */
@@ -86,7 +86,7 @@ export interface CheckoutWebViewControllerProps {
   style?: ViewStyle;
 }
 
-export interface CheckoutWebViewControllerHandle {
+export interface CheckoutRef {
   /**
    * Reload the current checkout page
    */
@@ -115,25 +115,30 @@ const RCTCheckoutWebView =
   requireNativeComponent<NativeCheckoutWebViewProps>('RCTCheckoutWebView');
 
 /**
- * CheckoutWebViewController provides a native webview component for displaying
+ * Checkout provides a native webview component for displaying
  * Shopify checkout pages directly within your React Native app.
  *
  * This component uses the native CheckoutWebViewController from ShopifyCheckoutSheetKit
  * to provide a seamless checkout experience with full support for all checkout features
  * including Shop Pay, Apple Pay, and other payment methods.
  *
- * @example
- * <CheckoutWebViewController
+ * @example Basic usage
+ * import {Checkout} from '@shopify/checkout-sheet-kit';
+ *
+ * <Checkout
  *   checkoutUrl="https://shop.example.com/checkouts/cn/123"
  *   onComplete={(event) => console.log('Checkout completed!', event.orderDetails)}
  *   onError={(error) => console.error('Checkout failed:', error.message)}
  *   style={{flex: 1}}
  * />
  *
- * @example Using with ref to reload
- * const checkoutRef = useRef<CheckoutWebViewControllerHandle>(null);
+ * @example Using with ref to reload on error
+ * import {useRef} from 'react';
+ * import {Checkout, CheckoutHandle} from '@shopify/checkout-sheet-kit';
  *
- * <CheckoutWebViewController
+ * const checkoutRef = useRef<CheckoutHandle>(null);
+ *
+ * <Checkout
  *   ref={checkoutRef}
  *   checkoutUrl={url}
  *   onError={() => {
@@ -142,10 +147,7 @@ const RCTCheckoutWebView =
  *   }}
  * />
  */
-export const Checkout = forwardRef<
-  CheckoutWebViewControllerHandle,
-  CheckoutWebViewControllerProps
->(
+export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
   (
     {
       checkoutUrl,
@@ -160,7 +162,8 @@ export const Checkout = forwardRef<
     },
     ref,
   ) => {
-    const webViewRef = useRef<any>(null);
+    const webViewRef =
+      useRef<React.ComponentRef<typeof RCTCheckoutWebView>>(null);
     const eventContext = useCheckoutEvents();
 
     // Register webview reference with the event provider
@@ -172,39 +175,51 @@ export const Checkout = forwardRef<
       return () => eventContext.unregisterWebView();
     }, [eventContext]);
 
-    const handleLoad = useCallback(
-      (event: {nativeEvent: {url: string}}) => {
+    const handleLoad = useCallback<
+      Required<NativeCheckoutWebViewProps>['onLoad']
+    >(
+      event => {
         onLoad?.(event.nativeEvent);
       },
       [onLoad],
     );
 
-    const handleError = useCallback(
+    const handleError = useCallback<
+      Required<NativeCheckoutWebViewProps>['onError']
+    >(
       (event: {nativeEvent: CheckoutException}) => {
         onError?.(event.nativeEvent);
       },
       [onError],
     );
 
-    const handleComplete = useCallback(
+    const handleComplete = useCallback<
+      Required<NativeCheckoutWebViewProps>['onComplete']
+    >(
       (event: {nativeEvent: CheckoutCompletedEvent}) => {
         onComplete?.(event.nativeEvent);
       },
       [onComplete],
     );
 
-    const handleCancel = useCallback(() => {
+    const handleCancel = useCallback<
+      Required<NativeCheckoutWebViewProps>['onCancel']
+    >(() => {
       onCancel?.();
     }, [onCancel]);
 
-    const handlePixelEvent = useCallback(
+    const handlePixelEvent = useCallback<
+      Required<NativeCheckoutWebViewProps>['onPixelEvent']
+    >(
       (event: {nativeEvent: PixelEvent}) => {
         onPixelEvent?.(event.nativeEvent);
       },
       [onPixelEvent],
     );
 
-    const handleClickLink = useCallback(
+    const handleClickLink = useCallback<
+      Required<NativeCheckoutWebViewProps>['onClickLink']
+    >(
       (event: {nativeEvent: {url: string}}) => {
         if (!event.nativeEvent.url) return;
         onClickLink?.(event.nativeEvent.url);
@@ -212,7 +227,9 @@ export const Checkout = forwardRef<
       [onClickLink],
     );
 
-    const handleAddressChangeIntent = useCallback(
+    const handleAddressChangeIntent = useCallback<
+      Required<NativeCheckoutWebViewProps>['onAddressChangeIntent']
+    >(
       (event: {
         nativeEvent: {id: string; type: string; addressType: string};
       }) => {
@@ -223,17 +240,20 @@ export const Checkout = forwardRef<
     );
 
     const reload = useCallback(() => {
-      if (webViewRef.current) {
-        const handle = findNodeHandle(webViewRef.current);
-        if (handle) {
-          UIManager.dispatchViewManagerCommand(
-            handle,
-            UIManager.getViewManagerConfig('RCTCheckoutWebView')?.Commands
-              ?.reload ?? 1,
-            [],
-          );
-        }
+      if (!webViewRef.current) {
+        return;
       }
+      const handle = findNodeHandle(webViewRef.current);
+      if (!handle) {
+        return;
+      }
+
+      UIManager.dispatchViewManagerCommand(
+        handle,
+        UIManager.getViewManagerConfig('RCTCheckoutWebView')?.Commands
+          ?.reload ?? 1,
+        [],
+      );
     }, []);
 
     useImperativeHandle(ref, () => ({reload}), [reload]);

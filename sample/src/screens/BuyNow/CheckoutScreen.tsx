@@ -24,8 +24,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 import type {NavigationProp, RouteProp} from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
 import React, {useRef} from 'react';
-import {Checkout} from '@shopify/checkout-sheet-kit';
+import {Checkout, type CheckoutRef} from '@shopify/checkout-sheet-kit';
 import type {BuyNowStackParamList} from './types';
+import {StyleSheet} from 'react-native';
 
 function getAuthUrl(url: string, auth: string) {
   const authUrl = new URL(url);
@@ -39,11 +40,13 @@ function useAuth() {
   return '';
 }
 
+// This component represents a screen in the consumers app that
+// wraps the shopify Checkout and provides it the auth param
 export default function CheckoutScreen(props: {
   route: RouteProp<BuyNowStackParamList, 'Checkout'>;
 }) {
   const navigation = useNavigation<NavigationProp<BuyNowStackParamList>>();
-  const ref = useRef<any>(null);
+  const ref = useRef<CheckoutRef>(null);
   const auth = useAuth();
   const url = getAuthUrl(props.route.params.url, auth);
 
@@ -67,7 +70,7 @@ export default function CheckoutScreen(props: {
     <Checkout
       ref={ref}
       checkoutUrl={url.toString()}
-      style={{flex: 1}}
+      style={styles.container}
       onAddressChangeIntent={onAddressChangeIntent}
       onCancel={onCancel}
       onError={onError}
@@ -76,3 +79,9 @@ export default function CheckoutScreen(props: {
     />
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

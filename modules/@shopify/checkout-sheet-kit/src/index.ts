@@ -526,7 +526,7 @@ export {
 export {
   Checkout,
   type CheckoutProps,
-  type CheckoutHandle,
+  type CheckoutRef,
 } from './components/Checkout';
 export {
   CheckoutEventProvider,

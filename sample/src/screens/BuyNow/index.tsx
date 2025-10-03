@@ -38,6 +38,8 @@ type BuyNowStackProps = {
   route: RouteProp<RootStackParamList, 'BuyNow'>;
 };
 
+// Stack contains a delegated navigation pattern where Shopify Checkout is not
+// responsible for the Address or Payment change screens
 export default function BuyNowStack(props: BuyNowStackProps) {
   return (
     <CheckoutEventProvider>
@@ -57,7 +59,7 @@ export default function BuyNowStack(props: BuyNowStackProps) {
         })}>
         <BuyNowStackNavigator.Screen
           name="Checkout"
-          component={CheckoutScreen}
+          component={CheckoutScreen} // This component renders the @shopify CheckoutWebView component
           initialParams={{url: props.route.params.url}}
           options={{title: 'Shopify Checkout'}}
         />
