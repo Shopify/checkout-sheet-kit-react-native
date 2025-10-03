@@ -27,22 +27,22 @@ import React from 'react';
 import {Button} from 'react-native';
 import {CheckoutEventProvider} from '@shopify/checkout-sheet-kit/src/CheckoutEventProvider';
 import type {RootStackParamList} from '../../App';
-import CheckoutWebViewScreen from './CheckoutWebViewScreen';
+import CheckoutScreen from './CheckoutScreen';
 import AddressScreen from './AddressScreen';
 import PaymentScreen from './PaymentScreen';
 import type {BuyNowStackParamList} from './types';
 
 const BuyNowStackNavigator = createNativeStackNavigator<BuyNowStackParamList>();
 
-type BuyNowProps = {
+type BuyNowStackProps = {
   route: RouteProp<RootStackParamList, 'BuyNow'>;
 };
 
-export default function BuyNowStack(props: BuyNowProps) {
+export default function BuyNowStack(props: BuyNowStackProps) {
   return (
     <CheckoutEventProvider>
       <BuyNowStackNavigator.Navigator
-        initialRouteName="CheckoutWebView"
+        initialRouteName="Checkout"
         screenOptions={({navigation}) => ({
           headerStyle: {backgroundColor: '#ffffff'},
           headerTintColor: '#000',
@@ -56,8 +56,8 @@ export default function BuyNowStack(props: BuyNowProps) {
           ),
         })}>
         <BuyNowStackNavigator.Screen
-          name="CheckoutWebView"
-          component={CheckoutWebViewScreen}
+          name="Checkout"
+          component={CheckoutScreen}
           initialParams={{url: props.route.params.url}}
           options={{title: 'Shopify Checkout'}}
         />

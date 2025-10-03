@@ -39,8 +39,8 @@ function useAuth() {
   return '';
 }
 
-export default function CheckoutWebViewScreen(props: {
-  route: RouteProp<BuyNowStackParamList, 'CheckoutWebView'>;
+export default function CheckoutScreen(props: {
+  route: RouteProp<BuyNowStackParamList, 'Checkout'>;
 }) {
   const navigation = useNavigation<NavigationProp<BuyNowStackParamList>>();
   const ref = useRef<any>(null);

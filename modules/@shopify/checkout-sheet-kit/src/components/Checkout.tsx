@@ -39,7 +39,7 @@ import type {CheckoutCompletedEvent, CheckoutException, PixelEvent} from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
 import type {CheckoutAddressChangeIntent} from '../events';
 
-export interface CheckoutProps {
+export interface CheckoutWebViewControllerProps {
   /**
    * The checkout URL to load in the webview
    */
@@ -86,7 +86,7 @@ export interface CheckoutProps {
   style?: ViewStyle;
 }
 
-export interface CheckoutHandle {
+export interface CheckoutWebViewControllerHandle {
   /**
    * Reload the current checkout page
    */
@@ -115,7 +115,7 @@ const RCTCheckoutWebView =
   requireNativeComponent<NativeCheckoutWebViewProps>('RCTCheckoutWebView');
 
 /**
- * Checkout provides a native webview component for displaying
+ * CheckoutWebViewController provides a native webview component for displaying
  * Shopify checkout pages directly within your React Native app.
  *
  * This component uses the native CheckoutWebViewController from ShopifyCheckoutSheetKit
@@ -123,7 +123,7 @@ const RCTCheckoutWebView =
  * including Shop Pay, Apple Pay, and other payment methods.
  *
  * @example
- * <Checkout
+ * <CheckoutWebViewController
  *   checkoutUrl="https://shop.example.com/checkouts/cn/123"
  *   onComplete={(event) => console.log('Checkout completed!', event.orderDetails)}
  *   onError={(error) => console.error('Checkout failed:', error.message)}
@@ -131,9 +131,9 @@ const RCTCheckoutWebView =
  * />
  *
  * @example Using with ref to reload
- * const checkoutRef = useRef<CheckoutHandle>(null);
+ * const checkoutRef = useRef<CheckoutWebViewControllerHandle>(null);
  *
- * <Checkout
+ * <CheckoutWebViewController
  *   ref={checkoutRef}
  *   checkoutUrl={url}
  *   onError={() => {
@@ -143,8 +143,8 @@ const RCTCheckoutWebView =
  * />
  */
 export const Checkout = forwardRef<
-  CheckoutHandle,
-  CheckoutProps
+  CheckoutWebViewControllerHandle,
+  CheckoutWebViewControllerProps
 >(
   (
     {
@@ -162,21 +162,15 @@ export const Checkout = forwardRef<
   ) => {
     const webViewRef = useRef<any>(null);
     const eventContext = useCheckoutEvents();
-    const {registerWebView, unregisterWebView} = eventContext || {
-      registerWebView: () => {},
-      unregisterWebView: () => {},
-    };
 
     // Register webview reference with the event provider
     useEffect(() => {
-      if (eventContext) {
-        registerWebView(webViewRef);
-        return () => {
-          unregisterWebView();
-        };
-      }
-      return undefined;
-    }, [registerWebView, unregisterWebView, eventContext]);
+      if (!eventContext) return;
+
+      eventContext.registerWebView(webViewRef);
+
+      return () => eventContext.unregisterWebView();
+    }, [eventContext]);
 
     const handleLoad = useCallback(
       (event: {nativeEvent: {url: string}}) => {
@@ -212,9 +206,8 @@ export const Checkout = forwardRef<
 
     const handleClickLink = useCallback(
       (event: {nativeEvent: {url: string}}) => {
-        if (event.nativeEvent?.url) {
-          onClickLink?.(event.nativeEvent.url);
-        }
+        if (!event.nativeEvent.url) return;
+        onClickLink?.(event.nativeEvent.url);
       },
       [onClickLink],
     );
@@ -223,15 +216,14 @@ export const Checkout = forwardRef<
       (event: {
         nativeEvent: {id: string; type: string; addressType: string};
       }) => {
-        if (event.nativeEvent) {
-          onAddressChangeIntent?.(event.nativeEvent);
-        }
+        if (!event.nativeEvent) return;
+        onAddressChangeIntent?.(event.nativeEvent);
       },
       [onAddressChangeIntent],
     );
 
     const reload = useCallback(() => {
-      if (Platform.OS === 'ios' && webViewRef.current) {
+      if (webViewRef.current) {
         const handle = findNodeHandle(webViewRef.current);
         if (handle) {
           UIManager.dispatchViewManagerCommand(
@@ -244,18 +236,12 @@ export const Checkout = forwardRef<
       }
     }, []);
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        reload,
-      }),
-      [reload],
-    );
+    useImperativeHandle(ref, () => ({reload}), [reload]);
 
     // Only render on iOS as the native module is iOS-only
     if (Platform.OS !== 'ios') {
       // eslint-disable-next-line no-console
-      console.warn('CheckoutWebViewController is only available on iOS');
+      console.error('Checkout is only available on iOS');
       return null;
     }
 
