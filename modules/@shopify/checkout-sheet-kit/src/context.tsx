@@ -39,7 +39,7 @@ interface Context {
   acceleratedCheckoutsAvailable: boolean;
   addEventListener: AddEventListener;
   getConfig: () => Promise<Configuration | undefined>;
-  setConfig: (config: Configuration) => void;
+  setConfig: (config: Configuration) => Promise<void>;
   removeEventListeners: RemoveEventListeners;
   preload: (checkoutUrl: string) => void;
   present: (checkoutUrl: string) => void;
@@ -116,8 +116,8 @@ export function ShopifyCheckoutSheetProvider({
     instance.current?.dismiss();
   }, []);
 
-  const setConfig = useCallback((config: Configuration) => {
-    instance.current?.setConfig(config);
+  const setConfig = useCallback(async (config: Configuration) => {
+    await instance.current?.setConfig(config);
   }, []);
 
   const getConfig = useCallback(async () => {
