@@ -111,6 +111,18 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
     }
   }, [cartId, fetchCart, setTotalQuantity]);
 
+  const preloadCheckout = useCallback(
+    async (checkoutURL: string) => {
+      if (checkoutURL) {
+        const config = await shopify.getConfig();
+        if (config?.preloading) {
+          shopify.preload(checkoutURL);
+        }
+      }
+    },
+    [shopify],
+  );
+
   const addToCart = useCallback(
     async (variantId: string) => {
       let id = cartId;
@@ -140,7 +152,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setTotalQuantity(data.cartLinesAdd.cart.totalQuantity);
 
       if (data.cartLinesAdd.cart.checkoutUrl) {
-        shopify.preload(data.cartLinesAdd.cart.checkoutUrl);
+        await preloadCheckout(data.cartLinesAdd.cart.checkoutUrl);
       }
 
       if (id) {
@@ -159,8 +171,8 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       appConfig,
       createCart,
       setCartId,
-      shopify,
       fetchCart,
+      preloadCheckout,
     ],
   );
 
@@ -183,7 +195,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setTotalQuantity(data.cartLinesRemove.cart.totalQuantity);
 
       if (checkoutURL) {
-        shopify.preload(checkoutURL);
+        await preloadCheckout(checkoutURL);
       }
 
       if (cartId) {
@@ -202,7 +214,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setCheckoutURL,
       setTotalQuantity,
       checkoutURL,
-      shopify,
+      preloadCheckout,
       fetchCart,
     ],
   );
