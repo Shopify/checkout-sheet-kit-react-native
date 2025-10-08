@@ -4791,12 +4791,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^19.1.0":
+"@types/react@npm:*":
   version: 19.1.12
   resolution: "@types/react@npm:19.1.12"
   dependencies:
     csstype: "npm:^3.0.2"
   checksum: 10c0/e35912b43da0caaab5252444bab87a31ca22950cde2822b3b3dc32e39c2d42dad1a4cf7b5dde9783aa2d007f0b2cba6ab9563fc6d2dbcaaa833b35178118767c
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^19.1.13":
+  version: 19.1.13
+  resolution: "@types/react@npm:19.1.13"
+  dependencies:
+    csstype: "npm:^3.0.2"
+  checksum: 10c0/75e35b54883f5ed07d3b5cb16a4711b6dbb7ec6b74301bcb9bfa697c9d9fff022ec508e1719e7b2c69e2e8b042faac1125be7717b5e5e084f816a2c88e136920
   languageName: node
   linkType: hard
 
@@ -6114,14 +6123,14 @@ __metadata:
     "@testing-library/react-native": "npm:^13.3.1"
     "@tsconfig/react-native": "npm:^3.0.6"
     "@types/jest": "npm:^29.5.13"
-    "@types/react": "npm:^19.1.0"
+    "@types/react": "npm:^19.1.13"
     "@types/react-native-dotenv": "npm:^0.2.1"
     "@types/react-test-renderer": "npm:19.1.0"
     eslint: "npm:^8.57.1"
     eslint-plugin-prettier: "npm:^5.5.4"
     jest: "npm:^30.0.5"
     prettier: "npm:^3.2.5"
-    react: "npm:19.1.0"
+    react: "npm:19.1.1"
     react-native: "npm:0.80.2"
     react-native-dotenv: "npm:^3.4.9"
     react-native-gesture-handler: "npm:2.26.0"
@@ -11294,10 +11303,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:19.1.0":
-  version: 19.1.0
-  resolution: "react@npm:19.1.0"
-  checksum: 10c0/530fb9a62237d54137a13d2cfb67a7db6a2156faed43eecc423f4713d9b20c6f2728b026b45e28fcd72e8eadb9e9ed4b089e99f5e295d2f0ad3134251bdd3698
+"react@npm:19.1.1":
+  version: 19.1.1
+  resolution: "react@npm:19.1.1"
+  checksum: 10c0/8c9769a2dfd02e603af6445058325e6c8a24b47b185d0e461f66a6454765ddcaecb3f0a90184836c68bb509f3c38248359edbc42f0d07c23eb500a5c30c87b4e
   languageName: node
   linkType: hard
 
