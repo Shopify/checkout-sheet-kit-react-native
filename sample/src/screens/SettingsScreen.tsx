@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useMemo, useEffect, useState} from 'react';
 import {
   Pressable,
   SafeAreaView,
@@ -87,11 +87,20 @@ interface SectionData {
 }
 
 function SettingsScreen() {
-  const ShopifyCheckout = useShopifyCheckoutSheet();
+  const shopify = useShopifyCheckoutSheet();
   const {clearCart} = useCart();
   const {appConfig, setAppConfig} = useConfig();
   const {colors, setColorScheme} = useTheme();
   const styles = createStyles(colors);
+  const [preloadingEnabled, setPreloadingEnabled] = useState(false);
+
+  useEffect(() => {
+    async function loadConfig() {
+      const config = await shopify.getConfig();
+      setPreloadingEnabled(config?.preloading ?? false);
+    }
+    loadConfig();
+  }, [shopify]);
 
   const handleColorSchemeChange = useCallback(
     (item: SingleSelectItem) => {
@@ -104,12 +113,15 @@ function SettingsScreen() {
     [appConfig, setAppConfig, setColorScheme],
   );
 
-  const handleTogglePreloading = useCallback(() => {
-    setAppConfig({
-      ...appConfig,
-      enablePreloading: !appConfig.enablePreloading,
+  const handleTogglePreloading = useCallback(async () => {
+    const currentConfig = await shopify.getConfig();
+    const newPreloadingValue = !currentConfig?.preloading;
+    shopify.setConfig({
+      ...currentConfig,
+      preloading: newPreloadingValue,
     });
-  }, [appConfig, setAppConfig]);
+    setPreloadingEnabled(newPreloadingValue);
+  }, [shopify]);
 
   const handleTogglePrefill = useCallback(() => {
     clearCart();
@@ -132,7 +144,7 @@ function SettingsScreen() {
       {
         title: 'Preload checkout',
         type: SectionType.Switch,
-        value: appConfig.enablePreloading,
+        value: preloadingEnabled,
         handler: handleTogglePreloading,
       },
       {
@@ -152,6 +164,7 @@ function SettingsScreen() {
     ],
     [
       appConfig,
+      preloadingEnabled,
       handleTogglePrefill,
       handleTogglePreloading,
       handleToggleCustomerAuthenticated,
@@ -193,7 +206,7 @@ function SettingsScreen() {
       {
         title: 'SDK version',
         type: SectionType.Text,
-        value: ShopifyCheckout.version,
+        value: shopify.version,
       },
       {
         title: 'App version',
@@ -206,7 +219,7 @@ function SettingsScreen() {
         value: Config.STOREFRONT_DOMAIN || 'undefined',
       },
     ],
-    [ShopifyCheckout.version],
+    [shopify.version],
   );
 
   const sections: SectionData[] = useMemo(

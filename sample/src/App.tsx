@@ -235,7 +235,6 @@ function AppWithContext({children}: PropsWithChildren) {
       config={{
         colorScheme:
           checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
-        enablePreloading: checkoutKitConfigDefaults.preloading ?? true,
         prefillBuyerInformation: false,
         customerAuthenticated: false,
       }}>
@@ -364,7 +363,6 @@ function AppWithCheckoutKit({children}: PropsWithChildren) {
     return {
       ...checkoutKitConfigDefaults,
       ...checkoutKitThemeConfig,
-      preloading: appConfig.enablePreloading,
       acceleratedCheckouts: {
         storefrontDomain: env.STOREFRONT_DOMAIN!,
         storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN!,
