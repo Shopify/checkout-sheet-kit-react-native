@@ -12,6 +12,8 @@ import com.shopify.checkoutsheetkit.ClientException;
 import com.shopify.checkoutsheetkit.ConfigurationException;
 import com.shopify.checkoutsheetkit.HttpException;
 import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
+import com.shopify.checkoutsheetkit.Preloading;
+import com.shopify.checkoutsheetkit.ColorScheme;
 import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
 import com.shopify.checkoutsheetkit.pixelevents.StandardPixelEvent;
 import com.shopify.checkoutsheetkit.pixelevents.CustomPixelEvent;
@@ -23,6 +25,7 @@ import com.shopify.checkoutsheetkit.lifecycleevents.Price;
 import com.shopify.reactnative.checkoutsheetkit.ShopifyCheckoutSheetKitModule;
 import com.shopify.reactnative.checkoutsheetkit.CustomCheckoutEventProcessor;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +62,10 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   private ShopifyCheckoutSheetKitModule shopifyCheckoutSheetKitModule;
 
+  // Store initial configuration to restore after each test
+  private Preloading initialPreloading;
+  private ColorScheme initialColorScheme;
+
   // Test constants for color configuration
   private static final String BACKGROUND_COLOR = "#FFFFFF";
   private static final String PROGRESS_INDICATOR = "#000000";
@@ -77,6 +84,20 @@ public class ShopifyCheckoutSheetKitModuleTest {
     when(mockReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class))
         .thenReturn(mockEventEmitter);
     shopifyCheckoutSheetKitModule = new ShopifyCheckoutSheetKitModule(mockReactContext);
+
+    // Capture initial configuration state to restore after each test
+    initialPreloading = ShopifyCheckoutSheetKitModule.checkoutConfig.getPreloading();
+    initialColorScheme = ShopifyCheckoutSheetKitModule.checkoutConfig.getColorScheme();
+  }
+
+  @After
+  public void tearDown() {
+    // Reset configuration to initial state after each test
+    ShopifyCheckoutSheetKit.configure(configuration -> {
+      configuration.setPreloading(initialPreloading);
+      configuration.setColorScheme(initialColorScheme);
+      ShopifyCheckoutSheetKitModule.checkoutConfig = configuration;
+    });
   }
 
   /**
