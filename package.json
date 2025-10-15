@@ -45,7 +45,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "jest": "^30.0.5",
     "prettier": "^3.2.5",
-    "react": "19.1.0",
+    "react": "19.1.1",
     "react-native": "0.80.2",
     "react-native-dotenv": "^3.4.9",
     "react-native-gesture-handler": "2.26.0",
