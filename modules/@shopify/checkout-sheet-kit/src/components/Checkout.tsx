@@ -35,7 +35,12 @@ import {
   findNodeHandle,
 } from 'react-native';
 import type {ViewStyle} from 'react-native';
-import type {CheckoutCompletedEvent, CheckoutException, PixelEvent} from '..';
+import type {
+  CheckoutCompletedEvent,
+  CheckoutException,
+  CheckoutOptions,
+  PixelEvent,
+} from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
 import type {CheckoutAddressChangeIntent} from '../events';
 
@@ -44,6 +49,11 @@ export interface CheckoutProps {
    * The checkout URL to load in the webview
    */
   checkoutUrl: string;
+
+  /**
+   * Optional checkout configuration (authentication, entry point)
+   */
+  options?: CheckoutOptions;
 
   /**
    * Called when the webview loads
@@ -95,6 +105,7 @@ export interface CheckoutRef {
 
 interface NativeCheckoutWebViewProps {
   checkoutUrl: string;
+  checkoutOptions?: CheckoutOptions;
   style?: ViewStyle;
   onLoad?: (event: {nativeEvent: {url: string}}) => void;
   onError?: (event: {nativeEvent: CheckoutException}) => void;
@@ -151,6 +162,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
   (
     {
       checkoutUrl,
+      options,
       onLoad,
       onError,
       onComplete,
@@ -269,6 +281,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       <RCTCheckoutWebView
         ref={webViewRef}
         checkoutUrl={checkoutUrl}
+        checkoutOptions={options}
         style={style}
         onLoad={handleLoad}
         onError={handleError}

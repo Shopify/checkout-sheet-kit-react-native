@@ -136,20 +136,22 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         ShopifyCheckoutSheetKit.invalidate()
     }
 
-    @objc func present(_ checkoutURL: String) {
+    @objc func present(_ checkoutURL: String, options: [AnyHashable: Any]?) {
         DispatchQueue.main.async {
             if let url = URL(string: checkoutURL), let viewController = self.getCurrentViewController() {
-                let view = CheckoutViewController(checkout: url, delegate: self)
+                let checkoutOptions = self.parseCheckoutOptions(options)
+                let view = CheckoutViewController(checkout: url, delegate: self, options: checkoutOptions)
                 viewController.present(view, animated: true)
                 self.checkoutSheet = view
             }
         }
     }
 
-    @objc func preload(_ checkoutURL: String) {
+    @objc func preload(_ checkoutURL: String, options: [AnyHashable: Any]?) {
         DispatchQueue.main.async {
             if let url = URL(string: checkoutURL) {
-                ShopifyCheckoutSheetKit.preload(checkout: url)
+                let checkoutOptions = self.parseCheckoutOptions(options)
+                ShopifyCheckoutSheetKit.preload(checkout: url, options: checkoutOptions)
             }
         }
     }
@@ -302,5 +304,22 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
             }
             return field
         }
+    }
+
+    /// Parses CheckoutOptions from React Native dictionary
+    /// - Parameter options: Optional dictionary containing authentication
+    /// - Returns: CheckoutOptions instance if options are provided, nil otherwise
+    private func parseCheckoutOptions(_ options: [AnyHashable: Any]?) -> CheckoutOptions? {
+        guard let options = options else {
+            return nil
+        }
+
+        // Parse authentication
+        if let authDict = options["authentication"] as? [AnyHashable: Any],
+           let token = authDict["token"] as? String {
+            return CheckoutOptions(authentication: .token(token))
+        }
+
+        return nil
     }
 }

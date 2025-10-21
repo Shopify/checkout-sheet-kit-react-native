@@ -24,20 +24,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 import type {NavigationProp, RouteProp} from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
 import React, {useRef} from 'react';
-import {Checkout, type CheckoutRef} from '@shopify/checkout-sheet-kit';
+import {
+  Checkout,
+  type CheckoutRef,
+  type CheckoutOptions,
+} from '@shopify/checkout-sheet-kit';
 import type {BuyNowStackParamList} from './types';
 import {StyleSheet} from 'react-native';
 
-function getAuthUrl(url: string, auth: string) {
-  const authUrl = new URL(url);
-  // TODO; Mock implementation
-  authUrl.searchParams.append('embed', auth);
-  return authUrl;
-}
+/**
+ * Hook that fetches an authentication token from the authorization server.
+ */
+function useAuth(): string | undefined {
+  // Example:
+  // const [token, setToken] = useState<string | undefined>();
+  // useEffect(() => {
+  //   fetchTokenFromServer().then(setToken);
+  // }, []);
+  // return token;
 
-/// Mock implementation
-function useAuth() {
-  return '';
+  return undefined;
 }
 
 // This component represents a screen in the consumers app that
@@ -47,8 +53,15 @@ export default function CheckoutScreen(props: {
 }) {
   const navigation = useNavigation<NavigationProp<BuyNowStackParamList>>();
   const ref = useRef<CheckoutRef>(null);
-  const auth = useAuth();
-  const url = getAuthUrl(props.route.params.url, auth);
+  const authToken = useAuth();
+
+  const checkoutOptions: CheckoutOptions | undefined = authToken
+    ? {
+        authentication: {
+          token: authToken,
+        },
+      }
+    : undefined;
 
   const onAddressChangeIntent = (event: {id: string}) => {
     navigation.navigate('Address', {id: event.id});
@@ -69,7 +82,8 @@ export default function CheckoutScreen(props: {
   return (
     <Checkout
       ref={ref}
-      checkoutUrl={url.toString()}
+      checkoutUrl={props.route.params.url}
+      options={checkoutOptions}
       style={styles.container}
       onAddressChangeIntent={onAddressChangeIntent}
       onCancel={onCancel}

@@ -30,12 +30,12 @@ SOFTWARE.
     /**
      * Present checkout
      */
-    RCT_EXTERN_METHOD(present : (NSString*)checkoutURLString);
+    RCT_EXTERN_METHOD(present : (NSString*)checkoutURLString options : (NSDictionary*)options);
 
     /**
      * Preload checkout
      */
-    RCT_EXTERN_METHOD(preload : (NSString*)checkoutURLString);
+    RCT_EXTERN_METHOD(preload : (NSString*)checkoutURLString options : (NSDictionary*)options);
 
     /**
      * Dismiss checkout
@@ -87,6 +87,11 @@ SOFTWARE.
      * The checkout URL to load
      */
     RCT_EXPORT_VIEW_PROPERTY(checkoutUrl, NSString*)
+
+    /**
+     * Optional checkout options (authentication, entryPoint)
+     */
+    RCT_EXPORT_VIEW_PROPERTY(checkoutOptions, NSDictionary*)
 
     /**
      * Emitted when the webview loads

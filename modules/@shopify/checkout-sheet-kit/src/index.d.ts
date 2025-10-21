@@ -267,6 +267,26 @@ function removeEventListeners(event: CheckoutEvent): void;
 export type AddEventListener = typeof addEventListener;
 export type RemoveEventListeners = typeof removeEventListeners;
 
+/**
+ * Authentication configuration for checkout
+ */
+export interface CheckoutAuthentication {
+  /**
+   * JWT authentication token
+   */
+  token: string;
+}
+
+/**
+ * Optional configuration for checkout presentation and preloading
+ */
+export interface CheckoutOptions {
+  /**
+   * Application authentication configuration
+   */
+  authentication?: CheckoutAuthentication;
+}
+
 export interface ShopifyCheckoutSheetKit {
   /**
    * The version number of the Shopify Checkout SDK.
@@ -275,7 +295,7 @@ export interface ShopifyCheckoutSheetKit {
   /**
    * Preload the checkout for faster presentation.
    */
-  preload(checkoutURL: string): void;
+  preload(checkoutURL: string, options?: CheckoutOptions): void;
 
   /**
    * Invalidate preload cache.
@@ -284,7 +304,7 @@ export interface ShopifyCheckoutSheetKit {
   /**
    * Present the checkout.
    */
-  present(checkoutURL: string): void;
+  present(checkoutURL: string, options?: CheckoutOptions): void;
   /**
    * Configure the checkout. See README.md for more details.
    */
