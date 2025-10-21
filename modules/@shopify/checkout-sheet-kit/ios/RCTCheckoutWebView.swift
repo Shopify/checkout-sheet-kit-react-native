@@ -53,6 +53,17 @@ class RCTCheckoutWebView: UIView {
 
   private var events: EventBus = .init()
 
+  private var parentViewController: UIViewController? {
+    var responder: UIResponder? = self
+    while let nextResponder = responder?.next {
+      if let viewController = nextResponder as? UIViewController {
+        return viewController
+      }
+      responder = nextResponder
+    }
+    return nil
+  }
+
   /// Public Properties
   @objc var checkoutUrl: String?
   @objc var checkoutOptions: [AnyHashable: Any]?
