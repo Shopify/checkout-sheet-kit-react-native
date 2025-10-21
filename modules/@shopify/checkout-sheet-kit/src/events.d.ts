@@ -115,3 +115,12 @@ export interface CheckoutAddressChangeIntent {
   type: string;
   addressType: string;
 }
+
+export interface CheckoutPaymentChangeIntent {
+  id: string;
+  type: string;
+  currentCard?: {
+    last4: string;
+    brand: string;
+  };
+}

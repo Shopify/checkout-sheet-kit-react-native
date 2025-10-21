@@ -62,6 +62,7 @@ class RCTCheckoutWebView: UIView {
   @objc var onPixelEvent: RCTBubblingEventBlock?
   @objc var onClickLink: RCTBubblingEventBlock?
   @objc var onAddressChangeIntent: RCTBubblingEventBlock?
+  @objc var onPaymentChangeIntent: RCTBubblingEventBlock?
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -234,7 +235,7 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     error.isRecoverable
   }
 
-  func checkoutDidRequestAddressChange(event: AddressChangeRequest) {
+  func checkoutDidRequestAddressChange(event: AddressChangeRequested) {
     guard let id = event.id else { return }
 
     self.events.set(key: id, event: event)
@@ -242,7 +243,28 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     onAddressChangeIntent?([
       "id": event.id,
       "type": "addressChangeIntent",
-      "addressType": event.addressType,
+      "addressType": event.params.addressType,
     ])
+  }
+
+  func checkoutDidRequestCardChange(event: CheckoutCardChangeRequested) {
+    guard let id = event.id else { return }
+
+    self.events.set(key: id, event: event)
+
+    var eventData: [String: Any] = [
+      "id": event.id,
+      "type": "paymentChangeIntent",
+    ]
+
+    // Include current card info if available
+    if let currentCard = event.params.currentCard {
+      eventData["currentCard"] = [
+        "last4": currentCard.last4,
+        "brand": currentCard.brand,
+      ]
+    }
+
+    onPaymentChangeIntent?(eventData)
   }
 }

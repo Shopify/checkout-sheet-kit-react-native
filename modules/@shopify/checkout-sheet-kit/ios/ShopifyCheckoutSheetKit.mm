@@ -120,6 +120,11 @@ SOFTWARE.
     RCT_EXPORT_VIEW_PROPERTY(onAddressChangeIntent, RCTBubblingEventBlock)
 
     /**
+     * Emitted when checkout is moving to payment selection screen
+     */
+    RCT_EXPORT_VIEW_PROPERTY(onPaymentChangeIntent, RCTBubblingEventBlock)
+
+    /**
      * Emitted when a link is clicked
      */
     RCT_EXPORT_VIEW_PROPERTY(onClickLink, RCTBubblingEventBlock)

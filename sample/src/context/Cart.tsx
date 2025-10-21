@@ -18,16 +18,19 @@ interface Context {
   totalQuantity: number;
   addingToCart: Set<string>;
   selectedAddressIndex: number;
+  selectedPaymentIndex: number;
   clearCart: () => void;
   addToCart: (variantId: string) => Promise<void>;
   removeFromCart: (variantId: string) => Promise<void>;
   setSelectedAddressIndex: (index: number) => void;
+  setSelectedPaymentIndex: (index: number) => void;
 }
 
 const defaultCartId = undefined;
 const defaultCheckoutURL = undefined;
 const defaultTotalQuantity = 0;
 const defaultSelectedAddressIndex = 0;
+const defaultSelectedPaymentIndex = 0;
 
 const CartContext = createContext<Context>({
   cartId: defaultCartId,
@@ -35,10 +38,12 @@ const CartContext = createContext<Context>({
   totalQuantity: 0,
   addingToCart: new Set(),
   selectedAddressIndex: defaultSelectedAddressIndex,
+  selectedPaymentIndex: defaultSelectedPaymentIndex,
   addToCart: async () => {},
   removeFromCart: async () => {},
   clearCart: () => {},
   setSelectedAddressIndex: () => {},
+  setSelectedPaymentIndex: () => {},
 });
 
 type AddingToCartAction =
@@ -49,6 +54,7 @@ const checkoutURLState = atom<Context['checkoutURL']>(defaultCheckoutURL);
 const cartIdState = atom<Context['cartId']>(defaultCartId);
 const totalQuantityState = atom<Context['totalQuantity']>(defaultTotalQuantity);
 const selectedAddressIndexState = atom<Context['selectedAddressIndex']>(defaultSelectedAddressIndex);
+const selectedPaymentIndexState = atom<Context['selectedPaymentIndex']>(defaultSelectedPaymentIndex);
 
 export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const shopify = useShopifyCheckoutSheet();
@@ -60,6 +66,8 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const [totalQuantity, setTotalQuantity] = useAtom(totalQuantityState);
   // Keep track of the selected address index
   const [selectedAddressIndex, setSelectedAddressIndex] = useAtom(selectedAddressIndexState);
+  // Keep track of the selected payment index
+  const [selectedPaymentIndex, setSelectedPaymentIndex] = useAtom(selectedPaymentIndexState);
   // Maintain a loading state for items being added to the cart
   const addingToCartReducer = (
     state: Set<string>,
@@ -90,7 +98,8 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
     setCheckoutURL(undefined);
     setTotalQuantity(0);
     setSelectedAddressIndex(defaultSelectedAddressIndex);
-  }, [setCartId, setCheckoutURL, setTotalQuantity, setSelectedAddressIndex]);
+    setSelectedPaymentIndex(defaultSelectedPaymentIndex);
+  }, [setCartId, setCheckoutURL, setTotalQuantity, setSelectedAddressIndex, setSelectedPaymentIndex]);
 
   useEffect(() => {
     const subscription = shopify.addEventListener('completed', () => {
@@ -227,6 +236,8 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       clearCart,
       selectedAddressIndex,
       setSelectedAddressIndex,
+      selectedPaymentIndex,
+      setSelectedPaymentIndex,
     }),
     [
       cartId,
@@ -238,6 +249,8 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       clearCart,
       selectedAddressIndex,
       setSelectedAddressIndex,
+      selectedPaymentIndex,
+      setSelectedPaymentIndex,
     ],
   );
 

@@ -37,7 +37,7 @@ import {
 import type {ViewStyle} from 'react-native';
 import type {CheckoutCompletedEvent, CheckoutException, PixelEvent} from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
-import type {CheckoutAddressChangeIntent} from '../events';
+import type {CheckoutAddressChangeIntent, CheckoutPaymentChangeIntent} from '../events';
 
 export interface CheckoutProps {
   /**
@@ -81,6 +81,11 @@ export interface CheckoutProps {
   onAddressChangeIntent?: (event: CheckoutAddressChangeIntent) => void;
 
   /**
+   * Called when checkout requests a payment method change (e.g., for native payment selector)
+   */
+  onPaymentChangeIntent?: (event: CheckoutPaymentChangeIntent) => void;
+
+  /**
    * Style for the webview container
    */
   style?: ViewStyle;
@@ -107,6 +112,16 @@ interface NativeCheckoutWebViewProps {
       id: string;
       type: string;
       addressType: string;
+    };
+  }) => void;
+  onPaymentChangeIntent?: (event: {
+    nativeEvent: {
+      id: string;
+      type: string;
+      currentCard?: {
+        last4: string;
+        brand: string;
+      };
     };
   }) => void;
 }
@@ -158,6 +173,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       onPixelEvent,
       onClickLink,
       onAddressChangeIntent,
+      onPaymentChangeIntent,
       style,
     },
     ref,
@@ -239,6 +255,22 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       [onAddressChangeIntent],
     );
 
+    const handlePaymentChangeIntent = useCallback<
+      Required<NativeCheckoutWebViewProps>['onPaymentChangeIntent']
+    >(
+      (event: {
+        nativeEvent: {
+          id: string;
+          type: string;
+          currentCard?: {last4: string; brand: string};
+        };
+      }) => {
+        if (!event.nativeEvent) return;
+        onPaymentChangeIntent?.(event.nativeEvent);
+      },
+      [onPaymentChangeIntent],
+    );
+
     const reload = useCallback(() => {
       if (!webViewRef.current) {
         return;
@@ -277,6 +309,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
         onPixelEvent={handlePixelEvent}
         onClickLink={handleClickLink}
         onAddressChangeIntent={handleAddressChangeIntent}
+        onPaymentChangeIntent={handlePaymentChangeIntent}
       />
     );
   },
