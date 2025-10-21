@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import type {NavigationProp, RouteProp} from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
-import React, {useRef} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   Checkout,
   type CheckoutRef,
@@ -31,19 +31,41 @@ import {
 } from '@shopify/checkout-sheet-kit';
 import type {BuyNowStackParamList} from './types';
 import {StyleSheet} from 'react-native';
+import {authConfig, hasAuthCredentials} from '../../config/authConfig';
+import {generateAuthToken} from '../../utils/crypto/jwtTokenGenerator';
+import {useConfig} from '../../context/Config';
 
 /**
- * Hook that fetches an authentication token from the authorization server.
+ * Hook that generates/fetches an authentication token.
+ *
+ * For testing: Uses client-side JWT generation (NOT production safe)
+ * For production: Replace with API call to your authorization server
+ *
+ * @param enabled - Whether authentication is enabled (from Settings toggle)
  */
-function useAuth(): string | undefined {
-  // Example:
-  // const [token, setToken] = useState<string | undefined>();
-  // useEffect(() => {
-  //   fetchTokenFromServer().then(setToken);
-  // }, []);
-  // return token;
+function useAuth(enabled: boolean): string | undefined {
+  const [token, setToken] = useState<string | undefined>();
 
-  return undefined;
+  useEffect(() => {
+    if (!enabled || !hasAuthCredentials()) {
+      setToken(undefined);
+      return;
+    }
+
+    try {
+      const generatedToken = generateAuthToken(
+        authConfig.apiKey,
+        authConfig.sharedSecret,
+        authConfig.accessToken,
+      );
+      setToken(generatedToken ?? undefined);
+    } catch (error) {
+      console.error('[CheckoutScreen] Auth token generation error:', error);
+      setToken(undefined);
+    }
+  }, [enabled]);
+
+  return token;
 }
 
 // This component represents a screen in the consumers app that
@@ -53,15 +75,19 @@ export default function CheckoutScreen(props: {
 }) {
   const navigation = useNavigation<NavigationProp<BuyNowStackParamList>>();
   const ref = useRef<CheckoutRef>(null);
-  const authToken = useAuth();
+  const {appConfig} = useConfig();
+  const authToken = useAuth(appConfig.appAuthenticationEnabled);
 
-  const checkoutOptions: CheckoutOptions | undefined = authToken
-    ? {
-        authentication: {
-          token: authToken,
-        },
-      }
-    : undefined;
+  const checkoutOptions = useMemo<CheckoutOptions | undefined>(() => {
+    if (!authToken) {
+      return undefined;
+    }
+    return {
+      authentication: {
+        token: authToken,
+      },
+    };
+  }, [authToken]);
 
   const onAddressChangeIntent = (event: {id: string}) => {
     navigation.navigate('Address', {id: event.id});

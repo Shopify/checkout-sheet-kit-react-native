@@ -14,6 +14,7 @@ export interface AppConfig {
   enablePreloading: boolean;
   prefillBuyerInformation: boolean;
   customerAuthenticated: boolean;
+  appAuthenticationEnabled: boolean;
 }
 
 interface Context {
@@ -26,6 +27,7 @@ const defaultAppConfig: AppConfig = {
   enablePreloading: true,
   prefillBuyerInformation: true,
   customerAuthenticated: false,
+  appAuthenticationEnabled: false,
 };
 
 const ConfigContext = createContext<Context>({

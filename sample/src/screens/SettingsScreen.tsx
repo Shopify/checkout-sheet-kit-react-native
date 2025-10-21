@@ -126,6 +126,13 @@ function SettingsScreen() {
     });
   }, [appConfig, setAppConfig]);
 
+  const handleToggleAppAuthentication = useCallback(() => {
+    setAppConfig({
+      ...appConfig,
+      appAuthenticationEnabled: !appConfig.appAuthenticationEnabled,
+    });
+  }, [appConfig, setAppConfig]);
+
   const configurationOptions: readonly SwitchItem[] = useMemo(
     () => [
       {
@@ -148,12 +155,21 @@ function SettingsScreen() {
         value: appConfig.customerAuthenticated,
         handler: handleToggleCustomerAuthenticated,
       },
+      {
+        title: 'App authentication',
+        description:
+          'Provide an app authentication token with checkout requests. Allows applying app specific checkout customizations and prevents redaction of checkout event data.',
+        type: SectionType.Switch,
+        value: appConfig.appAuthenticationEnabled,
+        handler: handleToggleAppAuthentication,
+      },
     ],
     [
       appConfig,
       handleTogglePrefill,
       handleTogglePreloading,
       handleToggleCustomerAuthenticated,
+      handleToggleAppAuthentication,
     ],
   );
 
