@@ -106,7 +106,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       ).toHaveBeenCalledTimes(1);
       expect(
         NativeModules.ShopifyCheckoutSheetKit.preload,
-      ).toHaveBeenCalledWith(checkoutUrl);
+      ).toHaveBeenCalledWith(checkoutUrl, undefined);
     });
   });
 
@@ -129,7 +129,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       ).toHaveBeenCalledTimes(1);
       expect(
         NativeModules.ShopifyCheckoutSheetKit.present,
-      ).toHaveBeenCalledWith(checkoutUrl);
+      ).toHaveBeenCalledWith(checkoutUrl, undefined);
     });
   });
 

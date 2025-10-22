@@ -36,8 +36,10 @@ import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
 import {ApplePayContactField, ColorScheme} from './index.d';
 import type {
   AcceleratedCheckoutConfiguration,
+  CheckoutAuthentication,
   CheckoutEvent,
   CheckoutEventCallback,
+  CheckoutOptions,
   Configuration,
   Features,
   GeolocationRequestEvent,
@@ -127,17 +129,19 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   /**
    * Preloads checkout for a given URL to improve performance
    * @param checkoutUrl The URL of the checkout to preload
+   * @param options Optional checkout session configuration (e.g. authentication)
    */
-  public preload(checkoutUrl: string): void {
-    RNShopifyCheckoutSheetKit.preload(checkoutUrl);
+  public preload(checkoutUrl: string, options?: CheckoutOptions): void {
+    RNShopifyCheckoutSheetKit.preload(checkoutUrl, options);
   }
 
   /**
    * Presents the checkout sheet for a given checkout URL
    * @param checkoutUrl The URL of the checkout to display
+   * @param options Optional checkout session configuration (e.g. authentication)
    */
-  public present(checkoutUrl: string): void {
-    RNShopifyCheckoutSheetKit.present(checkoutUrl);
+  public present(checkoutUrl: string, options?: CheckoutOptions): void {
+    RNShopifyCheckoutSheetKit.present(checkoutUrl, options);
   }
 
   /**
@@ -505,10 +509,12 @@ export {
 export type {
   AcceleratedCheckoutButtonsProps,
   AcceleratedCheckoutConfiguration,
+  CheckoutAuthentication,
   CheckoutCompletedEvent,
   CheckoutEvent,
   CheckoutEventCallback,
   CheckoutException,
+  CheckoutOptions,
   Configuration,
   CustomEvent,
   Features,

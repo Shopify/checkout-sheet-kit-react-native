@@ -37,7 +37,7 @@ class RCTCheckoutWebView: UIView {
     func get(key: String) -> Event? {
       events[key]
     }
-    
+
     mutating func set(key: String, event: Event) {
       events[key] = event
     }
@@ -55,6 +55,7 @@ class RCTCheckoutWebView: UIView {
 
   /// Public Properties
   @objc var checkoutUrl: String?
+  @objc var checkoutOptions: [AnyHashable: Any]?
   @objc var onLoad: RCTDirectEventBlock?
   @objc var onError: RCTBubblingEventBlock?
   @objc var onComplete: RCTBubblingEventBlock?
@@ -106,7 +107,8 @@ class RCTCheckoutWebView: UIView {
       return
     }
 
-    let webViewController = CheckoutWebViewController(checkoutURL: url, delegate: self)
+    let options = parseCheckoutOptions(checkoutOptions)
+    let webViewController = CheckoutWebViewController(checkoutURL: url, delegate: self, options: options)
     parentViewController.addChild(webViewController)
 
     if let view = webViewController.view {
@@ -207,6 +209,25 @@ class RCTCheckoutWebView: UIView {
     removeCheckout()
     super.removeFromSuperview()
     self.events.removeAll()
+  }
+
+  // MARK: - Private Helpers
+
+  /// Parses CheckoutOptions from React Native dictionary
+  /// - Parameter options: Optional dictionary containing authentication
+  /// - Returns: CheckoutOptions instance if options are provided, nil otherwise
+  private func parseCheckoutOptions(_ options: [AnyHashable: Any]?) -> CheckoutOptions? {
+    guard let options = options else {
+      return nil
+    }
+
+    // Parse authentication
+    if let authDict = options["authentication"] as? [AnyHashable: Any],
+       let token = authDict["token"] as? String {
+      return CheckoutOptions(authentication: .token(token))
+    }
+
+    return nil
   }
 }
 
