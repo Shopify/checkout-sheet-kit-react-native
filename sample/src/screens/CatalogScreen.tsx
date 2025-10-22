@@ -113,7 +113,7 @@ function CatalogScreen({navigation}: Props) {
           style={styles.cartButton}
           disabled={totalQuantity === 0}
           onPress={presentCheckout}>
-          <Text style={styles.cartButtonText}>Amazon Checkout</Text>
+          <Text style={styles.cartButtonText}>Checkout</Text>
           <Text style={styles.cartButtonTextSubtitle}>
             {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}
           </Text>
