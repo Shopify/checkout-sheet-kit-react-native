@@ -5,9 +5,11 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>webcredentials:myshopify.com</string>
-    <string>applinks:myshopify.com</string>
+		<string>applinks:myshopify.com</string>
 	</array>
 	<key>com.apple.developer.in-app-payments</key>
-	<true/>
+	<array>
+		<string>merchant.com.shopify.example.CheckoutKitReactNative.ApplePay</string>
+	</array>
 </dict>
 </plist>
