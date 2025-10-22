@@ -206,6 +206,7 @@ describe('useShopifyCheckoutSheet', () => {
 
     expect(NativeModules.ShopifyCheckoutSheetKit.present).toHaveBeenCalledWith(
       checkoutUrl,
+      undefined,
     );
   });
 
@@ -248,6 +249,7 @@ describe('useShopifyCheckoutSheet', () => {
 
     expect(NativeModules.ShopifyCheckoutSheetKit.preload).toHaveBeenCalledWith(
       checkoutUrl,
+      undefined,
     );
   });
 
@@ -391,11 +393,11 @@ describe('useShopifyCheckoutSheet', () => {
 describe('ShopifyCheckoutSheetContext without provider', () => {
   it('throws error when hook is used without provider', () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation();
-    
+
     expect(() => {
       render(<HookTestComponent onHookValue={() => {}} />);
     }).toThrow('useShopifyCheckoutSheet must be used from within a ShopifyCheckoutSheetContext');
-    
+
     errorSpy.mockRestore();
   });
 });
