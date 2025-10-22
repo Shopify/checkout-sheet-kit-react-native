@@ -53,6 +53,17 @@ class RCTCheckoutWebView: UIView {
 
   private var events: EventBus = .init()
 
+  private var parentViewController: UIViewController? {
+    var responder: UIResponder? = self
+    while let nextResponder = responder?.next {
+      if let viewController = nextResponder as? UIViewController {
+        return viewController
+      }
+      responder = nextResponder
+    }
+    return nil
+  }
+
   /// Public Properties
   @objc var checkoutUrl: String?
   @objc var checkoutOptions: [AnyHashable: Any]?
@@ -255,7 +266,7 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     error.isRecoverable
   }
 
-  func checkoutDidRequestAddressChange(event: AddressChangeRequest) {
+  func checkoutDidRequestAddressChange(event: AddressChangeRequested) {
     guard let id = event.id else { return }
 
     self.events.set(key: id, event: event)
@@ -263,7 +274,7 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     onAddressChangeIntent?([
       "id": event.id,
       "type": "addressChangeIntent",
-      "addressType": event.addressType,
+      "addressType": event.params.addressType,
     ])
   }
 }
