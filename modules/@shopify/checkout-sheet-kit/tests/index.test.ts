@@ -106,7 +106,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       ).toHaveBeenCalledTimes(1);
       expect(
         NativeModules.ShopifyCheckoutSheetKit.preload,
-      ).toHaveBeenCalledWith(checkoutUrl);
+      ).toHaveBeenCalledWith(checkoutUrl, undefined);
     });
   });
 
@@ -129,7 +129,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       ).toHaveBeenCalledTimes(1);
       expect(
         NativeModules.ShopifyCheckoutSheetKit.present,
-      ).toHaveBeenCalledWith(checkoutUrl);
+      ).toHaveBeenCalledWith(checkoutUrl, undefined);
     });
   });
 
@@ -729,7 +729,6 @@ describe('ShopifyCheckoutSheetKit', () => {
           'customer-access-token',
           'merchant.com.test',
           ['email', 'phone'],
-          [],
         );
       });
 
@@ -754,7 +753,6 @@ describe('ShopifyCheckoutSheetKit', () => {
           null,
           null,
           null,
-          [],
           [],
         );
       });
@@ -870,87 +868,6 @@ describe('ShopifyCheckoutSheetKit', () => {
         await expect(
           instance.configureAcceleratedCheckouts(configWithoutApplePay),
         ).resolves.toBe(true);
-      });
-
-      it('throws when a non-string value is given for supportedShippingCountries', async () => {
-        const instance = new ShopifyCheckoutSheet();
-        const invalidConfig = {
-          ...acceleratedConfig,
-          wallets: {
-            applePay: {
-              contactFields: [],
-              merchantIdentifier: 'merchant.test.com',
-              supportedShippingCountries: [NaN],
-            },
-          },
-        };
-
-        const expectedError = new Error(
-          `'wallets.applePay.supportedShippingCountries' contains unexpected values. Expects ISO 3166-1 alpha-2 country codes (e.g., "US", "CA", "GB").`,
-        );
-
-        await expect(
-          instance.configureAcceleratedCheckouts(invalidConfig as any),
-        ).resolves.toBe(false);
-        expect(console.error).toHaveBeenCalledWith(
-          '[ShopifyCheckoutSheetKit] Failed to configure accelerated checkouts with',
-          expectedError,
-        );
-      });
-
-      it('calls configureAcceleratedCheckouts with an empty array for supportShippingCountries when omitted', async () => {
-        const instance = new ShopifyCheckoutSheet();
-
-        await instance.configureAcceleratedCheckouts({
-          ...acceleratedConfig,
-          wallets: {
-            applePay: {
-              contactFields: [],
-              merchantIdentifier: 'merchant.test.com',
-            },
-          },
-        });
-
-        expect(
-          NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts,
-        ).toHaveBeenCalledWith(
-          'test-shop.myshopify.com',
-          'shpat_test_token',
-          'test@example.com',
-          '+1234567890',
-          'customer-access-token',
-          'merchant.test.com',
-          [],
-          [],
-        );
-      });
-
-      it('calls configureAcceleratedCheckouts with supportShippingCountries when given', async () => {
-        const instance = new ShopifyCheckoutSheet();
-
-        await instance.configureAcceleratedCheckouts({
-          ...acceleratedConfig,
-          wallets: {
-            applePay: {
-              contactFields: [],
-              merchantIdentifier: 'merchant.test.com',
-              supportedShippingCountries: ['IE', 'CA'],
-            },
-          },
-        });
-
-        expect(
-          NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts,
-        ).toHaveBeenCalledWith(
-          'test-shop.myshopify.com',
-          'shpat_test_token',
-          'test@example.com',
-          '+1234567890',
-          'customer-access-token',
-          'merchant.test.com',
-          [],
-          ['IE', 'CA'],
-        );
       });
     });
 

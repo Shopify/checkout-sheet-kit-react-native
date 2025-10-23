@@ -11,6 +11,7 @@ import {useTheme} from './Theme';
 
 export interface AppConfig {
   colorScheme: ColorScheme;
+  enablePreloading: boolean;
   prefillBuyerInformation: boolean;
   customerAuthenticated: boolean;
 }
@@ -22,7 +23,8 @@ interface Context {
 
 const defaultAppConfig: AppConfig = {
   colorScheme: ColorScheme.automatic,
-  prefillBuyerInformation: false,
+  enablePreloading: true,
+  prefillBuyerInformation: true,
   customerAuthenticated: false,
 };
 
@@ -43,9 +45,6 @@ export const ConfigProvider: React.FC<
   }, [config, setColorScheme]);
 
   const setAppConfig = useCallback((config: AppConfig) => {
-    console.groupCollapsed('APP CONFIG UPDATE');
-    console.log(config);
-    console.groupEnd();
     setInternalAppConfig(config);
   }, []);
 
@@ -56,6 +55,12 @@ export const ConfigProvider: React.FC<
     }),
     [appConfig, setAppConfig],
   );
+
+  useEffect(() => {
+    console.groupCollapsed('APP CONFIG UPDATE');
+    console.log(appConfig);
+    console.groupEnd();
+  }, [appConfig]);
 
   return (
     <ConfigContext.Provider value={value}>{children}</ConfigContext.Provider>

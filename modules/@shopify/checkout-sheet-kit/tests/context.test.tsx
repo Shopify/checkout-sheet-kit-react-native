@@ -120,7 +120,6 @@ describe('ShopifyCheckoutSheetProvider', () => {
       'customer-access-token',
       'merchant.test',
       ['email'],
-      [],
     );
   });
 
@@ -207,6 +206,7 @@ describe('useShopifyCheckoutSheet', () => {
 
     expect(NativeModules.ShopifyCheckoutSheetKit.present).toHaveBeenCalledWith(
       checkoutUrl,
+      undefined,
     );
   });
 
@@ -249,6 +249,7 @@ describe('useShopifyCheckoutSheet', () => {
 
     expect(NativeModules.ShopifyCheckoutSheetKit.preload).toHaveBeenCalledWith(
       checkoutUrl,
+      undefined,
     );
   });
 
@@ -395,9 +396,7 @@ describe('ShopifyCheckoutSheetContext without provider', () => {
 
     expect(() => {
       render(<HookTestComponent onHookValue={() => {}} />);
-    }).toThrow(
-      'useShopifyCheckoutSheet must be used from within a ShopifyCheckoutSheetContext',
-    );
+    }).toThrow('useShopifyCheckoutSheet must be used from within a ShopifyCheckoutSheetContext');
 
     errorSpy.mockRestore();
   });

@@ -46,6 +46,7 @@ import {
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
 import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
+import {BuyNowButton, CartDataSource} from '../components/BuyNowButton';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetails'>;
 
@@ -117,7 +118,7 @@ function ProductDetails({
         <View>
           <Text style={styles.productTitle}>{product.title}</Text>
           <Text style={styles.productDescription}>
-            {product.description.slice(0, 100)}...
+            {product.description.slice(0, 100)} ...
           </Text>
         </View>
 
@@ -140,13 +141,17 @@ function ProductDetails({
             {loading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
-              <Text
-                testID="add-to-cart-button"
-                style={styles.addToCartButtonText}>
-                Add to cart
-              </Text>
+              <Text style={styles.addToCartButtonText}>Add to cart</Text>
             )}
           </Pressable>
+
+          {variant?.id && (
+            <BuyNowButton
+              variantId={variant.id}
+              cartDataSource={CartDataSource.Permalink}
+              disabled={loading}
+            />
+          )}
         </View>
       </View>
     </View>
@@ -221,7 +226,7 @@ function createStyles(colors: Colors, cornerRadius: number) {
     },
     addToCartButtonText: {
       fontSize: 20,
-      lineHeight: 24,
+      lineHeight: 20,
       color: colors.secondaryText,
       fontWeight: 'bold',
       textAlign: 'center',

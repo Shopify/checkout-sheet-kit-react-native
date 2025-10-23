@@ -110,3 +110,18 @@ namespace CheckoutCompletedEvent {
 export interface CheckoutCompletedEvent {
   orderDetails: CheckoutCompletedEvent.OrderDetails;
 }
+
+export interface CheckoutAddressChangeIntent {
+  id: string;
+  type: string;
+  addressType: string;
+}
+
+export interface CheckoutPaymentChangeIntent {
+  id: string;
+  type: string;
+  currentCard?: {
+    last4: string;
+    brand: string;
+  };
+}
