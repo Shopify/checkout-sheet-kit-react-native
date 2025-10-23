@@ -12,10 +12,17 @@ import {gql} from '@apollo/client';
 import {useConfig} from '../context/Config';
 import {useTheme} from '../context/Theme';
 import {createBuyerIdentityCartInput, getLocale} from '../utils';
+import {buildCartPermalink} from '../utils/cartPermalink';
 import type {RootStackParamList} from '../App';
+
+export enum CartDataSource {
+  StorefrontAPI = 'StorefrontAPI',
+  Permalink = 'Permalink',
+}
 
 interface BuyNowButtonProps {
   variantId: string;
+  cartDataSource: CartDataSource;
   disabled?: boolean;
 }
 
@@ -34,6 +41,7 @@ const CREATE_CART_WITH_LINE_MUTATION = gql`
 
 export function BuyNowButton({
   variantId,
+  cartDataSource,
   disabled,
 }: BuyNowButtonProps) {
   const {cornerRadius} = useTheme();
@@ -52,24 +60,39 @@ export function BuyNowButton({
     setLoading(true);
 
     try {
-      const cartInput = {
-        ...createBuyerIdentityCartInput(appConfig),
-        lines: [
-          {
-            quantity: 1,
-            merchandiseId: variantId,
-          },
-        ],
-      };
+      let checkoutUrl: string;
 
-      const {data} = await createCartWithLine({
-        variables: {input: cartInput},
-      });
+      switch (cartDataSource) {
+        case CartDataSource.Permalink:
+          checkoutUrl = buildCartPermalink(variantId, 1);
+          break;
 
-      const checkoutUrl = data?.cartCreate?.cart?.checkoutUrl;
+        case CartDataSource.StorefrontAPI: {
+          const cartInput = {
+            ...createBuyerIdentityCartInput(appConfig),
+            lines: [
+              {
+                quantity: 1,
+                merchandiseId: variantId,
+              },
+            ],
+          };
 
-      if (!checkoutUrl) {
-        throw new Error('No CheckoutURL');
+          const {data} = await createCartWithLine({
+            variables: {input: cartInput},
+          });
+
+          checkoutUrl = data?.cartCreate?.cart?.checkoutUrl;
+
+          if (!checkoutUrl) {
+            throw new Error('No CheckoutURL');
+          }
+          break;
+        }
+
+        default:
+          const _exhaustiveCheck: never = cartDataSource;
+          throw new Error(`Unknown cart data source: ${_exhaustiveCheck}`);
       }
 
       navigation.navigate('BuyNow', {url: checkoutUrl});

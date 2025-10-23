@@ -46,7 +46,7 @@ import {
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
 import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
-import {BuyNowButton} from '../components/BuyNowButton';
+import {BuyNowButton, CartDataSource} from '../components/BuyNowButton';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetails'>;
 
@@ -146,7 +146,11 @@ function ProductDetails({
           </Pressable>
 
           {variant?.id && (
-            <BuyNowButton variantId={variant.id} disabled={loading} />
+            <BuyNowButton
+              variantId={variant.id}
+              cartDataSource={CartDataSource.Permalink}
+              disabled={loading}
+            />
           )}
         </View>
       </View>
