@@ -25,7 +25,7 @@ import type {RouteProp} from '@react-navigation/native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React from 'react';
 import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {useShopifyEvent} from '@shopify/checkout-sheet-kit/src/CheckoutEventProvider';
+import {useShopifyEvent} from '@shopify/checkout-sheet-kit';
 import {useCart} from '../../context/Cart';
 import type {BuyNowStackParamList} from './types';
 
@@ -80,9 +80,9 @@ export default function AddressScreen() {
     },
   ];
 
-  const handleAddressSelection = () => {
+  const handleAddressSelection = async () => {
     const selectedAddress = addressOptions[selectedAddressIndex];
-    event.respondWith({
+    await event.respondWith({
       delivery: {
         addresses: [
           {
@@ -91,6 +91,9 @@ export default function AddressScreen() {
         ],
       },
     });
+
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     navigation.goBack();
   };
 

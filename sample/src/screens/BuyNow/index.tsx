@@ -25,7 +25,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import type {RouteProp} from '@react-navigation/native';
 import React from 'react';
 import {Button} from 'react-native';
-import {CheckoutEventProvider} from '@shopify/checkout-sheet-kit/src/CheckoutEventProvider';
+import {CheckoutEventProvider} from '@shopify/checkout-sheet-kit';
 import type {RootStackParamList} from '../../App';
 import CheckoutScreen from './CheckoutScreen';
 import AddressScreen from './AddressScreen';

@@ -4,7 +4,6 @@ import {
   Text,
   ActivityIndicator,
   StyleSheet,
-  Image,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NavigationProp} from '@react-navigation/native';
@@ -15,12 +14,9 @@ import {useTheme} from '../context/Theme';
 import {createBuyerIdentityCartInput, getLocale} from '../utils';
 import type {RootStackParamList} from '../App';
 
-export type Partner = 'microsoft' | 'openai' | 'google' | 'amazon';
-
 interface BuyNowButtonProps {
   variantId: string;
   disabled?: boolean;
-  type: Partner;
 }
 
 const CREATE_CART_WITH_LINE_MUTATION = gql`
@@ -36,39 +32,9 @@ const CREATE_CART_WITH_LINE_MUTATION = gql`
   }
 `;
 
-type EmbedPartner = {
-  type: Partner;
-  color: string;
-  image: any;
-};
-
-const PartnerConfig: Record<Partner, EmbedPartner> = {
-  microsoft: {
-    type: 'microsoft',
-    color: 'white',
-    image: require('./microsoft.png'),
-  },
-  openai: {
-    type: 'openai',
-    color: 'white',
-    image: require('./openai.png'),
-  },
-  google: {
-    type: 'google',
-    color: 'white',
-    image: require('./google.png'),
-  },
-  amazon: {
-    type: 'amazon',
-    color: 'white',
-    image: require('./amazon.png'),
-  },
-};
-
 export function BuyNowButton({
   variantId,
   disabled,
-  type,
 }: BuyNowButtonProps) {
   const {cornerRadius} = useTheme();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -106,11 +72,7 @@ export function BuyNowButton({
         throw new Error('No CheckoutURL');
       }
 
-      const url = new URL(checkoutUrl);
-      url.searchParams.append('partner', type);
-      console.log(url.toString());
-
-      navigation.navigate('BuyNow', {url: url.toString()});
+      navigation.navigate('BuyNow', {url: checkoutUrl});
     } catch (error) {
       console.error('Error creating buy now cart:', error);
     } finally {
@@ -119,19 +81,18 @@ export function BuyNowButton({
   };
 
   const styles = createStyles(cornerRadius);
-  const partner = PartnerConfig[type];
 
   return (
     <Pressable
       disabled={loading || disabled}
-      style={{...styles.buyNowButton, backgroundColor: partner.color}}
+      // eslint-disable-next-line react-native/no-inline-styles
+      style={{...styles.buyNowButton, backgroundColor: 'white'}}
       onPress={handleBuyNow}>
       {loading ? (
         <ActivityIndicator size="small" color="black" />
       ) : (
         <>
           <Text style={styles.buyNowButtonText}>Buy Now </Text>
-          <Image source={partner.image} style={styles.partnerImage} />
         </>
       )}
     </Pressable>
@@ -157,6 +118,5 @@ function createStyles(cornerRadius: number) {
       fontWeight: 'bold',
       textAlign: 'center',
     },
-    partnerImage: {height: 24, width: 24},
   });
 }

@@ -25,7 +25,7 @@ import type {RouteProp} from '@react-navigation/native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React from 'react';
 import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {useShopifyEvent} from '@shopify/checkout-sheet-kit/src/CheckoutEventProvider';
+import {useShopifyEvent} from '@shopify/checkout-sheet-kit';
 import {useCart} from '../../context/Cart';
 import type {BuyNowStackParamList} from './types';
 
