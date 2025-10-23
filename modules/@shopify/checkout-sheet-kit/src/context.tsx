@@ -77,9 +77,8 @@ export function ShopifyCheckoutSheetProvider({
       }
 
       await instance.current?.setConfig(configuration);
-      setAcceleratedCheckoutsAvailable(
-        instance.current.acceleratedCheckoutsReady,
-      );
+      const isAvailable = await instance.current.isAcceleratedCheckoutAvailable();
+      setAcceleratedCheckoutsAvailable(isAvailable);
     }
 
     configureCheckoutKit();

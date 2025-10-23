@@ -21,34 +21,44 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import type {PropsWithChildren, ReactNode} from 'react';
-import React, {useEffect, useMemo, useState} from 'react';
-import {Appearance, Linking, Pressable, StatusBar} from 'react-native';
+import {ApolloClient, ApolloProvider, InMemoryCache} from '@apollo/client';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
   NavigationContainer,
   useNavigation,
   type NavigationProp,
 } from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
+import type {PropsWithChildren, ReactNode} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
+import {
+  Appearance,
+  Linking,
+  Pressable,
+  StatusBar,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 
 import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import BuyNowStack from './screens/BuyNow';
 
-import type {Configuration, Features} from '@shopify/checkout-sheet-kit';
+import type {
+  CheckoutCompletedEvent,
+  CheckoutException,
+  Configuration,
+  Features,
+  PixelEvent,
+} from '@shopify/checkout-sheet-kit';
 import {
   ApplePayContactField,
   ColorScheme,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
-import type {
-  CheckoutCompletedEvent,
-  CheckoutException,
-  PixelEvent,
-} from '@shopify/checkout-sheet-kit';
+import env from 'react-native-config';
+import type {ProductVariant, ShopifyProduct} from '../@types';
+import {CartProvider, useCart} from './context/Cart';
 import {ConfigProvider, useConfig} from './context/Config';
 import {
   ThemeProvider,
@@ -58,14 +68,11 @@ import {
   lightColors,
   useTheme,
 } from './context/Theme';
-import {CartProvider, useCart} from './context/Cart';
+import ErrorBoundary from './ErrorBoundary';
+import {useShopifyEventHandlers} from './hooks/useCheckoutEventHandlers';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
-import type {ProductVariant, ShopifyProduct} from '../@types';
-import ErrorBoundary from './ErrorBoundary';
-import env from 'react-native-config';
 import {createDebugLogger} from './utils';
-import {useShopifyEventHandlers} from './hooks/useCheckoutEventHandlers';
 
 const log = createDebugLogger('ENV');
 
@@ -95,6 +102,7 @@ export type RootStackParamList = {
   Cart: undefined;
   CartModal: undefined;
   Settings: undefined;
+  BuyNow: {url: string};
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -235,7 +243,8 @@ function AppWithContext({children}: PropsWithChildren) {
       config={{
         colorScheme:
           checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
-        prefillBuyerInformation: false,
+        enablePreloading: checkoutKitConfigDefaults.preloading ?? true,
+        prefillBuyerInformation: true,
         customerAuthenticated: false,
       }}>
       <ApolloProvider client={client}>
@@ -248,9 +257,10 @@ function AppWithContext({children}: PropsWithChildren) {
   );
 }
 
-function CatalogStack() {
+function AppStack() {
   return (
     <Stack.Navigator
+      initialRouteName="CatalogScreen"
       screenOptions={({navigation}) => ({
         headerBackTitle: 'Back',
         // eslint-disable-next-line react/no-unstable-nested-components
@@ -289,6 +299,15 @@ function CatalogStack() {
           headerRight: undefined,
         }}
       />
+
+      <Stack.Screen
+        name="BuyNow"
+        component={BuyNowStack}
+        options={{
+          headerShown: false,
+          presentation: 'fullScreenModal',
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -297,7 +316,7 @@ function CartIcon({onPress}: {onPress: () => void}) {
   const theme = useTheme();
 
   return (
-    <Pressable onPress={onPress} testID="header-cart-icon">
+    <Pressable onPress={onPress}>
       <Icon name="shopping-basket" size={24} color={theme.colors.secondary} />
     </Pressable>
   );
@@ -363,6 +382,7 @@ function AppWithCheckoutKit({children}: PropsWithChildren) {
     return {
       ...checkoutKitConfigDefaults,
       ...checkoutKitThemeConfig,
+      preloading: appConfig.enablePreloading,
       acceleratedCheckouts: {
         storefrontDomain: env.STOREFRONT_DOMAIN!,
         storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN!,
@@ -457,10 +477,9 @@ function Routes() {
     <Tab.Navigator>
       <Tab.Screen
         name="Catalog"
-        component={CatalogStack}
+        component={AppStack}
         options={{
           headerShown: false,
-          tabBarButtonTestID: 'catalog-tab',
           tabBarIcon: createNavigationIcon('shop'),
         }}
       />
@@ -468,7 +487,6 @@ function Routes() {
         name="Cart"
         component={CartScreen}
         options={{
-          tabBarButtonTestID: 'cart-tab',
           tabBarIcon: createNavigationIcon('shopping-bag'),
           tabBarBadge: totalQuantity > 0 ? totalQuantity : undefined,
         }}
@@ -477,7 +495,6 @@ function Routes() {
         name="Settings"
         component={SettingsScreen}
         options={{
-          tabBarButtonTestID: 'settings-tab',
           tabBarIcon: createNavigationIcon('cog'),
         }}
       />

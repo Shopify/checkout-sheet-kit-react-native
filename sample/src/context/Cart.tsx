@@ -17,23 +17,33 @@ interface Context {
   checkoutURL: string | undefined;
   totalQuantity: number;
   addingToCart: Set<string>;
+  selectedAddressIndex: number;
+  selectedPaymentIndex: number;
   clearCart: () => void;
   addToCart: (variantId: string) => Promise<void>;
   removeFromCart: (variantId: string) => Promise<void>;
+  setSelectedAddressIndex: (index: number) => void;
+  setSelectedPaymentIndex: (index: number) => void;
 }
 
 const defaultCartId = undefined;
 const defaultCheckoutURL = undefined;
 const defaultTotalQuantity = 0;
+const defaultSelectedAddressIndex = 0;
+const defaultSelectedPaymentIndex = 0;
 
 const CartContext = createContext<Context>({
   cartId: defaultCartId,
   checkoutURL: undefined,
   totalQuantity: 0,
   addingToCart: new Set(),
+  selectedAddressIndex: defaultSelectedAddressIndex,
+  selectedPaymentIndex: defaultSelectedPaymentIndex,
   addToCart: async () => {},
   removeFromCart: async () => {},
   clearCart: () => {},
+  setSelectedAddressIndex: () => {},
+  setSelectedPaymentIndex: () => {},
 });
 
 type AddingToCartAction =
@@ -43,6 +53,8 @@ type AddingToCartAction =
 const checkoutURLState = atom<Context['checkoutURL']>(defaultCheckoutURL);
 const cartIdState = atom<Context['cartId']>(defaultCartId);
 const totalQuantityState = atom<Context['totalQuantity']>(defaultTotalQuantity);
+const selectedAddressIndexState = atom<Context['selectedAddressIndex']>(defaultSelectedAddressIndex);
+const selectedPaymentIndexState = atom<Context['selectedPaymentIndex']>(defaultSelectedPaymentIndex);
 
 export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const shopify = useShopifyCheckoutSheet();
@@ -52,6 +64,10 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const [cartId, setCartId] = useAtom(cartIdState);
   // Keep track of the number of items in the cart
   const [totalQuantity, setTotalQuantity] = useAtom(totalQuantityState);
+  // Keep track of the selected address index
+  const [selectedAddressIndex, setSelectedAddressIndex] = useAtom(selectedAddressIndexState);
+  // Keep track of the selected payment index
+  const [selectedPaymentIndex, setSelectedPaymentIndex] = useAtom(selectedPaymentIndexState);
   // Maintain a loading state for items being added to the cart
   const addingToCartReducer = (
     state: Set<string>,
@@ -81,7 +97,9 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
     setCartId(defaultCartId);
     setCheckoutURL(undefined);
     setTotalQuantity(0);
-  }, [setCartId, setCheckoutURL, setTotalQuantity]);
+    setSelectedAddressIndex(defaultSelectedAddressIndex);
+    setSelectedPaymentIndex(defaultSelectedPaymentIndex);
+  }, [setCartId, setCheckoutURL, setTotalQuantity, setSelectedAddressIndex, setSelectedPaymentIndex]);
 
   useEffect(() => {
     const subscription = shopify.addEventListener('completed', () => {
@@ -110,18 +128,6 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       getCart();
     }
   }, [cartId, fetchCart, setTotalQuantity]);
-
-  const preloadCheckout = useCallback(
-    async (checkoutURL: string) => {
-      if (checkoutURL) {
-        const config = await shopify.getConfig();
-        if (config?.preloading) {
-          shopify.preload(checkoutURL);
-        }
-      }
-    },
-    [shopify],
-  );
 
   const addToCart = useCallback(
     async (variantId: string) => {
@@ -152,7 +158,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setTotalQuantity(data.cartLinesAdd.cart.totalQuantity);
 
       if (data.cartLinesAdd.cart.checkoutUrl) {
-        await preloadCheckout(data.cartLinesAdd.cart.checkoutUrl);
+        shopify.preload(data.cartLinesAdd.cart.checkoutUrl);
       }
 
       if (id) {
@@ -171,8 +177,8 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       appConfig,
       createCart,
       setCartId,
+      shopify,
       fetchCart,
-      preloadCheckout,
     ],
   );
 
@@ -195,7 +201,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setTotalQuantity(data.cartLinesRemove.cart.totalQuantity);
 
       if (checkoutURL) {
-        await preloadCheckout(checkoutURL);
+        shopify.preload(checkoutURL);
       }
 
       if (cartId) {
@@ -214,7 +220,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setCheckoutURL,
       setTotalQuantity,
       checkoutURL,
-      preloadCheckout,
+      shopify,
       fetchCart,
     ],
   );
@@ -228,6 +234,10 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       totalQuantity,
       addingToCart,
       clearCart,
+      selectedAddressIndex,
+      setSelectedAddressIndex,
+      selectedPaymentIndex,
+      setSelectedPaymentIndex,
     }),
     [
       cartId,
@@ -237,6 +247,10 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       totalQuantity,
       addingToCart,
       clearCart,
+      selectedAddressIndex,
+      setSelectedAddressIndex,
+      selectedPaymentIndex,
+      setSelectedPaymentIndex,
     ],
   );
 

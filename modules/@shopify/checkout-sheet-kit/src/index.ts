@@ -36,8 +36,10 @@ import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
 import {ApplePayContactField, ColorScheme} from './index.d';
 import type {
   AcceleratedCheckoutConfiguration,
+  CheckoutAuthentication,
   CheckoutEvent,
   CheckoutEventCallback,
+  CheckoutOptions,
   Configuration,
   Features,
   GeolocationRequestEvent,
@@ -85,12 +87,6 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   private features: Features;
   private geolocationCallback: Maybe<EventSubscription>;
 
-  private _acceleratedCheckoutsReady = false;
-
-  get acceleratedCheckoutsReady(): boolean {
-    return this._acceleratedCheckoutsReady;
-  }
-
   /**
    * Initializes a new ShopifyCheckoutSheet instance
    * @param configuration Optional configuration settings for the checkout
@@ -133,17 +129,19 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   /**
    * Preloads checkout for a given URL to improve performance
    * @param checkoutUrl The URL of the checkout to preload
+   * @param options Optional checkout session configuration (e.g. authentication)
    */
-  public preload(checkoutUrl: string): void {
-    RNShopifyCheckoutSheetKit.preload(checkoutUrl);
+  public preload(checkoutUrl: string, options?: CheckoutOptions): void {
+    RNShopifyCheckoutSheetKit.preload(checkoutUrl, options);
   }
 
   /**
    * Presents the checkout sheet for a given checkout URL
    * @param checkoutUrl The URL of the checkout to display
+   * @param options Optional checkout session configuration (e.g. authentication)
    */
-  public present(checkoutUrl: string): void {
-    RNShopifyCheckoutSheetKit.present(checkoutUrl);
+  public present(checkoutUrl: string, options?: CheckoutOptions): void {
+    RNShopifyCheckoutSheetKit.present(checkoutUrl, options);
   }
 
   /**
@@ -158,13 +156,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * Updates the checkout configuration
    * @param configuration New configuration settings to apply
    */
-  public async setConfig(configuration: Configuration): Promise<void> {
-    if (configuration.acceleratedCheckouts) {
-      this._acceleratedCheckoutsReady =
-        await this.configureAcceleratedCheckouts(
-          configuration.acceleratedCheckouts,
-        );
-    }
+  public setConfig(configuration: Configuration): void {
     RNShopifyCheckoutSheetKit.setConfig(configuration);
   }
 
@@ -250,7 +242,6 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
           config.customer?.accessToken || null,
           config.wallets?.applePay?.merchantIdentifier || null,
           config.wallets?.applePay?.contactFields || [],
-          config.wallets?.applePay?.supportedShippingCountries || [],
         );
       return configured;
     } catch (error) {
@@ -302,38 +293,28 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   private validateAcceleratedCheckoutsConfiguration(
     acceleratedCheckouts: Configuration['acceleratedCheckouts'],
   ) {
-    if (!acceleratedCheckouts) {
-      return;
-    }
-
-    const {storefrontDomain, storefrontAccessToken, wallets} =
-      acceleratedCheckouts;
-
     /**
      * Required Accelerated Checkouts configuration properties
      */
-    if (!storefrontDomain) {
+    if (!acceleratedCheckouts?.storefrontDomain) {
       throw new Error('`storefrontDomain` is required');
     }
-    if (!storefrontAccessToken) {
+    if (!acceleratedCheckouts.storefrontAccessToken) {
       throw new Error('`storefrontAccessToken` is required');
     }
 
     /**
      * Validate Apple Pay config if available
      */
-    if (wallets?.applePay) {
-      const {merchantIdentifier, contactFields, supportedShippingCountries} =
-        wallets.applePay;
-
-      if (!merchantIdentifier) {
+    if (acceleratedCheckouts.wallets?.applePay) {
+      if (!acceleratedCheckouts.wallets.applePay.merchantIdentifier) {
         throw new Error('`wallets.applePay.merchantIdentifier` is required');
       }
 
       const expectedContactFields = Object.values(ApplePayContactField);
       const hasInvalidContactFields =
-        Array.isArray(contactFields) &&
-        contactFields.some(
+        Array.isArray(acceleratedCheckouts.wallets.applePay.contactFields) &&
+        acceleratedCheckouts.wallets.applePay.contactFields.some(
           value =>
             !expectedContactFields.includes(
               value.toLowerCase() as ApplePayContactField,
@@ -342,16 +323,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
       if (hasInvalidContactFields) {
         throw new Error(
-          `'wallets.applePay.contactFields' contains unexpected values. Expected "${expectedContactFields.join(', ')}", received "${contactFields}"`,
-        );
-      }
-
-      if (
-        Array.isArray(supportedShippingCountries) &&
-        supportedShippingCountries?.some(country => typeof country !== 'string')
-      ) {
-        throw new Error(
-          `'wallets.applePay.supportedShippingCountries' contains unexpected values. Expects ISO 3166-1 alpha-2 country codes (e.g., "US", "CA", "GB").`,
+          `'wallets.applePay.contactFields' contains unexpected values. Expected "${expectedContactFields.join(', ')}", received "${acceleratedCheckouts.wallets.applePay.contactFields}"`,
         );
       }
     }
@@ -537,10 +509,12 @@ export {
 export type {
   AcceleratedCheckoutButtonsProps,
   AcceleratedCheckoutConfiguration,
+  CheckoutAuthentication,
   CheckoutCompletedEvent,
   CheckoutEvent,
   CheckoutEventCallback,
   CheckoutException,
+  CheckoutOptions,
   Configuration,
   CustomEvent,
   Features,
@@ -555,3 +529,14 @@ export {
   AcceleratedCheckoutButtons,
   RenderState,
 } from './components/AcceleratedCheckoutButtons';
+export {
+  Checkout,
+  type CheckoutProps,
+  type CheckoutRef,
+} from './components/Checkout';
+export {
+  CheckoutEventProvider,
+  useCheckoutEvents,
+  useShopifyEvent,
+  type CheckoutEventProviderProps,
+} from './CheckoutEventProvider';

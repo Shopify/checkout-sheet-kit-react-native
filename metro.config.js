@@ -29,6 +29,26 @@ const config = mergeConfig(getDefaultConfig(__dirname), {
         'modules',
         '@shopify/checkout-sheet-kit',
       ),
+      '@react-navigation/native': path.resolve(
+        sample,
+        'node_modules',
+        '@react-navigation/native',
+      ),
+      '@react-navigation/native-stack': path.resolve(
+        sample,
+        'node_modules',
+        '@react-navigation/native-stack',
+      ),
+      'react-native-safe-area-context': path.resolve(
+        sample,
+        'node_modules',
+        'react-native-safe-area-context',
+      ),
+      'react-native-screens': path.resolve(
+        sample,
+        'node_modules',
+        'react-native-screens',
+      ),
     },
   },
 

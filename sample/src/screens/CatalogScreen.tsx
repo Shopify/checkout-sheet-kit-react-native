@@ -186,7 +186,7 @@ function createStyles(colors: Colors) {
       color: colors.text,
     },
     scrollView: {
-      paddingBottom: 55,
+      paddingBottom: 110,
     },
     cartButton: {
       position: 'absolute',

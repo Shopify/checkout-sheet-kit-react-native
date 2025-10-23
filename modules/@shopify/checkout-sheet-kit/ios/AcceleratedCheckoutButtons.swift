@@ -82,7 +82,6 @@ class RCTAcceleratedCheckoutButtonsManager: RCTViewManager {
 class RCTAcceleratedCheckoutButtonsView: UIView {
     private var hostingController: UIHostingController<AnyView>?
     private var configuration: ShopifyAcceleratedCheckouts.Configuration?
-    private weak var parentViewController: UIViewController?
     internal var instance: AcceleratedCheckoutButtons?
 
     @objc var onSizeChange: RCTDirectEventBlock?
@@ -164,11 +163,6 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
     private func setupView() {
         /// Configuration will be set via a static method from the main module
         configuration = AcceleratedCheckoutConfiguration.shared.configuration
-
-        /// Find the parent view controller
-        DispatchQueue.main.async { [weak self] in
-            self?.parentViewController = self?.findViewController()
-        }
 
         updateView()
 
