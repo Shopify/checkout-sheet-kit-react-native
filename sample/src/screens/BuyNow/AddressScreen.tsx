@@ -80,9 +80,9 @@ export default function AddressScreen() {
     },
   ];
 
-  const handleAddressSelection = () => {
+  const handleAddressSelection = async () => {
     const selectedAddress = addressOptions[selectedAddressIndex];
-    event.respondWith({
+    await event.respondWith({
       delivery: {
         addresses: [
           {
@@ -91,6 +91,9 @@ export default function AddressScreen() {
         ],
       },
     });
+
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     navigation.goBack();
   };
 
