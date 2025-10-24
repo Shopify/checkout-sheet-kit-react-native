@@ -140,7 +140,6 @@ export default function CheckoutScreen(props: {
       onCancel={onCancel}
       onError={onError}
       onComplete={onComplete}
-      onPixelEvent={event => console.log(event.name)}
     />
   );
 }
