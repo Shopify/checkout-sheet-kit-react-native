@@ -22,93 +22,184 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 namespace CheckoutCompletedEvent {
-  interface Address {
-    address1?: string;
-    address2?: string;
-    city?: string;
-    countryCode?: string;
-    firstName?: string;
-    lastName?: string;
-    name?: string;
-    phone?: string;
-    postalCode?: string;
-    referenceId?: string;
-    zoneCode?: string;
+  export interface OrderConfirmation {
+    url?: string;
+    order: Order;
+    number?: string;
+    isFirstOrder: boolean;
   }
 
-  interface CartInfo {
+  interface Order {
+    id: string;
+  }
+
+  export interface Cart {
+    id: string;
     lines: CartLine[];
-    price: Price;
-    token: string;
-  }
-
-  interface CartLineImage {
-    altText?: string;
-    lg: string;
-    md: string;
-    sm: string;
+    cost: CartCost;
+    buyerIdentity: CartBuyerIdentity;
+    deliveryGroups: CartDeliveryGroup[];
+    discountCodes: CartDiscountCode[];
+    appliedGiftCards: AppliedGiftCard[];
+    discountAllocations: CartDiscountAllocation[];
+    delivery: CartDelivery;
   }
 
   interface CartLine {
-    discounts?: Discount[];
-    image?: CartLineImage;
-    merchandiseId?: string;
-    price: Money;
-    productId?: string;
+    id: string;
     quantity: number;
+    merchandise: CartLineMerchandise;
+    cost: CartLineCost;
+    discountAllocations: CartDiscountAllocation[];
+  }
+
+  interface CartLineCost {
+    amountPerQuantity: Money;
+    subtotalAmount: Money;
+    totalAmount: Money;
+  }
+
+  interface CartLineMerchandise {
+    id: string;
+    title: string;
+    product: Product;
+    image?: MerchandiseImage;
+    selectedOptions: SelectedOption[];
+  }
+
+  interface Product {
+    id: string;
     title: string;
   }
 
-  interface DeliveryDetails {
-    additionalInfo?: string;
-    location?: Address;
-    name?: string;
+  interface MerchandiseImage {
+    url: string;
+    altText?: string;
   }
 
-  interface DeliveryInfo {
-    details: DeliveryDetails;
-    method: string;
+  interface SelectedOption {
+    name: string;
+    value: string;
   }
 
-  interface Discount {
-    amount?: Money;
-    applicationType?: string;
-    title?: string;
-    value?: number;
-    valueType?: string;
+  interface CartDiscountAllocation {
+    discountedAmount: Money;
+    discountApplication: DiscountApplication;
+    targetType: DiscountApplicationTargetType;
   }
 
-  export interface OrderDetails {
-    billingAddress?: Address;
-    cart: CartInfo;
-    deliveries?: DeliveryInfo[];
+  interface DiscountApplication {
+    allocationMethod: AllocationMethod;
+    targetSelection: TargetSelection;
+    targetType: DiscountApplicationTargetType;
+    value: DiscountValue;
+  }
+
+  type AllocationMethod = 'ACROSS' | 'EACH';
+  type TargetSelection = 'ALL' | 'ENTITLED' | 'EXPLICIT';
+  type DiscountApplicationTargetType = 'LINE_ITEM' | 'SHIPPING_LINE';
+
+  interface CartCost {
+    subtotalAmount: Money;
+    totalAmount: Money;
+  }
+
+  interface CartBuyerIdentity {
     email?: string;
-    id: string;
-    paymentMethods?: PaymentMethod[];
+    phone?: string;
+    customer?: Customer;
+    countryCode?: string;
+  }
+
+  interface Customer {
+    id?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
     phone?: string;
   }
 
-  interface PaymentMethod {
-    details: {[key: string]: string | null};
-    type: string;
+  interface CartDeliveryGroup {
+    deliveryAddress: MailingAddress;
+    deliveryOptions: CartDeliveryOption[];
+    selectedDeliveryOption?: CartDeliveryOption;
+    groupType: CartDeliveryGroupType;
   }
 
-  interface Price {
-    discounts?: Discount[];
-    shipping?: Money;
-    subtotal?: Money;
-    taxes?: Money;
-    total?: Money;
+  interface MailingAddress {
+    address1?: string;
+    address2?: string;
+    city?: string;
+    province?: string;
+    country?: string;
+    countryCodeV2?: string;
+    zip?: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    company?: string;
+  }
+
+  interface CartDeliveryOption {
+    code?: string;
+    title?: string;
+    description?: string;
+    handle: string;
+    estimatedCost: Money;
+    deliveryMethodType: CartDeliveryMethodType;
+  }
+
+  type CartDeliveryMethodType = 'SHIPPING' | 'PICKUP' | 'PICKUP_POINT' | 'LOCAL' | 'NONE';
+  type CartDeliveryGroupType = 'SUBSCRIPTION' | 'ONE_TIME_PURCHASE';
+
+  interface CartDelivery {
+    addresses: CartSelectableAddress[];
+  }
+
+  interface CartSelectableAddress {
+    address: CartDeliveryAddress;
+  }
+
+  interface CartDeliveryAddress {
+    address1?: string;
+    address2?: string;
+    city?: string;
+    company?: string;
+    countryCode?: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    provinceCode?: string;
+    zip?: string;
+  }
+
+  interface CartDiscountCode {
+    code: string;
+    applicable: boolean;
+  }
+
+  interface AppliedGiftCard {
+    amountUsed: Money;
+    balance: Money;
+    lastCharacters: string;
+    presentmentAmountUsed: Money;
   }
 
   interface Money {
-    amount?: number;
-    currencyCode?: string;
+    amount: string;
+    currencyCode: string;
   }
+
+  interface PricingPercentageValue {
+    percentage: number;
+  }
+
+  type DiscountValue = Money | PricingPercentageValue;
 }
 
 export interface CheckoutCompletedEvent {
-  orderDetails: CheckoutCompletedEvent.OrderDetails;
+  orderConfirmation: CheckoutCompletedEvent.OrderConfirmation;
+  cart: CheckoutCompletedEvent.Cart;
 }
 
 export interface CheckoutAddressChangeIntent {

@@ -317,9 +317,9 @@ describe('ShopifyCheckoutSheetKit', () => {
         );
         eventEmitter.emit(
           'completed',
-          JSON.stringify({orderDetails: {id: 'test-id'}}),
+          JSON.stringify({orderConfirmation: {order: {id: 'test-id'}}, cart: {}}),
         );
-        expect(callback).toHaveBeenCalledWith({orderDetails: {id: 'test-id'}});
+        expect(callback).toHaveBeenCalledWith({orderConfirmation: {order: {id: 'test-id'}}, cart: {}});
       });
 
       it('parses completed event JSON data', () => {
@@ -335,8 +335,8 @@ describe('ShopifyCheckoutSheetKit', () => {
           'completed',
           expect.any(Function),
         );
-        eventEmitter.emit('completed', {orderDetails: {id: 'test-id'}});
-        expect(callback).toHaveBeenCalledWith({orderDetails: {id: 'test-id'}});
+        eventEmitter.emit('completed', {orderConfirmation: {order: {id: 'test-id'}}, cart: {}});
+        expect(callback).toHaveBeenCalledWith({orderConfirmation: {order: {id: 'test-id'}}, cart: {}});
       });
 
       it('prints an error if the completed event data cannot be parsed', () => {

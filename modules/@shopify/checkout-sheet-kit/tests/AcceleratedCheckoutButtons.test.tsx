@@ -197,7 +197,7 @@ describe('AcceleratedCheckoutButtons', () => {
       );
 
       const nativeComponent = getByTestId('accelerated-checkout-buttons');
-      const details = {orderDetails: {id: '1'}} as any;
+      const details = {orderConfirmation: {order: {id: '1'}}, cart: {}} as any;
       nativeComponent.props.onComplete({nativeEvent: details});
       expect(onComplete).toHaveBeenCalledWith(details);
     });
