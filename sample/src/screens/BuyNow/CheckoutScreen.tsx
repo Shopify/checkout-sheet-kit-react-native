@@ -52,9 +52,6 @@ function useAuth(): string | undefined {
 
       // Skip if credentials are not configured
       if (!clientId || !clientSecret) {
-        console.warn(
-          'SHOPIFY_CLIENT_ID or SHOPIFY_CLIENT_SECRET not configured',
-        );
         return;
       }
 
@@ -143,7 +140,6 @@ export default function CheckoutScreen(props: {
       onCancel={onCancel}
       onError={onError}
       onComplete={onComplete}
-      onPixelEvent={event => console.log(event.name)}
     />
   );
 }

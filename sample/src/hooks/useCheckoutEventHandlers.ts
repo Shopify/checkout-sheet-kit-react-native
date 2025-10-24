@@ -31,7 +31,7 @@ export function useShopifyEventHandlers(name?: string): EventHandlers {
         log('onFail', error);
       },
       onComplete: event => {
-        log('onComplete', event.orderDetails.id);
+        log('onComplete', event.orderConfirmation.order.id);
         clearCart();
       },
       onCancel: () => {
