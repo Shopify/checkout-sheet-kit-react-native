@@ -19,78 +19,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import type {NavigationProp, RouteProp} from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   Checkout,
   type CheckoutRef,
   type CheckoutOptions,
 } from '@shopify/checkout-sheet-kit';
-import Config from 'react-native-config';
 import type {BuyNowStackParamList} from './types';
 import {StyleSheet} from 'react-native';
+import {authConfig, hasAuthCredentials} from '../../config/authConfig';
+import {generateAuthToken} from '../../utils/crypto/jwtTokenGenerator';
+import {useConfig} from '../../context/Config';
 
-/**
- * Response from Shopify's access token endpoint
- */
-interface AccessTokenResponse {
-  access_token: string;
-  expires_in?: number;
-  token_type?: string;
-}
-
-/**
- * Hook that fetches an authentication token from the authorization server.
- */
-function useAuth(): string | undefined {
+function useAuth(enabled: boolean): string | undefined {
   const [token, setToken] = useState<string | undefined>();
 
   useEffect(() => {
-    const fetchToken = async () => {
-      const clientId = Config.SHOPIFY_CLIENT_ID || '';
-      const clientSecret = Config.SHOPIFY_CLIENT_SECRET || '';
-      const authEndpoint = Config.SHOPIFY_AUTH_ENDPOINT || '';
+    if (!enabled || !hasAuthCredentials()) {
+      setToken(undefined);
+      return;
+    }
 
-      // Skip if credentials are not configured
-      if (!clientId || !clientSecret) {
-        console.warn(
-          'SHOPIFY_CLIENT_ID or SHOPIFY_CLIENT_SECRET not configured',
-        );
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          authEndpoint,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              client_id: clientId,
-              client_secret: clientSecret,
-              grant_type: 'client_credentials',
-            }),
-          },
-        );
-
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch access token: ${response.status} ${response.statusText}`,
-          );
-        }
-
-        const data: AccessTokenResponse = await response.json();
-        setToken(data.access_token);
-      } catch (error) {
-        console.error('Error fetching auth token:', error);
-      }
-    };
-
-    fetchToken();
-  }, []);
-
-
+    try {
+      const generatedToken = generateAuthToken(
+        authConfig.apiKey,
+        authConfig.sharedSecret,
+        authConfig.accessToken,
+      );
+      setToken(generatedToken ?? undefined);
+    } catch (error) {
+      console.error('[CheckoutScreen] Auth token generation error:', error);
+      setToken(undefined);
+    }
+  }, [enabled]);
 
   return token;
 }
@@ -102,15 +63,19 @@ export default function CheckoutScreen(props: {
 }) {
   const navigation = useNavigation<NavigationProp<BuyNowStackParamList>>();
   const ref = useRef<CheckoutRef>(null);
-  const authToken = useAuth();
+  const {appConfig} = useConfig();
+  const authToken = useAuth(appConfig.appAuthenticationEnabled);
 
-  const checkoutOptions: CheckoutOptions | undefined = authToken
-    ? {
-        authentication: {
-          token: authToken,
-        },
-      }
-    : undefined;
+  const checkoutOptions = useMemo<CheckoutOptions | undefined>(() => {
+    if (!authToken) {
+      return undefined;
+    }
+    return {
+      authentication: {
+        token: authToken,
+      },
+    };
+  }, [authToken]);
 
   const onAddressChangeIntent = (event: {id: string}) => {
     navigation.navigate('Address', {id: event.id});
