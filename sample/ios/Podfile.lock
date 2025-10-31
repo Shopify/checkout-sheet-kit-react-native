@@ -2423,7 +2423,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNScreens (4.15.4):
+  - RNScreens (4.16.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2451,10 +2451,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.15.4)
+    - RNScreens/common (= 4.16.0)
     - SocketRocket
     - Yoga
-  - RNScreens/common (4.15.4):
+  - RNScreens/common (4.16.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2544,11 +2544,11 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ShopifyCheckoutSheetKit (3.4.0-rc.8):
-    - ShopifyCheckoutSheetKit/Core (= 3.4.0-rc.8)
-  - ShopifyCheckoutSheetKit/AcceleratedCheckouts (3.4.0-rc.8):
+  - ShopifyCheckoutSheetKit (3.4.0):
+    - ShopifyCheckoutSheetKit/Core (= 3.4.0)
+  - ShopifyCheckoutSheetKit/AcceleratedCheckouts (3.4.0):
     - ShopifyCheckoutSheetKit/Core
-  - ShopifyCheckoutSheetKit/Core (3.4.0-rc.8)
+  - ShopifyCheckoutSheetKit/Core (3.4.0)
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
@@ -2595,7 +2595,7 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-config (from `../node_modules/react-native-config`)
-  - react-native-safe-area-context (from `../../node_modules/react-native-safe-area-context`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-NativeModulesApple (from `../../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../../node_modules/react-native/ReactCommon/oscompat`)
   - React-perflogger (from `../../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -2630,7 +2630,7 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../node_modules/@react-native-masked-view/masked-view`)"
   - RNGestureHandler (from `../../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
-  - RNScreens (from `../../node_modules/react-native-screens`)
+  - RNScreens (from `../node_modules/react-native-screens`)
   - "RNShopifyCheckoutSheetKit (from `../../modules/@shopify/checkout-sheet-kit`)"
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - ShopifyCheckoutSheetKit (from `~/src/github.com/Shopify/checkout-sheet-kit-swift`)
@@ -2727,7 +2727,7 @@ EXTERNAL SOURCES:
   react-native-config:
     :path: "../node_modules/react-native-config"
   react-native-safe-area-context:
-    :path: "../../node_modules/react-native-safe-area-context"
+    :path: "../node_modules/react-native-safe-area-context"
   React-NativeModulesApple:
     :path: "../../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-oscompat:
@@ -2797,7 +2797,7 @@ EXTERNAL SOURCES:
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
-    :path: "../../node_modules/react-native-screens"
+    :path: "../node_modules/react-native-screens"
   RNShopifyCheckoutSheetKit:
     :path: "../../modules/@shopify/checkout-sheet-kit"
   RNVectorIcons:
@@ -2884,13 +2884,13 @@ SPEC CHECKSUMS:
   RNCMaskedView: 7e0ce15656772a939ff0d269100bca3a182163c8
   RNGestureHandler: eeb622199ef1fb3a076243131095df1c797072f0
   RNReanimated: 288616f9c66ff4b0911f3862ffcf4104482a2adc
-  RNScreens: 26bb60cdb2ef2ca06fd87feefc495072f25982a7
+  RNScreens: 3fc29af06302e1f1c18a7829fe57cbc2c0259912
   RNShopifyCheckoutSheetKit: 26063fe3dfaed4a2f8ba0c6a5c92b8dfef15c1fb
   RNVectorIcons: be4d047a76ad307ffe54732208fb0498fcb8477f
-  ShopifyCheckoutSheetKit: 8e1574805ee7b3043608c92f3cdbea3adf7079fa
+  ShopifyCheckoutSheetKit: d934dca6adfbc4afc328cde1f821371adfa8872e
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: a742cc68e8366fcfc681808162492bc0aa7a9498
 
-PODFILE CHECKSUM: 91d686f97b8fb46fc8e78c3ce16f20ae4b95b953
+PODFILE CHECKSUM: b884b39a166cbc27d9d3d4e5f91e9e1a7eb9f0f7
 
 COCOAPODS: 1.15.2

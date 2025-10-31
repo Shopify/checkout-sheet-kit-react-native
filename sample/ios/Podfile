@@ -28,6 +28,13 @@ target 'ReactNative' do
     :new_arch_enabled => true
   )
 
+  # Points to this repo - should always be ../../modules/@shopify/checkout-sheet-kit
+  pod "RNShopifyCheckoutSheetKit", :path => "../../modules/@shopify/checkout-sheet-kit"
+
+  # Adjust these to point to where you cloned checkout-sheet-kit-swift
+  pod "ShopifyCheckoutSheetKit", :path => "~/src/github.com/Shopify/checkout-sheet-kit-swift"
+  pod "ShopifyCheckoutSheetKit/AcceleratedCheckouts", :path => "~/src/github.com/Shopify/checkout-sheet-kit-swift"
+
   target 'ReactNativeTests' do
     inherit! :complete
   end
@@ -55,10 +62,3 @@ target 'ReactNative' do
     end
   end
 end
-
-# Points to this repo - should always be ../../modules/@shopify/checkout-sheet-kit
-pod "RNShopifyCheckoutSheetKit", :path => "../../modules/@shopify/checkout-sheet-kit"
-
-# Adjust these to point to where you cloned checkout-sheet-kit-swift
-pod "ShopifyCheckoutSheetKit", :path => "~/src/github.com/Shopify/checkout-sheet-kit-swift"
-pod "ShopifyCheckoutSheetKit/AcceleratedCheckouts", :path => "~/src/github.com/Shopify/checkout-sheet-kit-swift"
