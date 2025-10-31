@@ -28,6 +28,9 @@ target 'ReactNative' do
     :new_arch_enabled => true
   )
 
+  # Pod dependency should be inside the target block
+  pod "RNShopifyCheckoutSheetKit", :path => "../../modules/@shopify/checkout-sheet-kit"
+
   target 'ReactNativeTests' do
     inherit! :complete
   end
@@ -55,5 +58,3 @@ target 'ReactNative' do
     end
   end
 end
-
-pod "RNShopifyCheckoutSheetKit", :path => "../../modules/@shopify/checkout-sheet-kit"
