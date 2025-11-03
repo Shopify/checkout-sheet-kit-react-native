@@ -23,6 +23,11 @@ up:
       meet: |
         yarn
   - custom:
+      name: Generate iOS xcconfig from env
+      met?: test -f sample/ios/JSEnvironment.xcconfig && test sample/.env -ot sample/ios/JSEnvironment.xcconfig
+      meet: |
+        yarn env-to-xcconfig
+  - custom:
       name: Install gems
       met?: (cd sample/ios && bundle check)
       meet: |
@@ -51,7 +56,12 @@ commands:
 
   ios:
     desc: 'Run iOS simulator'
-    run: yarn sample ios
+    run: |
+      if [ ! -f sample/ios/JSEnvironment.xcconfig ]; then
+        echo "Error: JSEnvironment.xcconfig not found. Have you run 'yarn env-to-xcconfig'?"
+        exit 1
+      fi
+      yarn sample ios
 
   android:
     desc: 'Run Android emulator'
