@@ -299,7 +299,7 @@ export interface ShopifyCheckoutSheetKit {
   /**
    * Configure the checkout. See README.md for more details.
    */
-  setConfig(config: Configuration): void;
+  setConfig(config: Configuration): Promise<void>;
   /**
    * Return the current config for the checkout. See README.md for more details.
    */
