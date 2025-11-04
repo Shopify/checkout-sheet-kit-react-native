@@ -317,9 +317,9 @@ describe('ShopifyCheckoutSheetKit', () => {
         );
         eventEmitter.emit(
           'completed',
-          JSON.stringify({orderDetails: {id: 'test-id'}}),
+          JSON.stringify({orderConfirmation: {order: {id: 'test-id'}}, cart: {}}),
         );
-        expect(callback).toHaveBeenCalledWith({orderDetails: {id: 'test-id'}});
+        expect(callback).toHaveBeenCalledWith({orderConfirmation: {order: {id: 'test-id'}}, cart: {}});
       });
 
       it('parses completed event JSON data', () => {
@@ -335,8 +335,89 @@ describe('ShopifyCheckoutSheetKit', () => {
           'completed',
           expect.any(Function),
         );
-        eventEmitter.emit('completed', {orderDetails: {id: 'test-id'}});
-        expect(callback).toHaveBeenCalledWith({orderDetails: {id: 'test-id'}});
+        eventEmitter.emit('completed', {orderConfirmation: {order: {id: 'test-id'}}, cart: {}});
+        expect(callback).toHaveBeenCalledWith({orderConfirmation: {order: {id: 'test-id'}}, cart: {}});
+      });
+
+      it('parses completed event with realistic data structure', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'completed';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+
+        const realisticEvent = {
+          orderConfirmation: {
+            isFirstOrder: false,
+            number: 'EVKEJE589',
+            order: {
+              id: 'gid://shopify/OrderIdentity/55'
+            }
+          },
+          cart: {
+            id: 'hWN4rcG3B0eUb77ctZBcUovR',
+            lines: [{
+              id: '85067e24248ffaba6253819534197aa2',
+              quantity: 1,
+              merchandise: {
+                id: 'gid://shopify/ProductVariant/2',
+                title: 'Heavy Duty Bronze Computer',
+                product: {
+                  id: 'gid://shopify/Product/1',
+                  title: 'Heavy Duty Bronze Computer'
+                },
+                selectedOptions: [
+                  { name: 'Size', value: 'Long' },
+                  { name: 'Color', value: 'Violet' }
+                ]
+              },
+              cost: {
+                amountPerQuantity: { amount: '157.00', currencyCode: 'CAD' },
+                subtotalAmount: { amount: '157.00', currencyCode: 'CAD' },
+                totalAmount: { amount: '157.00', currencyCode: 'CAD' }
+              },
+              discountAllocations: []
+            }],
+            cost: {
+              subtotalAmount: { amount: '157.00', currencyCode: 'CAD' },
+              totalAmount: { amount: '170.54', currencyCode: 'CAD' }
+            },
+            buyerIdentity: {
+              countryCode: 'US'
+            },
+            deliveryGroups: [{
+              groupType: 'ONE_TIME_PURCHASE',
+              deliveryAddress: {
+                country: 'US',
+                countryCodeV2: 'US'
+              },
+              deliveryOptions: [{
+                handle: 'e81115f7e41eaaa6fa84a1595d3ea1ee-8de1713aa96dd5b5d153a92a7d88724d',
+                title: 'Standard International',
+                deliveryMethodType: 'SHIPPING',
+                estimatedCost: { amount: '0.00', currencyCode: 'CAD' }
+              }],
+              selectedDeliveryOption: {
+                handle: 'e81115f7e41eaaa6fa84a1595d3ea1ee-8de1713aa96dd5b5d153a92a7d88724d',
+                title: 'Standard International',
+                deliveryMethodType: 'SHIPPING',
+                estimatedCost: { amount: '0.00', currencyCode: 'CAD' }
+              }
+            }],
+            discountCodes: [],
+            appliedGiftCards: [],
+            discountAllocations: [],
+            delivery: {
+              addresses: [{
+                address: {
+                  countryCode: 'US'
+                }
+              }]
+            }
+          }
+        };
+
+        eventEmitter.emit('completed', realisticEvent);
+        expect(callback).toHaveBeenCalledWith(realisticEvent);
       });
 
       it('prints an error if the completed event data cannot be parsed', () => {
