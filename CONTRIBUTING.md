@@ -16,33 +16,39 @@ specific to each workspace.
 
 ## Getting started
 
-If you've cloned the repo and want to run the sample app, you will first need
-to:
+If you've cloned the repo and want to run the sample app, you will first need to:
 
 1. Install the NPM dependencies
-2. Install iOS dependencies (cocoapods)
+
+   ```sh
+   yarn
+   ```
+
+2. Install iOS dependencies. (N.b. Android dependencies are automatically installed by Gradle)
+
+   ```sh
+   yarn pod-install sample/ios
+   ```
+
 3. Build the Native Module
 
-```sh
-# Install NPM dependencies and link local module
-yarn
+   ```sh
+   yarn module build
+   ```
 
-# Install Cocoapods for iOS
-yarn pod-install sample/ios
-# Note: Android dependencies are automatically installed by Gradle
+4. Start the Metro server
 
-# Build the Native Module JS
-yarn module build
-```
+   ```sh
+   yarn sample start
+   ```
 
-If all of these steps have succeeded, you can now run the sample app with:
+5. Run the sample application (in a new terminal / tab)
 
-```sh
-yarn sample start
-```
-
-This command will start the Metro server. Follow the steps given by Metro to
-open both the iOS and Android simulators/emulators respectively.
+   ```sh
+   yarn sample ios
+   # or
+   yarn sample android
+   ```
 
 ## Optional: Speed up builds with ccache
 
