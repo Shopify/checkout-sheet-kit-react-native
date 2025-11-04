@@ -55,16 +55,15 @@ function convertEnvToXcconfig() {
         continue;
       }
 
-      // Check if value already has double quotes
-      const trimmedValue = value.trim();
-      let finalValue = trimmedValue;
-
-      if (!trimmedValue.startsWith('"') || !trimmedValue.endsWith('"')) {
-        // Wrap in quotes if not already quoted
-        finalValue = `"${trimmedValue}"`;
+      // Trim and remove outer quotes if present
+      let cleanValue = value.trim();
+      if ((cleanValue.startsWith('"') && cleanValue.endsWith('"')) ||
+          (cleanValue.startsWith("'") && cleanValue.endsWith("'"))) {
+        cleanValue = cleanValue.slice(1, -1);
       }
 
-      xcconfigLines.push(`${key}=${finalValue}`);
+      // Write to xcconfig without quotes
+      xcconfigLines.push(`${key}=${cleanValue}`);
     }
 
     // Write to xcconfig file
