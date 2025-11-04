@@ -171,9 +171,17 @@ def stripSurroundingQuotes(String value) {
 
 def properties = loadProperties()
 def storefrontDomain = stripSurroundingQuotes(properties.getProperty("STOREFRONT_DOMAIN"))
+def displayName = stripSurroundingQuotes(properties.getProperty("DISPLAY_NAME"))
 
 if (!storefrontDomain) {
   println("**** Please add a .env file with STOREFRONT_DOMAIN set *****")
+}
+
+// Add app_name resValue from DISPLAY_NAME
+android {
+    defaultConfig {
+        resValue "string", "app_name", displayName ?: "ReactNative"
+    }
 }
 
 task generateAndroidManifestFromTemplate {
