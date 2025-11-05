@@ -28,7 +28,6 @@ import UIKit
 @objc(RCTCheckoutWebView)
 class RCTCheckoutWebView: UIView {
   private var checkoutWebViewController: CheckoutWebViewController?
-  private var currentURL: URL?
 
   private struct EventBus {
     typealias Event = any RPCRequest
@@ -52,10 +51,33 @@ class RCTCheckoutWebView: UIView {
   }
 
   private var events: EventBus = .init()
+  private var pendingSetup = false
+  internal var setupScheduler: (@escaping () -> Void) -> Void = { work in
+    DispatchQueue.main.async(execute: work)
+  }
+  struct CheckoutConfiguration: Equatable {
+    let url: String
+    let authToken: String?
+  }
+  internal var lastConfiguration: CheckoutConfiguration?
 
   /// Public Properties
-  @objc var checkoutUrl: String?
-  @objc var checkoutOptions: [AnyHashable: Any]?
+  @objc var checkoutUrl: String? {
+    didSet {
+      guard checkoutUrl != oldValue else { return }
+      if checkoutUrl == nil {
+        removeCheckout()
+      } else {
+        scheduleSetupIfNeeded()
+      }
+    }
+  }
+  @objc var auth: String? {
+    didSet {
+      guard auth != oldValue else { return }
+      scheduleSetupIfNeeded()
+    }
+  }
   @objc var onLoad: RCTDirectEventBlock?
   @objc var onError: RCTBubblingEventBlock?
   @objc var onComplete: RCTBubblingEventBlock?
@@ -75,23 +97,26 @@ class RCTCheckoutWebView: UIView {
 
   deinit {
     self.events.removeAll()
+    removeCheckout()
   }
 
-  private func setup() {
-    guard
-      let urlString = checkoutUrl,
-      let url = URL(string: urlString)
-    else {
+  func setup() {
+    pendingSetup = false
+    guard let urlString = checkoutUrl,
+          let url = URL(string: urlString) else {
+      // Clear any existing checkout if URL is not available
       removeCheckout()
       return
     }
 
     backgroundColor = UIColor.clear
 
-    if url != currentURL {
-      currentURL = url
-      setupCheckoutWebViewController(with: url)
+    let newConfiguration = CheckoutConfiguration(url: urlString, authToken: auth)
+    guard newConfiguration != lastConfiguration else {
+      return
     }
+
+    _ = setupCheckoutWebViewController(with: url, configuration: newConfiguration)
   }
 
   override func layoutSubviews() {
@@ -99,15 +124,16 @@ class RCTCheckoutWebView: UIView {
     setup()
   }
 
-  private func setupCheckoutWebViewController(with url: URL) {
+  @discardableResult
+  func setupCheckoutWebViewController(with url: URL, configuration: CheckoutConfiguration? = nil) -> Bool {
     removeCheckout()
 
     guard let parentViewController else {
       print("[CheckoutWebView] ERROR: Could not find parent view controller")
-      return
+      return false
     }
 
-    let options = parseCheckoutOptions(checkoutOptions)
+    let options = auth.map { CheckoutOptions(authentication: .token($0)) }
     let webViewController = CheckoutWebViewController(checkoutURL: url, delegate: self, options: options)
     parentViewController.addChild(webViewController)
 
@@ -129,20 +155,38 @@ class RCTCheckoutWebView: UIView {
 
     webViewController.notifyPresented()
     onLoad?(["url": url.absoluteString])
+    if let configuration {
+      lastConfiguration = configuration
+    }
+    return true
   }
 
-  private func removeCheckout() {
+  func removeCheckout() {
+    ShopifyCheckoutSheetKit.invalidate()
     checkoutWebViewController?.willMove(toParent: nil)
     checkoutWebViewController?.view.removeFromSuperview()
     checkoutWebViewController?.removeFromParent()
     checkoutWebViewController = nil
-    currentURL = nil
+    lastConfiguration = nil
+  }
+
+  private func scheduleSetupIfNeeded() {
+    guard !pendingSetup else { return }
+    pendingSetup = true
+
+    setupScheduler { [weak self] in
+      self?.setup()
+    }
   }
 
   @objc func reload() {
-    if let url = currentURL {
-      setupCheckoutWebViewController(with: url)
+    guard let urlString = checkoutUrl,
+          let url = URL(string: urlString) else {
+      return
     }
+
+    let configuration = CheckoutConfiguration(url: urlString, authToken: auth)
+    _ = setupCheckoutWebViewController(with: url, configuration: configuration)
   }
 
   @objc func respondToEvent(eventId id: String, responseData: String) {
@@ -211,24 +255,6 @@ class RCTCheckoutWebView: UIView {
     self.events.removeAll()
   }
 
-  // MARK: - Private Helpers
-
-  /// Parses CheckoutOptions from React Native dictionary
-  /// - Parameter options: Optional dictionary containing authentication
-  /// - Returns: CheckoutOptions instance if options are provided, nil otherwise
-  private func parseCheckoutOptions(_ options: [AnyHashable: Any]?) -> CheckoutOptions? {
-    guard let options = options else {
-      return nil
-    }
-
-    // Parse authentication
-    if let authDict = options["authentication"] as? [AnyHashable: Any],
-       let token = authDict["token"] as? String {
-      return CheckoutOptions(authentication: .token(token))
-    }
-
-    return nil
-  }
 }
 
 extension RCTCheckoutWebView: CheckoutDelegate {

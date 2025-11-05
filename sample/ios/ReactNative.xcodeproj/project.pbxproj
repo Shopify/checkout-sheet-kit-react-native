@@ -19,6 +19,7 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9403907249B4B6D988902B48 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1939D329B2C035D1A15E316B /* PrivacyInfo.xcprivacy */; };
 		B347434AEAC8EA85AFA07E62 /* libPods-ReactNative-ReactNativeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EE1BFA6683BBD8EDBBDD2598 /* libPods-ReactNative-ReactNativeTests.a */; };
+		C02E91DA2EBCCB74009DCC33 /* RCTCheckoutWebViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C02E91D92EBCCB74009DCC33 /* RCTCheckoutWebViewTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		7959053DABE1E06BE5CF1255 /* Pods-ReactNative-ReactNativeTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNative-ReactNativeTests.release.xcconfig"; path = "Target Support Files/Pods-ReactNative-ReactNativeTests/Pods-ReactNative-ReactNativeTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ReactNative/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9E0AC43398437CA0E3D05DDF /* libPods-ReactNative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ReactNative.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C02E91D92EBCCB74009DCC33 /* RCTCheckoutWebViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTCheckoutWebViewTests.swift; sourceTree = "<group>"; };
 		DF9E097D026528607DDCD7B7 /* Pods-ReactNative-ReactNativeTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNative-ReactNativeTests.debug.xcconfig"; path = "Target Support Files/Pods-ReactNative-ReactNativeTests/Pods-ReactNative-ReactNativeTests.debug.xcconfig"; sourceTree = "<group>"; };
 		ED728EF8BB9B5E9BA9D50EBE /* Pods-ReactNative.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNative.debug.xcconfig"; path = "Target Support Files/Pods-ReactNative/Pods-ReactNative.debug.xcconfig"; sourceTree = "<group>"; };
 		EE1BFA6683BBD8EDBBDD2598 /* libPods-ReactNative-ReactNativeTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ReactNative-ReactNativeTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -87,6 +89,7 @@
 				6AEEAAB02C00010100E5EE1B /* AcceleratedCheckouts_SupportedTests.swift */,
 				6AEEAAB12C00010100E5EE1B /* AcceleratedCheckouts_UnsupportedTests.swift */,
 				6AF1E0022C00010100E5EE1B /* EventSerializationTests.swift */,
+				C02E91D92EBCCB74009DCC33 /* RCTCheckoutWebViewTests.swift */,
 			);
 			path = ReactNativeTests;
 			sourceTree = "<group>";
@@ -416,6 +419,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6A1F48E72B16900600BA591C /* ShopifyCheckoutSheetKitTests.swift in Sources */,
+				C02E91DA2EBCCB74009DCC33 /* RCTCheckoutWebViewTests.swift in Sources */,
 				6A86196D2BF36EB900E5EE1A /* CheckoutDidFailTests.swift in Sources */,
 				6AEEAAB22C00010100E5EE1B /* AcceleratedCheckouts_SupportedTests.swift in Sources */,
 				6AEEAAB32C00010100E5EE1B /* AcceleratedCheckouts_UnsupportedTests.swift in Sources */,

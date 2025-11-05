@@ -81,7 +81,7 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
             customerAccessToken: customerAccessToken,
             applePayMerchantIdentifier: merchantIdentifier,
             applyPayContactFields: contactFields,
-            supportedShippingCountries: supportedShippingCountries,
+            // supportedShippingCountries: supportedShippingCountries,
             resolve: { _ in expectation.fulfill() },
             reject: { _, _, _ in }
         )
@@ -410,7 +410,7 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
             customerAccessToken: nil,
             applePayMerchantIdentifier: "merchant.com.shopify.reactnative.tests",
             applyPayContactFields: ["email", "not_a_field"],
-            supportedShippingCountries: [],
+            // supportedShippingCountries: [],
             resolve: { value in
                 resolved = (value as? Bool) ?? true
                 expectation.fulfill()

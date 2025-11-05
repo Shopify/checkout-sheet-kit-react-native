@@ -89,6 +89,11 @@ SOFTWARE.
     RCT_EXPORT_VIEW_PROPERTY(checkoutUrl, NSString*)
 
     /**
+     * Authentication token for checkout
+     */
+    RCT_EXPORT_VIEW_PROPERTY(auth, NSString*)
+
+    /**
      * Optional checkout options (authentication, entryPoint)
      */
     RCT_EXPORT_VIEW_PROPERTY(checkoutOptions, NSDictionary*)

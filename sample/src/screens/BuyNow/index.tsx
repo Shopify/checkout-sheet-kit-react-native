@@ -27,6 +27,7 @@ import CheckoutScreen from './CheckoutScreen';
 import AddressScreen from './AddressScreen';
 import PaymentScreen from './PaymentScreen';
 import type {BuyNowStackParamList} from './types';
+import {useTheme} from '../../context/Theme';
 
 const BuyNowStackNavigator = createNativeStackNavigator<BuyNowStackParamList>();
 
@@ -37,13 +38,14 @@ type BuyNowStackProps = {
 // Stack contains a delegated navigation pattern where Shopify Checkout is not
 // responsible for the Address or Payment change screens
 export default function BuyNowStack(props: BuyNowStackProps) {
+  const {colors} = useTheme();
   return (
     <CheckoutEventProvider>
       <BuyNowStackNavigator.Navigator
         initialRouteName="Checkout"
         screenOptions={({navigation}) => ({
-          headerStyle: {backgroundColor: '#ffffff'},
-          headerTintColor: '#000',
+          headerStyle: {backgroundColor: colors.webviewHeaderBackgroundColor},
+          headerTintColor: colors.webviewHeaderTextColor,
           // eslint-disable-next-line react/no-unstable-nested-components
           headerRight: () => (
             <Button
@@ -56,7 +58,7 @@ export default function BuyNowStack(props: BuyNowStackProps) {
         <BuyNowStackNavigator.Screen
           name="Checkout"
           component={CheckoutScreen} // This component renders the @shopify CheckoutWebView component
-          initialParams={{url: props.route.params.url}}
+          initialParams={{url: props.route.params.url, auth: props.route.params.auth}}
           options={{title: 'Shopify Checkout'}}
         />
         <BuyNowStackNavigator.Screen

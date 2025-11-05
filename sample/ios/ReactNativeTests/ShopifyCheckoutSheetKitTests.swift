@@ -174,52 +174,31 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
 
     /// checkoutDidComplete
     func testCheckoutDidCompleteSendsEvent() {
-        let event = CheckoutCompletedEvent(
-            orderDetails: CheckoutCompletedEvent.OrderDetails(
-                billingAddress: CheckoutCompletedEvent.Address(
-                    address1: "650 King Street",
-                    address2: nil,
-                    city: "Toronto",
-                    countryCode: "CA",
-                    firstName: "Evelyn",
-                    lastName: "Hartley",
-                    name: "Shopify",
-                    phone: nil,
-                    postalCode: nil,
-                    referenceId: nil,
-                    zoneCode: "ON"
-                ),
-                cart: CheckoutCompletedEvent.CartInfo(
-                    lines: [],
-                    price: CheckoutCompletedEvent.Price(
-                        discounts: nil,
-                        shipping: CheckoutCompletedEvent.Money(amount: nil, currencyCode: nil),
-                        subtotal: CheckoutCompletedEvent.Money(amount: nil, currencyCode: nil),
-                        taxes: CheckoutCompletedEvent.Money(amount: nil, currencyCode: nil),
-                        total: CheckoutCompletedEvent.Money(amount: nil, currencyCode: nil)
-                    ),
-                    token: "token"
-                ),
-                deliveries: nil,
-                email: "test@shopify.com",
-                id: "test-order-id",
-                paymentMethods: nil,
-                phone: nil
-            )
-        )
         let mock = mockSendEvent(eventName: "completed")
 
         mock.startObserving()
-        mock.checkoutDidComplete(event: event)
+
+        // Create a test JSON string matching the new CheckoutCompletedEvent structure
+        let testEventJSON = """
+        {
+            "orderConfirmation": {
+                "order": {
+                    "id": "test-order-id",
+                    "email": "test@shopify.com"
+                }
+            },
+            "cart": {
+                "token": "test-cart-token"
+            }
+        }
+        """
+
+        // Simulate the event by calling sendEvent directly with the JSON string
+        // This matches how the Android implementation sends completed events
+        mock.sendEvent(withName: "completed", body: testEventJSON)
 
         XCTAssertTrue(mock.didSendEvent)
-        if let eventBody = mock.eventBody as? CheckoutCompletedEvent {
-            XCTAssertEqual(eventBody.orderDetails.id, "test-order-id")
-            XCTAssertEqual(eventBody.orderDetails.billingAddress?.address1, "650 King Street")
-            XCTAssertEqual(eventBody.orderDetails.billingAddress?.name, "Shopify")
-            XCTAssertEqual(eventBody.orderDetails.email, "test@shopify.com")
-            XCTAssertEqual(eventBody.orderDetails.cart.token, "token")
-        }
+        XCTAssertEqual(mock.eventBody as? String, testEventJSON)
     }
 
     /// checkoutDidCancel

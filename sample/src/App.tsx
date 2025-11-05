@@ -102,7 +102,7 @@ export type RootStackParamList = {
   Cart: undefined;
   CartModal: undefined;
   Settings: undefined;
-  BuyNow: {url: string};
+  BuyNow: {url: string, auth: string};
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -202,7 +202,6 @@ const checkoutKitConfigDefaults: Configuration = {
     },
   },
 };
-
 function AppWithContext({children}: PropsWithChildren) {
   const shopify = useShopifyCheckoutSheet();
   const eventHandlers = useShopifyEventHandlers();
@@ -239,21 +238,12 @@ function AppWithContext({children}: PropsWithChildren) {
   }, [shopify, eventHandlers]);
 
   return (
-    <ConfigProvider
-      config={{
-        colorScheme:
-          checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
-        enablePreloading: checkoutKitConfigDefaults.preloading ?? true,
-        prefillBuyerInformation: true,
-        customerAuthenticated: false,
-      }}>
-      <ApolloProvider client={client}>
-        <CartProvider>
-          <StatusBar barStyle="default" />
-          {children}
-        </CartProvider>
-      </ApolloProvider>
-    </ConfigProvider>
+    <ApolloProvider client={client}>
+      <CartProvider>
+        <StatusBar barStyle="default" />
+        {children}
+      </CartProvider>
+    </ApolloProvider>
   );
 }
 
@@ -510,13 +500,22 @@ function App() {
   return (
     <ErrorBoundary>
       <AppWithTheme>
-        <AppWithCheckoutKit>
-          <AppWithContext>
-            <AppWithNavigation>
-              <Routes />
-            </AppWithNavigation>
-          </AppWithContext>
-        </AppWithCheckoutKit>
+        <ConfigProvider
+          config={{
+            colorScheme:
+              checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
+            enablePreloading: checkoutKitConfigDefaults.preloading ?? true,
+            prefillBuyerInformation: true,
+            customerAuthenticated: false,
+          }}>
+          <AppWithCheckoutKit>
+            <AppWithContext>
+              <AppWithNavigation>
+                <Routes />
+              </AppWithNavigation>
+            </AppWithContext>
+          </AppWithCheckoutKit>
+        </ConfigProvider>
       </AppWithTheme>
     </ErrorBoundary>
   );
