@@ -22,6 +22,21 @@
 		C02E91DA2EBCCB74009DCC33 /* RCTCheckoutWebViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C02E91D92EBCCB74009DCC33 /* RCTCheckoutWebViewTests.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXBuildRule section */
+		CB4C33EE2EBA168B00149A36 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.xcconfig";
+			fileType = pattern.proxy;
+			inputFiles = (
+			);
+			isEditable = 1;
+			outputFiles = (
+			);
+			script = "# Type a script or drag a script file from your workspace to insert its path.\nyarn env-to-xcconfig\n";
+		};
+/* End PBXBuildRule section */
+
 /* Begin PBXContainerItemProxy section */
 		00E356F41AD99517003FC87E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -208,6 +223,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ReactNative" */;
 			buildPhases = (
+				CB4C33ED2EBA15AC00149A36 /* ShellScript */,
 				EC9AFE111A4C07A98A76F332 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
@@ -217,6 +233,7 @@
 				1EF77979E16522DC120150A8 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
+				CB4C33EE2EBA168B00149A36 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -372,6 +389,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ReactNative-ReactNativeTests/Pods-ReactNative-ReactNativeTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CB4C33ED2EBA15AC00149A36 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\nif [[ -z $DISPLAY_NAME ]]; then\n    echo \"DISPLAY_NAME is nil\" \n    exit 1\nfi\n\n";
 			showEnvVarsInLog = 0;
 		};
 		E5E915CDFAA811FAB9901380 /* [CP] Embed Pods Frameworks */ = {

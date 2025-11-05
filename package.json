@@ -23,7 +23,7 @@
     "compare-snapshot": "./scripts/compare_snapshot",
     "turbo": "turbo",
     "test": "jest",
-    "env-to-xcconfig": "node scripts/env_to_xcconfig.js"
+    "env-to-xcconfig": "./scripts/env_to_xcconfig"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

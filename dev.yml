@@ -56,12 +56,7 @@ commands:
 
   ios:
     desc: 'Run iOS simulator'
-    run: |
-      if [ ! -f sample/ios/JSEnvironment.xcconfig ]; then
-        echo "Error: JSEnvironment.xcconfig not found. Have you run 'yarn env-to-xcconfig'?"
-        exit 1
-      fi
-      yarn sample ios
+    run: yarn sample ios
 
   android:
     desc: 'Run Android emulator'
