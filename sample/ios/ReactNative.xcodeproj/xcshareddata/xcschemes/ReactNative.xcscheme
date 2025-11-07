@@ -10,7 +10,7 @@
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
                title = "Run Script"
-               scriptText = "$PROJECT_DIR/../../scripts/env_to_xcconfig.sh&#10;">
+               scriptText = "$PROJECT_DIR/../../scripts/env_to_xcconfig&#10;">
                <EnvironmentBuildable>
                   <BuildableReference
                      BuildableIdentifier = "primary"
