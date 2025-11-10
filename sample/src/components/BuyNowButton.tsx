@@ -13,6 +13,7 @@ import Config from 'react-native-config';
 import {useConfig} from '../context/Config';
 import {useTheme} from '../context/Theme';
 import {createBuyerIdentityCartInput, getLocale} from '../utils';
+import {fetchToken} from '../services/TokenClient';
 import {buildCartPermalink} from '../utils/cartPermalink';
 import type {RootStackParamList} from '../App';
 
@@ -61,6 +62,11 @@ export function BuyNowButton({
     setLoading(true);
 
     try {
+      const auth = await fetchToken();
+      if (!auth) {
+        throw new Error('Authentication required for this sample app');
+      }
+
       let checkoutUrl: string;
 
       switch (cartDataSource) {
@@ -99,7 +105,7 @@ export function BuyNowButton({
           throw new Error(`Unknown cart data source: ${_exhaustiveCheck}`);
       }
 
-      navigation.navigate('BuyNow', {url: checkoutUrl});
+      navigation.navigate('BuyNow', {url: checkoutUrl, auth});
     } catch (error) {
       console.error('Error creating buy now cart:', error);
     } finally {

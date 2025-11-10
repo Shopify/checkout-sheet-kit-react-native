@@ -37,12 +37,20 @@ export const ConfigProvider: React.FC<
   PropsWithChildren<{config?: AppConfig}>
 > = ({children, config}) => {
   const [appConfig, setInternalAppConfig] =
-    useState<AppConfig>(defaultAppConfig);
+    useState<AppConfig>(config ?? defaultAppConfig);
   const {setColorScheme} = useTheme();
 
+  // Update theme when appConfig changes (not just initial config prop)
   useEffect(() => {
-    setColorScheme(config?.colorScheme ?? ColorScheme.automatic);
-  }, [config, setColorScheme]);
+    setColorScheme(appConfig.colorScheme);
+  }, [appConfig.colorScheme, setColorScheme]);
+
+  // Handle initial config prop changes
+  useEffect(() => {
+    if (config) {
+      setInternalAppConfig(config);
+    }
+  }, [config]);
 
   const setAppConfig = useCallback((config: AppConfig) => {
     setInternalAppConfig(config);

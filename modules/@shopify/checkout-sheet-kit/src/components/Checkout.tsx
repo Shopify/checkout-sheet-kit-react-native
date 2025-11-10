@@ -34,7 +34,6 @@ import type {ViewStyle} from 'react-native';
 import type {
   CheckoutCompletedEvent,
   CheckoutException,
-  CheckoutOptions,
   PixelEvent,
 } from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
@@ -47,9 +46,9 @@ export interface CheckoutProps {
   checkoutUrl: string;
 
   /**
-   * Optional checkout configuration (authentication, entry point)
+   * Authentication token for the checkout
    */
-  options?: CheckoutOptions;
+  auth?: string;
 
   /**
    * Called when the webview loads
@@ -106,7 +105,7 @@ export interface CheckoutRef {
 
 interface NativeCheckoutWebViewProps {
   checkoutUrl: string;
-  checkoutOptions?: CheckoutOptions;
+  auth?: string;
   style?: ViewStyle;
   onLoad?: (event: {nativeEvent: {url: string}}) => void;
   onError?: (event: {nativeEvent: CheckoutException}) => void;
@@ -154,6 +153,13 @@ const RCTCheckoutWebView =
  *   style={{flex: 1}}
  * />
  *
+ * @example Passing an app authentication token to customize checkout and receive richer events
+ * <Checkout
+ *   checkoutUrl="https://shop.example.com/checkouts/cn/123"
+ *   auth="your_auth_token_here"
+ *   onComplete={(event) => console.log('Checkout completed!')}
+ * />
+ *
  * @example Using with ref to reload on error
  * import {useRef} from 'react';
  * import {Checkout, CheckoutHandle} from '@shopify/checkout-sheet-kit';
@@ -163,6 +169,7 @@ const RCTCheckoutWebView =
  * <Checkout
  *   ref={checkoutRef}
  *   checkoutUrl={url}
+ *   auth={authToken}
  *   onError={() => {
  *     // Reload on error
  *     checkoutRef.current?.reload();
@@ -173,7 +180,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
   (
     {
       checkoutUrl,
-      options,
+      auth,
       onLoad,
       onError,
       onComplete,
@@ -309,7 +316,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       <RCTCheckoutWebView
         ref={webViewRef}
         checkoutUrl={checkoutUrl}
-        checkoutOptions={options}
+        auth={auth}
         style={style}
         onLoad={handleLoad}
         onError={handleError}
