@@ -22,7 +22,8 @@
     "snapshot": "./scripts/create_snapshot",
     "compare-snapshot": "./scripts/compare_snapshot",
     "turbo": "turbo",
-    "test": "jest"
+    "test": "jest",
+    "env-to-xcconfig": "./scripts/env_to_xcconfig"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

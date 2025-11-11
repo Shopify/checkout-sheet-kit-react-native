@@ -22,6 +22,21 @@
 		C02E91DA2EBCCB74009DCC33 /* RCTCheckoutWebViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C02E91D92EBCCB74009DCC33 /* RCTCheckoutWebViewTests.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXBuildRule section */
+		CB4C33EE2EBA168B00149A36 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.xcconfig";
+			fileType = pattern.proxy;
+			inputFiles = (
+			);
+			isEditable = 1;
+			outputFiles = (
+			);
+			script = "# Type a script or drag a script file from your workspace to insert its path.\nyarn env-to-xcconfig\n";
+		};
+/* End PBXBuildRule section */
+
 /* Begin PBXContainerItemProxy section */
 		00E356F41AD99517003FC87E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -55,6 +70,7 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ReactNative/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9E0AC43398437CA0E3D05DDF /* libPods-ReactNative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ReactNative.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C02E91D92EBCCB74009DCC33 /* RCTCheckoutWebViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTCheckoutWebViewTests.swift; sourceTree = "<group>"; };
+		CBD040A42EBA05D300A11F01 /* JSEnvironment.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = JSEnvironment.xcconfig; sourceTree = "<group>"; };
 		DF9E097D026528607DDCD7B7 /* Pods-ReactNative-ReactNativeTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNative-ReactNativeTests.debug.xcconfig"; path = "Target Support Files/Pods-ReactNative-ReactNativeTests/Pods-ReactNative-ReactNativeTests.debug.xcconfig"; sourceTree = "<group>"; };
 		ED728EF8BB9B5E9BA9D50EBE /* Pods-ReactNative.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReactNative.debug.xcconfig"; path = "Target Support Files/Pods-ReactNative/Pods-ReactNative.debug.xcconfig"; sourceTree = "<group>"; };
 		EE1BFA6683BBD8EDBBDD2598 /* libPods-ReactNative-ReactNativeTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ReactNative-ReactNativeTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -152,6 +168,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
 				6A18CE262AF1B119007B1B08 /* Frameworks */,
+				CBD040A42EBA05D300A11F01 /* JSEnvironment.xcconfig */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -206,6 +223,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ReactNative" */;
 			buildPhases = (
+				CB4C33ED2EBA15AC00149A36 /* ShellScript */,
 				EC9AFE111A4C07A98A76F332 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
@@ -215,6 +233,7 @@
 				1EF77979E16522DC120150A8 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
+				CB4C33EE2EBA168B00149A36 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -370,6 +389,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ReactNative-ReactNativeTests/Pods-ReactNative-ReactNativeTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CB4C33ED2EBA15AC00149A36 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\nif [[ -z $DISPLAY_NAME ]]; then\n    echo \"DISPLAY_NAME is nil\" \n    exit 1\nfi\n\n";
 			showEnvVarsInLog = 0;
 		};
 		E5E915CDFAA811FAB9901380 /* [CP] Embed Pods Frameworks */ = {
@@ -850,6 +888,7 @@
 		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CBD040A42EBA05D300A11F01 /* JSEnvironment.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CC = "$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang.sh";
@@ -934,6 +973,7 @@
 		};
 		83CBBA211A601CBA00E9B192 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CBD040A42EBA05D300A11F01 /* JSEnvironment.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CC = "$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang.sh";

@@ -28,6 +28,13 @@ target 'ReactNative' do
     :new_arch_enabled => true
   )
 
+  # Points to this repo - should always be ../../modules/@shopify/checkout-sheet-kit
+  pod "RNShopifyCheckoutSheetKit", :path => "../../modules/@shopify/checkout-sheet-kit"
+
+  # Adjust these to point to where you cloned checkout-sheet-kit-swift
+  pod "ShopifyCheckoutSheetKit", :path => "~/src/github.com/Shopify/checkout-sheet-kit-swift"
+  pod "ShopifyCheckoutSheetKit/AcceleratedCheckouts", :path => "~/src/github.com/Shopify/checkout-sheet-kit-swift"
+
   target 'ReactNativeTests' do
     inherit! :complete
   end
@@ -41,24 +48,5 @@ target 'ReactNative' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => true
     )
-
-    # WORKAROUND
-    # This fixes issues with the 'React-Core-AccessibilityResources' dependency when archiving the sample app in XCode:
-    installer.pods_project.targets.each do |target|
-      if target.name == "React-Core-AccessibilityResources"
-        target.remove_from_project
-      end
-
-      if target.name == "React-Core-RCTI18nStrings"
-        target.remove_from_project
-      end
-    end
   end
 end
-
-# Points to this repo - should always be ../../modules/@shopify/checkout-sheet-kit
-pod "RNShopifyCheckoutSheetKit", :path => "../../modules/@shopify/checkout-sheet-kit"
-
-# Adjust these to point to where you cloned checkout-sheet-kit-swift
-pod "ShopifyCheckoutSheetKit", :path => "~/src/github.com/Shopify/checkout-sheet-kit-swift"
-pod "ShopifyCheckoutSheetKit/AcceleratedCheckouts", :path => "~/src/github.com/Shopify/checkout-sheet-kit-swift"
