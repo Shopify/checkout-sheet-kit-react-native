@@ -60,7 +60,6 @@ public class RCTCheckoutWebView extends FrameLayout {
     private String auth;
     private boolean pendingSetup = false;
     private CheckoutConfiguration lastConfiguration = null;
-    private final Map<String, CheckoutAddressChangeRequestedEvent> addressChangeEvents = new ConcurrentHashMap<>();
     private final ObjectMapper mapper = new ObjectMapper();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -209,7 +208,6 @@ public class RCTCheckoutWebView extends FrameLayout {
             checkoutWebView = null;
         }
         lastConfiguration = null;
-        addressChangeEvents.clear();
     }
 
     public void reload() {
@@ -231,9 +229,6 @@ public class RCTCheckoutWebView extends FrameLayout {
         } else {
             Log.e(TAG, "CheckoutWebView is null when trying to respond to event: " + eventId);
         }
-
-        // Clean up stored events
-        addressChangeEvents.remove(eventId);
     }
 
     @Override
@@ -338,7 +333,6 @@ public class RCTCheckoutWebView extends FrameLayout {
                 Log.e(TAG, "Event ID is null for address change event");
                 return;
             }
-            addressChangeEvents.put(eventId, event);
 
             WritableMap params = Arguments.createMap();
             params.putString("id", eventId);
