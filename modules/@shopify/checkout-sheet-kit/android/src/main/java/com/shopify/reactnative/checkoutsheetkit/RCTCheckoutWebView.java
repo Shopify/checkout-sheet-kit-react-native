@@ -48,9 +48,7 @@ import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class RCTCheckoutWebView extends FrameLayout {
     private static final String TAG = "RCTCheckoutWebView";
