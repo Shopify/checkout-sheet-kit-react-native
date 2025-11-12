@@ -1,109 +1,114 @@
-buildscript {
-  repositories {
-    google()
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath "com.android.tools.build:gradle:8.11.0"
-  }
-}
-
-def isNewArchitectureEnabled() {
-  return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
-}
-
-apply plugin: "com.android.library"
-
-if (isNewArchitectureEnabled()) {
-  apply plugin: "com.facebook.react"
-}
-
-def getExtOrIntegerDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties[name]).toInteger()
-}
-
-static def supportsNamespace() {
-  def parsed = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')
-  def major = parsed[0].toInteger()
-  def minor = parsed[1].toInteger()
-
-  // Namespace support was added in 7.3.0
-  return (major == 7 && minor >= 3) || major >= 8
-}
-
-buildToolsVersion = "35.0.0"
-minSdkVersion = 23
-compileSdkVersion = 36
-targetSdkVersion = 35
-
-// We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
-ndkVersion = "23.1.7779620"
-
-android {
-  if (supportsNamespace()) {
-    namespace "com.shopify.reactnative.checkoutsheetkit"
-
-    sourceSets {
-      main {
-        manifest.srcFile "src/main/AndroidManifestNew.xml"
-      }
-    }
-  }
-
-  compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
-
-  defaultConfig {
-    minSdkVersion getExtOrIntegerDefault("minSdkVersion")
-    targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
-
-  }
-
-  buildTypes {
-    debug {
-      minifyEnabled false
-    }
-
-    release {
-      minifyEnabled false
-
-      // Rules in consumerProguardFiles are automatically included in the ProGuard configuration of any application that uses the library
-      consumerProguardFiles 'proguard-rules.pro'
-    }
-  }
-
-  lintOptions {
-    disable "GradleCompatible"
-  }
-
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
-}
-
-repositories {
-  mavenLocal()
-  mavenCentral()
-  google()
-}
-
-
-dependencies {
-  // For < 0.71, this will be from the local maven repo
-  // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
-  //noinspection GradleDynamicVersion
-  implementation "com.facebook.react:react-native:+"
-  // Uncomment to install dependencies for local development
-  //  implementation("com.facebook.react:react-android:+")
-
-  implementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.12.5")
-  debugImplementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
-
-  testImplementation 'junit:junit:4.13.2'
-  testImplementation 'org.mockito:mockito-core:4.11.0'
-  testImplementation 'org.mockito:mockito-inline:5.2.0'
-  testImplementation 'org.assertj:assertj-core:3.27.6'
-}
-
+   1 buildscript {
+   2   repositories {
+   3     google()
+   4     mavenCentral()
+   5   }
+   6 
+   7   dependencies {
+   8     classpath "com.android.tools.build:gradle:8.11.0"
+   9   }
+  10 }
+  11 
+  12 def isNewArchitectureEnabled() {
+  13   return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
+  14 }
+  15 
+  16 apply plugin: "com.android.library"
+  17 
+  18 if (isNewArchitectureEnabled()) {
+  19   apply plugin: "com.facebook.react"
+  20 }
+  21 
+  22 def getExtOrIntegerDefault(name) {
+  23   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties[name]).toInteger()
+  24 }
+  25 
+  26 static def supportsNamespace() {
+  27   def parsed = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')
+  28   def major = parsed[0].toInteger()
+  29   def minor = parsed[1].toInteger()
+  30 
+  31   // Namespace support was added in 7.3.0
+  32   return (major == 7 && minor >= 3) || major >= 8
+  33 }
+  34 
+  35 buildToolsVersion = "35.0.0"
+  36 minSdkVersion = 23
+  37 compileSdkVersion = 36
+  38 targetSdkVersion = 35
+  39 
+  40 // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
+  41 ndkVersion = "23.1.7779620"
+  42 
+  43 android {
+  44   if (supportsNamespace()) {
+  45     namespace "com.shopify.reactnative.checkoutsheetkit"
+  46 
+  47     sourceSets {
+  48       main {
+  49         manifest.srcFile "src/main/AndroidManifestNew.xml"
+  50       }
+  51     }
+  52   }
+  53 
+  54   compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+  55 
+  56   defaultConfig {
+  57     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
+  58     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
+  59 
+  60   }
+  61 
+  62   buildTypes {
+  63     debug {
+  64       minifyEnabled false
+  65     }
+  66 
+  67     release {
+  68       minifyEnabled false
+  69 
+  70       // Rules in consumerProguardFiles are automatically included in the ProGuard configuration of any application that uses the library
+  71       consumerProguardFiles 'proguard-rules.pro'
+  72     }
+  73   }
+  74 
+  75   lintOptions {
+  76     disable "GradleCompatible"
+  77   }
+  78 
+  79   compileOptions {
+  80     sourceCompatibility JavaVersion.VERSION_1_8
+  81     targetCompatibility JavaVersion.VERSION_1_8
+  82   }
+  83 }
+  84 
+  85 repositories {
+  86   mavenLocal()
+  87   mavenCentral()
+  88   google()
+  89 }
+  90 
+  91 
+  92 dependencies {
+  93   // For < 0.71, this will be from the local maven repo
+  94   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
+  95   //noinspection GradleDynamicVersion
+  96   implementation "com.facebook.react:react-native:+"
+  97   // Uncomment to install dependencies for local development
+  98   //  implementation("com.facebook.react:react-android:+")
+  99 
+ 100   // Use local checkout-sheet-kit-android SDK
+ 101   if (findProject(':checkout-sheet-kit') != null) {
+ 102     implementation project(':checkout-sheet-kit')
+ 103     debugImplementation project(':checkout-sheet-kit')
+ 104   } else {
+ 105     implementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
+ 106     debugImplementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
+ 107   }
+ 108   implementation("com.fasterxml.jackson.core:jackson-databind:2.12.5")
+ 109 
+ 110   testImplementation 'junit:junit:4.13.2'
+ 111   testImplementation 'org.mockito:mockito-core:4.11.0'
+ 112   testImplementation 'org.mockito:mockito-inline:5.2.0'
+ 113   testImplementation 'org.assertj:assertj-core:3.27.6'
+ 114 }
