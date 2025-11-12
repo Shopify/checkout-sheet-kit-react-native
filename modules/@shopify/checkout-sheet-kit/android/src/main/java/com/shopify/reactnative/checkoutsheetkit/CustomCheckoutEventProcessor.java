@@ -142,6 +142,14 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
     }
   }
 
+  @Override
+  public void onAddressChangeRequested(CheckoutAddressChangeRequestedEvent event) {
+    // For modal presentation, we don't currently support address changes
+    // The WebView component handles this internally
+    // Just cancel the request by not responding
+    Log.d("ShopifyCheckoutSheetKit", "Address change requested in modal mode - not supported");
+  }
+
   // Private
 
   private Map<String, Object> populateErrorDetails(CheckoutException checkoutError) {

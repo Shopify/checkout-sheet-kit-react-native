@@ -4,6 +4,7 @@ import {
   Text,
   ActivityIndicator,
   StyleSheet,
+  View,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NavigationProp} from '@react-navigation/native';
@@ -13,7 +14,7 @@ import Config from 'react-native-config';
 import {useConfig} from '../context/Config';
 import {useTheme} from '../context/Theme';
 import {createBuyerIdentityCartInput, getLocale} from '../utils';
-import {fetchToken} from '../services/TokenClient';
+import {fetchToken, testConnectivity} from '../services/TokenClient';
 import {buildCartPermalink} from '../utils/cartPermalink';
 import type {RootStackParamList} from '../App';
 
@@ -50,6 +51,8 @@ export function BuyNowButton({
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const {appConfig} = useConfig();
   const [loading, setLoading] = useState(false);
+  const [authError, setAuthError] = useState(false);
+  const [testingConnectivity, setTestingConnectivity] = useState(false);
   const [, country] = getLocale().split('-');
 
   const [createCartWithLine] = useMutation(CREATE_CART_WITH_LINE_MUTATION, {
@@ -60,10 +63,12 @@ export function BuyNowButton({
     if (!variantId || disabled) return;
 
     setLoading(true);
+    setAuthError(false);
 
     try {
       const auth = await fetchToken();
       if (!auth) {
+        setAuthError(true);
         throw new Error('Authentication required for this sample app');
       }
 
@@ -110,22 +115,50 @@ export function BuyNowButton({
     }
   };
 
+  const handleTestConnectivity = async () => {
+    setTestingConnectivity(true);
+    try {
+      await testConnectivity();
+      console.log('[BuyNowButton] Connectivity test completed - check console logs');
+    } catch (error) {
+      console.error('[BuyNowButton] Connectivity test error:', error);
+    } finally {
+      setTestingConnectivity(false);
+    }
+  };
+
   const styles = createStyles(cornerRadius);
 
   return (
-    <Pressable
-      disabled={loading || disabled}
-      // eslint-disable-next-line react-native/no-inline-styles
-      style={{...styles.buyNowButton, backgroundColor: 'white'}}
-      onPress={handleBuyNow}>
-      {loading ? (
-        <ActivityIndicator size="small" color="black" />
-      ) : (
-        <>
-          <Text style={styles.buyNowButtonText}>Buy Now </Text>
-        </>
+    <View>
+      <Pressable
+        disabled={loading || disabled}
+        // eslint-disable-next-line react-native/no-inline-styles
+        style={{...styles.buyNowButton, backgroundColor: 'white'}}
+        onPress={handleBuyNow}>
+        {loading ? (
+          <ActivityIndicator size="small" color="black" />
+        ) : (
+          <>
+            <Text style={styles.buyNowButtonText}>Buy Now </Text>
+          </>
+        )}
+      </Pressable>
+
+      {authError && (
+        <Pressable
+          disabled={testingConnectivity}
+          // eslint-disable-next-line react-native/no-inline-styles
+          style={{...styles.testButton, backgroundColor: '#ff9500', marginTop: 8}}
+          onPress={handleTestConnectivity}>
+          {testingConnectivity ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : (
+            <Text style={styles.testButtonText}>Test Network Connectivity</Text>
+          )}
+        </Pressable>
       )}
-    </Pressable>
+    </View>
   );
 }
 
@@ -146,6 +179,22 @@ function createStyles(cornerRadius: number) {
       lineHeight: 20,
       color: 'black',
       fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    testButton: {
+      borderRadius: cornerRadius,
+      paddingHorizontal: 10,
+      paddingVertical: 12,
+      height: 44,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    testButtonText: {
+      fontSize: 16,
+      lineHeight: 20,
+      color: 'white',
+      fontWeight: '600',
       textAlign: 'center',
     },
   });
