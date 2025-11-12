@@ -97,8 +97,14 @@ dependencies {
   // Uncomment to install dependencies for local development
   //  implementation("com.facebook.react:react-android:+")
 
-  implementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
+  // Use local checkout-sheet-kit-android SDK
+  if (findProject(':checkout-sheet-kit') != null) {
+    implementation project(':checkout-sheet-kit')
+    debugImplementation project(':checkout-sheet-kit')
+  } else {
+    implementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
+    debugImplementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
+  }
   implementation("com.fasterxml.jackson.core:jackson-databind:2.12.5")
-  debugImplementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
 }
 

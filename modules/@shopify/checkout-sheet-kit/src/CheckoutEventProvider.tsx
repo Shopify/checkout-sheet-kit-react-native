@@ -18,7 +18,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import React, {createContext, useContext, useRef, useCallback} from 'react';
-import {UIManager, findNodeHandle, Platform} from 'react-native';
+import {UIManager, findNodeHandle} from 'react-native';
 
 interface CheckoutEventContextType {
   registerWebView: (webViewRef: React.RefObject<any>) => void;
@@ -57,24 +57,22 @@ export const CheckoutEventProvider = ({
         return false;
       }
 
-      if (Platform.OS !== 'ios') {
-        return false;
-      }
-
       try {
         const handle = findNodeHandle(webViewRef.current.current);
         if (!handle) {
           return false;
         }
 
+        const viewConfig = UIManager.getViewManagerConfig('RCTCheckoutWebView');
+        const commandId =
+          viewConfig?.Commands?.respondToEvent ?? 'respondToEvent';
+
         // Call the native method to respond to the event
         // Native side will handle event lookup and validation
-        UIManager.dispatchViewManagerCommand(
-          handle,
-          UIManager.getViewManagerConfig('RCTCheckoutWebView')?.Commands
-            ?.respondToEvent ?? 'respondToEvent',
-          [eventId, JSON.stringify(response)],
-        );
+        UIManager.dispatchViewManagerCommand(handle, commandId, [
+          eventId,
+          JSON.stringify(response),
+        ]);
 
         return true;
       } catch (error) {

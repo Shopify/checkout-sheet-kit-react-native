@@ -26,7 +26,6 @@ import React, {
 } from 'react';
 import {
   requireNativeComponent,
-  Platform,
   UIManager,
   findNodeHandle,
 } from 'react-native';
@@ -296,22 +295,17 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
         return;
       }
 
+      const viewConfig = UIManager.getViewManagerConfig('RCTCheckoutWebView');
+      const commandId = viewConfig?.Commands?.reload ?? 'reload';
+
       UIManager.dispatchViewManagerCommand(
         handle,
-        UIManager.getViewManagerConfig('RCTCheckoutWebView')?.Commands
-          ?.reload ?? 1,
+        commandId,
         [],
       );
     }, []);
 
     useImperativeHandle(ref, () => ({reload}), [reload]);
-
-    // Only render on iOS as the native module is iOS-only
-    if (Platform.OS !== 'ios') {
-      // eslint-disable-next-line no-console
-      console.error('Checkout is only available on iOS');
-      return null;
-    }
 
     return (
       <RCTCheckoutWebView
