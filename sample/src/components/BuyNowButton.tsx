@@ -71,10 +71,7 @@ export function BuyNowButton({
 
       switch (cartDataSource) {
         case CartDataSource.Permalink:
-          checkoutUrl = buildCartPermalink(
-            Config.DEMO_VARIANT_ID || '2',
-            1,
-          );
+          checkoutUrl = buildCartPermalink(variantId, 1);
           break;
 
         case CartDataSource.StorefrontAPI: {
