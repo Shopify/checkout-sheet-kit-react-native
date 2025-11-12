@@ -17,15 +17,47 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Validate versions match
+        id: validate-versions
+        run: |
+          # Extract version from package.json
+          PACKAGE_VERSION=$(node -p "require('./modules/@shopify/checkout-sheet-kit/package.json').version")
+
+          # Extract Git tag from release
+          GIT_TAG="${{ github.event.release.tag_name }}"
+
+          echo "📦 package.json version: $PACKAGE_VERSION"
+          echo "🏷️  Git tag: $GIT_TAG"
+
+          # Compare versions
+          if [ "$PACKAGE_VERSION" != "$GIT_TAG" ]; then
+            echo ""
+            echo "❌ ERROR: Version mismatch detected!"
+            echo ""
+            echo "The version in package.json ($PACKAGE_VERSION) does not match the Git tag ($GIT_TAG)."
+            echo ""
+            echo "Please ensure the following are updated before creating a release:"
+            echo "  1. modules/@shopify/checkout-sheet-kit/package.json"
+            echo "  2. Git tag should match package.json version exactly"
+            echo ""
+            echo "For pre-releases, use format: X.Y.Z-beta.N or X.Y.Z-rc.N"
+            echo ""
+            exit 1
+          fi
+
+          echo ""
+          echo "✅ All versions match! Proceeding with release..."
+          echo ""
+
       - name: Determine NPM tag
         id: npm-tag
         run: |
           # Read the version from package.json
           VERSION=$(node -p "require('./modules/@shopify/checkout-sheet-kit/package.json').version")
 
-          # Check if it's a "beta" or "rc" version
-          if [[ "$VERSION" == *"-beta"* ]] || [[ "$VERSION" == *"-rc"* ]]; then
-            echo "Version $VERSION is a prerelease, using 'next' tag"
+          # Check if it's a pre-release version (alpha, beta, or rc)
+          if [[ "$VERSION" == *"-alpha"* ]] || [[ "$VERSION" == *"-beta"* ]] || [[ "$VERSION" == *"-rc"* ]]; then
+            echo "Version $VERSION is a pre-release, using 'next' tag"
             echo "tag=next" >> $GITHUB_OUTPUT
           else
             echo "Version $VERSION is a stable release, using 'latest' tag"
