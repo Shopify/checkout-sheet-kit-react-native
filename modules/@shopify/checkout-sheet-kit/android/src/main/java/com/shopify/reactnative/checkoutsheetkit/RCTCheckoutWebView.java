@@ -50,7 +50,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RCTCheckoutWebView extends FrameLayout {
@@ -61,7 +60,7 @@ public class RCTCheckoutWebView extends FrameLayout {
     private String auth;
     private boolean pendingSetup = false;
     private CheckoutConfiguration lastConfiguration = null;
-//    private final Map<String, CheckoutAddressChangeRequestedEvent> addressChangeEvents = new ConcurrentHashMap<>();
+    private final Map<String, CheckoutAddressChangeRequestedEvent> addressChangeEvents = new ConcurrentHashMap<>();
     private final ObjectMapper mapper = new ObjectMapper();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -210,7 +209,7 @@ public class RCTCheckoutWebView extends FrameLayout {
             checkoutWebView = null;
         }
         lastConfiguration = null;
-//        addressChangeEvents.clear();
+        addressChangeEvents.clear();
     }
 
     public void reload() {
@@ -234,7 +233,7 @@ public class RCTCheckoutWebView extends FrameLayout {
         }
 
         // Clean up stored events
-//        addressChangeEvents.remove(eventId);
+        addressChangeEvents.remove(eventId);
     }
 
     @Override
@@ -334,8 +333,12 @@ public class RCTCheckoutWebView extends FrameLayout {
 
         @Override
         public void onAddressChangeRequested(CheckoutAddressChangeRequestedEvent event) {
-            String eventId = UUID.randomUUID().toString();
-//            addressChangeEvents.put(eventId, event);
+            String eventId = event.getId();
+            if (eventId == null) {
+                Log.e(TAG, "Event ID is null for address change event");
+                return;
+            }
+            addressChangeEvents.put(eventId, event);
 
             WritableMap params = Arguments.createMap();
             params.putString("id", eventId);
