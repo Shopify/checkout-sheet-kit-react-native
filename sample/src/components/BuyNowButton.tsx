@@ -113,7 +113,6 @@ export function BuyNowButton({
   const styles = createStyles(cornerRadius);
 
   return (
-    <View>
       <Pressable
         disabled={loading || disabled}
         // eslint-disable-next-line react-native/no-inline-styles
@@ -127,7 +126,6 @@ export function BuyNowButton({
           </>
         )}
       </Pressable>
-    </View>
   );
 }
 
