@@ -70,7 +70,7 @@ export class TokenClient {
       return undefined;
     }
 
-    const authUrl = this.config.authEndpoint    
+    const authUrl = this.config.authEndpoint;
     const requestBody = {
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,
@@ -198,7 +198,7 @@ export class TokenClient {
         errorMessage =
           'Network error: Unable to connect to authentication service';
         errorDetails.platform = Platform.OS;
-        errorDetails.endpoint = this.getAuthEndpointUrl();
+        errorDetails.endpoint = this.config.authEndpoint;
         errorDetails.possibleCauses = [
           'SSL/TLS certificate issues',
           'Android emulator network configuration',
@@ -246,4 +246,3 @@ export const defaultTokenClient = new TokenClient();
 export const fetchToken = (): Promise<string | undefined> => {
   return defaultTokenClient.fetchToken();
 };
-

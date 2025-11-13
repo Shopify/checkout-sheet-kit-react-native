@@ -1,11 +1,5 @@
 import React, {useState} from 'react';
-import {
-  Pressable,
-  Text,
-  ActivityIndicator,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Pressable, Text, ActivityIndicator, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NavigationProp} from '@react-navigation/native';
 import {useMutation} from '@apollo/client';
@@ -113,19 +107,19 @@ export function BuyNowButton({
   const styles = createStyles(cornerRadius);
 
   return (
-      <Pressable
-        disabled={loading || disabled}
-        // eslint-disable-next-line react-native/no-inline-styles
-        style={{...styles.buyNowButton, backgroundColor: 'white'}}
-        onPress={handleBuyNow}>
-        {loading ? (
-          <ActivityIndicator size="small" color="black" />
-        ) : (
-          <>
-            <Text style={styles.buyNowButtonText}>Buy Now </Text>
-          </>
-        )}
-      </Pressable>
+    <Pressable
+      disabled={loading || disabled}
+      // eslint-disable-next-line react-native/no-inline-styles
+      style={{...styles.buyNowButton, backgroundColor: 'white'}}
+      onPress={handleBuyNow}>
+      {loading ? (
+        <ActivityIndicator size="small" color="black" />
+      ) : (
+        <>
+          <Text style={styles.buyNowButtonText}>Buy Now </Text>
+        </>
+      )}
+    </Pressable>
   );
 }
 
