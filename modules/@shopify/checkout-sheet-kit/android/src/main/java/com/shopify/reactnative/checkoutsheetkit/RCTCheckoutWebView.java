@@ -42,7 +42,7 @@ import com.shopify.checkoutsheetkit.CheckoutOptions;
 import com.shopify.checkoutsheetkit.CheckoutWebView;
 import com.shopify.checkoutsheetkit.CheckoutWebViewEventProcessor;
 import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor;
-import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -256,7 +256,7 @@ public class RCTCheckoutWebView extends FrameLayout {
         }
 
         @Override
-        public void onCheckoutCompleted(CheckoutCompletedEvent event) {
+        public void onCheckoutCompleted(CheckoutCompleteEvent event) {
             try {
                 String eventJson = mapper.writeValueAsString(event);
                 WritableMap params = Arguments.createMap();
