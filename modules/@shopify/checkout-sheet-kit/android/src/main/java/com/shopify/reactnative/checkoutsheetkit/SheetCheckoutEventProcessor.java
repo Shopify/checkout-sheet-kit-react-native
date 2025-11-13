@@ -136,7 +136,7 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
   }
 
   @Override
-  public void onComplete(@NonNull CheckoutCompleteEvent event) {
+  public void onCheckoutCompleted(@NonNull CheckoutCompleteEvent event) {
     try {
       String data = mapper.writeValueAsString(event);
       sendEventWithStringData("complete", data);
