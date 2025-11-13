@@ -60,22 +60,6 @@ export class TokenClient {
   }
 
   /**
-   * Get the appropriate auth endpoint URL based on platform
-   */
-  private getAuthEndpointUrl(): string {
-    let authUrl = this.config.authEndpoint;
-
-    // Handle localhost URLs for Android emulator
-    if (Platform.OS === 'android') {
-      // Android emulator needs to use 10.0.2.2 to access host machine
-      authUrl = authUrl.replace('localhost', '10.0.2.2');
-      authUrl = authUrl.replace('127.0.0.1', '10.0.2.2');
-    }
-
-    return authUrl;
-  }
-
-  /**
    * Fetch an access token from the Shopify auth service
    * @returns Access token string, or undefined if not configured or failed
    */
@@ -86,7 +70,7 @@ export class TokenClient {
       return undefined;
     }
 
-    const authUrl = this.getAuthEndpointUrl();
+    const authUrl = this.config.authEndpoint    
     const requestBody = {
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,
@@ -95,10 +79,10 @@ export class TokenClient {
 
     try {
       const controller = new AbortController();
-      // const timeoutId = setTimeout(
-      //   () => controller.abort(),
-      //   this.config.timeoutMs,
-      // );
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        this.config.timeoutMs,
+      );
 
       const response = await fetch(authUrl, {
         method: 'POST',
@@ -110,7 +94,7 @@ export class TokenClient {
         signal: controller.signal,
       });
 
-      // clearTimeout(timeoutId);
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw await this.createHttpError(response);
