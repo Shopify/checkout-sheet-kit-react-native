@@ -29,19 +29,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class RCTCheckoutWebViewManager extends SimpleViewManager<RCTCheckoutWebView> {
     private static final String TAG = "RCTCheckoutWebViewManager";
     private static final String REACT_CLASS = "RCTCheckoutWebView";
-
-    private static final int COMMAND_RELOAD = 1;
-    private static final int COMMAND_RESPOND_TO_EVENT = 2;
 
     @NonNull
     @Override
@@ -66,20 +63,12 @@ public class RCTCheckoutWebViewManager extends SimpleViewManager<RCTCheckoutWebV
     }
 
     @Override
-    public Map<String, Integer> getCommandsMap() {
-        return MapBuilder.of(
-            "reload", COMMAND_RELOAD,
-            "respondToEvent", COMMAND_RESPOND_TO_EVENT
-        );
-    }
-
-    @Override
-    public void receiveCommand(@NonNull RCTCheckoutWebView view, int commandId, @Nullable ReadableArray args) {
+    public void receiveCommand(@NonNull RCTCheckoutWebView view, String commandId, @Nullable ReadableArray args) {
         switch (commandId) {
-            case COMMAND_RELOAD:
+            case "reload":
                 view.reload();
                 break;
-            case COMMAND_RESPOND_TO_EVENT:
+            case "respondToEvent":
                 if (args != null && args.size() >= 2) {
                     String eventId = args.getString(0);
                     String responseData = args.getString(1);
@@ -95,16 +84,22 @@ public class RCTCheckoutWebViewManager extends SimpleViewManager<RCTCheckoutWebV
 
     @Override
     public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
-        return MapBuilder.<String, Object>builder()
-            .put("onLoad", MapBuilder.of("registrationName", "onLoad"))
-            .put("onError", MapBuilder.of("registrationName", "onError"))
-            .put("onComplete", MapBuilder.of("registrationName", "onComplete"))
-            .put("onCancel", MapBuilder.of("registrationName", "onCancel"))
-            .put("onPixelEvent", MapBuilder.of("registrationName", "onPixelEvent"))
-            .put("onClickLink", MapBuilder.of("registrationName", "onClickLink"))
-            .put("onAddressChangeIntent", MapBuilder.of("registrationName", "onAddressChangeIntent"))
-            .put("onPaymentChangeIntent", MapBuilder.of("registrationName", "onPaymentChangeIntent"))
-            .build();
+        Map<String, Object> events = new HashMap<>();
+        events.put("onLoad", createEventMap("onLoad"));
+        events.put("onError", createEventMap("onError"));
+        events.put("onComplete", createEventMap("onComplete"));
+        events.put("onCancel", createEventMap("onCancel"));
+        events.put("onPixelEvent", createEventMap("onPixelEvent"));
+        events.put("onClickLink", createEventMap("onClickLink"));
+        events.put("onAddressChangeIntent", createEventMap("onAddressChangeIntent"));
+        events.put("onPaymentChangeIntent", createEventMap("onPaymentChangeIntent"));
+        return events;
+    }
+
+    private Map<String, String> createEventMap(String eventName) {
+        Map<String, String> event = new HashMap<>();
+        event.put("registrationName", eventName);
+        return event;
     }
 
     @Override
