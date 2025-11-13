@@ -47,16 +47,18 @@ export default function CheckoutScreen(props: {
   };
 
   const onPaymentChangeIntent = (event: {id: string}) => {
+    console.log('<CheckoutScreen /> onPaymentChangeIntent: ', event);
     navigation.navigate('Payment', {id: event.id});
   };
 
   const onCancel = () => {
+    console.log('<CheckoutScreen /> onCancel: ');
     navigation.getParent()?.goBack();
   };
 
   const onError = (error: unknown) => {
+    console.log('<CheckoutScreen /> onError: ', error);
     ref.current?.reload();
-    console.log('[Checkout] onError: ', error);
   };
 
   const onComplete = (event: CheckoutCompleteEvent) => {
