@@ -31,6 +31,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
@@ -49,6 +51,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class RCTCheckoutWebView extends FrameLayout {
     private static final String TAG = "RCTCheckoutWebView";
@@ -61,26 +64,18 @@ public class RCTCheckoutWebView extends FrameLayout {
     private final ObjectMapper mapper = new ObjectMapper();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    private static class CheckoutConfiguration {
-        final String url;
-        final String authToken;
+  private record CheckoutConfiguration(String url, String authToken) {
 
-        CheckoutConfiguration(String url, String authToken) {
-            this.url = url;
-            this.authToken = authToken;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof CheckoutConfiguration)) {
-                return false;
-            }
-            CheckoutConfiguration other = (CheckoutConfiguration) obj;
-            return url.equals(other.url) &&
-                   ((authToken == null && other.authToken == null) ||
-                    (authToken != null && authToken.equals(other.authToken)));
-        }
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof CheckoutConfiguration other)) {
+        return false;
+      }
+      return url.equals(other.url) &&
+        ((authToken == null && other.authToken == null) ||
+          (authToken != null && authToken.equals(other.authToken)));
     }
+  }
 
     public RCTCheckoutWebView(Context context) {
         super(context);
@@ -100,7 +95,7 @@ public class RCTCheckoutWebView extends FrameLayout {
     }
 
     public void setCheckoutUrl(String url) {
-        if (url == null ? checkoutUrl == null : url.equals(checkoutUrl)) {
+        if (Objects.equals(url, checkoutUrl)) {
             return;
         }
 
@@ -114,7 +109,7 @@ public class RCTCheckoutWebView extends FrameLayout {
     }
 
     public void setAuth(String authToken) {
-        if (authToken == null ? auth == null : authToken.equals(auth)) {
+        if (Objects.equals(authToken, auth)) {
             return;
         }
 
@@ -162,15 +157,8 @@ public class RCTCheckoutWebView extends FrameLayout {
         Log.d(TAG, "setupCheckoutWebView: New CheckoutWebView created");
 
         // Set up event processor with all required parameters
-        CheckoutWebEventProcessor eventProcessor = new CheckoutWebEventProcessor();
-        CheckoutWebViewEventProcessor webViewEventProcessor = new CheckoutWebViewEventProcessor(
-            eventProcessor,
-            (visible) -> { return kotlin.Unit.INSTANCE; }, // toggleHeader
-            (error) -> { return kotlin.Unit.INSTANCE; }, // closeCheckoutDialogWithError
-            (visibility) -> { return kotlin.Unit.INSTANCE; }, // setProgressBarVisibility
-            (percentage) -> { return kotlin.Unit.INSTANCE; } // updateProgressBarPercentage
-        );
-        checkoutWebView.setEventProcessor(webViewEventProcessor);
+      CheckoutWebViewEventProcessor webViewEventProcessor = getCheckoutWebViewEventProcessor();
+      checkoutWebView.setEventProcessor(webViewEventProcessor);
 
         // Configure authentication if provided
         CheckoutOptions options = null;
@@ -197,7 +185,18 @@ public class RCTCheckoutWebView extends FrameLayout {
         lastConfiguration = configuration;
     }
 
-    private void removeCheckout() {
+  @NonNull
+  private CheckoutWebViewEventProcessor getCheckoutWebViewEventProcessor() {
+    return new CheckoutWebViewEventProcessor(
+        new CheckoutWebEventProcessor(),
+        (visible) -> { return kotlin.Unit.INSTANCE; }, // toggleHeader
+        (error) -> { return kotlin.Unit.INSTANCE; }, // closeCheckoutDialogWithError
+        (visibility) -> { return kotlin.Unit.INSTANCE; }, // setProgressBarVisibility
+        (percentage) -> { return kotlin.Unit.INSTANCE; } // updateProgressBarPercentage
+    );
+  }
+
+  private void removeCheckout() {
         Log.d(TAG, "removeCheckout: Called, webview exists: " + (checkoutWebView != null));
         if (checkoutWebView != null) {
             Log.d(TAG, "removeCheckout: Destroying webview");
