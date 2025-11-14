@@ -169,7 +169,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   // Private
 
   private Map<String, Object> populateErrorDetails(CheckoutException checkoutError) {
-    Map<String, Object> errorMap = new HashMap();
+    Map<String, Object> errorMap = new HashMap<>();
     errorMap.put("__typename", getErrorTypeName(checkoutError));
     errorMap.put("message", checkoutError.getErrorDescription());
     errorMap.put("recoverable", checkoutError.isRecoverable());
