@@ -54,6 +54,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.Objects;
 
+import kotlin.Unit;
+
 public class RCTCheckoutWebView extends FrameLayout {
     private static final String TAG = "RCTCheckoutWebView";
 
@@ -118,7 +120,7 @@ public class RCTCheckoutWebView extends FrameLayout {
         scheduleSetupIfNeeded();
     }
 
-    private void scheduleSetupIfNeeded() {
+  private void scheduleSetupIfNeeded() {
         if (pendingSetup) {
             return;
         }
@@ -190,10 +192,10 @@ public class RCTCheckoutWebView extends FrameLayout {
   private CheckoutWebViewEventProcessor getCheckoutWebViewEventProcessor() {
     return new CheckoutWebViewEventProcessor(
         new CheckoutWebEventProcessor(),
-        (visible) -> { return kotlin.Unit.INSTANCE; }, // toggleHeader
-        (error) -> { return kotlin.Unit.INSTANCE; }, // closeCheckoutDialogWithError
-        (visibility) -> { return kotlin.Unit.INSTANCE; }, // setProgressBarVisibility
-        (percentage) -> { return kotlin.Unit.INSTANCE; } // updateProgressBarPercentage
+        (visible) -> Unit.INSTANCE, // toggleHeader
+        (error) -> Unit.INSTANCE, // closeCheckoutDialogWithError
+        (visibility) -> Unit.INSTANCE, // setProgressBarVisibility
+        (percentage) -> Unit.INSTANCE // updateProgressBarPercentage
     );
   }
 
