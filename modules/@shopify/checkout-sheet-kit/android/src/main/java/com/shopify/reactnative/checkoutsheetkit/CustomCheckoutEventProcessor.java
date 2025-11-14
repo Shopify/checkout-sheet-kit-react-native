@@ -35,7 +35,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
-import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
@@ -133,7 +133,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   }
 
   @Override
-  public void onCheckoutCompleted(@NonNull CheckoutCompletedEvent event) {
+  public void onCheckoutCompleted(@NonNull CheckoutCompleteEvent event) {
     try {
       String data = mapper.writeValueAsString(event);
       sendEventWithStringData("completed", data);
@@ -142,10 +142,18 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
     }
   }
 
+  @Override
+  public void onAddressChangeRequested(CheckoutAddressChangeRequestedEvent event) {
+    // For modal presentation, we don't currently support address changes
+    // The WebView component handles this internally
+    // Just cancel the request by not responding
+    Log.d("ShopifyCheckoutSheetKit", "Address change requested in modal mode - not supported");
+  }
+
   // Private
 
   private Map<String, Object> populateErrorDetails(CheckoutException checkoutError) {
-    Map<String, Object> errorMap = new HashMap();
+    Map<String, Object> errorMap = new HashMap<>();
     errorMap.put("__typename", getErrorTypeName(checkoutError));
     errorMap.put("message", checkoutError.getErrorDescription());
     errorMap.put("recoverable", checkoutError.isRecoverable());

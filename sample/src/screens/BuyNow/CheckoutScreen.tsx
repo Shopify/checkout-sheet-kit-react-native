@@ -28,7 +28,6 @@ import {
 import type {BuyNowStackParamList} from './types';
 import {StyleSheet} from 'react-native';
 
-
 // This component represents a screen in the consumers app that
 // wraps the shopify Checkout and provides it the auth param
 export default function CheckoutScreen(props: {
@@ -38,23 +37,27 @@ export default function CheckoutScreen(props: {
   const ref = useRef<CheckoutRef>(null);
 
   const onAddressChangeIntent = (event: {id: string}) => {
+    console.log('<CheckoutScreen /> onAddressChangeIntent: ', event);
     navigation.navigate('Address', {id: event.id});
   };
 
   const onPaymentChangeIntent = (event: {id: string}) => {
+    console.log('<CheckoutScreen /> onPaymentChangeIntent: ', event);
     navigation.navigate('Payment', {id: event.id});
   };
 
   const onCancel = () => {
+    console.log('<CheckoutScreen /> onCancel: ');
     navigation.getParent()?.goBack();
   };
 
-  const onError = () => {
+  const onError = (error: unknown) => {
+    console.log('<CheckoutScreen /> onError: ', error);
     ref.current?.reload();
   };
 
   const onComplete = (event: CheckoutCompletedEvent) => {
-    console.log('Checkout complete', JSON.stringify(event, null, 2));
+    console.log('<CheckoutScreen /> onComplete: ', JSON.stringify(event, null, 2));
     navigation.getParent()?.goBack();
   };
 

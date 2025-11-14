@@ -1,4 +1,5 @@
 import Config from 'react-native-config';
+import {Platform} from 'react-native';
 
 /**
  * Response from Shopify's access token endpoint
@@ -23,7 +24,10 @@ interface TokenClientConfig {
  * Error thrown when token fetching fails
  */
 export class TokenClientError extends Error {
-  constructor(message: string, public readonly statusCode?: number) {
+  constructor(
+    message: string,
+    public readonly statusCode?: number,
+  ) {
     super(message);
     this.name = 'TokenClientError';
   }
@@ -50,8 +54,8 @@ export class TokenClient {
   isConfigured(): boolean {
     return Boolean(
       this.config.clientId &&
-      this.config.clientSecret &&
-      this.config.authEndpoint
+        this.config.clientSecret &&
+        this.config.authEndpoint,
     );
   }
 
@@ -66,20 +70,27 @@ export class TokenClient {
       return undefined;
     }
 
+    const authUrl = this.config.authEndpoint;
+    const requestBody = {
+      client_id: this.config.clientId,
+      client_secret: this.config.clientSecret,
+      grant_type: 'client_credentials',
+    };
+
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.config.timeoutMs);
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        this.config.timeoutMs,
+      );
 
-      const response = await fetch(this.config.authEndpoint, {
+      const response = await fetch(authUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'User-Agent': `ReactNative/${Platform.OS}`,
         },
-        body: JSON.stringify({
-          client_id: this.config.clientId,
-          client_secret: this.config.clientSecret,
-          grant_type: 'client_credentials',
-        }),
+        body: JSON.stringify(requestBody),
         signal: controller.signal,
       });
 
@@ -124,11 +135,13 @@ export class TokenClient {
         errorMessage = 'Access denied: Check client permissions and scopes';
         break;
       case 429:
-        errorMessage = 'Rate limit exceeded: Too many requests, please try again later';
+        errorMessage =
+          'Rate limit exceeded: Too many requests, please try again later';
         break;
       default:
         if (response.status >= 500) {
-          errorMessage = 'Server error: Authentication service is temporarily unavailable';
+          errorMessage =
+            'Server error: Authentication service is temporarily unavailable';
         }
         break;
     }
@@ -139,11 +152,15 @@ export class TokenClient {
   /**
    * Parse the JSON response safely
    */
-  private async parseResponse(response: Response): Promise<AccessTokenResponse> {
+  private async parseResponse(
+    response: Response,
+  ): Promise<AccessTokenResponse> {
     try {
       return await response.json();
     } catch (jsonError) {
-      throw new TokenClientError('Invalid response format: Unable to parse authentication response');
+      throw new TokenClientError(
+        'Invalid response format: Unable to parse authentication response',
+      );
     }
   }
 
@@ -152,7 +169,9 @@ export class TokenClient {
    */
   private validateTokenResponse(data: AccessTokenResponse): void {
     if (!data.access_token || typeof data.access_token !== 'string') {
-      throw new TokenClientError('Invalid response: Missing or invalid access token in response');
+      throw new TokenClientError(
+        'Invalid response: Missing or invalid access token in response',
+      );
     }
   }
 
@@ -160,21 +179,59 @@ export class TokenClient {
    * Handle and log errors appropriately
    */
   private handleError(error: unknown): void {
-    let errorMessage = 'Unknown error occurred while fetching authentication token';
+    let errorMessage =
+      'Unknown error occurred while fetching authentication token';
+    let errorDetails: any = {};
 
     if (error instanceof TokenClientError) {
       errorMessage = error.message;
+      errorDetails.statusCode = error.statusCode;
     } else if (error instanceof Error) {
       if (error.name === 'AbortError') {
-        errorMessage = 'Request timeout: Authentication service took too long to respond';
-      } else if (error.message.includes('Network request failed') || error.message.includes('Failed to fetch')) {
-        errorMessage = 'Network error: Unable to connect to authentication service';
+        errorMessage =
+          'Request timeout: Authentication service took too long to respond';
+        errorDetails.timeout = `${this.config.timeoutMs}ms`;
+      } else if (
+        error.message.includes('Network request failed') ||
+        error.message.includes('Failed to fetch')
+      ) {
+        errorMessage =
+          'Network error: Unable to connect to authentication service';
+        errorDetails.platform = Platform.OS;
+        errorDetails.endpoint = this.config.authEndpoint;
+        errorDetails.possibleCauses = [
+          'SSL/TLS certificate issues',
+          'Android emulator network configuration',
+          'Firewall or proxy blocking the request',
+          'DNS resolution failure',
+          'Invalid or unreachable endpoint URL',
+        ];
+
+        if (Platform.OS === 'android') {
+          errorDetails.androidTips = [
+            'Ensure the auth endpoint is accessible from Android emulator',
+            'Try using actual device IP instead of localhost/127.0.0.1',
+            'Check if cleartext traffic is allowed in network_security_config.xml',
+            'Verify Android emulator has internet access',
+            'Test with a public test endpoint like https://httpbin.org/post',
+          ];
+        }
       } else {
         errorMessage = error.message;
       }
+      errorDetails.errorName = error.name;
+      errorDetails.errorStack = error.stack;
     }
 
-    console.error('TokenClient: Error fetching auth token:', errorMessage, error);
+    console.error(
+      'TokenClient: Error fetching auth token:',
+      errorMessage,
+      error,
+    );
+    console.error(
+      'TokenClient: Error details:',
+      JSON.stringify(errorDetails, null, 2),
+    );
   }
 }
 
@@ -189,4 +246,3 @@ export const defaultTokenClient = new TokenClient();
 export const fetchToken = (): Promise<string | undefined> => {
   return defaultTokenClient.fetchToken();
 };
-

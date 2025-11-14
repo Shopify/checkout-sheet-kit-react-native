@@ -223,8 +223,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ReactNative" */;
 			buildPhases = (
-				CB4C33ED2EBA15AC00149A36 /* ShellScript */,
 				EC9AFE111A4C07A98A76F332 /* [CP] Check Pods Manifest.lock */,
+				CB4C33ED2EBA15AC00149A36 /* ShellScript */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
