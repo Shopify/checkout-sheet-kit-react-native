@@ -38,6 +38,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.shopify.checkoutsheetkit.CheckoutAddressChangeRequestedEvent;
 import com.shopify.checkoutsheetkit.CheckoutException;
 import com.shopify.checkoutsheetkit.CheckoutOptions;
@@ -259,9 +260,8 @@ public class RCTCheckoutWebView extends FrameLayout {
             try {
                 String eventJson = mapper.writeValueAsString(event);
                 WritableMap params = Arguments.createMap();
-
                 // Parse the JSON to extract fields
-                Map<String, Object> eventMap = mapper.readValue(eventJson, Map.class);
+                Map<String, Object> eventMap = mapper.readValue(eventJson, new TypeReference<>(){ });
                 for (Map.Entry<String, Object> entry : eventMap.entrySet()) {
                     if (entry.getValue() instanceof String) {
                         params.putString(entry.getKey(), (String) entry.getValue());
@@ -301,7 +301,7 @@ public class RCTCheckoutWebView extends FrameLayout {
                 WritableMap params = Arguments.createMap();
 
                 // Parse the JSON to extract fields
-                Map<String, Object> eventMap = mapper.readValue(eventJson, Map.class);
+                Map<String, Object> eventMap = mapper.readValue(eventJson, new TypeReference<>(){ });
                 for (Map.Entry<String, Object> entry : eventMap.entrySet()) {
                     if (entry.getValue() instanceof String) {
                         params.putString(entry.getKey(), (String) entry.getValue());
