@@ -18,31 +18,42 @@ specific to each workspace.
 
 If you've cloned the repo and want to run the sample app, you will first need to:
 
-1. Install the NPM dependencies
+1. Update the dotenv file
+
+   Replace the details in the `sample/.env.example` file and rename it to `sample/.env`
+
+   ```sh
+   # Storefront Details
+   STOREFRONT_DOMAIN="YOUR_STORE.myshopify.com"
+   STOREFRONT_ACCESS_TOKEN="YOUR_PUBLIC_STOREFRONT_ACCESS_TOKEN"
+   STOREFRONT_VERSION="2025-07"
+   ```
+
+2. Install the NPM dependencies
 
    ```sh
    yarn
    ```
 
-2. Install iOS dependencies. (N.b. Android dependencies are automatically installed by Gradle)
+3. Install iOS dependencies. (N.b. Android dependencies are automatically installed by Gradle)
 
    ```sh
    yarn pod-install sample/ios
    ```
 
-3. Build the Native Module
+4. Build the Native Module
 
    ```sh
    yarn module build
    ```
 
-4. Start the Metro server
+5. Start the Metro server
 
    ```sh
    yarn sample start
    ```
 
-5. Run the sample application (in a new terminal / tab)
+6. Run the sample application (in a new terminal / tab)
 
    ```sh
    yarn sample ios
@@ -128,43 +139,3 @@ yarn sample test:ios
 yarn sample test:android
 ```
 
-## Running the sample app
-
-To run the sample app in this repo, first clone the repo and run the following
-commands at the root of the project directory.
-
-### Install NPM dependencies
-
-```sh
-yarn
-```
-
-### Install Cocoapods
-
-```sh
-yarn pod-install sample/ios
-```
-
-### Build the local module
-
-```sh
-yarn module build
-```
-
-### Update the dotenv file
-
-Replace the details in the `sample/.env.example` file and rename it to
-`sample/.env`
-
-```
-# Storefront Details
-STOREFRONT_DOMAIN="YOUR_STORE.myshopify.com"
-STOREFRONT_ACCESS_TOKEN="YOUR_PUBLIC_STOREFRONT_ACCESS_TOKEN"
-STOREFRONT_VERSION="2025-07"
-```
-
-### Start the sample app
-
-```sh
-yarn sample start
-```
