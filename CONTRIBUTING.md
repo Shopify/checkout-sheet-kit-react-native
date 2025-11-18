@@ -3,6 +3,9 @@
 We welcome code contributions, feature requests, and reporting of issues. Please
 see [guidelines and instructions](.github/CONTRIBUTING.md).
 
+For information about creating releases and publishing new versions, see the
+[Release Documentation](docs/contributing/release.md).
+
 ---
 
 This repo is subdivided into 3 parts using yarn workspaces:
