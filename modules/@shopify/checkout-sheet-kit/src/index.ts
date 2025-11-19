@@ -59,7 +59,6 @@ import {
 } from './errors.d';
 import {CheckoutErrorCode} from './errors.d';
 import type {CheckoutCompletedEvent} from './events.d';
-import type {CustomEvent, PixelEvent, StandardEvent} from './pixels.d';
 import {ApplePayLabel} from './components/AcceleratedCheckoutButtons';
 import type {
   AcceleratedCheckoutButtonsProps,
@@ -173,13 +172,6 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     let eventCallback;
 
     switch (event) {
-      case 'pixel':
-        eventCallback = this.interceptEventEmission(
-          'pixel',
-          callback,
-          this.parseCustomPixelData,
-        );
-        break;
       case 'completed':
         eventCallback = this.interceptEventEmission('completed', callback);
         break;
@@ -200,7 +192,6 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
         eventCallback = callback;
     }
 
-    // Default handler for all non-pixel events
     return ShopifyCheckoutSheet.eventEmitter.addListener(event, eventCallback);
   }
 
@@ -374,30 +365,6 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   }
 
   /**
-   * Parses custom pixel event data from string to object if needed
-   * @param eventData The pixel event data to parse
-   * @returns Parsed PixelEvent object
-   */
-  private parseCustomPixelData(eventData: PixelEvent): PixelEvent {
-    if (
-      isCustomPixelEvent(eventData) &&
-      eventData.hasOwnProperty('customData') &&
-      typeof eventData.customData === 'string'
-    ) {
-      try {
-        return {
-          ...eventData,
-          customData: JSON.parse(eventData.customData),
-        };
-      } catch {
-        return eventData;
-      }
-    }
-
-    return eventData;
-  }
-
-  /**
    * Converts native checkout errors into appropriate error class instances
    * @param exception The native error to parse
    * @returns Appropriate CheckoutException instance
@@ -467,10 +434,6 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   }
 }
 
-function isCustomPixelEvent(event: PixelEvent): event is CustomEvent {
-  return event.type === 'CUSTOM';
-}
-
 export class LifecycleEventParseError extends Error {
   constructor(message?: string, options?: ErrorOptions) {
     super(message, options);
@@ -516,12 +479,9 @@ export type {
   CheckoutException,
   CheckoutOptions,
   Configuration,
-  CustomEvent,
   Features,
   GeolocationRequestEvent,
-  PixelEvent,
   RenderStateChangeEvent,
-  StandardEvent,
 };
 
 // Components

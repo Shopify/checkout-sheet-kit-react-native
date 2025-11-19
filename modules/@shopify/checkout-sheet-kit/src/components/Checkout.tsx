@@ -34,7 +34,6 @@ import type {ViewStyle} from 'react-native';
 import type {
   CheckoutCompletedEvent,
   CheckoutException,
-  PixelEvent,
 } from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
 import type {CheckoutAddressChangeIntent, CheckoutPaymentChangeIntent} from '../events';
@@ -69,11 +68,6 @@ export interface CheckoutProps {
    * Called when checkout is cancelled
    */
   onCancel?: () => void;
-
-  /**
-   * Called when a web pixel event is triggered
-   */
-  onPixelEvent?: (event: PixelEvent) => void;
 
   /**
    * Called when a link is clicked within the checkout
@@ -111,7 +105,6 @@ interface NativeCheckoutWebViewProps {
   onError?: (event: {nativeEvent: CheckoutException}) => void;
   onComplete?: (event: {nativeEvent: CheckoutCompletedEvent}) => void;
   onCancel?: () => void;
-  onPixelEvent?: (event: {nativeEvent: PixelEvent}) => void;
   onClickLink?: (event: {nativeEvent: {url: string}}) => void;
   onAddressChangeIntent?: (event: {
     nativeEvent: {
@@ -185,7 +178,6 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       onError,
       onComplete,
       onCancel,
-      onPixelEvent,
       onClickLink,
       onAddressChangeIntent,
       onPaymentChangeIntent,
@@ -238,15 +230,6 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
     >(() => {
       onCancel?.();
     }, [onCancel]);
-
-    const handlePixelEvent = useCallback<
-      Required<NativeCheckoutWebViewProps>['onPixelEvent']
-    >(
-      (event: {nativeEvent: PixelEvent}) => {
-        onPixelEvent?.(event.nativeEvent);
-      },
-      [onPixelEvent],
-    );
 
     const handleClickLink = useCallback<
       Required<NativeCheckoutWebViewProps>['onClickLink']
@@ -322,7 +305,6 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
         onError={handleError}
         onComplete={handleComplete}
         onCancel={handleCancel}
-        onPixelEvent={handlePixelEvent}
         onClickLink={handleClickLink}
         onAddressChangeIntent={handleAddressChangeIntent}
         onPaymentChangeIntent={handlePaymentChangeIntent}

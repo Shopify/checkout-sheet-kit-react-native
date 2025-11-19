@@ -82,7 +82,6 @@ class RCTCheckoutWebView: UIView {
   @objc var onError: RCTBubblingEventBlock?
   @objc var onComplete: RCTBubblingEventBlock?
   @objc var onCancel: RCTBubblingEventBlock?
-  @objc var onPixelEvent: RCTBubblingEventBlock?
   @objc var onClickLink: RCTBubblingEventBlock?
   @objc var onAddressChangeIntent: RCTBubblingEventBlock?
   @objc var onPaymentChangeIntent: RCTBubblingEventBlock?
@@ -268,10 +267,6 @@ extension RCTCheckoutWebView: CheckoutDelegate {
 
   func checkoutDidFail(error: ShopifyCheckoutSheetKit.CheckoutError) {
     onError?(ShopifyEventSerialization.serialize(checkoutError: error))
-  }
-
-  func checkoutDidEmitWebPixelEvent(event: ShopifyCheckoutSheetKit.PixelEvent) {
-    onPixelEvent?(ShopifyEventSerialization.serialize(pixelEvent: event))
   }
 
   func checkoutDidClickLink(url: URL) {

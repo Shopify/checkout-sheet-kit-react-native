@@ -254,20 +254,6 @@ describe('AcceleratedCheckoutButtons', () => {
       });
     });
 
-    it('forwards web pixel native events', () => {
-      const onWebPixelEvent = jest.fn();
-      const {getByTestId} = render(
-        <AcceleratedCheckoutButtons
-          cartId="gid://shopify/Cart/123"
-          onWebPixelEvent={onWebPixelEvent}
-        />,
-      );
-      const nativeComponent = getByTestId('accelerated-checkout-buttons');
-      const pixel = {type: 'STANDARD'} as any;
-      nativeComponent.props.onWebPixelEvent({nativeEvent: pixel});
-      expect(onWebPixelEvent).toHaveBeenCalledWith(pixel);
-    });
-
     it('handles onClickLink when URL is present and ignores when absent', () => {
       const onClickLink = jest.fn();
       const {getByTestId} = render(

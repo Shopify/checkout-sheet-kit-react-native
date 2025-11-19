@@ -48,7 +48,6 @@ import type {
   CheckoutException,
   Configuration,
   Features,
-  PixelEvent,
 } from '@shopify/checkout-sheet-kit';
 import {
   ApplePayContactField,
@@ -211,10 +210,6 @@ function AppWithContext({children}: PropsWithChildren) {
       eventHandlers.onCancel?.();
     });
 
-    const pixel = shopify.addEventListener('pixel', (event: PixelEvent) => {
-      eventHandlers.onWebPixelEvent?.(event);
-    });
-
     const completed = shopify.addEventListener(
       'completed',
       (event: CheckoutCompletedEvent) => {
@@ -230,7 +225,6 @@ function AppWithContext({children}: PropsWithChildren) {
     );
 
     return () => {
-      pixel?.remove();
       completed?.remove();
       close?.remove();
       error?.remove();

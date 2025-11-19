@@ -34,7 +34,6 @@ import com.shopify.checkoutsheetkit.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -105,16 +104,6 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
     // Reset the geolocation callback and origin when the prompt is hidden.
     this.geolocationCallback = null;
     this.geolocationOrigin = null;
-  }
-
-  @Override
-  public void onWebPixelEvent(@NonNull PixelEvent event) {
-    try {
-      String data = mapper.writeValueAsString(event);
-      sendEventWithStringData("pixel", data);
-    } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error processing pixel event", e);
-    }
   }
 
   @Override

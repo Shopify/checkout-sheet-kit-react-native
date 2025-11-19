@@ -119,12 +119,6 @@ SOFTWARE.
     RCT_EXPORT_VIEW_PROPERTY(onCancel, RCTBubblingEventBlock)
 
     /**
-     * Emitted when a web pixel event occurs
-     */
-    RCT_EXPORT_VIEW_PROPERTY(onPixelEvent, RCTBubblingEventBlock)
-
-
-    /**
      * Emitted when checkout is moving to address selection screen
      */
     RCT_EXPORT_VIEW_PROPERTY(onAddressChangeIntent, RCTBubblingEventBlock)
@@ -200,11 +194,6 @@ SOFTWARE.
      * Direct event used to determine whether native should attempt recovery from an error.
      */
     RCT_EXPORT_VIEW_PROPERTY(onShouldRecoverFromError, RCTDirectEventBlock)
-
-    /**
-     * Emitted when a web pixel event occurs during checkout.
-     */
-    RCT_EXPORT_VIEW_PROPERTY(onWebPixelEvent, RCTBubblingEventBlock)
 
     /**
      * Emitted when a link is clicked within the checkout experience. Payload contains the URL.

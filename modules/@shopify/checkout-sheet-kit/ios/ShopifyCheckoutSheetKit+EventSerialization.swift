@@ -66,34 +66,6 @@ internal enum ShopifyEventSerialization {
         return encodeToJSON(from: event)
     }
 
-    /**
-     * Converts a PixelEvent to a React Native compatible dictionary.
-     */
-    static func serialize(pixelEvent event: PixelEvent) -> [String: Any] {
-        switch event {
-        case let .standardEvent(standardEvent):
-            let encoded = encodeToJSON(from: standardEvent)
-            return [
-                "context": encoded["context"] ?? NSNull(),
-                "data": encoded["data"] ?? NSNull(),
-                "id": encoded["id"] ?? NSNull(),
-                "name": encoded["name"] ?? NSNull(),
-                "timestamp": encoded["timestamp"] ?? NSNull(),
-                "type": "STANDARD"
-            ]
-
-        case let .customEvent(customEvent):
-            return [
-                "context": encodeToJSON(from: customEvent.context),
-                "customData": stringToJSON(from: customEvent.customData) ?? NSNull(),
-                "id": customEvent.id,
-                "name": customEvent.name,
-                "timestamp": customEvent.timestamp,
-                "type": "CUSTOM"
-            ]
-        }
-    }
-
     static func serialize(clickEvent url: URL) -> [String: URL] {
         return ["url": url]
     }
