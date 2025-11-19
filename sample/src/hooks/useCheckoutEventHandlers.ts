@@ -6,7 +6,6 @@ import {useCart} from '../context/Cart';
 import type {
   CheckoutCompletedEvent,
   CheckoutException,
-  PixelEvent,
   RenderStateChangeEvent,
 } from '@shopify/checkout-sheet-kit';
 import {Linking} from 'react-native';
@@ -17,7 +16,6 @@ interface EventHandlers {
   onCancel?: () => void;
   onRenderStateChange?: (event: RenderStateChangeEvent) => void;
   onShouldRecoverFromError?: (error: {message: string}) => boolean;
-  onWebPixelEvent?: (event: PixelEvent) => void;
   onClickLink?: (url: string) => void;
 }
 
@@ -39,9 +37,6 @@ export function useShopifyEventHandlers(name?: string): EventHandlers {
       },
       onRenderStateChange: event => {
         log('onRenderStateChange', event);
-      },
-      onWebPixelEvent: event => {
-        log('onWebPixelEvent', event.name);
       },
       onClickLink: async url => {
         log('onClickLink', url);

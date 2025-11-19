@@ -47,7 +47,6 @@ experiences.
 - [Checkout lifecycle](#checkout-lifecycle)
   - [`addEventListener(eventName, callback)`](#addeventlistenereventname-callback)
   - [`removeEventListeners(eventName)`](#removeeventlistenerseventname)
-- [Behavioral data - Web pixels](#behavioral-data---web-pixels)
 - [Identity \& customer accounts](#identity--customer-accounts)
   - [Cart: buyer bag, identity, and preferences](#cart-buyer-bag-identity-and-preferences)
     - [Multipass](#multipass)
@@ -582,7 +581,6 @@ methods - available on both the context provider as well as the class instance.
 | `close`     | `() => void`                              | Fired when the checkout has been closed.                     |
 | `completed` | `(event: CheckoutCompletedEvent) => void` | Fired when the checkout has been successfully completed.     |
 | `error`     | `(error: {message: string}) => void`      | Fired when a checkout exception has been raised.             |
-| `pixel`     | `(event: PixelEvent) => void`             | Fired when a Web Pixel event has been relayed from checkout. |
 
 ### `addEventListener(eventName, callback)`
 
@@ -615,22 +613,11 @@ useEffect(() => {
     },
   );
 
-  const pixel = shopifyCheckout.addEventListener(
-    'pixel',
-    (event: PixelEvent) => {
-      // Dispatch web pixel events to third-party services
-      if (hasPermissionToTrack) {
-        sendEventToAnalyticsProvider(event);
-      }
-    },
-  );
-
   return () => {
     // It is important to clear the subscription on unmount to prevent memory leaks
     close?.remove();
     completed?.remove();
     error?.remove();
-    pixel?.remove();
   };
 }, [shopifyCheckout]);
 ```
@@ -639,26 +626,6 @@ useEffect(() => {
 
 On the rare occasion that you want to remove all event listeners for a given
 `eventName`, you can use the `removeEventListeners(eventName)` method.
-
-## Behavioral data - Web pixels
-
-App developers can use
-[lifecycle events](#checkout-lifecycle) to monitor
-and log the status of a checkout session.
-
-For behavioural monitoring,
-["standard"](https://shopify.dev/docs/api/web-pixels-api/standard-events) and
-["custom"](https://shopify.dev/docs/api/web-pixels-api#custom-web-pixels) Web
-Pixel events will be relayed back to your application through the `"pixel"`
-event listener. App developers should only subscribe to pixel events if they have proper levels of consent from merchants/buyers and are responsible for adherence to Apple's privacy policy and local regulations like GDPR and
-ePrivacy directive before disseminating these events to first-party and
-third-party systems.
-
-> [!NOTE]
-> You will likely need to augment these events with customer/session information derived from app state.
-
-> [!NOTE]
-> The `customData` attribute of CustomPixelEvent can take on any shape. As such, this attribute will be returned as a String. Client applications should define a custom data type and deserialize the customData string into that type.
 
 ## Identity & customer accounts
 

@@ -53,7 +53,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     }
 
     override func supportedEvents() -> [String]! {
-        return ["close", "completed", "error", "pixel", "addressChangeIntent"]
+        return ["close", "completed", "error", "addressChangeIntent"]
     }
 
     override func startObserving() {
@@ -78,12 +78,6 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         guard hasListeners else { return }
 
         sendEvent(withName: "error", body: ShopifyEventSerialization.serialize(checkoutError: error))
-    }
-
-    func checkoutDidEmitWebPixelEvent(event: ShopifyCheckoutSheetKit.PixelEvent) {
-        if hasListeners {
-            sendEvent(withName: "pixel", body: ShopifyEventSerialization.serialize(pixelEvent: event))
-        }
     }
 
     func checkoutDidCancel() {

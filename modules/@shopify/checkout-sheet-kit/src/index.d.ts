@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import type {EmitterSubscription} from 'react-native';
-import type {PixelEvent} from './pixels';
 import type {CheckoutCompletedEvent} from './events';
 import type {CheckoutException} from './errors';
 
@@ -152,8 +151,7 @@ export type CheckoutEvent =
   | 'close'
   | 'completed'
   | 'error'
-  | 'geolocationRequest'
-  | 'pixel';
+  | 'geolocationRequest';
 
 export interface GeolocationRequestEvent {
   origin: string;
@@ -163,7 +161,6 @@ export type CloseEventCallback = () => void;
 export type GeolocationRequestEventCallback = (
   event: GeolocationRequestEvent,
 ) => void;
-export type PixelEventCallback = (event: PixelEvent) => void;
 export type CheckoutExceptionCallback = (error: CheckoutException) => void;
 export type CheckoutCompletedEventCallback = (
   event: CheckoutCompletedEvent,
@@ -173,8 +170,7 @@ export type CheckoutEventCallback =
   | CloseEventCallback
   | CheckoutExceptionCallback
   | CheckoutCompletedEventCallback
-  | GeolocationRequestEventCallback
-  | PixelEventCallback;
+  | GeolocationRequestEventCallback;
 
 /**
  * Available wallet types for accelerated checkout
@@ -250,11 +246,6 @@ function addEventListener(
 function addEventListener(
   event: 'error',
   callback: CheckoutExceptionCallback,
-): Maybe<EmitterSubscription>;
-
-function addEventListener(
-  event: 'pixel',
-  callback: PixelEventCallback,
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(
