@@ -14,6 +14,7 @@ import com.shopify.checkoutsheetkit.HttpException;
 import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
 import com.shopify.checkoutsheetkit.Preloading;
 import com.shopify.checkoutsheetkit.ColorScheme;
+import com.shopify.checkoutsheetkit.CheckoutOptions;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.Cart;
@@ -109,13 +110,13 @@ public class ShopifyCheckoutSheetKitModuleTest {
     try (MockedStatic<ShopifyCheckoutSheetKit> mockedShopifyCheckoutSheetKit = Mockito
         .mockStatic(ShopifyCheckoutSheetKit.class)) {
       String checkoutUrl = "https://shopify.com";
-      shopifyCheckoutSheetKitModule.present(checkoutUrl);
+      shopifyCheckoutSheetKitModule.present(checkoutUrl, null);
 
       verify(mockComponentActivity).runOnUiThread(runnableCaptor.capture());
       runnableCaptor.getValue().run();
 
       mockedShopifyCheckoutSheetKit.verify(() -> {
-        ShopifyCheckoutSheetKit.present(eq(checkoutUrl), any(), any());
+        ShopifyCheckoutSheetKit.present(eq(checkoutUrl), any(), any(), eq(null));
       });
     }
   }
@@ -125,10 +126,86 @@ public class ShopifyCheckoutSheetKitModuleTest {
     try (MockedStatic<ShopifyCheckoutSheetKit> mockedShopifyCheckoutSheetKit = Mockito
         .mockStatic(ShopifyCheckoutSheetKit.class)) {
       String checkoutUrl = "https://shopify.com";
-      shopifyCheckoutSheetKitModule.preload(checkoutUrl);
+      shopifyCheckoutSheetKitModule.preload(checkoutUrl, null);
 
       mockedShopifyCheckoutSheetKit.verify(() -> {
-        ShopifyCheckoutSheetKit.preload(eq(checkoutUrl), any());
+        ShopifyCheckoutSheetKit.preload(eq(checkoutUrl), any(), eq(null));
+      });
+    }
+  }
+
+  @Test
+  public void testCanPresentCheckoutWithAuthenticationOptions() {
+    try (MockedStatic<ShopifyCheckoutSheetKit> mockedShopifyCheckoutSheetKit = Mockito
+        .mockStatic(ShopifyCheckoutSheetKit.class)) {
+      String checkoutUrl = "https://shopify.com";
+
+      JavaOnlyMap authMap = new JavaOnlyMap();
+      authMap.putString("token", "test-auth-token");
+
+      JavaOnlyMap options = new JavaOnlyMap();
+      options.putMap("authentication", authMap);
+
+      shopifyCheckoutSheetKitModule.present(checkoutUrl, options);
+
+      verify(mockComponentActivity).runOnUiThread(runnableCaptor.capture());
+      runnableCaptor.getValue().run();
+
+      mockedShopifyCheckoutSheetKit.verify(() -> {
+        ShopifyCheckoutSheetKit.present(eq(checkoutUrl), any(), any(), argThat(opt ->
+          opt != null && opt.getAuthToken().equals("test-auth-token")
+        ));
+      });
+    }
+  }
+
+  @Test
+  public void testCanPreloadCheckoutWithAuthenticationOptions() {
+    try (MockedStatic<ShopifyCheckoutSheetKit> mockedShopifyCheckoutSheetKit = Mockito
+        .mockStatic(ShopifyCheckoutSheetKit.class)) {
+      String checkoutUrl = "https://shopify.com";
+
+      JavaOnlyMap authMap = new JavaOnlyMap();
+      authMap.putString("token", "test-auth-token");
+
+      JavaOnlyMap options = new JavaOnlyMap();
+      options.putMap("authentication", authMap);
+
+      shopifyCheckoutSheetKitModule.preload(checkoutUrl, options);
+
+      mockedShopifyCheckoutSheetKit.verify(() -> {
+        ShopifyCheckoutSheetKit.preload(eq(checkoutUrl), any(), argThat(opt ->
+          opt != null && opt.getAuthToken().equals("test-auth-token")
+        ));
+      });
+    }
+  }
+
+  @Test
+  public void testCanPresentCheckoutWithNullOptions() {
+    try (MockedStatic<ShopifyCheckoutSheetKit> mockedShopifyCheckoutSheetKit = Mockito
+        .mockStatic(ShopifyCheckoutSheetKit.class)) {
+      String checkoutUrl = "https://shopify.com";
+      shopifyCheckoutSheetKitModule.present(checkoutUrl, null);
+
+      verify(mockComponentActivity).runOnUiThread(runnableCaptor.capture());
+      runnableCaptor.getValue().run();
+
+      mockedShopifyCheckoutSheetKit.verify(() -> {
+        ShopifyCheckoutSheetKit.present(eq(checkoutUrl), any(), any(), eq(null));
+      });
+    }
+  }
+
+  @Test
+  public void testCanPreloadCheckoutWithNullOptions() {
+    try (MockedStatic<ShopifyCheckoutSheetKit> mockedShopifyCheckoutSheetKit = Mockito
+        .mockStatic(ShopifyCheckoutSheetKit.class)) {
+      String checkoutUrl = "https://shopify.com";
+      shopifyCheckoutSheetKitModule.preload(checkoutUrl, null);
+
+      mockedShopifyCheckoutSheetKit.verify(() -> {
+        ShopifyCheckoutSheetKit.preload(eq(checkoutUrl), any(), eq(null));
       });
     }
   }

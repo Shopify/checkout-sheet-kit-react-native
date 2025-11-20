@@ -85,13 +85,14 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void present(String checkoutURL) {
+  public void present(String checkoutURL, ReadableMap options) {
     Activity currentActivity = getCurrentActivity();
     if (currentActivity instanceof ComponentActivity) {
       checkoutEventProcessor = new CustomCheckoutEventProcessor(currentActivity, this.reactContext);
+      CheckoutOptions checkoutOptions = parseCheckoutOptions(options);
       currentActivity.runOnUiThread(() -> {
         checkoutSheet = ShopifyCheckoutSheetKit.present(checkoutURL, (ComponentActivity) currentActivity,
-            checkoutEventProcessor);
+            checkoutEventProcessor, checkoutOptions);
       });
     }
   }
@@ -105,11 +106,12 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void preload(String checkoutURL) {
+  public void preload(String checkoutURL, ReadableMap options) {
     Activity currentActivity = getCurrentActivity();
 
     if (currentActivity instanceof ComponentActivity) {
-      ShopifyCheckoutSheetKit.preload(checkoutURL, (ComponentActivity) currentActivity);
+      CheckoutOptions checkoutOptions = parseCheckoutOptions(options);
+      ShopifyCheckoutSheetKit.preload(checkoutURL, (ComponentActivity) currentActivity, checkoutOptions);
     }
   }
 
@@ -170,6 +172,25 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   }
 
   // Private
+
+  private CheckoutOptions parseCheckoutOptions(ReadableMap options) {
+    if (options == null) {
+      return null;
+    }
+
+    // Parse authentication
+    if (options.hasKey("authentication")) {
+      ReadableMap authMap = options.getMap("authentication");
+      if (authMap != null && authMap.hasKey("token")) {
+        String token = authMap.getString("token");
+        if (token != null) {
+          return new CheckoutOptions(token);
+        }
+      }
+    }
+
+    return null;
+  }
 
   private ColorScheme getColorScheme(String colorScheme) {
     switch (colorScheme) {
