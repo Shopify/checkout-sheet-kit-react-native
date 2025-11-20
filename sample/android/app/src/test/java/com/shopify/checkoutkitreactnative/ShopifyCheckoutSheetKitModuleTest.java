@@ -16,9 +16,12 @@ import com.shopify.checkoutsheetkit.Preloading;
 import com.shopify.checkoutsheetkit.ColorScheme;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
-import com.shopify.checkoutsheetkit.lifecycleevents.OrderDetails;
-import com.shopify.checkoutsheetkit.lifecycleevents.CartInfo;
-import com.shopify.checkoutsheetkit.lifecycleevents.Price;
+import com.shopify.checkoutsheetkit.lifecycleevents.Cart;
+import com.shopify.checkoutsheetkit.lifecycleevents.CartCost;
+import com.shopify.checkoutsheetkit.lifecycleevents.CartBuyerIdentity;
+import com.shopify.checkoutsheetkit.lifecycleevents.CartDelivery;
+import com.shopify.checkoutsheetkit.lifecycleevents.Money;
+import com.shopify.checkoutsheetkit.lifecycleevents.OrderConfirmation;
 import com.shopify.reactnative.checkoutsheetkit.ShopifyCheckoutSheetKitModule;
 import com.shopify.reactnative.checkoutsheetkit.CustomCheckoutEventProcessor;
 
@@ -307,41 +310,41 @@ public class ShopifyCheckoutSheetKitModuleTest {
   public void testCanProcessCheckoutCompletedEvents() {
     CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
 
-    CartInfo cartInfo = new CartInfo(new ArrayList<>(), new Price(), "cart-token");
-    OrderDetails orderDetails = new OrderDetails(
-        null, // billingAddress
-        cartInfo,
-        new ArrayList<>(), // deliveries
-        "test@example.com", // email
-        "order-123", // id
-        new ArrayList<>(), // paymentMethods
-        "+1234567890" // phone
+    Cart cart = buildMinimalCart("cart-123", "100.00", "USD");
+
+    OrderConfirmation orderConfirmation = new OrderConfirmation(
+        null, // url
+        new OrderConfirmation.Order("order-123"),
+        "ORDER-123", // number
+        false // isFirstOrder
     );
 
-    CheckoutCompleteEvent completedEvent = new CheckoutCompleteEvent(orderDetails);
+    CheckoutCompleteEvent completedEvent = new CheckoutCompleteEvent(orderConfirmation, cart);
 
     processor.onCheckoutCompleted(completedEvent);
 
     verify(mockEventEmitter).emit(eq("completed"), stringCaptor.capture());
 
+    // Verify the JSON contains our test data
     assertThat(stringCaptor.getValue())
-        .contains("order-123", "test@example.com", "cart-token");
+        .contains("order-123", "cart-123");
   }
 
   @Test
   public void testCanProcessCheckoutStartedEvents() {
     CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
 
-    CartInfo cartInfo = new CartInfo(new ArrayList<>(), new Price(), "cart-token-started");
+    Cart cart = buildMinimalCart("cart-456", "75.00", "CAD");
 
-    CheckoutStartEvent startedEvent = new CheckoutStartEvent(cartInfo);
+    CheckoutStartEvent startedEvent = new CheckoutStartEvent(cart);
 
     processor.onCheckoutStarted(startedEvent);
 
     verify(mockEventEmitter).emit(eq("started"), stringCaptor.capture());
 
+    // Verify the JSON contains our test data
     assertThat(stringCaptor.getValue())
-        .contains("cart-token-started");
+        .contains("cart-456");
   }
 
   /**
@@ -424,6 +427,23 @@ public class ShopifyCheckoutSheetKitModuleTest {
   /**
    * Helpers
    */
+
+  private Cart buildMinimalCart(String cartId, String amount, String currencyCode) {
+    return new Cart(
+        cartId,
+        new ArrayList<>(), // lines
+        new CartCost(
+            new Money(amount, currencyCode),
+            new Money(amount, currencyCode)
+        ),
+        new CartBuyerIdentity(null, null, null, null),
+        new ArrayList<>(), // deliveryGroups
+        new ArrayList<>(), // discountCodes
+        new ArrayList<>(), // appliedGiftCards
+        new ArrayList<>(), // discountAllocations
+        new CartDelivery(new ArrayList<>())
+    );
+  }
 
   private JavaOnlyMap createValidLightColors() {
     JavaOnlyMap colors = new JavaOnlyMap();
