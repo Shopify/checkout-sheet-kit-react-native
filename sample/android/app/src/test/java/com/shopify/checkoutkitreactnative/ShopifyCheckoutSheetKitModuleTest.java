@@ -14,11 +14,8 @@ import com.shopify.checkoutsheetkit.HttpException;
 import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
 import com.shopify.checkoutsheetkit.Preloading;
 import com.shopify.checkoutsheetkit.ColorScheme;
-import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
-import com.shopify.checkoutsheetkit.pixelevents.StandardPixelEvent;
-import com.shopify.checkoutsheetkit.pixelevents.CustomPixelEvent;
-import com.shopify.checkoutsheetkit.pixelevents.EventType;
-import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.OrderDetails;
 import com.shopify.checkoutsheetkit.lifecycleevents.CartInfo;
 import com.shopify.checkoutsheetkit.lifecycleevents.Price;
@@ -321,7 +318,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
         "+1234567890" // phone
     );
 
-    CheckoutCompletedEvent completedEvent = new CheckoutCompletedEvent(orderDetails);
+    CheckoutCompleteEvent completedEvent = new CheckoutCompleteEvent(orderDetails);
 
     processor.onCheckoutCompleted(completedEvent);
 
@@ -329,6 +326,22 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     assertThat(stringCaptor.getValue())
         .contains("order-123", "test@example.com", "cart-token");
+  }
+
+  @Test
+  public void testCanProcessCheckoutStartedEvents() {
+    CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
+
+    CartInfo cartInfo = new CartInfo(new ArrayList<>(), new Price(), "cart-token-started");
+
+    CheckoutStartEvent startedEvent = new CheckoutStartEvent(cartInfo);
+
+    processor.onCheckoutStarted(startedEvent);
+
+    verify(mockEventEmitter).emit(eq("started"), stringCaptor.capture());
+
+    assertThat(stringCaptor.getValue())
+        .contains("cart-token-started");
   }
 
   /**

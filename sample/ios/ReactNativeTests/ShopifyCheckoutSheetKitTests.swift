@@ -201,6 +201,29 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
         XCTAssertEqual(mock.eventBody as? String, testEventJSON)
     }
 
+    /// checkoutDidStart
+    func testCheckoutDidStartSendsEvent() {
+        let mock = mockSendEvent(eventName: "started")
+
+        mock.startObserving()
+
+        // Create a test JSON string matching the CheckoutStartedEvent structure
+        let testEventJSON = """
+        {
+            "cart": {
+                "id": "test-cart-id",
+                "token": "test-cart-token"
+            }
+        }
+        """
+
+        // Simulate the event by calling sendEvent directly with the JSON string
+        mock.sendEvent(withName: "started", body: testEventJSON)
+
+        XCTAssertTrue(mock.didSendEvent)
+        XCTAssertEqual(mock.eventBody as? String, testEventJSON)
+    }
+
     /// checkoutDidCancel
     func testCheckoutDidCancelSendsEvent() {
         let mock = mockAsyncSendEvent(eventName: "close")

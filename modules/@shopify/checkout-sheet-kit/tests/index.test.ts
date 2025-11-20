@@ -309,6 +309,119 @@ describe('ShopifyCheckoutSheetKit', () => {
       });
     });
 
+    describe('Started Event', () => {
+      it('parses started event string data as JSON', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'started';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          eventName,
+          callback,
+        );
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'started',
+          expect.any(Function),
+        );
+        eventEmitter.emit(
+          'started',
+          JSON.stringify({cart: {id: 'test-cart-id'}}),
+        );
+        expect(callback).toHaveBeenCalledWith({cart: {id: 'test-cart-id'}});
+      });
+
+      it('parses started event JSON data', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'started';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          eventName,
+          callback,
+        );
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'started',
+          expect.any(Function),
+        );
+        eventEmitter.emit('started', {cart: {id: 'test-cart-id'}});
+        expect(callback).toHaveBeenCalledWith({cart: {id: 'test-cart-id'}});
+      });
+
+      it('parses started event with realistic cart data structure', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'started';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+
+        const realisticEvent = {
+          cart: {
+            id: 'hWN4rcG3B0eUb77ctZBcUovR',
+            lines: [{
+              id: '85067e24248ffaba6253819534197aa2',
+              quantity: 1,
+              merchandise: {
+                id: 'gid://shopify/ProductVariant/2',
+                title: 'Heavy Duty Bronze Computer',
+                product: {
+                  id: 'gid://shopify/Product/1',
+                  title: 'Heavy Duty Bronze Computer'
+                },
+                selectedOptions: [
+                  { name: 'Size', value: 'Long' },
+                  { name: 'Color', value: 'Violet' }
+                ]
+              },
+              cost: {
+                amountPerQuantity: { amount: '157.00', currencyCode: 'CAD' },
+                subtotalAmount: { amount: '157.00', currencyCode: 'CAD' },
+                totalAmount: { amount: '157.00', currencyCode: 'CAD' }
+              },
+              discountAllocations: []
+            }],
+            cost: {
+              subtotalAmount: { amount: '157.00', currencyCode: 'CAD' },
+              totalAmount: { amount: '170.54', currencyCode: 'CAD' }
+            },
+            buyerIdentity: {
+              countryCode: 'US'
+            },
+            deliveryGroups: [],
+            discountCodes: [],
+            appliedGiftCards: [],
+            discountAllocations: [],
+            delivery: {
+              addresses: []
+            }
+          }
+        };
+
+        eventEmitter.emit('started', JSON.stringify(realisticEvent));
+        expect(callback).toHaveBeenCalledWith(realisticEvent);
+      });
+
+      it('prints an error if the started event data cannot be parsed', () => {
+        const mock = jest.spyOn(global.console, 'error');
+        const instance = new ShopifyCheckoutSheet();
+        const eventName = 'started';
+        const callback = jest.fn();
+        instance.addEventListener(eventName, callback);
+        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          eventName,
+          callback,
+        );
+        expect(eventEmitter.addListener).toHaveBeenCalledWith(
+          'started',
+          expect.any(Function),
+        );
+        const invalidData = 'INVALID JSON';
+        eventEmitter.emit('started', invalidData);
+        expect(mock).toHaveBeenCalledWith(
+          expect.any(LifecycleEventParseError),
+          invalidData,
+        );
+      });
+    });
+
     describe('Error Event', () => {
       const internalError = {
         __typename: CheckoutNativeErrorType.InternalError,

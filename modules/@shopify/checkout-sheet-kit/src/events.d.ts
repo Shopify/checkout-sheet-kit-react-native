@@ -157,8 +157,15 @@ namespace CheckoutCompletedEvent {
   }
 
   interface CartSelectableAddress {
-    address: CartDeliveryAddress;
+    address: CartAddress;
   }
+
+  /**
+   * A delivery address of the buyer that is interacting with the cart.
+   * This is a union type to support future address types
+   * Currently only CartDeliveryAddress is supported.
+   */
+  type CartAddress = CartDeliveryAddress;
 
   interface CartDeliveryAddress {
     address1?: string;
@@ -199,6 +206,10 @@ namespace CheckoutCompletedEvent {
 
 export interface CheckoutCompletedEvent {
   orderConfirmation: CheckoutCompletedEvent.OrderConfirmation;
+  cart: CheckoutCompletedEvent.Cart;
+}
+
+export interface CheckoutStartedEvent {
   cart: CheckoutCompletedEvent.Cart;
 }
 

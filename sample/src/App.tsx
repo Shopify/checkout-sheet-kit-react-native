@@ -46,6 +46,7 @@ import BuyNowStack from './screens/BuyNow';
 import type {
   CheckoutCompletedEvent,
   CheckoutException,
+  CheckoutStartedEvent,
   Configuration,
   Features,
 } from '@shopify/checkout-sheet-kit';
@@ -217,6 +218,13 @@ function AppWithContext({children}: PropsWithChildren) {
       },
     );
 
+    const started = shopify.addEventListener(
+      'started',
+      (event: CheckoutStartedEvent) => {
+        eventHandlers.onStart?.(event);
+      },
+    );
+
     const error = shopify.addEventListener(
       'error',
       (error: CheckoutException) => {
@@ -226,6 +234,7 @@ function AppWithContext({children}: PropsWithChildren) {
 
     return () => {
       completed?.remove();
+      started?.remove();
       close?.remove();
       error?.remove();
     };

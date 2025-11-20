@@ -34,7 +34,8 @@ import com.shopify.checkoutsheetkit.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
@@ -122,12 +123,22 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   }
 
   @Override
-  public void onCheckoutCompleted(@NonNull CheckoutCompletedEvent event) {
+  public void onCheckoutCompleted(@NonNull CheckoutCompleteEvent event) {
     try {
       String data = mapper.writeValueAsString(event);
       sendEventWithStringData("completed", data);
     } catch (IOException e) {
       Log.e("ShopifyCheckoutSheetKit", "Error processing completed event", e);
+    }
+  }
+
+  @Override
+  public void onCheckoutStarted(@NonNull CheckoutStartEvent event) {
+    try {
+      String data = mapper.writeValueAsString(event);
+      sendEventWithStringData("started", data);
+    } catch (IOException e) {
+      Log.e("ShopifyCheckoutSheetKit", "Error processing started event", e);
     }
   }
 

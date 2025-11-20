@@ -572,14 +572,15 @@ Should you wish to manually clear the preload cache, there is a `ShopifyCheckout
 
 ## Checkout lifecycle
 
-There are currently 3 checkout events exposed through the Native Module. You can
-subscribe to these events using `addEventListener` and `removeEventListeners`
+The checkout events exposed through the Native Module can be
+un/subscribed to using the `addEventListener` and `removeEventListeners`
 methods - available on both the context provider as well as the class instance.
 
 | Name        | Callback                                  | Description                                                  |
 | ----------- | ----------------------------------------- | ------------------------------------------------------------ |
 | `close`     | `() => void`                              | Fired when the checkout has been closed.                     |
 | `completed` | `(event: CheckoutCompletedEvent) => void` | Fired when the checkout has been successfully completed.     |
+| `started`   | `(event: CheckoutStartedEvent) => void`   | Fired when the checkout has been started.                    |
 | `error`     | `(error: {message: string}) => void`      | Fired when a checkout exception has been raised.             |
 
 ### `addEventListener(eventName, callback)`
