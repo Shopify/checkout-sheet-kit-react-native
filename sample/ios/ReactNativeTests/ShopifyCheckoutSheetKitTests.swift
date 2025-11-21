@@ -250,6 +250,53 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
         XCTAssertTrue((mock.checkoutSheet as! MockCheckoutSheet).dismissWasCalled)
     }
 
+    /// CheckoutOptions parsing
+    func testCanPresentCheckoutWithAuthenticationOptions() {
+        let options: [AnyHashable: Any] = [
+            "authentication": [
+                "token": "test-auth-token"
+            ]
+        ]
+
+        let checkoutOptions = shopifyCheckoutSheetKit.parseCheckoutOptions(options)
+
+        XCTAssertNotNil(checkoutOptions)
+        if case .token(let token) = checkoutOptions?.authentication {
+            XCTAssertEqual(token, "test-auth-token")
+        } else {
+            XCTFail("Expected authentication token")
+        }
+    }
+
+    func testCanPreloadCheckoutWithAuthenticationOptions() {
+        let options: [AnyHashable: Any] = [
+            "authentication": [
+                "token": "test-auth-token"
+            ]
+        ]
+
+        let checkoutOptions = shopifyCheckoutSheetKit.parseCheckoutOptions(options)
+
+        XCTAssertNotNil(checkoutOptions)
+        if case .token(let token) = checkoutOptions?.authentication {
+            XCTAssertEqual(token, "test-auth-token")
+        } else {
+            XCTFail("Expected authentication token")
+        }
+    }
+
+    func testCanPresentCheckoutWithNullOptions() {
+        let checkoutOptions = shopifyCheckoutSheetKit.parseCheckoutOptions(nil)
+
+        XCTAssertNil(checkoutOptions)
+    }
+
+    func testCanPreloadCheckoutWithNullOptions() {
+        let checkoutOptions = shopifyCheckoutSheetKit.parseCheckoutOptions(nil)
+
+        XCTAssertNil(checkoutOptions)
+    }
+
     private func mockSendEvent(eventName: String) -> RCTShopifyCheckoutSheetKitMock {
         let mock = RCTShopifyCheckoutSheetKitMock()
         mock.eventName = eventName

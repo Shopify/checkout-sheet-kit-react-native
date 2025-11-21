@@ -309,7 +309,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     /// Parses CheckoutOptions from React Native dictionary
     /// - Parameter options: Optional dictionary containing authentication
     /// - Returns: CheckoutOptions instance if options are provided, nil otherwise
-    private func parseCheckoutOptions(_ options: [AnyHashable: Any]?) -> CheckoutOptions? {
+    internal func parseCheckoutOptions(_ options: [AnyHashable: Any]?) -> CheckoutOptions? {
         guard let options = options else {
             return nil
         }
