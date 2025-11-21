@@ -66,6 +66,13 @@ internal enum ShopifyEventSerialization {
         return encodeToJSON(from: event)
     }
 
+    /**
+     * Converts a CheckoutStartEvent to a React Native compatible dictionary.
+     */
+    static func serialize(checkoutStartEvent event: CheckoutStartEvent) -> [String: Any] {
+        return encodeToJSON(from: event)
+    }
+
     static func serialize(clickEvent url: URL) -> [String: URL] {
         return ["url": url]
     }

@@ -6,6 +6,7 @@ import {useCart} from '../context/Cart';
 import type {
   CheckoutCompletedEvent,
   CheckoutException,
+  CheckoutStartedEvent,
   RenderStateChangeEvent,
 } from '@shopify/checkout-sheet-kit';
 import {Linking} from 'react-native';
@@ -13,6 +14,7 @@ import {Linking} from 'react-native';
 interface EventHandlers {
   onFail?: (error: CheckoutException) => void;
   onComplete?: (event: CheckoutCompletedEvent) => void;
+  onStart?: (event: CheckoutStartedEvent) => void;
   onCancel?: () => void;
   onRenderStateChange?: (event: RenderStateChangeEvent) => void;
   onShouldRecoverFromError?: (error: {message: string}) => boolean;
@@ -31,6 +33,9 @@ export function useShopifyEventHandlers(name?: string): EventHandlers {
       onComplete: event => {
         log('onComplete', event.orderConfirmation.order.id);
         clearCart();
+      },
+      onStart: event => {
+        log('onStart', event.cart);
       },
       onCancel: () => {
         log('onCancel');

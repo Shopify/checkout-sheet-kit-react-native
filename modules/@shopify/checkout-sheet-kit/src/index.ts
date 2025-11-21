@@ -58,7 +58,7 @@ import {
   GenericError,
 } from './errors.d';
 import {CheckoutErrorCode} from './errors.d';
-import type {CheckoutCompletedEvent} from './events.d';
+import type {CheckoutCompletedEvent, CheckoutStartedEvent} from './events.d';
 import {ApplePayLabel} from './components/AcceleratedCheckoutButtons';
 import type {
   AcceleratedCheckoutButtonsProps,
@@ -186,6 +186,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     switch (event) {
       case 'completed':
         eventCallback = this.interceptEventEmission('completed', callback);
+        break;
+      case 'started':
+        eventCallback = this.interceptEventEmission('started', callback);
         break;
       case 'error':
         eventCallback = this.interceptEventEmission(
@@ -486,6 +489,7 @@ export type {
   AcceleratedCheckoutConfiguration,
   CheckoutAuthentication,
   CheckoutCompletedEvent,
+  CheckoutStartedEvent,
   CheckoutEvent,
   CheckoutEventCallback,
   CheckoutException,
