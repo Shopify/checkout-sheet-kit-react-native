@@ -184,11 +184,11 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     let eventCallback;
 
     switch (event) {
-      case 'completed':
-        eventCallback = this.interceptEventEmission('completed', callback);
+      case 'complete':
+        eventCallback = this.interceptEventEmission('complete', callback);
         break;
-      case 'started':
-        eventCallback = this.interceptEventEmission('started', callback);
+      case 'start':
+        eventCallback = this.interceptEventEmission('start', callback);
         break;
       case 'error':
         eventCallback = this.interceptEventEmission(

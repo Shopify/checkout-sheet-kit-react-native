@@ -384,7 +384,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
    */
 
   @Test
-  public void testCanProcessCheckoutCompletedEvents() {
+  public void testCanProcessCheckoutCompleteEvents() {
     CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
 
     Cart cart = buildMinimalCart("cart-123", "100.00", "USD");
@@ -400,7 +400,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     processor.onCheckoutCompleted(completedEvent);
 
-    verify(mockEventEmitter).emit(eq("completed"), stringCaptor.capture());
+    verify(mockEventEmitter).emit(eq("complete"), stringCaptor.capture());
 
     // Verify the JSON contains our test data
     assertThat(stringCaptor.getValue())
@@ -408,7 +408,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
   }
 
   @Test
-  public void testCanProcessCheckoutStartedEvents() {
+  public void testCanProcessCheckoutStartEvents() {
     CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
 
     Cart cart = buildMinimalCart("cart-456", "75.00", "CAD");
@@ -417,7 +417,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     processor.onCheckoutStarted(startedEvent);
 
-    verify(mockEventEmitter).emit(eq("started"), stringCaptor.capture());
+    verify(mockEventEmitter).emit(eq("start"), stringCaptor.capture());
 
     // Verify the JSON contains our test data
     assertThat(stringCaptor.getValue())

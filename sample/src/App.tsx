@@ -212,14 +212,14 @@ function AppWithContext({children}: PropsWithChildren) {
     });
 
     const completed = shopify.addEventListener(
-      'completed',
+      'complete',
       (event: CheckoutCompletedEvent) => {
         eventHandlers.onComplete?.(event);
       },
     );
 
     const started = shopify.addEventListener(
-      'started',
+      'start',
       (event: CheckoutStartedEvent) => {
         eventHandlers.onStart?.(event);
       },

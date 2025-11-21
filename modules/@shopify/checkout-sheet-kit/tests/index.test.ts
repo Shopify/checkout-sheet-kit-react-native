@@ -167,10 +167,10 @@ describe('ShopifyCheckoutSheetKit', () => {
       );
     });
 
-    describe('Completed Event', () => {
-      it('parses completed event string data as JSON', () => {
+    describe('Complete Event', () => {
+      it('parses complete event string data as JSON', () => {
         const instance = new ShopifyCheckoutSheet();
-        const eventName = 'completed';
+        const eventName = 'complete';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
         NativeModules.ShopifyCheckoutSheetKit.addEventListener(
@@ -178,19 +178,19 @@ describe('ShopifyCheckoutSheetKit', () => {
           callback,
         );
         expect(eventEmitter.addListener).toHaveBeenCalledWith(
-          'completed',
+          'complete',
           expect.any(Function),
         );
         eventEmitter.emit(
-          'completed',
+          'complete',
           JSON.stringify({orderConfirmation: {order: {id: 'test-id'}}, cart: {}}),
         );
         expect(callback).toHaveBeenCalledWith({orderConfirmation: {order: {id: 'test-id'}}, cart: {}});
       });
 
-      it('parses completed event JSON data', () => {
+      it('parses complete event JSON data', () => {
         const instance = new ShopifyCheckoutSheet();
-        const eventName = 'completed';
+        const eventName = 'complete';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
         NativeModules.ShopifyCheckoutSheetKit.addEventListener(
@@ -198,16 +198,16 @@ describe('ShopifyCheckoutSheetKit', () => {
           callback,
         );
         expect(eventEmitter.addListener).toHaveBeenCalledWith(
-          'completed',
+          'complete',
           expect.any(Function),
         );
-        eventEmitter.emit('completed', {orderConfirmation: {order: {id: 'test-id'}}, cart: {}});
+        eventEmitter.emit('complete', {orderConfirmation: {order: {id: 'test-id'}}, cart: {}});
         expect(callback).toHaveBeenCalledWith({orderConfirmation: {order: {id: 'test-id'}}, cart: {}});
       });
 
-      it('parses completed event with realistic data structure', () => {
+      it('parses complete event with realistic data structure', () => {
         const instance = new ShopifyCheckoutSheet();
-        const eventName = 'completed';
+        const eventName = 'complete';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
 
@@ -282,14 +282,14 @@ describe('ShopifyCheckoutSheetKit', () => {
           }
         };
 
-        eventEmitter.emit('completed', realisticEvent);
+        eventEmitter.emit('complete', realisticEvent);
         expect(callback).toHaveBeenCalledWith(realisticEvent);
       });
 
       it('prints an error if the completed event data cannot be parsed', () => {
         const mock = jest.spyOn(global.console, 'error');
         const instance = new ShopifyCheckoutSheet();
-        const eventName = 'completed';
+        const eventName = 'complete';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
         NativeModules.ShopifyCheckoutSheetKit.addEventListener(
@@ -297,11 +297,11 @@ describe('ShopifyCheckoutSheetKit', () => {
           callback,
         );
         expect(eventEmitter.addListener).toHaveBeenCalledWith(
-          'completed',
+          'complete',
           expect.any(Function),
         );
         const invalidData = 'INVALID JSON';
-        eventEmitter.emit('completed', invalidData);
+        eventEmitter.emit('complete', invalidData);
         expect(mock).toHaveBeenCalledWith(
           expect.any(LifecycleEventParseError),
           invalidData,
@@ -309,10 +309,10 @@ describe('ShopifyCheckoutSheetKit', () => {
       });
     });
 
-    describe('Started Event', () => {
-      it('parses started event string data as JSON', () => {
+    describe('Start Event', () => {
+      it('parses start event string data as JSON', () => {
         const instance = new ShopifyCheckoutSheet();
-        const eventName = 'started';
+        const eventName = 'start';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
         NativeModules.ShopifyCheckoutSheetKit.addEventListener(
@@ -320,19 +320,19 @@ describe('ShopifyCheckoutSheetKit', () => {
           callback,
         );
         expect(eventEmitter.addListener).toHaveBeenCalledWith(
-          'started',
+          'start',
           expect.any(Function),
         );
         eventEmitter.emit(
-          'started',
+          'start',
           JSON.stringify({cart: {id: 'test-cart-id'}}),
         );
         expect(callback).toHaveBeenCalledWith({cart: {id: 'test-cart-id'}});
       });
 
-      it('parses started event JSON data', () => {
+      it('parses start event JSON data', () => {
         const instance = new ShopifyCheckoutSheet();
-        const eventName = 'started';
+        const eventName = 'start';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
         NativeModules.ShopifyCheckoutSheetKit.addEventListener(
@@ -340,16 +340,16 @@ describe('ShopifyCheckoutSheetKit', () => {
           callback,
         );
         expect(eventEmitter.addListener).toHaveBeenCalledWith(
-          'started',
+          'start',
           expect.any(Function),
         );
-        eventEmitter.emit('started', {cart: {id: 'test-cart-id'}});
+        eventEmitter.emit('start', {cart: {id: 'test-cart-id'}});
         expect(callback).toHaveBeenCalledWith({cart: {id: 'test-cart-id'}});
       });
 
-      it('parses started event with realistic cart data structure', () => {
+      it('parses start event with realistic cart data structure', () => {
         const instance = new ShopifyCheckoutSheet();
-        const eventName = 'started';
+        const eventName = 'start';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
 
@@ -395,14 +395,14 @@ describe('ShopifyCheckoutSheetKit', () => {
           }
         };
 
-        eventEmitter.emit('started', JSON.stringify(realisticEvent));
+        eventEmitter.emit('start', JSON.stringify(realisticEvent));
         expect(callback).toHaveBeenCalledWith(realisticEvent);
       });
 
       it('prints an error if the started event data cannot be parsed', () => {
         const mock = jest.spyOn(global.console, 'error');
         const instance = new ShopifyCheckoutSheet();
-        const eventName = 'started';
+        const eventName = 'start';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
         NativeModules.ShopifyCheckoutSheetKit.addEventListener(
@@ -410,11 +410,11 @@ describe('ShopifyCheckoutSheetKit', () => {
           callback,
         );
         expect(eventEmitter.addListener).toHaveBeenCalledWith(
-          'started',
+          'start',
           expect.any(Function),
         );
         const invalidData = 'INVALID JSON';
-        eventEmitter.emit('started', invalidData);
+        eventEmitter.emit('start', invalidData);
         expect(mock).toHaveBeenCalledWith(
           expect.any(LifecycleEventParseError),
           invalidData,

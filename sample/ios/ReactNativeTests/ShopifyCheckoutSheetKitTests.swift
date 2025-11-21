@@ -174,7 +174,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
 
     /// checkoutDidComplete
     func testCheckoutDidCompleteSendsEvent() {
-        let mock = mockSendEvent(eventName: "completed")
+        let mock = mockSendEvent(eventName: "complete")
 
         mock.startObserving()
 
@@ -194,8 +194,8 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
         """
 
         // Simulate the event by calling sendEvent directly with the JSON string
-        // This matches how the Android implementation sends completed events
-        mock.sendEvent(withName: "completed", body: testEventJSON)
+        // This matches how the Android implementation sends complete events
+        mock.sendEvent(withName: "complete", body: testEventJSON)
 
         XCTAssertTrue(mock.didSendEvent)
         XCTAssertEqual(mock.eventBody as? String, testEventJSON)
@@ -203,7 +203,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
 
     /// checkoutDidStart
     func testCheckoutDidStartSendsEvent() {
-        let mock = mockSendEvent(eventName: "started")
+        let mock = mockSendEvent(eventName: "start")
 
         mock.startObserving()
 
@@ -218,7 +218,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
         """
 
         // Simulate the event by calling sendEvent directly with the JSON string
-        mock.sendEvent(withName: "started", body: testEventJSON)
+        mock.sendEvent(withName: "start", body: testEventJSON)
 
         XCTAssertTrue(mock.didSendEvent)
         XCTAssertEqual(mock.eventBody as? String, testEventJSON)

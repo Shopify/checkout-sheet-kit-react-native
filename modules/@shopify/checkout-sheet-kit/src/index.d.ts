@@ -149,8 +149,8 @@ export type Configuration = CommonConfiguration & {
 
 export type CheckoutEvent =
   | 'close'
-  | 'completed'
-  | 'started'
+  | 'complete'
+  | 'start'
   | 'error'
   | 'geolocationRequest';
 
@@ -244,12 +244,12 @@ function addEventListener(
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(
-  event: 'completed',
+  event: 'complete',
   callback: CheckoutCompletedEventCallback,
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(
-  event: 'started',
+  event: 'start',
   callback: CheckoutStartedEventCallback,
 ): Maybe<EmitterSubscription>;
 
