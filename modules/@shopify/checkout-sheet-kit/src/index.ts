@@ -86,6 +86,12 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   private features: Features;
   private geolocationCallback: Maybe<EventSubscription>;
 
+  private _acceleratedCheckoutsReady = false;
+
+  get acceleratedCheckoutsReady(): boolean {
+    return this._acceleratedCheckoutsReady;
+  }
+
   /**
    * Initializes a new ShopifyCheckoutSheet instance
    * @param configuration Optional configuration settings for the checkout
@@ -155,7 +161,13 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * Updates the checkout configuration
    * @param configuration New configuration settings to apply
    */
-  public setConfig(configuration: Configuration): void {
+  public async setConfig(configuration: Configuration): Promise<void> {
+    if (configuration.acceleratedCheckouts) {
+      this._acceleratedCheckoutsReady =
+        await this.configureAcceleratedCheckouts(
+          configuration.acceleratedCheckouts,
+        );
+    }
     RNShopifyCheckoutSheetKit.setConfig(configuration);
   }
 
