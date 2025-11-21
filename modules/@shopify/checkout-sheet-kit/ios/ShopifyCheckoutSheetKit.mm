@@ -119,9 +119,9 @@ SOFTWARE.
     RCT_EXPORT_VIEW_PROPERTY(onCancel, RCTBubblingEventBlock)
 
     /**
-     * Emitted when checkout is moving to address selection screen
+     * Emitted when checkout starts an address change flow
      */
-    RCT_EXPORT_VIEW_PROPERTY(onAddressChangeIntent, RCTBubblingEventBlock)
+    RCT_EXPORT_VIEW_PROPERTY(onAddressChangeStart, RCTBubblingEventBlock)
 
     /**
      * Emitted when checkout is moving to payment selection screen

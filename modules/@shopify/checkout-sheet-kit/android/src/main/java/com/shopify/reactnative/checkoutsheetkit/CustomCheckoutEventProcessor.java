@@ -36,6 +36,8 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
@@ -139,6 +141,27 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
       sendEventWithStringData("started", data);
     } catch (IOException e) {
       Log.e("ShopifyCheckoutSheetKit", "Error processing started event", e);
+    }
+  }
+
+  @Override
+  public void onCheckoutAddressChangeStart(@NonNull CheckoutAddressChangeStart event) {
+    try {
+      CheckoutAddressChangeStartEvent params = event.getParams();
+      if (params == null) {
+        Log.e("ShopifyCheckoutSheetKit", "Address change event has null params");
+        return;
+      }
+
+      Map<String, Object> eventData = new HashMap<>();
+      eventData.put("id", event.getId());
+      eventData.put("type", "addressChangeStart");
+      eventData.put("addressType", params.getAddressType());
+
+      String data = mapper.writeValueAsString(eventData);
+      sendEventWithStringData("addressChangeStart", data);
+    } catch (IOException e) {
+      Log.e("ShopifyCheckoutSheetKit", "Error processing address change start event", e);
     }
   }
 

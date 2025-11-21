@@ -83,7 +83,7 @@ class RCTCheckoutWebView: UIView {
   @objc var onComplete: RCTBubblingEventBlock?
   @objc var onCancel: RCTBubblingEventBlock?
   @objc var onClickLink: RCTBubblingEventBlock?
-  @objc var onAddressChangeIntent: RCTBubblingEventBlock?
+  @objc var onAddressChangeStart: RCTBubblingEventBlock?
   @objc var onPaymentChangeIntent: RCTBubblingEventBlock?
 
   override init(frame: CGRect) {
@@ -277,14 +277,14 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     error.isRecoverable
   }
 
-  func checkoutDidRequestAddressChange(event: AddressChangeRequested) {
+  func checkoutDidStartAddressChange(event: CheckoutAddressChangeStart) {
     guard let id = event.id else { return }
 
     self.events.set(key: id, event: event)
 
-    onAddressChangeIntent?([
+    onAddressChangeStart?([
       "id": event.id,
-      "type": "addressChangeIntent",
+      "type": "addressChangeStart",
       "addressType": event.params.addressType,
     ])
   }

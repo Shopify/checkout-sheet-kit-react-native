@@ -53,7 +53,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     }
 
     override func supportedEvents() -> [String]! {
-        return ["close", "completed", "started", "error", "addressChangeIntent"]
+        return ["close", "completed", "started", "error", "addressChangeStart"]
     }
 
     override func startObserving() {

@@ -213,10 +213,10 @@ export interface CheckoutStartedEvent {
   cart: CheckoutCompletedEvent.Cart;
 }
 
-export interface CheckoutAddressChangeIntent {
+export interface CheckoutAddressChangeStart {
   id: string;
-  type: string;
-  addressType: string;
+  type: 'addressChangeStart';
+  addressType: 'shipping' | 'billing';
 }
 
 export interface CheckoutPaymentChangeIntent {

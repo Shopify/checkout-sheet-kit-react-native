@@ -23,6 +23,8 @@ import com.shopify.checkoutsheetkit.lifecycleevents.CartBuyerIdentity;
 import com.shopify.checkoutsheetkit.lifecycleevents.CartDelivery;
 import com.shopify.checkoutsheetkit.lifecycleevents.Money;
 import com.shopify.checkoutsheetkit.lifecycleevents.OrderConfirmation;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
 import com.shopify.reactnative.checkoutsheetkit.ShopifyCheckoutSheetKitModule;
 import com.shopify.reactnative.checkoutsheetkit.CustomCheckoutEventProcessor;
 
@@ -422,6 +424,57 @@ public class ShopifyCheckoutSheetKitModuleTest {
     // Verify the JSON contains our test data
     assertThat(stringCaptor.getValue())
         .contains("cart-456");
+  }
+
+  @Test
+  public void testCanProcessCheckoutAddressChangeStartEvent() {
+    CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
+
+    // Create a mock CheckoutAddressChangeStart event
+    CheckoutAddressChangeStart addressChangeEvent = mock(CheckoutAddressChangeStart.class);
+    when(addressChangeEvent.getId()).thenReturn("address-event-123");
+
+    // Create a mock CheckoutAddressChangeStartEvent for params
+    CheckoutAddressChangeStartEvent mockParams = mock(CheckoutAddressChangeStartEvent.class);
+    when(mockParams.getAddressType()).thenReturn("shipping");
+
+    when(addressChangeEvent.getParams()).thenReturn(mockParams);
+
+    processor.onCheckoutAddressChangeStart(addressChangeEvent);
+
+    verify(mockEventEmitter).emit(eq("addressChangeStart"), stringCaptor.capture());
+
+    // Verify the JSON contains expected fields
+    String emittedJson = stringCaptor.getValue();
+    assertThat(emittedJson)
+        .contains("address-event-123")
+        .contains("addressChangeStart")
+        .contains("shipping");
+  }
+
+  @Test
+  public void testCanProcessCheckoutAddressChangeStartForBillingAddress() {
+    CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
+
+    // Create a mock CheckoutAddressChangeStart event
+    CheckoutAddressChangeStart addressChangeEvent = mock(CheckoutAddressChangeStart.class);
+    when(addressChangeEvent.getId()).thenReturn("billing-event-456");
+
+    // Create a mock CheckoutAddressChangeStartEvent for params
+    CheckoutAddressChangeStartEvent mockParams = mock(CheckoutAddressChangeStartEvent.class);
+    when(mockParams.getAddressType()).thenReturn("billing");
+
+    when(addressChangeEvent.getParams()).thenReturn(mockParams);
+
+    processor.onCheckoutAddressChangeStart(addressChangeEvent);
+
+    verify(mockEventEmitter).emit(eq("addressChangeStart"), stringCaptor.capture());
+
+    // Verify the JSON contains billing address type
+    String emittedJson = stringCaptor.getValue();
+    assertThat(emittedJson)
+        .contains("billing-event-456")
+        .contains("billing");
   }
 
   /**

@@ -200,16 +200,16 @@ class RCTCheckoutWebViewTests: XCTestCase {
         XCTAssertEqual(checkoutWebView.removeCheckoutWebViewControllerCallCount, 1)
     }
 
-    func test_respondToEvent_whenAddressIntentResponded_doesNotRecreateCheckout() {
+    func test_respondToEvent_whenAddressStartResponded_doesNotRecreateCheckout() {
         checkoutWebView.checkoutUrl = "https://shop.example.com/checkout"
         checkoutWebView.auth = "valid-token"
         checkoutWebView.flushScheduledSetup()
 
-        let request = AddressChangeRequested(
+        let request = CheckoutAddressChangeStart(
             id: "event-1",
-            params: .init(addressType: "shipping", selectedAddress: nil)
+            params: .init(addressType: "shipping", cart: createMockCart())
         )
-        checkoutWebView.checkoutDidRequestAddressChange(event: request)
+        checkoutWebView.checkoutDidStartAddressChange(event: request)
 
         checkoutWebView.respondToEvent(eventId: "event-1", responseData: "{}")
 
@@ -217,6 +217,23 @@ class RCTCheckoutWebViewTests: XCTestCase {
 
         XCTAssertEqual(checkoutWebView.setupCheckoutWebViewControllerCallCount, 1)
         XCTAssertEqual(checkoutWebView.removeCheckoutWebViewControllerCallCount, 0)
+    }
+
+    private func createMockCart() -> ShopifyCheckoutSheetKit.Cart {
+        return ShopifyCheckoutSheetKit.Cart(
+            id: "gid://shopify/Cart/test",
+            lines: [],
+            cost: .init(
+                subtotalAmount: .init(amount: "0", currencyCode: "USD"),
+                totalAmount: .init(amount: "0", currencyCode: "USD")
+            ),
+            buyerIdentity: .init(),
+            deliveryGroups: [],
+            discountCodes: [],
+            appliedGiftCards: [],
+            discountAllocations: [],
+            delivery: .init(addresses: [])
+        )
     }
 
     // MARK: - Event Emission
@@ -239,6 +256,52 @@ class RCTCheckoutWebViewTests: XCTestCase {
         let orderConfirmation = receivedPayload?["orderConfirmation"] as? [String: Any]
         let order = orderConfirmation?["order"] as? [String: Any]
         XCTAssertEqual(order?["id"] as? String, "order-123")
+    }
+
+    func test_checkoutDidStartAddressChange_whenDelegateCalled_emitsOnAddressChangeStartEvent() {
+        let expectation = expectation(description: "onAddressChangeStart event emitted")
+        var receivedPayload: [AnyHashable: Any]?
+
+        checkoutWebView.onAddressChangeStart = { payload in
+            receivedPayload = payload
+            expectation.fulfill()
+        }
+
+        let request = CheckoutAddressChangeStart(
+            id: "address-event-123",
+            params: .init(addressType: "shipping", cart: createMockCart())
+        )
+
+        checkoutWebView.checkoutDidStartAddressChange(event: request)
+
+        wait(for: [expectation], timeout: 0.1)
+
+        XCTAssertEqual(receivedPayload?["id"] as? String, "address-event-123")
+        XCTAssertEqual(receivedPayload?["type"] as? String, "addressChangeStart")
+        XCTAssertEqual(receivedPayload?["addressType"] as? String, "shipping")
+    }
+
+    func test_checkoutDidStartAddressChange_forBillingAddress_emitsCorrectAddressType() {
+        let expectation = expectation(description: "onAddressChangeStart event emitted")
+        var receivedPayload: [AnyHashable: Any]?
+
+        checkoutWebView.onAddressChangeStart = { payload in
+            receivedPayload = payload
+            expectation.fulfill()
+        }
+
+        let request = CheckoutAddressChangeStart(
+            id: "billing-event-456",
+            params: .init(addressType: "billing", cart: createMockCart())
+        )
+
+        checkoutWebView.checkoutDidStartAddressChange(event: request)
+
+        wait(for: [expectation], timeout: 0.1)
+
+        XCTAssertEqual(receivedPayload?["id"] as? String, "billing-event-456")
+        XCTAssertEqual(receivedPayload?["type"] as? String, "addressChangeStart")
+        XCTAssertEqual(receivedPayload?["addressType"] as? String, "billing")
     }
 }
 

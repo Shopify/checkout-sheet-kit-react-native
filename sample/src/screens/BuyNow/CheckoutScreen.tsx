@@ -37,7 +37,7 @@ export default function CheckoutScreen(props: {
   const navigation = useNavigation<NavigationProp<BuyNowStackParamList>>();
   const ref = useRef<CheckoutRef>(null);
 
-  const onAddressChangeIntent = (event: {id: string}) => {
+  const onAddressChangeStart = (event: {id: string}) => {
     navigation.navigate('Address', {id: event.id});
   };
 
@@ -64,7 +64,7 @@ export default function CheckoutScreen(props: {
       checkoutUrl={props.route.params.url}
       auth={props.route.params.auth}
       style={styles.container}
-      onAddressChangeIntent={onAddressChangeIntent}
+      onAddressChangeStart={onAddressChangeStart}
       onPaymentChangeIntent={onPaymentChangeIntent}
       onCancel={onCancel}
       onError={onError}
