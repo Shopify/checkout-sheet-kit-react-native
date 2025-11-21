@@ -74,8 +74,7 @@ describe('ShopifyCheckoutSheetProvider', () => {
     ).not.toHaveBeenCalled();
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('configures accelerated checkouts when provided', async () => {
+  it('configures accelerated checkouts when provided', async () => {
     (Platform as any).Version = '17.0';
     (
       NativeModules.ShopifyCheckoutSheetKit
