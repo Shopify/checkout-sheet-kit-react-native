@@ -75,7 +75,10 @@ export interface CheckoutProps {
   onClickLink?: (url: string) => void;
 
   /**
-   * Called when checkout starts an address change flow (e.g., for native address picker)
+   * Called when checkout starts an address change flow (e.g., for native address picker).
+   *
+   * Note: This callback is only invoked when native address selection is enabled
+   * for the authenticated app.
    */
   onAddressChangeStart?: (event: CheckoutAddressChangeStart) => void;
 

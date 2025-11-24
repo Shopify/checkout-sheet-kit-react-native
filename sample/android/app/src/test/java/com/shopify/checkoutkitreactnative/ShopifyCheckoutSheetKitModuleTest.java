@@ -1,5 +1,7 @@
 package com.shopify.checkoutkitreactnative;
 
+import static com.shopify.checkoutkitreactnative.TestFixtures.createTestCart;
+
 import androidx.activity.ComponentActivity;
 
 import com.facebook.react.bridge.JavaOnlyMap;
@@ -475,6 +477,36 @@ public class ShopifyCheckoutSheetKitModuleTest {
     assertThat(emittedJson)
         .contains("billing-event-456")
         .contains("billing");
+  }
+
+  @Test
+  public void testCheckoutAddressChangeStartIncludesCartInPayload() {
+    CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
+
+    // Create a mock CheckoutAddressChangeStart event
+    CheckoutAddressChangeStart addressChangeEvent = mock(CheckoutAddressChangeStart.class);
+    when(addressChangeEvent.getId()).thenReturn("cart-test-event");
+
+    // Create a test Cart using shared fixture
+    Cart testCart = createTestCart();
+
+    // Create a mock CheckoutAddressChangeStartEvent for params
+    CheckoutAddressChangeStartEvent mockParams = mock(CheckoutAddressChangeStartEvent.class);
+    when(mockParams.getAddressType()).thenReturn("shipping");
+    when(mockParams.getCart()).thenReturn(testCart);
+
+    when(addressChangeEvent.getParams()).thenReturn(mockParams);
+
+    processor.onCheckoutAddressChangeStart(addressChangeEvent);
+
+    verify(mockEventEmitter).emit(eq("addressChangeStart"), stringCaptor.capture());
+
+    // Verify the JSON contains the cart
+    String emittedJson = stringCaptor.getValue();
+    assertThat(emittedJson)
+        .contains("cart-test-event")
+        .contains("cart")
+        .contains("gid://shopify/Cart/test-cart-123");
   }
 
   /**

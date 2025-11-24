@@ -23,6 +23,7 @@ jest.mock('react-native', () => {
 import React from 'react';
 import {render, act} from '@testing-library/react-native';
 import {Checkout} from '../src/components/Checkout';
+import {createTestCart} from './testFixtures';
 
 describe('Checkout Component - Address Change Events', () => {
   const mockCheckoutUrl = 'https://example.myshopify.com/checkout';
@@ -40,12 +41,15 @@ describe('Checkout Component - Address Change Events', () => {
 
     const nativeComponent = getByTestId('checkout-webview');
 
+    const testCart = createTestCart();
+
     act(() => {
       nativeComponent.props.onAddressChangeStart({
         nativeEvent: {
           id: 'test-event-123',
           type: 'addressChangeStart',
           addressType: 'shipping',
+          cart: testCart,
         },
       });
     });
@@ -55,6 +59,7 @@ describe('Checkout Component - Address Change Events', () => {
       id: 'test-event-123',
       type: 'addressChangeStart',
       addressType: 'shipping',
+      cart: testCart,
     });
   });
 
@@ -72,6 +77,7 @@ describe('Checkout Component - Address Change Events', () => {
             id: 'test-event',
             type: 'addressChangeStart',
             addressType: 'shipping',
+            cart: createTestCart(),
           },
         });
       });
@@ -121,6 +127,7 @@ describe('Checkout Component - Address Change Events', () => {
           id: 'event-123',
           type: 'addressChangeStart',
           addressType: 'shipping',
+          cart: createTestCart(),
         },
       });
     });
@@ -128,6 +135,38 @@ describe('Checkout Component - Address Change Events', () => {
     expect(onAddressChangeStart).toHaveBeenCalled();
     expect(onComplete).not.toHaveBeenCalled();
     expect(onCancel).not.toHaveBeenCalled();
+  });
+
+  it('includes cart data in the event', () => {
+    const onAddressChangeStart = jest.fn();
+
+    const {getByTestId} = render(
+      <Checkout
+        checkoutUrl={mockCheckoutUrl}
+        onAddressChangeStart={onAddressChangeStart}
+        testID="checkout-webview"
+      />,
+    );
+
+    const nativeComponent = getByTestId('checkout-webview');
+    const testCart = createTestCart();
+
+    act(() => {
+      nativeComponent.props.onAddressChangeStart({
+        nativeEvent: {
+          id: 'event-with-cart',
+          type: 'addressChangeStart',
+          addressType: 'shipping',
+          cart: testCart,
+        },
+      });
+    });
+
+    const receivedEvent = onAddressChangeStart.mock.calls[0][0];
+    expect(receivedEvent.cart).toBeDefined();
+    expect(receivedEvent.cart.id).toBe('gid://shopify/Cart/test-cart-123');
+    expect(receivedEvent.cart.delivery).toBeDefined();
+    expect(receivedEvent.cart.delivery.addresses).toHaveLength(1);
   });
 
   it('can be updated with new callback', () => {
@@ -150,6 +189,7 @@ describe('Checkout Component - Address Change Events', () => {
           id: 'event-1',
           type: 'addressChangeStart',
           addressType: 'shipping',
+          cart: createTestCart(),
         },
       });
     });
@@ -168,13 +208,14 @@ describe('Checkout Component - Address Change Events', () => {
     nativeComponent = getByTestId('checkout-webview');
 
     act(() => {
-      nativeComponent.props.onAddressChangeStart({
-        nativeEvent: {
-          id: 'event-2',
-          type: 'addressChangeStart',
-          addressType: 'shipping',
-        },
-      });
+        nativeComponent.props.onAddressChangeStart({
+          nativeEvent: {
+            id: 'event-2',
+            type: 'addressChangeStart',
+            addressType: 'shipping',
+            cart: createTestCart(),
+          },
+        });
     });
 
     expect(firstCallback).toHaveBeenCalledTimes(1);

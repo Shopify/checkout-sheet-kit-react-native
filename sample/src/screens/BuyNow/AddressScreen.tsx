@@ -19,9 +19,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import type {RouteProp} from '@react-navigation/native';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import React from 'react';
-import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useState} from 'react';
+import {Alert, Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useShopifyEvent} from '@shopify/checkout-sheet-kit';
+import type {CheckoutAddressChangeStartResponse} from '@shopify/checkout-sheet-kit';
 import {useCart} from '../../context/Cart';
 import type {BuyNowStackParamList} from './types';
 
@@ -30,6 +31,7 @@ export default function AddressScreen() {
   const navigation = useNavigation();
   const event = useShopifyEvent(route.params.id);
   const {selectedAddressIndex, setSelectedAddressIndex} = useCart();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const addressOptions = [
     {
@@ -77,20 +79,42 @@ export default function AddressScreen() {
   ];
 
   const handleAddressSelection = async () => {
-    const selectedAddress = addressOptions[selectedAddressIndex];
-    await event.respondWith({
-      delivery: {
-        addresses: [
-          {
-            address: selectedAddress!.address,
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const selectedAddress = addressOptions[selectedAddressIndex];
+
+      const response: CheckoutAddressChangeStartResponse = {
+        cart: {
+          delivery: {
+            addresses: [
+              {
+                address: selectedAddress!.address,
+                selected: true,
+              },
+            ],
           },
-        ],
-      },
-    });
+        },
+      };
 
-    await new Promise(resolve => setTimeout(resolve, 500));
+      await event.respondWith(response);
 
-    navigation.goBack();
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      navigation.goBack();
+    } catch (error) {
+      // Handle validation errors, decoding errors, etc.
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to update address';
+
+      Alert.alert(
+        'Address Update Failed',
+        errorMessage,
+        [{text: 'OK', onPress: () => setIsSubmitting(false)}],
+      );
+    }
   };
 
   return (
@@ -124,7 +148,11 @@ export default function AddressScreen() {
       </View>
 
       <View style={styles.buttonContainer}>
-        <Button title="Use Selected Address" onPress={handleAddressSelection} />
+        <Button
+          title={isSubmitting ? 'Updating...' : 'Use Selected Address'}
+          onPress={handleAddressSelection}
+          disabled={isSubmitting}
+        />
       </View>
     </View>
   );

@@ -157,6 +157,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
       eventData.put("id", event.getId());
       eventData.put("type", "addressChangeStart");
       eventData.put("addressType", params.getAddressType());
+      eventData.put("cart", params.getCart());
 
       String data = mapper.writeValueAsString(eventData);
       sendEventWithStringData("addressChangeStart", data);

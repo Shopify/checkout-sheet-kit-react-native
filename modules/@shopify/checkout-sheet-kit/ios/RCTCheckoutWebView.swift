@@ -209,7 +209,7 @@ class RCTCheckoutWebView: UIView {
       try event.respondWith(json: responseData)
       print("[CheckoutWebView] Successfully responded to event: \(id)")
       self.events.remove(key: id)
-    } catch let error as EventResponseError {
+    } catch let error as CheckoutEventResponseError {
       print("[CheckoutWebView] Event response error: \(error)")
       handleEventError(eventId: id, error: error)
     } catch {
@@ -222,7 +222,7 @@ class RCTCheckoutWebView: UIView {
     let errorMessage: String
     let errorCode: String
 
-    if let eventError = error as? EventResponseError {
+    if let eventError = error as? CheckoutEventResponseError {
       switch eventError {
       case .invalidEncoding:
         errorMessage = "Invalid response data encoding"
@@ -277,15 +277,26 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     error.isRecoverable
   }
 
+  /// Called when checkout starts an address change flow.
+  /// This method stores the event for later response and emits it to the React Native layer.
+  ///
+  /// - Parameter event: The address change start event containing:
+  ///   - id: Unique identifier for responding to the event
+  ///   - addressType: Type of address being changed ("shipping" or "billing")
+  ///   - cart: Current cart state
   func checkoutDidStartAddressChange(event: CheckoutAddressChangeStart) {
     guard let id = event.id else { return }
 
     self.events.set(key: id, event: event)
 
+    // Serialize the cart to JSON
+    let cartJSON = ShopifyEventSerialization.encodeToJSON(from: event.params.cart)
+
     onAddressChangeStart?([
       "id": event.id,
       "type": "addressChangeStart",
       "addressType": event.params.addressType,
+      "cart": cartJSON,
     ])
   }
 

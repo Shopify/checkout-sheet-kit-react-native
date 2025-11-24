@@ -500,6 +500,16 @@ export type {
   RenderStateChangeEvent,
 };
 
+// Event types
+export type {
+  Cart,
+  CartInput,
+  CheckoutAddressChangeStart,
+  CheckoutAddressChangeStartResponse,
+  CheckoutPaymentChangeIntent,
+  CheckoutResponseError,
+} from './events.d';
+
 // Components
 export {
   AcceleratedCheckoutButtons,
