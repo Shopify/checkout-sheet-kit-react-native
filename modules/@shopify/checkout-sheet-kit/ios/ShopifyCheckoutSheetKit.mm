@@ -104,6 +104,11 @@ SOFTWARE.
     RCT_EXPORT_VIEW_PROPERTY(onLoad, RCTDirectEventBlock)
 
     /**
+     * Emitted when checkout starts
+     */
+    RCT_EXPORT_VIEW_PROPERTY(onStart, RCTBubblingEventBlock)
+
+    /**
      * Emitted when checkout fails
      */
     RCT_EXPORT_VIEW_PROPERTY(onError, RCTDirectEventBlock)
