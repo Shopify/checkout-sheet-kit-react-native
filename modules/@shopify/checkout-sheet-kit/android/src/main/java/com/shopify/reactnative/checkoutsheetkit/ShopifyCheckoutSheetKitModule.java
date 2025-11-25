@@ -175,7 +175,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
   private CheckoutOptions parseCheckoutOptions(ReadableMap options) {
     if (options == null) {
-      return null;
+      return new CheckoutOptions(Authentication.None.INSTANCE);
     }
 
     // Parse authentication
@@ -184,12 +184,12 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
       if (authMap != null && authMap.hasKey("token")) {
         String token = authMap.getString("token");
         if (token != null) {
-          return new CheckoutOptions(token);
+          return new CheckoutOptions(new Authentication.Token(token));
         }
       }
     }
 
-    return null;
+    return new CheckoutOptions(Authentication.None.INSTANCE);
   }
 
   private ColorScheme getColorScheme(String colorScheme) {

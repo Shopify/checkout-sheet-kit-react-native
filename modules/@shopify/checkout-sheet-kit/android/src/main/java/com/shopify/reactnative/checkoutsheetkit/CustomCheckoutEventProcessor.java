@@ -110,7 +110,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   }
 
   @Override
-  public void onCheckoutFailed(CheckoutException checkoutError) {
+  public void onFail(CheckoutException checkoutError) {
     try {
       String data = mapper.writeValueAsString(populateErrorDetails(checkoutError));
       sendEventWithStringData("error", data);
@@ -120,12 +120,12 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   }
 
   @Override
-  public void onCheckoutCanceled() {
+  public void onCancel() {
     sendEvent("close", null);
   }
 
   @Override
-  public void onCheckoutCompleted(@NonNull CheckoutCompleteEvent event) {
+  public void onComplete(@NonNull CheckoutCompleteEvent event) {
     try {
       String data = mapper.writeValueAsString(event);
       sendEventWithStringData("completed", data);
@@ -135,7 +135,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   }
 
   @Override
-  public void onCheckoutStarted(@NonNull CheckoutStartEvent event) {
+  public void onStart(@NonNull CheckoutStartEvent event) {
     try {
       String data = mapper.writeValueAsString(event);
       sendEventWithStringData("started", data);
@@ -145,7 +145,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   }
 
   @Override
-  public void onCheckoutAddressChangeStart(@NonNull CheckoutAddressChangeStart event) {
+  public void onAddressChangeStart(@NonNull CheckoutAddressChangeStart event) {
     try {
       CheckoutAddressChangeStartEvent params = event.getParams();
       if (params == null) {
