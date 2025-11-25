@@ -84,7 +84,7 @@ class RCTCheckoutWebView: UIView {
   @objc var onCancel: RCTBubblingEventBlock?
   @objc var onClickLink: RCTBubblingEventBlock?
   @objc var onAddressChangeIntent: RCTBubblingEventBlock?
-  @objc var onPaymentChangeIntent: RCTBubblingEventBlock?
+  @objc var onPaymentMethodChangeStart: RCTBubblingEventBlock?
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -289,24 +289,29 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     ])
   }
 
-  func checkoutDidRequestCardChange(event: CheckoutCardChangeRequested) {
+  func checkoutDidStartPaymentMethodChange(event: CheckoutPaymentMethodChangeStart) {
     guard let id = event.id else { return }
 
     self.events.set(key: id, event: event)
 
     var eventData: [String: Any] = [
       "id": event.id,
-      "type": "paymentChangeIntent",
+      "type": "paymentMethodChangeStart",
     ]
 
-    // Include current card info if available
-    if let currentCard = event.params.currentCard {
-      eventData["currentCard"] = [
-        "last4": currentCard.last4,
-        "brand": currentCard.brand,
-      ]
+    // Include cart payment instruments if available
+    if let paymentInstruments = event.params.cart?.paymentInstruments {
+      var instruments: [[String: Any]] = []
+      for instrument in paymentInstruments {
+        var instrumentData: [String: Any] = ["type": instrument.type]
+        if let details = instrument.details {
+          instrumentData["details"] = details
+        }
+        instruments.append(instrumentData)
+      }
+      eventData["cart"] = ["paymentInstruments": instruments]
     }
 
-    onPaymentChangeIntent?(eventData)
+    onPaymentMethodChangeStart?(eventData)
   }
 }

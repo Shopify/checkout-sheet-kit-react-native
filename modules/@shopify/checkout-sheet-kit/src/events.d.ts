@@ -219,11 +219,13 @@ export interface CheckoutAddressChangeIntent {
   addressType: string;
 }
 
-export interface CheckoutPaymentChangeIntent {
+export interface CheckoutPaymentMethodChangeStart {
   id: string;
   type: string;
-  currentCard?: {
-    last4: string;
-    brand: string;
+  cart?: {
+    paymentInstruments?: Array<{
+      type: string;
+      details?: any;
+    }>;
   };
 }

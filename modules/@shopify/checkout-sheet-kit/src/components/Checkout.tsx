@@ -36,7 +36,7 @@ import type {
   CheckoutException,
 } from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
-import type {CheckoutAddressChangeIntent, CheckoutPaymentChangeIntent} from '../events';
+import type {CheckoutAddressChangeIntent, CheckoutPaymentMethodChangeStart} from '../events';
 
 export interface CheckoutProps {
   /**
@@ -82,7 +82,7 @@ export interface CheckoutProps {
   /**
    * Called when checkout requests a payment method change (e.g., for native payment selector)
    */
-  onPaymentChangeIntent?: (event: CheckoutPaymentChangeIntent) => void;
+  onPaymentMethodChangeStart?: (event: CheckoutPaymentMethodChangeStart) => void;
 
   /**
    * Style for the webview container
@@ -113,7 +113,7 @@ interface NativeCheckoutWebViewProps {
       addressType: string;
     };
   }) => void;
-  onPaymentChangeIntent?: (event: {
+  onPaymentMethodChangeStart?: (event: {
     nativeEvent: {
       id: string;
       type: string;
@@ -180,7 +180,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       onCancel,
       onClickLink,
       onAddressChangeIntent,
-      onPaymentChangeIntent,
+      onPaymentMethodChangeStart,
       style,
     },
     ref,
@@ -253,8 +253,8 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       [onAddressChangeIntent],
     );
 
-    const handlePaymentChangeIntent = useCallback<
-      Required<NativeCheckoutWebViewProps>['onPaymentChangeIntent']
+    const handlePaymentMethodChangeStart = useCallback<
+      Required<NativeCheckoutWebViewProps>['onPaymentMethodChangeStart']
     >(
       (event: {
         nativeEvent: {
@@ -264,9 +264,9 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
         };
       }) => {
         if (!event.nativeEvent) return;
-        onPaymentChangeIntent?.(event.nativeEvent);
+        onPaymentMethodChangeStart?.(event.nativeEvent);
       },
-      [onPaymentChangeIntent],
+      [onPaymentMethodChangeStart],
     );
 
     const reload = useCallback(() => {
@@ -307,7 +307,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
         onCancel={handleCancel}
         onClickLink={handleClickLink}
         onAddressChangeIntent={handleAddressChangeIntent}
-        onPaymentChangeIntent={handlePaymentChangeIntent}
+        onPaymentMethodChangeStart={handlePaymentMethodChangeStart}
       />
     );
   },
