@@ -226,6 +226,13 @@ function AppWithContext({children}: PropsWithChildren) {
       },
     );
 
+    const addressChangeStart = shopify.addEventListener(
+      'addressChangeStart',
+      (event) => {
+        console.log('[App] onAddressChangeStart event received from imperative API:', event);
+      },
+    );
+
     const error = shopify.addEventListener(
       'error',
       (error: CheckoutException) => {
@@ -236,6 +243,7 @@ function AppWithContext({children}: PropsWithChildren) {
     return () => {
       completed?.remove();
       started?.remove();
+      addressChangeStart?.remove();
       close?.remove();
       error?.remove();
     };

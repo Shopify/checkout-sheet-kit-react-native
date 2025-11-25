@@ -175,7 +175,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
   private CheckoutOptions parseCheckoutOptions(ReadableMap options) {
     if (options == null) {
-      return null;
+      return new CheckoutOptions();
     }
 
     // Parse authentication

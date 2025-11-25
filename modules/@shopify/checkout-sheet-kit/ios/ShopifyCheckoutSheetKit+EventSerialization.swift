@@ -73,6 +73,18 @@ internal enum ShopifyEventSerialization {
         return encodeToJSON(from: event)
     }
 
+    /**
+     * Converts a CheckoutAddressChangeStart to a React Native compatible dictionary.
+     */
+    static func serialize(checkoutAddressChangeStart event: CheckoutAddressChangeStart) -> [String: Any] {
+        return [
+            "id": event.id as Any,
+            "type": "addressChangeStart",
+            "addressType": event.params.addressType,
+            "cart": encodeToJSON(from: event.params.cart)
+        ]
+    }
+
     static func serialize(clickEvent url: URL) -> [String: URL] {
         return ["url": url]
     }

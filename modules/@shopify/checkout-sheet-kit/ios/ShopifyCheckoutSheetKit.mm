@@ -126,7 +126,7 @@ SOFTWARE.
     /**
      * Emitted when checkout is moving to address selection screen
      */
-    RCT_EXPORT_VIEW_PROPERTY(onAddressChangeIntent, RCTBubblingEventBlock)
+    RCT_EXPORT_VIEW_PROPERTY(onAddressChangeStart, RCTBubblingEventBlock)
 
     /**
      * Emitted when checkout is moving to payment selection screen
