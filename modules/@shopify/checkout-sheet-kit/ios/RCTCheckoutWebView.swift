@@ -79,6 +79,7 @@ class RCTCheckoutWebView: UIView {
     }
   }
   @objc var onLoad: RCTDirectEventBlock?
+  @objc var onStart: RCTBubblingEventBlock?
   @objc var onError: RCTBubblingEventBlock?
   @objc var onComplete: RCTBubblingEventBlock?
   @objc var onCancel: RCTBubblingEventBlock?
@@ -257,6 +258,10 @@ class RCTCheckoutWebView: UIView {
 }
 
 extension RCTCheckoutWebView: CheckoutDelegate {
+  func checkoutDidStart(event: CheckoutStartEvent) {
+    onStart?(ShopifyEventSerialization.serialize(checkoutStartEvent: event))
+  }
+
   func checkoutDidComplete(event: CheckoutCompletedEvent) {
     onComplete?(ShopifyEventSerialization.serialize(checkoutCompletedEvent: event))
   }

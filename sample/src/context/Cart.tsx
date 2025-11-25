@@ -102,7 +102,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   }, [setCartId, setCheckoutURL, setTotalQuantity, setSelectedAddressIndex, setSelectedPaymentIndex]);
 
   useEffect(() => {
-    const subscription = shopify.addEventListener('completed', () => {
+    const subscription = shopify.addEventListener('complete', () => {
       // Clear the cart ID and checkout URL when the checkout is completed
       clearCart();
     });

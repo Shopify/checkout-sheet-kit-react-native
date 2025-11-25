@@ -175,7 +175,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
   private CheckoutOptions parseCheckoutOptions(ReadableMap options) {
     if (options == null) {
-      return new CheckoutOptions(Authentication.None.INSTANCE);
+      return new CheckoutOptions();
     }
 
     // Parse authentication
@@ -189,7 +189,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
       }
     }
 
-    return new CheckoutOptions(Authentication.None.INSTANCE);
+    return new CheckoutOptions();
   }
 
   private ColorScheme getColorScheme(String colorScheme) {

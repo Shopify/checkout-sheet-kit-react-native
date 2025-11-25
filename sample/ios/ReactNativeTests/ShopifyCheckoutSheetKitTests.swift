@@ -178,7 +178,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
 
         mock.startObserving()
 
-        // Create a test JSON string matching the new CheckoutCompletedEvent structure
+        // Create a test JSON string matching the CheckoutCompleteEvent structure
         let testEventJSON = """
         {
             "orderConfirmation": {
@@ -207,7 +207,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
 
         mock.startObserving()
 
-        // Create a test JSON string matching the CheckoutStartedEvent structure
+        // Create a test JSON string matching the CheckoutStartEvent structure
         let testEventJSON = """
         {
             "cart": {

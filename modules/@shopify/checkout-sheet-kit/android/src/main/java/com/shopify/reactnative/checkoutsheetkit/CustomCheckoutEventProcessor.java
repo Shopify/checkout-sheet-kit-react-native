@@ -128,9 +128,9 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   public void onComplete(@NonNull CheckoutCompleteEvent event) {
     try {
       String data = mapper.writeValueAsString(event);
-      sendEventWithStringData("completed", data);
+      sendEventWithStringData("complete", data);
     } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error processing completed event", e);
+      Log.e("ShopifyCheckoutSheetKit", "Error processing complete event", e);
     }
   }
 
@@ -138,9 +138,9 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   public void onStart(@NonNull CheckoutStartEvent event) {
     try {
       String data = mapper.writeValueAsString(event);
-      sendEventWithStringData("started", data);
+      sendEventWithStringData("start", data);
     } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error processing started event", e);
+      Log.e("ShopifyCheckoutSheetKit", "Error processing start event", e);
     }
   }
 

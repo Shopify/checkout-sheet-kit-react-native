@@ -579,8 +579,8 @@ methods - available on both the context provider as well as the class instance.
 | Name        | Callback                                  | Description                                                  |
 | ----------- | ----------------------------------------- | ------------------------------------------------------------ |
 | `close`     | `() => void`                              | Fired when the checkout has been closed.                     |
-| `completed` | `(event: CheckoutCompletedEvent) => void` | Fired when the checkout has been successfully completed.     |
-| `started`   | `(event: CheckoutStartedEvent) => void`   | Fired when the checkout has been started.                    |
+| `complete`  | `(event: CheckoutCompleteEvent) => void`  | Fired when the checkout has been successfully completed.     |
+| `start`     | `(event: CheckoutStartEvent) => void`     | Fired when the checkout has been started.                    |
 | `error`     | `(error: {message: string}) => void`      | Fired when a checkout exception has been raised.             |
 
 ### `addEventListener(eventName, callback)`
@@ -599,10 +599,10 @@ useEffect(() => {
   });
 
   const completed = shopifyCheckout.addEventListener(
-    'completed',
-    (event: CheckoutCompletedEvent) => {
+    'complete',
+    (event: CheckoutCompleteEvent) => {
       // Lookup order on checkout completion
-      const orderId = event.orderDetails.id;
+      const orderId = event.orderConfirmation.order.id;
     },
   );
 

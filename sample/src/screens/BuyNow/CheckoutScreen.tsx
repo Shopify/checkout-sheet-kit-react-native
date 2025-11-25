@@ -22,7 +22,7 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useRef} from 'react';
 import {
   Checkout,
-  type CheckoutCompletedEvent,
+  type CheckoutCompleteEvent,
   type CheckoutRef,
 } from '@shopify/checkout-sheet-kit';
 import type {BuyNowStackParamList} from './types';
@@ -53,7 +53,7 @@ export default function CheckoutScreen(props: {
     ref.current?.reload();
   };
 
-  const onComplete = (event: CheckoutCompletedEvent) => {
+  const onComplete = (event: CheckoutCompleteEvent) => {
     console.log('Checkout complete', JSON.stringify(event, null, 2));
     navigation.getParent()?.goBack();
   };

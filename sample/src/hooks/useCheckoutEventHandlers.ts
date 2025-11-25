@@ -4,17 +4,17 @@ import {createDebugLogger} from '../utils';
 
 import {useCart} from '../context/Cart';
 import type {
-  CheckoutCompletedEvent,
+  CheckoutCompleteEvent,
   CheckoutException,
-  CheckoutStartedEvent,
+  CheckoutStartEvent,
   RenderStateChangeEvent,
 } from '@shopify/checkout-sheet-kit';
 import {Linking} from 'react-native';
 
 interface EventHandlers {
   onFail?: (error: CheckoutException) => void;
-  onComplete?: (event: CheckoutCompletedEvent) => void;
-  onStart?: (event: CheckoutStartedEvent) => void;
+  onComplete?: (event: CheckoutCompleteEvent) => void;
+  onStart?: (event: CheckoutStartEvent) => void;
   onCancel?: () => void;
   onRenderStateChange?: (event: RenderStateChangeEvent) => void;
   onShouldRecoverFromError?: (error: {message: string}) => boolean;

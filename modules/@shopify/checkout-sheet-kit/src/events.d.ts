@@ -195,7 +195,7 @@ export interface PricingPercentageValue {
 
 export type DiscountValue = Money | PricingPercentageValue;
 
-namespace CheckoutCompletedEvent {
+namespace CheckoutCompleteEvent {
   export interface OrderConfirmation {
     url?: string;
     order: Order;
@@ -208,12 +208,12 @@ namespace CheckoutCompletedEvent {
   }
 }
 
-export interface CheckoutCompletedEvent {
-  orderConfirmation: CheckoutCompletedEvent.OrderConfirmation;
+export interface CheckoutCompleteEvent {
+  orderConfirmation: CheckoutCompleteEvent.OrderConfirmation;
   cart: Cart;
 }
 
-export interface CheckoutStartedEvent {
+export interface CheckoutStartEvent {
   cart: Cart;
 }
 
