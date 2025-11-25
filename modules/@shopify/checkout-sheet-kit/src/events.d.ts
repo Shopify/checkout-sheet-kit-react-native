@@ -379,7 +379,6 @@ export interface CheckoutResponseError {
 
 /**
  * Mailing address input for delivery.
- * Aligns with Storefront API MailingAddressInput.
  *
  * @see https://shopify.dev/docs/api/storefront/latest/input-objects/MailingAddressInput
  */
@@ -428,7 +427,6 @@ export interface CartDeliveryAddressInput {
 
 /**
  * Delivery-related fields for the cart.
- * Aligns with Storefront API CartDeliveryInput.
  *
  * @see https://shopify.dev/docs/api/storefront/latest/input-objects/CartDeliveryInput
  */
@@ -441,7 +439,6 @@ export interface CartDeliveryInput {
 
 /**
  * The customer associated with the cart.
- * Aligns with Storefront API CartBuyerIdentityInput.
  *
  * @see https://shopify.dev/docs/api/storefront/latest/input-objects/CartBuyerIdentityInput
  */
@@ -523,7 +520,7 @@ export interface CheckoutAddressChangeStart {
  */
 export interface CheckoutAddressChangeStartResponse {
   /**
-   * Updated cart input with the delivery address to set.
+   * Updated cart input with the delivery addresses to set.
    */
   cart?: CartInput;
   /**
