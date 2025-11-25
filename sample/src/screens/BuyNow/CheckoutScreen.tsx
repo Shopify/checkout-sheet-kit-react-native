@@ -47,8 +47,7 @@ export default function CheckoutScreen(props: {
     navigation.navigate('Address', {id: event.id});
   };
 
-  const onPaymentChangeIntent = (event: {id: string}) => {
-    console.log('<CheckoutScreen /> onPaymentChangeIntent: ', event);
+  const onPaymentMethodChangeStart = (event: {id: string}) => {
     navigation.navigate('Payment', {id: event.id});
   };
 
@@ -75,7 +74,7 @@ export default function CheckoutScreen(props: {
       style={styles.container}
       onStart={onCheckoutStart}
       onAddressChangeStart={onAddressChangeStart}
-      onPaymentChangeIntent={onPaymentChangeIntent}
+      onPaymentMethodChangeStart={onPaymentMethodChangeStart}
       onCancel={onCancel}
       onError={onError}
       onComplete={onComplete}

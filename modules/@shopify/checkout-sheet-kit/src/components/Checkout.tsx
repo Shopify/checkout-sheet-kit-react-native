@@ -24,18 +24,15 @@ import React, {
   forwardRef,
   useEffect,
 } from 'react';
-import {
-  requireNativeComponent,
-  UIManager,
-  findNodeHandle,
-} from 'react-native';
+import {requireNativeComponent, UIManager, findNodeHandle} from 'react-native';
 import type {ViewStyle} from 'react-native';
 import type {
+  CheckoutAddressChangeStart,
   CheckoutCompleteEvent,
   CheckoutException,
+  CheckoutStartEvent,
 } from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
-import type {CheckoutAddressChangeStart, CheckoutStartEvent} from '../events';
 
 export interface CheckoutProps {
   /**
@@ -82,6 +79,13 @@ export interface CheckoutProps {
   onAddressChangeStart?: (event: CheckoutAddressChangeStart) => void;
 
   /**
+   * Called when checkout requests a payment method change (e.g., for native payment selector)
+   */
+  onPaymentMethodChangeStart?: (
+    event: CheckoutPaymentMethodChangeStart,
+  ) => void;
+
+  /**
    * Style for the webview container
    */
   style?: ViewStyle;
@@ -109,7 +113,19 @@ interface NativeCheckoutWebViewProps {
   onComplete?: (event: {nativeEvent: CheckoutCompleteEvent}) => void;
   onCancel?: () => void;
   onLinkClick?: (event: {nativeEvent: {url: string}}) => void;
-  onAddressChangeStart?: (event: {nativeEvent: CheckoutAddressChangeStart}) => void;
+  onAddressChangeStart?: (event: {
+    nativeEvent: CheckoutAddressChangeStart;
+  }) => void;
+  onPaymentMethodChangeStart?: (event: {
+    nativeEvent: {
+      id: string;
+      type: string;
+      currentCard?: {
+        last4: string;
+        brand: string;
+      };
+    };
+  }) => void;
 }
 
 const RCTCheckoutWebView =
@@ -167,6 +183,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       onCancel,
       onLinkClick,
       onAddressChangeStart,
+      onPaymentMethodChangeStart,
       style,
       testID,
     },
@@ -184,7 +201,6 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
 
       return () => eventContext.unregisterWebView();
     }, [eventContext]);
-
 
     const handleStart = useCallback<
       Required<NativeCheckoutWebViewProps>['onStart']
@@ -239,6 +255,22 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       [onAddressChangeStart],
     );
 
+    const handlePaymentMethodChangeStart = useCallback<
+      Required<NativeCheckoutWebViewProps>['onPaymentMethodChangeStart']
+    >(
+      (event: {
+        nativeEvent: {
+          id: string;
+          type: string;
+          currentCard?: {last4: string; brand: string};
+        };
+      }) => {
+        if (!event.nativeEvent) return;
+        onPaymentMethodChangeStart?.(event.nativeEvent);
+      },
+      [onPaymentMethodChangeStart],
+    );
+
     const reload = useCallback(() => {
       if (!webViewRef.current) {
         return;
@@ -251,11 +283,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       const viewConfig = UIManager.getViewManagerConfig('RCTCheckoutWebView');
       const commandId = viewConfig?.Commands?.reload ?? 'reload';
 
-      UIManager.dispatchViewManagerCommand(
-        handle,
-        commandId,
-        [],
-      );
+      UIManager.dispatchViewManagerCommand(handle, commandId, []);
     }, []);
 
     useImperativeHandle(ref, () => ({reload}), [reload]);
@@ -273,6 +301,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
         onCancel={handleCancel}
         onLinkClick={handleLinkClick}
         onAddressChangeStart={handleAddressChangeStart}
+        onPaymentMethodChangeStart={handlePaymentMethodChangeStart}
       />
     );
   },
