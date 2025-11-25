@@ -502,20 +502,17 @@ export type {
   AcceleratedCheckoutButtonsProps,
   RenderStateChangeEvent,
 } from './components/AcceleratedCheckoutButtons';
+export type {CheckoutProps, CheckoutRef} from './components/Checkout';
+export type {CheckoutEventProviderProps} from './CheckoutEventProvider';
 
 // Components
 export {
   AcceleratedCheckoutButtons,
   RenderState,
 } from './components/AcceleratedCheckoutButtons';
-export {
-  Checkout,
-  type CheckoutProps,
-  type CheckoutRef,
-} from './components/Checkout';
+export {Checkout} from './components/Checkout';
 export {
   CheckoutEventProvider,
   useCheckoutEvents,
   useShopifyEvent,
-  type CheckoutEventProviderProps,
 } from './CheckoutEventProvider';
