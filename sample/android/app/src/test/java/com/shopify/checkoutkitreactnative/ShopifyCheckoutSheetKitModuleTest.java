@@ -15,6 +15,7 @@ import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
 import com.shopify.checkoutsheetkit.Preloading;
 import com.shopify.checkoutsheetkit.ColorScheme;
 import com.shopify.checkoutsheetkit.CheckoutOptions;
+import com.shopify.checkoutsheetkit.Authentication;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.Cart;
@@ -153,7 +154,8 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
       mockedShopifyCheckoutSheetKit.verify(() -> {
         ShopifyCheckoutSheetKit.present(eq(checkoutUrl), any(), any(), argThat(opt ->
-          opt != null && opt.getAuthToken().equals("test-auth-token")
+          opt != null && opt.getAuthentication() instanceof Authentication.Token &&
+          ((Authentication.Token) opt.getAuthentication()).getValue().equals("test-auth-token")
         ));
       });
     }
@@ -175,7 +177,8 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
       mockedShopifyCheckoutSheetKit.verify(() -> {
         ShopifyCheckoutSheetKit.preload(eq(checkoutUrl), any(), argThat(opt ->
-          opt != null && opt.getAuthToken().equals("test-auth-token")
+          opt != null && opt.getAuthentication() instanceof Authentication.Token &&
+          ((Authentication.Token) opt.getAuthentication()).getValue().equals("test-auth-token")
         ));
       });
     }
