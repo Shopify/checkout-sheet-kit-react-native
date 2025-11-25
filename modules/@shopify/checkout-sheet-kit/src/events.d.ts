@@ -354,7 +354,6 @@ export interface CheckoutStartEvent {
   cart: Cart;
 }
 
-
 /**
  * Error object returned in checkout event responses.
  * Used to communicate validation or processing errors back to checkout.
@@ -535,16 +534,15 @@ export interface CheckoutAddressChangeStartResponse {
 /**
  * Event emitted when the buyer intends to change their payment method.
  */
-export interface CheckoutPaymentChangeIntent {
-  /** Unique identifier for this event instance */
+/** Unique identifier for this event instance */
+export interface CheckoutPaymentMethodChangeStart {
   id: string;
   /** Type of payment change event */
   type: string;
-  /** Current payment card information, if available */
-  currentCard?: {
-    /** Last 4 digits of the card number */
-    last4: string;
-    /** Card brand (e.g., "Visa", "Mastercard") */
-    brand: string;
+  cart?: {
+    paymentInstruments?: Array<{
+      type: string;
+      details?: any;
+    }>;
   };
 }
