@@ -221,13 +221,13 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
     private func attachEventListeners(to buttons: AcceleratedCheckoutButtons) -> AcceleratedCheckoutButtons {
         return buttons
             .onComplete { [weak self] event in
-                self?.handleCheckoutCompleted(event)
+                self?.handleCheckoutComplete(event)
             }
             .onFail { [weak self] error in
-                self?.handleCheckoutFailed(error)
+                self?.handleCheckoutFail(error)
             }
             .onCancel { [weak self] in
-                self?.handleCheckoutCancelled()
+                self?.handleCheckoutCancel()
             }
             .onRenderStateChange { [weak self] state in
                 self?.handleRenderStateChange(state)
@@ -312,15 +312,15 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
 
     // MARK: - Event Handlers
 
-    private func handleCheckoutCompleted(_ event: CheckoutCompletedEvent) {
-        onComplete?(ShopifyEventSerialization.serialize(checkoutCompletedEvent: event))
+    private func handleCheckoutComplete(_ event: CheckoutCompleteEvent) {
+        onComplete?(ShopifyEventSerialization.serialize(checkoutCompleteEvent: event))
     }
 
-    private func handleCheckoutFailed(_ error: CheckoutError) {
+    private func handleCheckoutFail(_ error: CheckoutError) {
         onFail?(ShopifyEventSerialization.serialize(checkoutError: error))
     }
 
-    private func handleCheckoutCancelled() {
+    private func handleCheckoutCancel() {
         onCancel?([:])
     }
 

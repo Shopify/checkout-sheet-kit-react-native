@@ -384,7 +384,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
    */
 
   @Test
-  public void testCanProcessCheckoutCompletedEvents() {
+  public void testCanProcessCheckoutCompleteEvents() {
     CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
 
     Cart cart = buildMinimalCart("cart-123", "100.00", "USD");
@@ -398,9 +398,9 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     CheckoutCompleteEvent completedEvent = new CheckoutCompleteEvent(orderConfirmation, cart);
 
-    processor.onCheckoutCompleted(completedEvent);
+    processor.onComplete(completedEvent);
 
-    verify(mockEventEmitter).emit(eq("completed"), stringCaptor.capture());
+    verify(mockEventEmitter).emit(eq("complete"), stringCaptor.capture());
 
     // Verify the JSON contains our test data
     assertThat(stringCaptor.getValue())
@@ -408,16 +408,16 @@ public class ShopifyCheckoutSheetKitModuleTest {
   }
 
   @Test
-  public void testCanProcessCheckoutStartedEvents() {
+  public void testCanProcessCheckoutStartEvents() {
     CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
 
     Cart cart = buildMinimalCart("cart-456", "75.00", "CAD");
 
     CheckoutStartEvent startedEvent = new CheckoutStartEvent(cart);
 
-    processor.onCheckoutStarted(startedEvent);
+    processor.onStart(startedEvent);
 
-    verify(mockEventEmitter).emit(eq("started"), stringCaptor.capture());
+    verify(mockEventEmitter).emit(eq("start"), stringCaptor.capture());
 
     // Verify the JSON contains our test data
     assertThat(stringCaptor.getValue())
@@ -438,7 +438,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
     when(mockException.getErrorCode()).thenReturn("cart_expired");
     when(mockException.isRecoverable()).thenReturn(false);
 
-    processor.onCheckoutFailed(mockException);
+    processor.onFail(mockException);
 
     verify(mockEventEmitter).emit(eq("error"), stringCaptor.capture());
 
@@ -455,7 +455,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
     when(mockException.getErrorCode()).thenReturn("customer_account_required");
     when(mockException.isRecoverable()).thenReturn(true);
 
-    processor.onCheckoutFailed(mockException);
+    processor.onFail(mockException);
 
     verify(mockEventEmitter).emit(eq("error"), stringCaptor.capture());
 
@@ -473,7 +473,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
     when(mockException.isRecoverable()).thenReturn(false);
     when(mockException.getStatusCode()).thenReturn(404);
 
-    processor.onCheckoutFailed(mockException);
+    processor.onFail(mockException);
 
     verify(mockEventEmitter).emit(eq("error"), stringCaptor.capture());
 

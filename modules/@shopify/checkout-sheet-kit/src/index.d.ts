@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import type {EmitterSubscription} from 'react-native';
-import type {CheckoutCompletedEvent, CheckoutStartedEvent} from './events';
+import type {CheckoutCompleteEvent, CheckoutStartEvent} from './events';
 import type {CheckoutException} from './errors';
 
 export type Maybe<T> = T | undefined;
@@ -149,8 +149,8 @@ export type Configuration = CommonConfiguration & {
 
 export type CheckoutEvent =
   | 'close'
-  | 'completed'
-  | 'started'
+  | 'complete'
+  | 'start'
   | 'error'
   | 'geolocationRequest';
 
@@ -163,18 +163,18 @@ export type GeolocationRequestEventCallback = (
   event: GeolocationRequestEvent,
 ) => void;
 export type CheckoutExceptionCallback = (error: CheckoutException) => void;
-export type CheckoutCompletedEventCallback = (
-  event: CheckoutCompletedEvent,
+export type CheckoutCompleteEventCallback = (
+  event: CheckoutCompleteEvent,
 ) => void;
-export type CheckoutStartedEventCallback = (
-  event: CheckoutStartedEvent,
+export type CheckoutStartEventCallback = (
+  event: CheckoutStartEvent,
 ) => void;
 
 export type CheckoutEventCallback =
   | CloseEventCallback
   | CheckoutExceptionCallback
-  | CheckoutCompletedEventCallback
-  | CheckoutStartedEventCallback
+  | CheckoutCompleteEventCallback
+  | CheckoutStartEventCallback
   | GeolocationRequestEventCallback;
 
 /**
@@ -244,13 +244,13 @@ function addEventListener(
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(
-  event: 'completed',
-  callback: CheckoutCompletedEventCallback,
+  event: 'complete',
+  callback: CheckoutCompleteEventCallback,
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(
-  event: 'started',
-  callback: CheckoutStartedEventCallback,
+  event: 'start',
+  callback: CheckoutStartEventCallback,
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(

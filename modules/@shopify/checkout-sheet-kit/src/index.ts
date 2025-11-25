@@ -58,12 +58,7 @@ import {
   GenericError,
 } from './errors.d';
 import {CheckoutErrorCode} from './errors.d';
-import type {CheckoutCompletedEvent, CheckoutStartedEvent} from './events.d';
 import {ApplePayLabel} from './components/AcceleratedCheckoutButtons';
-import type {
-  AcceleratedCheckoutButtonsProps,
-  RenderStateChangeEvent,
-} from './components/AcceleratedCheckoutButtons';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
 
@@ -184,11 +179,11 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     let eventCallback;
 
     switch (event) {
-      case 'completed':
-        eventCallback = this.interceptEventEmission('completed', callback);
+      case 'complete':
+        eventCallback = this.interceptEventEmission('complete', callback);
         break;
-      case 'started':
-        eventCallback = this.interceptEventEmission('started', callback);
+      case 'start':
+        eventCallback = this.interceptEventEmission('start', callback);
         break;
       case 'error':
         eventCallback = this.interceptEventEmission(
@@ -485,11 +480,8 @@ export {
 
 // Types
 export type {
-  AcceleratedCheckoutButtonsProps,
   AcceleratedCheckoutConfiguration,
   CheckoutAuthentication,
-  CheckoutCompletedEvent,
-  CheckoutStartedEvent,
   CheckoutEvent,
   CheckoutEventCallback,
   CheckoutException,
@@ -497,8 +489,19 @@ export type {
   Configuration,
   Features,
   GeolocationRequestEvent,
-  RenderStateChangeEvent,
 };
+
+// Event types
+export type {
+  CheckoutCompleteEvent,
+  CheckoutStartEvent,
+} from './events.d';
+
+// Component types
+export type {
+  AcceleratedCheckoutButtonsProps,
+  RenderStateChangeEvent,
+} from './components/AcceleratedCheckoutButtons';
 
 // Components
 export {

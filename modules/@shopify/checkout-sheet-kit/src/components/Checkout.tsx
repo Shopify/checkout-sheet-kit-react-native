@@ -32,7 +32,7 @@ import {
 } from 'react-native';
 import type {ViewStyle} from 'react-native';
 import type {
-  CheckoutCompletedEvent,
+  CheckoutCompleteEvent,
   CheckoutException,
 } from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
@@ -62,7 +62,7 @@ export interface CheckoutProps {
   /**
    * Called when checkout is completed successfully
    */
-  onComplete?: (event: CheckoutCompletedEvent) => void;
+  onComplete?: (event: CheckoutCompleteEvent) => void;
 
   /**
    * Called when checkout is cancelled
@@ -103,7 +103,7 @@ interface NativeCheckoutWebViewProps {
   style?: ViewStyle;
   onLoad?: (event: {nativeEvent: {url: string}}) => void;
   onError?: (event: {nativeEvent: CheckoutException}) => void;
-  onComplete?: (event: {nativeEvent: CheckoutCompletedEvent}) => void;
+  onComplete?: (event: {nativeEvent: CheckoutCompleteEvent}) => void;
   onCancel?: () => void;
   onClickLink?: (event: {nativeEvent: {url: string}}) => void;
   onAddressChangeIntent?: (event: {
@@ -219,7 +219,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
     const handleComplete = useCallback<
       Required<NativeCheckoutWebViewProps>['onComplete']
     >(
-      (event: {nativeEvent: CheckoutCompletedEvent}) => {
+      (event: {nativeEvent: CheckoutCompleteEvent}) => {
         onComplete?.(event.nativeEvent);
       },
       [onComplete],

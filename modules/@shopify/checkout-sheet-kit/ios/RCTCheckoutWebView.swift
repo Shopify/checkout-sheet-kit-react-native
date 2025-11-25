@@ -257,8 +257,8 @@ class RCTCheckoutWebView: UIView {
 }
 
 extension RCTCheckoutWebView: CheckoutDelegate {
-  func checkoutDidComplete(event: CheckoutCompletedEvent) {
-    onComplete?(ShopifyEventSerialization.serialize(checkoutCompletedEvent: event))
+  func checkoutDidComplete(event: CheckoutCompleteEvent) {
+    onComplete?(ShopifyEventSerialization.serialize(checkoutCompleteEvent: event))
   }
 
   func checkoutDidCancel() {

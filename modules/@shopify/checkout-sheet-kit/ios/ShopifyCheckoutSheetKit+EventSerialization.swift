@@ -60,9 +60,9 @@ internal enum ShopifyEventSerialization {
     }
 
     /**
-     * Converts a CheckoutCompletedEvent to a React Native compatible dictionary.
+     * Converts a CheckoutCompleteEvent to a React Native compatible dictionary.
      */
-    static func serialize(checkoutCompletedEvent event: CheckoutCompletedEvent) -> [String: Any] {
+    static func serialize(checkoutCompleteEvent event: CheckoutCompleteEvent) -> [String: Any] {
         return encodeToJSON(from: event)
     }
 

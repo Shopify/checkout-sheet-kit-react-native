@@ -44,9 +44,9 @@ import SettingsScreen from './screens/SettingsScreen';
 import BuyNowStack from './screens/BuyNow';
 
 import type {
-  CheckoutCompletedEvent,
+  CheckoutCompleteEvent,
   CheckoutException,
-  CheckoutStartedEvent,
+  CheckoutStartEvent,
   Configuration,
   Features,
 } from '@shopify/checkout-sheet-kit';
@@ -212,15 +212,15 @@ function AppWithContext({children}: PropsWithChildren) {
     });
 
     const completed = shopify.addEventListener(
-      'completed',
-      (event: CheckoutCompletedEvent) => {
+      'complete',
+      (event: CheckoutCompleteEvent) => {
         eventHandlers.onComplete?.(event);
       },
     );
 
     const started = shopify.addEventListener(
-      'started',
-      (event: CheckoutStartedEvent) => {
+      'start',
+      (event: CheckoutStartEvent) => {
         eventHandlers.onStart?.(event);
       },
     );
