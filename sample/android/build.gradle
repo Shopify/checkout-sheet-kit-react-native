@@ -9,6 +9,7 @@ buildscript {
         kotlinVersion = "2.1.20"
     }
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
     }
@@ -28,6 +29,14 @@ def loadProperties() {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+allprojects {
+    repositories {
+        mavenLocal()
+        google()
+        mavenCentral()
+    }
+}
 
 // Configure memory for forked test JVMs to avoid OOMs in CI
 subprojects {

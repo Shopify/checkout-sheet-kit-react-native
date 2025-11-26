@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+SDK_PATH="${1:-$HOME/src/github.com/Shopify/checkout-sheet-kit-android}"
+VERSION="${2:-4.0.0-SNAPSHOT}"
+
+if [ ! -d "$SDK_PATH" ]; then
+  echo "Error: checkout-sheet-kit-android not found at $SDK_PATH"
+  exit 1
+fi
+
+cd "$SDK_PATH"
+CHECKOUT_SHEET_KIT_VERSION="$VERSION" ./gradlew :lib:publishToMavenLocal
+echo "Published $VERSION to Maven local"
