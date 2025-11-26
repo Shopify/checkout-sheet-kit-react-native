@@ -26,6 +26,8 @@ import {
   type CheckoutCompleteEvent,
   type CheckoutRef,
   type CheckoutStartEvent,
+  type CheckoutSubmitStart,
+  useCheckoutEvents,
 } from '@shopify/checkout-sheet-kit';
 import type {BuyNowStackParamList} from './types';
 import {StyleSheet} from 'react-native';
@@ -37,14 +39,30 @@ export default function CheckoutScreen(props: {
 }) {
   const navigation = useNavigation<NavigationProp<BuyNowStackParamList>>();
   const ref = useRef<CheckoutRef>(null);
+  const eventContext = useCheckoutEvents();
 
-  const onCheckoutStart = (event: CheckoutStartEvent) => {
-    console.log('<CheckoutScreen /> onCheckoutStart: ', event);
+  const onStart = (event: CheckoutStartEvent) => {
+    console.log('Start', JSON.stringify(event, null, 2));
   };
 
   const onAddressChangeStart = (event: CheckoutAddressChangeStart) => {
     console.log('<CheckoutScreen /> onAddressChangeStart: ', event);
     navigation.navigate('Address', {id: event.id});
+  };
+
+  const onSubmitStart = async (event: CheckoutSubmitStart) => {
+    console.log('Submit start', JSON.stringify(event, null, 2));
+    try {
+      await eventContext?.respondToEvent(event.id, {
+        payment: {
+          token: '1234567890',
+          tokenType: 'delegated',
+          tokenProvider: 'shopify',
+        },
+      });
+    } catch (error) {
+      console.error('Failed to respond to submit event:', error);
+    }
   };
 
   const onCancel = () => {
@@ -68,8 +86,9 @@ export default function CheckoutScreen(props: {
       checkoutUrl={props.route.params.url}
       auth={props.route.params.auth}
       style={styles.container}
-      onStart={onCheckoutStart}
+      onStart={onStart}
       onAddressChangeStart={onAddressChangeStart}
+      onSubmitStart={onSubmitStart}
       onCancel={onCancel}
       onError={onError}
       onComplete={onComplete}

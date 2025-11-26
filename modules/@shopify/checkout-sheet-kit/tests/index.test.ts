@@ -422,6 +422,42 @@ describe('ShopifyCheckoutSheetKit', () => {
       });
     });
 
+    describe('Submit Start Event', () => {
+      it('parses submitStart event data', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const callback = jest.fn();
+        instance.addEventListener('submitStart', callback);
+
+        eventEmitter.emit('submitStart', {
+          id: 'test-event-id',
+          type: 'submitStart',
+          cart: {id: 'test-cart-id'},
+          checkout: {id: 'checkout-session-123'},
+        });
+
+        expect(callback).toHaveBeenCalledWith({
+          id: 'test-event-id',
+          type: 'submitStart',
+          cart: {id: 'test-cart-id'},
+          checkout: {id: 'checkout-session-123'},
+        });
+      });
+
+      it('prints an error if the submitStart event data cannot be parsed', () => {
+        const mock = jest.spyOn(global.console, 'error');
+        const instance = new ShopifyCheckoutSheet();
+        const callback = jest.fn();
+        instance.addEventListener('submitStart', callback);
+
+        eventEmitter.emit('submitStart', 'INVALID JSON');
+
+        expect(mock).toHaveBeenCalledWith(
+          expect.any(LifecycleEventParseError),
+          'INVALID JSON',
+        );
+      });
+    });
+
     describe('Error Event', () => {
       const internalError = {
         __typename: CheckoutNativeErrorType.InternalError,

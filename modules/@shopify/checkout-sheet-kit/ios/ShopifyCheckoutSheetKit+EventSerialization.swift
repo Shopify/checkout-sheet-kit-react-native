@@ -85,6 +85,20 @@ internal enum ShopifyEventSerialization {
         ]
     }
 
+    /**
+     * Converts a CheckoutSubmitStart to a React Native compatible dictionary.
+     */
+    static func serialize(checkoutSubmitStart event: CheckoutSubmitStart) -> [String: Any] {
+        return [
+            "id": event.id as Any,
+            "type": "submitStart",
+            "cart": encodeToJSON(from: event.params.cart),
+            "checkout": [
+                "id": event.params.checkout.id
+            ]
+        ]
+    }
+
     static func serialize(clickEvent url: URL) -> [String: URL] {
         return ["url": url]
     }

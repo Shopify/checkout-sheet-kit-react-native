@@ -35,7 +35,11 @@ import type {
   CheckoutException,
 } from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
-import type {CheckoutAddressChangeStart, CheckoutStartEvent} from '../events';
+import type {
+  CheckoutAddressChangeStart,
+  CheckoutStartEvent,
+  CheckoutSubmitStart
+} from '../events';
 
 export interface CheckoutProps {
   /**
@@ -82,6 +86,14 @@ export interface CheckoutProps {
   onAddressChangeStart?: (event: CheckoutAddressChangeStart) => void;
 
   /**
+   * Called when the buyer attempts to submit the checkout.
+   *
+   * Note: This callback is only invoked when native payment delegation is configured
+   * for the authenticated app.
+   */
+  onSubmitStart?: (event: CheckoutSubmitStart) => void;
+
+  /**
    * Style for the webview container
    */
   style?: ViewStyle;
@@ -110,6 +122,7 @@ interface NativeCheckoutWebViewProps {
   onCancel?: () => void;
   onLinkClick?: (event: {nativeEvent: {url: string}}) => void;
   onAddressChangeStart?: (event: {nativeEvent: CheckoutAddressChangeStart}) => void;
+  onSubmitStart?: (event: {nativeEvent: CheckoutSubmitStart}) => void;
 }
 
 const RCTCheckoutWebView =
@@ -167,6 +180,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       onCancel,
       onLinkClick,
       onAddressChangeStart,
+      onSubmitStart,
       style,
       testID,
     },
@@ -239,6 +253,16 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       [onAddressChangeStart],
     );
 
+    const handleSubmitStart = useCallback<
+      Required<NativeCheckoutWebViewProps>['onSubmitStart']
+    >(
+      (event: {nativeEvent: CheckoutSubmitStart}) => {
+        if (!event.nativeEvent) return;
+        onSubmitStart?.(event.nativeEvent);
+      },
+      [onSubmitStart],
+    );
+
     const reload = useCallback(() => {
       if (!webViewRef.current) {
         return;
@@ -273,6 +297,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
         onCancel={handleCancel}
         onLinkClick={handleLinkClick}
         onAddressChangeStart={handleAddressChangeStart}
+        onSubmitStart={handleSubmitStart}
       />
     );
   },
