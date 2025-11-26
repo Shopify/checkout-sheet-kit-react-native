@@ -18,7 +18,7 @@ interface EventHandlers {
   onCancel?: () => void;
   onRenderStateChange?: (event: RenderStateChangeEvent) => void;
   onShouldRecoverFromError?: (error: {message: string}) => boolean;
-  onClickLink?: (url: string) => void;
+  onLinkClick?: (url: string) => void;
 }
 
 export function useShopifyEventHandlers(name?: string): EventHandlers {
@@ -43,8 +43,8 @@ export function useShopifyEventHandlers(name?: string): EventHandlers {
       onRenderStateChange: event => {
         log('onRenderStateChange', event);
       },
-      onClickLink: async url => {
-        log('onClickLink', url);
+      onLinkClick: async url => {
+        log('onLinkClick', url);
 
         if (await Linking.canOpenURL(url)) {
           await Linking.openURL(url);

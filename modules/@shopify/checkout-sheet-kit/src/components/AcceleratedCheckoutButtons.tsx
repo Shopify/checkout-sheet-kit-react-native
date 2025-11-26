@@ -110,7 +110,7 @@ interface CommonAcceleratedCheckoutButtonsProps {
   /**
    * Called when a link is clicked within the checkout
    */
-  onClickLink?: (url: string) => void;
+  onLinkClick?: (url: string) => void;
 
   /**
    * Called when the size of the button changes
@@ -152,7 +152,7 @@ interface NativeAcceleratedCheckoutButtonsProps {
   onRenderStateChange?: (event: {
     nativeEvent: {state: string; reason?: string | undefined};
   }) => void;
-  onClickLink?: (event: {nativeEvent: {url: string}}) => void;
+  onLinkClick?: (event: {nativeEvent: {url: string}}) => void;
   onSizeChange?: (event: {nativeEvent: {height: number}}) => void;
 }
 
@@ -192,7 +192,7 @@ export const AcceleratedCheckoutButtons: React.FC<
   onComplete,
   onCancel,
   onRenderStateChange,
-  onClickLink,
+  onLinkClick,
   ...props
 }) => {
   const isCart = isCartProps(props);
@@ -233,13 +233,13 @@ export const AcceleratedCheckoutButtons: React.FC<
     [onRenderStateChange],
   );
 
-  const handleClickLink = useCallback(
+  const handleLinkClick = useCallback(
     (event: {nativeEvent: {url: string}}) => {
       if (event.nativeEvent?.url) {
-        onClickLink?.(event.nativeEvent.url);
+        onLinkClick?.(event.nativeEvent.url);
       }
     },
-    [onClickLink],
+    [onLinkClick],
   );
 
   const handleSizeChange = useCallback(
@@ -300,7 +300,7 @@ export const AcceleratedCheckoutButtons: React.FC<
       onComplete={handleComplete}
       onCancel={handleCancel}
       onRenderStateChange={handleRenderStateChange}
-      onClickLink={handleClickLink}
+      onLinkClick={handleLinkClick}
       onSizeChange={handleSizeChange}
     />
   );

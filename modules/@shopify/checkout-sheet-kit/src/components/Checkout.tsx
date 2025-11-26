@@ -77,7 +77,7 @@ export interface CheckoutProps {
   /**
    * Called when a link is clicked within the checkout
    */
-  onClickLink?: (url: string) => void;
+  onLinkClick?: (url: string) => void;
 
   /**
    * Called when checkout requests an address change (e.g., for native address picker)
@@ -111,7 +111,7 @@ interface NativeCheckoutWebViewProps {
   onError?: (event: {nativeEvent: CheckoutException}) => void;
   onComplete?: (event: {nativeEvent: CheckoutCompleteEvent}) => void;
   onCancel?: () => void;
-  onClickLink?: (event: {nativeEvent: {url: string}}) => void;
+  onLinkClick?: (event: {nativeEvent: {url: string}}) => void;
   onAddressChangeIntent?: (event: {
     nativeEvent: {
       id: string;
@@ -185,7 +185,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       onError,
       onComplete,
       onCancel,
-      onClickLink,
+      onLinkClick,
       onAddressChangeIntent,
       onPaymentChangeIntent,
       style,
@@ -247,14 +247,14 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       onCancel?.();
     }, [onCancel]);
 
-    const handleClickLink = useCallback<
-      Required<NativeCheckoutWebViewProps>['onClickLink']
+    const handleLinkClick = useCallback<
+      Required<NativeCheckoutWebViewProps>['onLinkClick']
     >(
       (event: {nativeEvent: {url: string}}) => {
         if (!event.nativeEvent.url) return;
-        onClickLink?.(event.nativeEvent.url);
+        onLinkClick?.(event.nativeEvent.url);
       },
-      [onClickLink],
+      [onLinkClick],
     );
 
     const handleAddressChangeIntent = useCallback<
@@ -322,7 +322,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
         onError={handleError}
         onComplete={handleComplete}
         onCancel={handleCancel}
-        onClickLink={handleClickLink}
+        onLinkClick={handleLinkClick}
         onAddressChangeIntent={handleAddressChangeIntent}
         onPaymentChangeIntent={handlePaymentChangeIntent}
       />

@@ -124,7 +124,7 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
     @objc var onCancel: RCTBubblingEventBlock?
     @objc var onRenderStateChange: RCTBubblingEventBlock?
     @objc var onShouldRecoverFromError: RCTDirectEventBlock?
-    @objc var onClickLink: RCTBubblingEventBlock?
+    @objc var onLinkClick: RCTBubblingEventBlock?
 
     // MARK: - Private
 
@@ -232,8 +232,8 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
             .onRenderStateChange { [weak self] state in
                 self?.handleRenderStateChange(state)
             }
-            .onClickLink { [weak self] url in
-                self?.handleClickLink(url)
+            .onLinkClick { [weak self] url in
+                self?.handleLinkClick(url)
             }
     }
 
@@ -328,8 +328,8 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         onRenderStateChange?(ShopifyEventSerialization.serialize(renderState: state))
     }
 
-    private func handleClickLink(_ url: URL) {
-        onClickLink?(ShopifyEventSerialization.serialize(clickEvent: url))
+    private func handleLinkClick(_ url: URL) {
+        onLinkClick?(ShopifyEventSerialization.serialize(clickEvent: url))
     }
 
     // MARK: - Helper Methods

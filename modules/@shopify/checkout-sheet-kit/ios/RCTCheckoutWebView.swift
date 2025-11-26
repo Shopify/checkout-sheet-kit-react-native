@@ -83,7 +83,7 @@ class RCTCheckoutWebView: UIView {
   @objc var onError: RCTBubblingEventBlock?
   @objc var onComplete: RCTBubblingEventBlock?
   @objc var onCancel: RCTBubblingEventBlock?
-  @objc var onClickLink: RCTBubblingEventBlock?
+  @objc var onLinkClick: RCTBubblingEventBlock?
   @objc var onAddressChangeIntent: RCTBubblingEventBlock?
   @objc var onPaymentChangeIntent: RCTBubblingEventBlock?
 
@@ -275,7 +275,7 @@ extension RCTCheckoutWebView: CheckoutDelegate {
   }
 
   func checkoutDidClickLink(url: URL) {
-    onClickLink?(["url": url.absoluteString])
+    onLinkClick?(["url": url.absoluteString])
   }
 
   func shouldRecoverFromError(error: CheckoutError) -> Bool {
