@@ -209,7 +209,7 @@ class RCTCheckoutWebView: UIView {
       try event.respondWith(json: responseData)
       print("[CheckoutWebView] Successfully responded to event: \(id)")
       self.events.remove(key: id)
-    } catch let error as EventResponseError {
+    } catch let error as CheckoutEventResponseError {
       print("[CheckoutWebView] Event response error: \(error)")
       handleEventError(eventId: id, error: error)
     } catch {
@@ -222,7 +222,7 @@ class RCTCheckoutWebView: UIView {
     let errorMessage: String
     let errorCode: String
 
-    if let eventError = error as? EventResponseError {
+    if let eventError = error as? CheckoutEventResponseError {
       switch eventError {
       case .invalidEncoding:
         errorMessage = "Invalid response data encoding"
@@ -257,8 +257,8 @@ class RCTCheckoutWebView: UIView {
 }
 
 extension RCTCheckoutWebView: CheckoutDelegate {
-  func checkoutDidComplete(event: CheckoutCompletedEvent) {
-    onComplete?(ShopifyEventSerialization.serialize(checkoutCompletedEvent: event))
+  func checkoutDidComplete(event: CheckoutCompleteEvent) {
+    onComplete?(ShopifyEventSerialization.serialize(checkoutCompleteEvent: event))
   }
 
   func checkoutDidCancel() {

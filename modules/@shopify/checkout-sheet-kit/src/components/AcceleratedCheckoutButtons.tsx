@@ -26,7 +26,7 @@ import {requireNativeComponent, Platform} from 'react-native';
 import type {ViewStyle} from 'react-native';
 import type {
   AcceleratedCheckoutWallet,
-  CheckoutCompletedEvent,
+  CheckoutCompleteEvent,
   CheckoutException,
 } from '..';
 
@@ -94,7 +94,7 @@ interface CommonAcceleratedCheckoutButtonsProps {
   /**
    * Called when checkout is completed successfully
    */
-  onComplete?: (event: CheckoutCompletedEvent) => void;
+  onComplete?: (event: CheckoutCompleteEvent) => void;
 
   /**
    * Called when checkout is cancelled
@@ -147,7 +147,7 @@ interface NativeAcceleratedCheckoutButtonsProps {
   cornerRadius?: number;
   wallets?: AcceleratedCheckoutWallet[];
   onFail?: (event: {nativeEvent: CheckoutException}) => void;
-  onComplete?: (event: {nativeEvent: CheckoutCompletedEvent}) => void;
+  onComplete?: (event: {nativeEvent: CheckoutCompleteEvent}) => void;
   onCancel?: () => void;
   onRenderStateChange?: (event: {
     nativeEvent: {state: string; reason?: string | undefined};
@@ -209,7 +209,7 @@ export const AcceleratedCheckoutButtons: React.FC<
   );
 
   const handleComplete = useCallback(
-    (event: {nativeEvent: CheckoutCompletedEvent}) => {
+    (event: {nativeEvent: CheckoutCompleteEvent}) => {
       onComplete?.(event.nativeEvent);
     },
     [onComplete],

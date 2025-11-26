@@ -230,7 +230,7 @@ class RCTCheckoutWebViewTests: XCTestCase {
             expectation.fulfill()
         }
 
-        let event = createEmptyCheckoutCompletedEvent(id: "order-123")
+        let event = createEmptyCheckoutCompleteEvent(id: "order-123")
 
         checkoutWebView.checkoutDidComplete(event: event)
 
@@ -240,6 +240,69 @@ class RCTCheckoutWebViewTests: XCTestCase {
         let order = orderConfirmation?["order"] as? [String: Any]
         XCTAssertEqual(order?["id"] as? String, "order-123")
     }
+
+    func test_checkoutDidStart_whenDelegateCalled_emitsOnStartEvent() {
+        let expectation = expectation(description: "onStart event emitted")
+        var receivedPayload: [AnyHashable: Any]?
+
+        checkoutWebView.onStart = { payload in
+            receivedPayload = payload
+            expectation.fulfill()
+        }
+
+        let cart = Cart(
+            id: "gid://shopify/Cart/test-cart-123",
+            lines: [],
+            cost: CartCost(
+                subtotalAmount: Money(amount: "100.00", currencyCode: "USD"),
+                totalAmount: Money(amount: "100.00", currencyCode: "USD")
+            ),
+            buyerIdentity: CartBuyerIdentity(email: nil, phone: nil, customer: nil, countryCode: nil),
+            deliveryGroups: [],
+            discountCodes: [],
+            appliedGiftCards: [],
+            discountAllocations: [],
+            delivery: CartDelivery(addresses: [])
+        )
+        let event = CheckoutStartEvent(cart: cart)
+
+        checkoutWebView.checkoutDidStart(event: event)
+
+        wait(for: [expectation], timeout: 0.1)
+
+        let receivedCart = receivedPayload?["cart"] as? [String: Any]
+        XCTAssertEqual(receivedCart?["id"] as? String, "gid://shopify/Cart/test-cart-123")
+    }
+}
+
+// MARK: - Test Helpers
+
+private func createEmptyCheckoutCompleteEvent(id: String) -> CheckoutCompleteEvent {
+    let cart = Cart(
+        id: "gid://shopify/Cart/\(id)",
+        lines: [],
+        cost: CartCost(
+            subtotalAmount: Money(amount: "0.00", currencyCode: "USD"),
+            totalAmount: Money(amount: "0.00", currencyCode: "USD")
+        ),
+        buyerIdentity: CartBuyerIdentity(email: nil, phone: nil, customer: nil, countryCode: nil),
+        deliveryGroups: [],
+        discountCodes: [],
+        appliedGiftCards: [],
+        discountAllocations: [],
+        delivery: CartDelivery(addresses: [])
+    )
+
+    let order = CheckoutCompleteEvent.OrderConfirmation.Order(
+        id: "gid://shopify/Order/\(id)",
+        statusUrl: "https://example.com"
+    )
+
+    let orderConfirmation = CheckoutCompleteEvent.OrderConfirmation(
+        order: order
+    )
+
+    return CheckoutCompleteEvent(orderConfirmation: orderConfirmation, cart: cart)
 }
 
 // MARK: - Mock Class
