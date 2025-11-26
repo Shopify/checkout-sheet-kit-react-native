@@ -24,6 +24,7 @@ import {
   Checkout,
   type CheckoutCompleteEvent,
   type CheckoutRef,
+  type CheckoutStartEvent,
 } from '@shopify/checkout-sheet-kit';
 import type {BuyNowStackParamList} from './types';
 import {StyleSheet} from 'react-native';
@@ -36,6 +37,10 @@ export default function CheckoutScreen(props: {
 }) {
   const navigation = useNavigation<NavigationProp<BuyNowStackParamList>>();
   const ref = useRef<CheckoutRef>(null);
+
+  const onCheckoutStart = (event: CheckoutStartEvent) => {
+    console.log('Checkout start', JSON.stringify(event, null, 2));
+  };
 
   const onAddressChangeIntent = (event: {id: string}) => {
     navigation.navigate('Address', {id: event.id});
@@ -64,6 +69,7 @@ export default function CheckoutScreen(props: {
       checkoutUrl={props.route.params.url}
       auth={props.route.params.auth}
       style={styles.container}
+      onStart={onCheckoutStart}
       onAddressChangeIntent={onAddressChangeIntent}
       onPaymentChangeIntent={onPaymentChangeIntent}
       onCancel={onCancel}
