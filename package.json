@@ -15,6 +15,7 @@
     "modules/**/*"
   ],
   "scripts": {
+    "build:android": "./scripts/publish_android_snapshot",
     "clean": "rm -rf node_modules; watchman watch-del . || true",
     "sample": "yarn workspace sample",
     "module": "yarn workspace @shopify/checkout-sheet-kit",

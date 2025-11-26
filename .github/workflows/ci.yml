@@ -112,6 +112,7 @@ jobs:
           javac -version
           echo "STOREFRONT_DOMAIN=myshopify.com" > sample/.env
           yarn module build
+          yarn build:android
           yarn sample test:android --no-daemon
 
   test-ios:

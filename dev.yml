@@ -55,7 +55,7 @@ commands:
     desc: Builds the Typescript and Android package for local development
     run: |
       yarn module build
-      ./scripts/publish_android_snapshot ~/src/github.com/Shopify/checkout-sheet-kit-android 4.0.0-SNAPSHOT
+      yarn build:android
 
   server:
     desc: 'Start development server'
