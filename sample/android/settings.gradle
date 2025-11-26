@@ -7,10 +7,6 @@ rootProject.name = 'ReactNative'
 include ':app'
 include ':react-native-config'
 
-// Include local checkout-sheet-kit-android SDK
-include ':checkout-sheet-kit'
-project(':checkout-sheet-kit').projectDir = new File('/Users/ko/src/github.com/Shopify/checkout-sheet-kit-android/lib')
-
 includeBuild('../../node_modules/@react-native/gradle-plugin')
 
 project(':react-native-config').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-config/android')
