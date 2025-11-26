@@ -125,6 +125,7 @@ jobs:
           javac -version
           cp sample/.env.example sample/.env
           yarn module build
+          yarn build:android
           yarn sample test:android --no-daemon
 
   test-ios:
