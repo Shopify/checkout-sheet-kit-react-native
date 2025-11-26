@@ -36,7 +36,7 @@ import type {
   CheckoutException,
 } from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
-import type {CheckoutAddressChangeIntent, CheckoutPaymentChangeIntent} from '../events';
+import type {CheckoutAddressChangeIntent, CheckoutPaymentChangeIntent, CheckoutStartEvent} from '../events';
 
 export interface CheckoutProps {
   /**
@@ -53,6 +53,11 @@ export interface CheckoutProps {
    * Called when the webview loads
    */
   onLoad?: (event: {url: string}) => void;
+
+  /**
+   * Called when checkout starts, providing the initial cart state
+   */
+  onStart?: (event: CheckoutStartEvent) => void;
 
   /**
    * Called when checkout fails
@@ -102,6 +107,7 @@ interface NativeCheckoutWebViewProps {
   auth?: string;
   style?: ViewStyle;
   onLoad?: (event: {nativeEvent: {url: string}}) => void;
+  onStart?: (event: {nativeEvent: CheckoutStartEvent}) => void;
   onError?: (event: {nativeEvent: CheckoutException}) => void;
   onComplete?: (event: {nativeEvent: CheckoutCompleteEvent}) => void;
   onCancel?: () => void;
@@ -175,6 +181,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       checkoutUrl,
       auth,
       onLoad,
+      onStart,
       onError,
       onComplete,
       onCancel,
@@ -205,6 +212,15 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
         onLoad?.(event.nativeEvent);
       },
       [onLoad],
+    );
+
+    const handleStart = useCallback<
+      Required<NativeCheckoutWebViewProps>['onStart']
+    >(
+      (event: {nativeEvent: CheckoutStartEvent}) => {
+        onStart?.(event.nativeEvent);
+      },
+      [onStart],
     );
 
     const handleError = useCallback<
@@ -302,6 +318,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
         auth={auth}
         style={style}
         onLoad={handleLoad}
+        onStart={handleStart}
         onError={handleError}
         onComplete={handleComplete}
         onCancel={handleCancel}
