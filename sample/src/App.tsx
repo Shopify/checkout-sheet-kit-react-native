@@ -36,6 +36,7 @@ import {
   Linking,
   Pressable,
   StatusBar,
+  StyleSheet,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 
@@ -102,7 +103,7 @@ export type RootStackParamList = {
   Cart: undefined;
   CartModal: undefined;
   Settings: undefined;
-  BuyNow: {url: string, auth: string};
+  BuyNow: {url: string; auth: string};
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -309,7 +310,7 @@ function CartIcon({onPress}: {onPress: () => void}) {
   const theme = useTheme();
 
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={onPress} style={styles.cart}>
       <Icon name="shopping-basket" size={24} color={theme.colors.secondary} />
     </Pressable>
   );
@@ -525,3 +526,12 @@ function App() {
 }
 
 export default App;
+
+const styles = StyleSheet.create({
+  cart: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: 36,
+    minHeight: 36,
+  },
+});
