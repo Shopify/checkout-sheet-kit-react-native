@@ -23,8 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 package com.shopify.reactnative.checkoutsheetkit;
 
+import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
@@ -34,32 +34,28 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.shopify.checkoutsheetkit.CheckoutAddressChangeRequestedEvent;
-import com.shopify.checkoutsheetkit.CheckoutException;
+import com.shopify.checkoutsheetkit.Authentication;
 import com.shopify.checkoutsheetkit.CheckoutOptions;
 import com.shopify.checkoutsheetkit.CheckoutWebView;
 import com.shopify.checkoutsheetkit.CheckoutWebViewEventProcessor;
-import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor;
-import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
-import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.Map;
 import java.util.Objects;
 
 import kotlin.Unit;
 
 public class RCTCheckoutWebView extends FrameLayout {
     private static final String TAG = "RCTCheckoutWebView";
+  private final ThemedReactContext context;
 
-    private CheckoutWebView checkoutWebView;
+  private CheckoutWebView checkoutWebView;
     private String checkoutUrl;
     private String auth;
     private boolean pendingSetup = false;
@@ -80,14 +76,16 @@ public class RCTCheckoutWebView extends FrameLayout {
     }
   }
 
-    public RCTCheckoutWebView(Context context) {
+    public RCTCheckoutWebView(ThemedReactContext context) {
         super(context);
+        this.context = context;
         Log.d(TAG, "RCTCheckoutWebView constructor called");
         init();
     }
 
-    public RCTCheckoutWebView(Context context, AttributeSet attrs) {
+    public RCTCheckoutWebView(ThemedReactContext context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         Log.d(TAG, "RCTCheckoutWebView constructor with attrs called");
         init();
     }
@@ -166,7 +164,7 @@ public class RCTCheckoutWebView extends FrameLayout {
         // Configure authentication if provided
         CheckoutOptions options = null;
         if (auth != null && !auth.isEmpty()) {
-            options = new CheckoutOptions(auth);
+            options = new CheckoutOptions(new Authentication.Token(auth));
         }
 
         // Add to view hierarchy
@@ -177,7 +175,7 @@ public class RCTCheckoutWebView extends FrameLayout {
         addView(checkoutWebView, params);
 
         // Load the URL with options
-        checkoutWebView.loadCheckout(url, false, options);
+        checkoutWebView.loadCheckout(url, options);
         checkoutWebView.notifyPresented();
 
         // Send onLoad event
@@ -190,8 +188,11 @@ public class RCTCheckoutWebView extends FrameLayout {
 
   @NonNull
   private CheckoutWebViewEventProcessor getCheckoutWebViewEventProcessor() {
+    Activity currentActivity = this.context.getCurrentActivity();
+    ReactApplicationContext reactAppContext = this.context.getReactApplicationContext();
+
     return new CheckoutWebViewEventProcessor(
-        new CheckoutWebEventProcessor(),
+        new CustomCheckoutEventProcessor(currentActivity, reactAppContext),
         (visible) -> Unit.INSTANCE, // toggleHeader
         (error) -> Unit.INSTANCE, // closeCheckoutDialogWithError
         (visibility) -> Unit.INSTANCE, // setProgressBarVisibility
@@ -249,109 +250,5 @@ public class RCTCheckoutWebView extends FrameLayout {
         ReactContext reactContext = (ReactContext) getContext();
         reactContext.getJSModule(RCTEventEmitter.class)
             .receiveEvent(getId(), eventName, params);
-    }
-
-    private class CheckoutWebEventProcessor extends DefaultCheckoutEventProcessor {
-
-        public CheckoutWebEventProcessor() {
-            super(getContext());
-        }
-
-        @Override
-        public void onCheckoutCompleted(CheckoutCompleteEvent event) {
-            try {
-                String eventJson = mapper.writeValueAsString(event);
-                WritableMap params = Arguments.createMap();
-                // Parse the JSON to extract fields
-                Map<String, Object> eventMap = mapper.readValue(eventJson, new TypeReference<>(){ });
-                for (Map.Entry<String, Object> entry : eventMap.entrySet()) {
-                    if (entry.getValue() instanceof String) {
-                        params.putString(entry.getKey(), (String) entry.getValue());
-                    } else if (entry.getValue() instanceof Number) {
-                        params.putDouble(entry.getKey(), ((Number) entry.getValue()).doubleValue());
-                    } else if (entry.getValue() instanceof Boolean) {
-                        params.putBoolean(entry.getKey(), (Boolean) entry.getValue());
-                    } else if (entry.getValue() != null) {
-                        params.putString(entry.getKey(), mapper.writeValueAsString(entry.getValue()));
-                    }
-                }
-
-                sendEvent("onComplete", params);
-            } catch (JsonProcessingException e) {
-                Log.e(TAG, "Failed to serialize completed event", e);
-            }
-        }
-
-        @Override
-        public void onCheckoutFailed(CheckoutException error) {
-            WritableMap params = Arguments.createMap();
-            params.putString("message", error.getMessage());
-            params.putString("code", error.getErrorCode());
-            params.putBoolean("recoverable", error.isRecoverable());
-            sendEvent("onError", params);
-        }
-
-        @Override
-        public void onCheckoutCanceled() {
-            sendEvent("onCancel", Arguments.createMap());
-        }
-
-        @Override
-        public void onWebPixelEvent(PixelEvent event) {
-            try {
-                String eventJson = mapper.writeValueAsString(event);
-                WritableMap params = Arguments.createMap();
-
-                // Parse the JSON to extract fields
-                Map<String, Object> eventMap = mapper.readValue(eventJson, new TypeReference<>(){ });
-                for (Map.Entry<String, Object> entry : eventMap.entrySet()) {
-                    if (entry.getValue() instanceof String) {
-                        params.putString(entry.getKey(), (String) entry.getValue());
-                    } else if (entry.getValue() != null) {
-                        params.putString(entry.getKey(), mapper.writeValueAsString(entry.getValue()));
-                    }
-                }
-
-                sendEvent("onPixelEvent", params);
-            } catch (JsonProcessingException e) {
-                Log.e(TAG, "Failed to serialize pixel event", e);
-            }
-        }
-
-        @Override
-        public void onCheckoutLinkClicked(Uri url) {
-            WritableMap params = Arguments.createMap();
-            params.putString("url", url.toString());
-            sendEvent("onClickLink", params);
-        }
-
-        @Override
-        public void onAddressChangeRequested(CheckoutAddressChangeRequestedEvent event) {
-            String eventId = event.getId();
-            if (eventId == null) {
-                Log.e(TAG, "Event ID is null for address change event");
-                return;
-            }
-
-            WritableMap params = Arguments.createMap();
-            params.putString("id", eventId);
-            params.putString("type", "addressChangeIntent");
-            params.putString("addressType", event.getAddressType());
-
-            // Include selected address if available
-            if (event.getSelectedAddress() != null) {
-                try {
-                    String selectedAddressJson = mapper.writeValueAsString(event.getSelectedAddress());
-                    params.putString("selectedAddress", selectedAddressJson);
-                } catch (JsonProcessingException e) {
-                    Log.e(TAG, "Failed to serialize selected address", e);
-                }
-            }
-
-            sendEvent("onAddressChangeIntent", params);
-        }
-
-        // Note: Payment change events are not yet supported in Android SDK
-        // This will be added when the SDK supports it
     }
 }
