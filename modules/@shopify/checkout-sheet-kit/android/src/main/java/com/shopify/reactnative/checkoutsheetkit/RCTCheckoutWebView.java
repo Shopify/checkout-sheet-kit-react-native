@@ -154,7 +154,7 @@ public class RCTCheckoutWebView extends FrameLayout implements CheckoutEventProc
         removeCheckout();
 
         // Create the CheckoutWebView with null AttributeSet
-        checkoutWebView = new CheckoutWebView(getContext(), null);
+        checkoutWebView = new CheckoutWebView(this.context, null);
         Log.d(TAG, "setupCheckoutWebView: New CheckoutWebView created");
 
         // Set up event processor with all required parameters
