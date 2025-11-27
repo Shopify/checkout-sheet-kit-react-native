@@ -35,7 +35,7 @@ import type {
   CheckoutException,
 } from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
-import type {CheckoutAddressChangeStart, CheckoutPaymentChangeIntent, CheckoutStartEvent} from '../events';
+import type {CheckoutAddressChangeStart, CheckoutStartEvent} from '../events';
 
 export interface CheckoutProps {
   /**
