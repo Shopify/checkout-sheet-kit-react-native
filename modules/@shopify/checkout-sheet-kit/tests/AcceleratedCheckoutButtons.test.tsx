@@ -254,23 +254,23 @@ describe('AcceleratedCheckoutButtons', () => {
       });
     });
 
-    it('handles onClickLink when URL is present and ignores when absent', () => {
-      const onClickLink = jest.fn();
+    it('handles onLinkClick when URL is present and ignores when absent', () => {
+      const onLinkClick = jest.fn();
       const {getByTestId} = render(
         <AcceleratedCheckoutButtons
           cartId="gid://shopify/Cart/123"
-          onClickLink={onClickLink}
+          onLinkClick={onLinkClick}
         />,
       );
       const nativeComponent = getByTestId('accelerated-checkout-buttons');
-      nativeComponent.props.onClickLink({
+      nativeComponent.props.onLinkClick({
         nativeEvent: {url: 'https://checkout.shopify.com'},
       });
-      expect(onClickLink).toHaveBeenCalledWith('https://checkout.shopify.com');
+      expect(onLinkClick).toHaveBeenCalledWith('https://checkout.shopify.com');
 
-      onClickLink.mockClear();
-      nativeComponent.props.onClickLink({nativeEvent: {}});
-      expect(onClickLink).not.toHaveBeenCalled();
+      onLinkClick.mockClear();
+      nativeComponent.props.onLinkClick({nativeEvent: {}});
+      expect(onLinkClick).not.toHaveBeenCalled();
     });
 
     it('applies dynamic height when onSizeChange is emitted', async () => {
@@ -314,7 +314,7 @@ describe('AcceleratedCheckoutButtons', () => {
         onCancel: jest.fn(),
         onRenderStateChange: jest.fn(),
         onWebPixelEvent: jest.fn(),
-        onClickLink: jest.fn(),
+        onLinkClick: jest.fn(),
       };
 
       expect(() => {

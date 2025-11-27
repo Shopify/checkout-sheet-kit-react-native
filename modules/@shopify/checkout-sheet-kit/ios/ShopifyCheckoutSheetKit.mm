@@ -136,7 +136,7 @@ SOFTWARE.
     /**
      * Emitted when a link is clicked
      */
-    RCT_EXPORT_VIEW_PROPERTY(onClickLink, RCTBubblingEventBlock)
+    RCT_EXPORT_VIEW_PROPERTY(onLinkClick, RCTBubblingEventBlock)
 
     /**
      * Reload the webview
@@ -203,7 +203,7 @@ SOFTWARE.
     /**
      * Emitted when a link is clicked within the checkout experience. Payload contains the URL.
      */
-    RCT_EXPORT_VIEW_PROPERTY(onClickLink, RCTBubblingEventBlock)
+    RCT_EXPORT_VIEW_PROPERTY(onLinkClick, RCTBubblingEventBlock)
 
     /**
      * Emitted when the intrinsic height of the native view changes. Payload contains { height }.
