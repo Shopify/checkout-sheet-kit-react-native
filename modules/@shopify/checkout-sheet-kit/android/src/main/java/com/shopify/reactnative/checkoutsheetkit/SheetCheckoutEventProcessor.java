@@ -30,7 +30,13 @@ import android.webkit.GeolocationPermissions;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.shopify.checkoutsheetkit.*;
+import com.shopify.checkoutsheetkit.CheckoutException;
+import com.shopify.checkoutsheetkit.CheckoutExpiredException;
+import com.shopify.checkoutsheetkit.CheckoutSheetKitException;
+import com.shopify.checkoutsheetkit.ClientException;
+import com.shopify.checkoutsheetkit.ConfigurationException;
+import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor;
+import com.shopify.checkoutsheetkit.HttpException;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -49,7 +55,6 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
 
   private final ReactApplicationContext reactContext;
   private final ObjectMapper mapper = new ObjectMapper();
-  private CheckoutEventProcessor eventListener;
 
   // Geolocation-specific variables
 
@@ -62,10 +67,6 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
   }
 
   // Public methods
-
-  public void setEventListener(CheckoutEventProcessor listener) {
-    this.eventListener = listener;
-  }
 
   public void invokeGeolocationCallback(boolean allow) {
     if (geolocationCallback != null) {
@@ -119,73 +120,53 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
 
   @Override
   public void onFail(@NonNull CheckoutException checkoutError) {
-    if (eventListener != null) {
-      eventListener.onFail(checkoutError);
-    } else {
-      try {
-        String data = mapper.writeValueAsString(populateErrorDetails(checkoutError));
-        sendEventWithStringData("error", data);
-      } catch (IOException e) {
-        Log.e(TAG, "Error processing checkout failed event", e);
-      }
+    try {
+      String data = mapper.writeValueAsString(populateErrorDetails(checkoutError));
+      sendEventWithStringData("error", data);
+    } catch (IOException e) {
+      Log.e(TAG, "Error processing checkout failed event", e);
     }
   }
 
   @Override
   public void onCancel() {
-    if (eventListener != null) {
-      eventListener.onCancel();
-    } else {
-      sendEvent("close", null);
-    }
+    sendEvent("close", null);
   }
 
   @Override
   public void onComplete(@NonNull CheckoutCompleteEvent event) {
-    if (eventListener != null) {
-      eventListener.onComplete(event);
-    } else {
-      try {
-        String data = mapper.writeValueAsString(event);
-        sendEventWithStringData("complete", data);
-      } catch (IOException e) {
-        Log.e(TAG, "Error processing complete event", e);
-      }
+    try {
+      String data = mapper.writeValueAsString(event);
+      sendEventWithStringData("complete", data);
+    } catch (IOException e) {
+      Log.e(TAG, "Error processing complete event", e);
     }
   }
 
   @Override
   public void onStart(@NonNull CheckoutStartEvent event) {
-    if (eventListener != null) {
-      eventListener.onStart(event);
-    } else {
-      try {
-        String data = mapper.writeValueAsString(event);
-        sendEventWithStringData("start", data);
-      } catch (IOException e) {
-        Log.e(TAG, "Error processing start event", e);
-      }
+    try {
+      String data = mapper.writeValueAsString(event);
+      sendEventWithStringData("start", data);
+    } catch (IOException e) {
+      Log.e(TAG, "Error processing start event", e);
     }
   }
 
   @Override
   public void onAddressChangeStart(@NonNull CheckoutAddressChangeStart event) {
-    if (eventListener != null) {
-      eventListener.onAddressChangeStart(event);
-    } else {
-      try {
-        CheckoutAddressChangeStartEvent params = event.getParams();
-        Map<String, Object> eventData = new HashMap<>();
-        eventData.put("id", event.getId());
-        eventData.put("type", "addressChangeStart");
-        eventData.put("addressType", params.getAddressType());
-        eventData.put("cart", params.getCart());
+    try {
+      CheckoutAddressChangeStartEvent params = event.getParams();
+      Map<String, Object> eventData = new HashMap<>();
+      eventData.put("id", event.getId());
+      eventData.put("type", "addressChangeStart");
+      eventData.put("addressType", params.getAddressType());
+      eventData.put("cart", params.getCart());
 
-        String data = mapper.writeValueAsString(eventData);
-        sendEventWithStringData("addressChangeStart", data);
-      } catch (IOException e) {
-        Log.e(TAG, "Error processing address change start event", e);
-      }
+      String data = mapper.writeValueAsString(eventData);
+      sendEventWithStringData("addressChangeStart", data);
+    } catch (IOException e) {
+      Log.e(TAG, "Error processing address change start event", e);
     }
   }
 
