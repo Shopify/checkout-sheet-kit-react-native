@@ -83,11 +83,6 @@ public class RCTCheckoutWebView extends FrameLayout {
         this.context = context;
     }
 
-    public RCTCheckoutWebView(ThemedReactContext context, AttributeSet attrs) {
-        super(context, attrs);
-        this.context = context;
-    }
-
     public void setCheckoutUrl(String url) {
         if (Objects.equals(url, checkoutUrl)) {
             return;
@@ -136,13 +131,7 @@ public class RCTCheckoutWebView extends FrameLayout {
         setupCheckoutWebView(checkoutUrl, newConfiguration);
     }
 
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        setup();
-    }
-
-    private void setupCheckoutWebView(String url, CheckoutConfiguration configuration) {
+    public void setupCheckoutWebView(String url, CheckoutConfiguration configuration) {
         Log.d(TAG, "setupCheckoutWebView: Setting up new webview for URL: " + url);
         removeCheckout();
 
@@ -151,26 +140,27 @@ public class RCTCheckoutWebView extends FrameLayout {
         Log.d(TAG, "setupCheckoutWebView: New CheckoutWebView created");
 
         // Set up event processor with all required parameters
-      CheckoutWebViewEventProcessor webViewEventProcessor = getCheckoutWebViewEventProcessor();
-      checkoutWebView.setEventProcessor(webViewEventProcessor);
+        CheckoutWebViewEventProcessor webViewEventProcessor = getCheckoutWebViewEventProcessor();
+        checkoutWebView.setEventProcessor(webViewEventProcessor);
 
         // Configure authentication if provided
         CheckoutOptions options = new CheckoutOptions();
         if (auth != null && !auth.isEmpty()) {
             options = new CheckoutOptions(new Authentication.Token(auth));
         }
+        checkoutWebView.loadCheckout(url, options);
+        checkoutWebView.notifyPresented();
 
-        // Add to view hierarchy
         LayoutParams params = new LayoutParams(
             LayoutParams.MATCH_PARENT,
             LayoutParams.MATCH_PARENT
         );
         addView(checkoutWebView, params);
-
-        // Load the URL with options
-        checkoutWebView.loadCheckout(url, options);
-        checkoutWebView.notifyPresented();
-
+        ///  Works around a race condition where onLayout executes before setupCheckoutWebView
+        ///  resulting in an empty view being rendered. Cannot move setup to constructor as
+        ///  checkoutUrl is undefined until setCheckoutUrl is called by RCTCheckoutWebViewManager
+        ///  requestLayout / invalidate were unsuccessful in remedying this
+        checkoutWebView.layout(0, 0, getWidth(), getHeight());
         lastConfiguration = configuration;
     }
 
