@@ -1,5 +1,7 @@
 package com.shopify.checkoutkitreactnative;
 
+import static com.shopify.checkoutkitreactnative.TestFixtures.createTestCart;
+
 import androidx.activity.ComponentActivity;
 
 import com.facebook.react.bridge.JavaOnlyMap;
@@ -24,6 +26,8 @@ import com.shopify.checkoutsheetkit.lifecycleevents.CartBuyerIdentity;
 import com.shopify.checkoutsheetkit.lifecycleevents.CartDelivery;
 import com.shopify.checkoutsheetkit.lifecycleevents.Money;
 import com.shopify.checkoutsheetkit.lifecycleevents.OrderConfirmation;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
 import com.shopify.reactnative.checkoutsheetkit.ShopifyCheckoutSheetKitModule;
 import com.shopify.reactnative.checkoutsheetkit.CustomCheckoutEventProcessor;
 
@@ -117,7 +121,9 @@ public class ShopifyCheckoutSheetKitModuleTest {
       runnableCaptor.getValue().run();
 
       mockedShopifyCheckoutSheetKit.verify(() -> {
-        ShopifyCheckoutSheetKit.present(eq(checkoutUrl), any(), any(), eq(null));
+        ShopifyCheckoutSheetKit.present(eq(checkoutUrl), any(), any(), argThat(opt ->
+          opt != null && opt.getAuthentication() instanceof Authentication.None
+        ));
       });
     }
   }
@@ -130,7 +136,9 @@ public class ShopifyCheckoutSheetKitModuleTest {
       shopifyCheckoutSheetKitModule.preload(checkoutUrl, null);
 
       mockedShopifyCheckoutSheetKit.verify(() -> {
-        ShopifyCheckoutSheetKit.preload(eq(checkoutUrl), any(), eq(null));
+        ShopifyCheckoutSheetKit.preload(eq(checkoutUrl), any(), argThat(opt ->
+          opt != null && opt.getAuthentication() instanceof Authentication.None
+        ));
       });
     }
   }
@@ -195,7 +203,9 @@ public class ShopifyCheckoutSheetKitModuleTest {
       runnableCaptor.getValue().run();
 
       mockedShopifyCheckoutSheetKit.verify(() -> {
-        ShopifyCheckoutSheetKit.present(eq(checkoutUrl), any(), any(), eq(null));
+        ShopifyCheckoutSheetKit.present(eq(checkoutUrl), any(), any(), argThat(opt ->
+          opt != null && opt.getAuthentication() instanceof Authentication.None
+        ));
       });
     }
   }
@@ -208,7 +218,9 @@ public class ShopifyCheckoutSheetKitModuleTest {
       shopifyCheckoutSheetKitModule.preload(checkoutUrl, null);
 
       mockedShopifyCheckoutSheetKit.verify(() -> {
-        ShopifyCheckoutSheetKit.preload(eq(checkoutUrl), any(), eq(null));
+        ShopifyCheckoutSheetKit.preload(eq(checkoutUrl), any(), argThat(opt ->
+          opt != null && opt.getAuthentication() instanceof Authentication.None
+        ));
       });
     }
   }
@@ -425,6 +437,32 @@ public class ShopifyCheckoutSheetKitModuleTest {
     // Verify the JSON contains our test data
     assertThat(stringCaptor.getValue())
         .contains("cart-456");
+  }
+
+  @Test
+  public void testCanProcessCheckoutAddressChangeStartEvent() {
+    CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
+
+    // Create a mock CheckoutAddressChangeStart event
+    CheckoutAddressChangeStart addressChangeEvent = mock(CheckoutAddressChangeStart.class);
+    when(addressChangeEvent.getId()).thenReturn("address-event-123");
+
+    // Create a mock CheckoutAddressChangeStartEvent for params
+    CheckoutAddressChangeStartEvent mockParams = mock(CheckoutAddressChangeStartEvent.class);
+    when(mockParams.getAddressType()).thenReturn("shipping");
+
+    when(addressChangeEvent.getParams()).thenReturn(mockParams);
+
+    processor.onAddressChangeStart(addressChangeEvent);
+
+    verify(mockEventEmitter).emit(eq("addressChangeStart"), stringCaptor.capture());
+
+    // Verify the JSON contains expected fields
+    String emittedJson = stringCaptor.getValue();
+    assertThat(emittedJson)
+        .contains("address-event-123")
+        .contains("addressChangeStart")
+        .contains("shipping");
   }
 
   /**

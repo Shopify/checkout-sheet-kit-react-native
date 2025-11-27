@@ -84,7 +84,7 @@ class RCTCheckoutWebView: UIView {
   @objc var onComplete: RCTBubblingEventBlock?
   @objc var onCancel: RCTBubblingEventBlock?
   @objc var onLinkClick: RCTBubblingEventBlock?
-  @objc var onAddressChangeIntent: RCTBubblingEventBlock?
+  @objc var onAddressChangeStart: RCTBubblingEventBlock?
   @objc var onPaymentChangeIntent: RCTBubblingEventBlock?
 
   override init(frame: CGRect) {
@@ -282,15 +282,27 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     error.isRecoverable
   }
 
-  func checkoutDidRequestAddressChange(event: AddressChangeRequested) {
+  /// Called when checkout starts an address change flow.
+  ///
+  /// This event is only emitted when native address selection is enabled
+  /// for the authenticated app.
+  ///
+  /// - Parameter event: The address change start event containing:
+  ///   - id: Unique identifier for responding to the event
+  ///   - addressType: Type of address being changed ("shipping" or "billing")
+  ///   - cart: Current cart state
+  func checkoutDidStartAddressChange(event: CheckoutAddressChangeStart) {
     guard let id = event.id else { return }
 
     self.events.set(key: id, event: event)
 
-    onAddressChangeIntent?([
+    let cartJSON = ShopifyEventSerialization.encodeToJSON(from: event.params.cart)
+
+    onAddressChangeStart?([
       "id": event.id,
-      "type": "addressChangeIntent",
+      "type": "addressChangeStart",
       "addressType": event.params.addressType,
+      "cart": cartJSON,
     ])
   }
 

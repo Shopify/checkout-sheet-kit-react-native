@@ -22,6 +22,7 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useRef} from 'react';
 import {
   Checkout,
+  type CheckoutAddressChangeStart,
   type CheckoutCompleteEvent,
   type CheckoutRef,
   type CheckoutStartEvent,
@@ -39,10 +40,10 @@ export default function CheckoutScreen(props: {
   const ref = useRef<CheckoutRef>(null);
 
   const onCheckoutStart = (event: CheckoutStartEvent) => {
-    console.log('Checkout start', JSON.stringify(event, null, 2));
+    console.log('Start', JSON.stringify(event, null, 2));
   };
 
-  const onAddressChangeIntent = (event: {id: string}) => {
+  const onAddressChangeStart = (event: CheckoutAddressChangeStart) => {
     navigation.navigate('Address', {id: event.id});
   };
 
@@ -70,7 +71,7 @@ export default function CheckoutScreen(props: {
       auth={props.route.params.auth}
       style={styles.container}
       onStart={onCheckoutStart}
-      onAddressChangeIntent={onAddressChangeIntent}
+      onAddressChangeStart={onAddressChangeStart}
       onPaymentChangeIntent={onPaymentChangeIntent}
       onCancel={onCancel}
       onError={onError}

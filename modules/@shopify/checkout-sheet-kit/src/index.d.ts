@@ -152,6 +152,7 @@ export type CheckoutEvent =
   | 'complete'
   | 'start'
   | 'error'
+  | 'addressChangeStart'
   | 'geolocationRequest';
 
 export interface GeolocationRequestEvent {
@@ -169,12 +170,16 @@ export type CheckoutCompleteEventCallback = (
 export type CheckoutStartEventCallback = (
   event: CheckoutStartEvent,
 ) => void;
+export type CheckoutAddressChangeStartCallback = (
+  event: CheckoutAddressChangeStart,
+) => void;
 
 export type CheckoutEventCallback =
   | CloseEventCallback
   | CheckoutExceptionCallback
   | CheckoutCompleteEventCallback
   | CheckoutStartEventCallback
+  | CheckoutAddressChangeStartCallback
   | GeolocationRequestEventCallback;
 
 /**
@@ -251,6 +256,11 @@ function addEventListener(
 function addEventListener(
   event: 'start',
   callback: CheckoutStartEventCallback,
+): Maybe<EmitterSubscription>;
+
+function addEventListener(
+  event: 'addressChangeStart',
+  callback: CheckoutAddressChangeStartCallback,
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(

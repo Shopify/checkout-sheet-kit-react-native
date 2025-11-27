@@ -36,7 +36,7 @@ import type {
   CheckoutException,
 } from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
-import type {CheckoutAddressChangeIntent, CheckoutPaymentChangeIntent, CheckoutStartEvent} from '../events';
+import type {CheckoutAddressChangeStart, CheckoutPaymentChangeIntent, CheckoutStartEvent} from '../events';
 
 export interface CheckoutProps {
   /**
@@ -80,9 +80,12 @@ export interface CheckoutProps {
   onLinkClick?: (url: string) => void;
 
   /**
-   * Called when checkout requests an address change (e.g., for native address picker)
+   * Called when checkout starts an address change flow (e.g., for native address picker).
+   *
+   * Note: This callback is only invoked when native address selection is enabled
+   * for the authenticated app.
    */
-  onAddressChangeIntent?: (event: CheckoutAddressChangeIntent) => void;
+  onAddressChangeStart?: (event: CheckoutAddressChangeStart) => void;
 
   /**
    * Called when checkout requests a payment method change (e.g., for native payment selector)
@@ -93,6 +96,11 @@ export interface CheckoutProps {
    * Style for the webview container
    */
   style?: ViewStyle;
+
+  /**
+   * Test identifier for testing
+   */
+  testID?: string;
 }
 
 export interface CheckoutRef {
@@ -106,19 +114,14 @@ interface NativeCheckoutWebViewProps {
   checkoutUrl: string;
   auth?: string;
   style?: ViewStyle;
+  testID?: string;
   onLoad?: (event: {nativeEvent: {url: string}}) => void;
   onStart?: (event: {nativeEvent: CheckoutStartEvent}) => void;
   onError?: (event: {nativeEvent: CheckoutException}) => void;
   onComplete?: (event: {nativeEvent: CheckoutCompleteEvent}) => void;
   onCancel?: () => void;
   onLinkClick?: (event: {nativeEvent: {url: string}}) => void;
-  onAddressChangeIntent?: (event: {
-    nativeEvent: {
-      id: string;
-      type: string;
-      addressType: string;
-    };
-  }) => void;
+  onAddressChangeStart?: (event: {nativeEvent: CheckoutAddressChangeStart}) => void;
   onPaymentChangeIntent?: (event: {
     nativeEvent: {
       id: string;
@@ -186,9 +189,10 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       onComplete,
       onCancel,
       onLinkClick,
-      onAddressChangeIntent,
+      onAddressChangeStart,
       onPaymentChangeIntent,
       style,
+      testID,
     },
     ref,
   ) => {
@@ -257,16 +261,14 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       [onLinkClick],
     );
 
-    const handleAddressChangeIntent = useCallback<
-      Required<NativeCheckoutWebViewProps>['onAddressChangeIntent']
+    const handleAddressChangeStart = useCallback<
+      Required<NativeCheckoutWebViewProps>['onAddressChangeStart']
     >(
-      (event: {
-        nativeEvent: {id: string; type: string; addressType: string};
-      }) => {
+      (event: {nativeEvent: CheckoutAddressChangeStart}) => {
         if (!event.nativeEvent) return;
-        onAddressChangeIntent?.(event.nativeEvent);
+        onAddressChangeStart?.(event.nativeEvent);
       },
-      [onAddressChangeIntent],
+      [onAddressChangeStart],
     );
 
     const handlePaymentChangeIntent = useCallback<
@@ -317,13 +319,14 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
         checkoutUrl={checkoutUrl}
         auth={auth}
         style={style}
+        testID={testID}
         onLoad={handleLoad}
         onStart={handleStart}
         onError={handleError}
         onComplete={handleComplete}
         onCancel={handleCancel}
         onLinkClick={handleLinkClick}
-        onAddressChangeIntent={handleAddressChangeIntent}
+        onAddressChangeStart={handleAddressChangeStart}
         onPaymentChangeIntent={handlePaymentChangeIntent}
       />
     );
