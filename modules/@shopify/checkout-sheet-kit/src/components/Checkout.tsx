@@ -30,6 +30,7 @@ import type {
   CheckoutAddressChangeStart,
   CheckoutCompleteEvent,
   CheckoutException,
+  CheckoutPaymentMethodChangeStart,
   CheckoutStartEvent,
 } from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';

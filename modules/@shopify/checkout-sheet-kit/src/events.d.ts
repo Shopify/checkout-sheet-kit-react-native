@@ -532,17 +532,68 @@ export interface CheckoutAddressChangeStartResponse {
 }
 
 /**
+ * Card brand identifiers for payment instruments.
+ * Matches Storefront API card brand values.
+ */
+export type CardBrand =
+  | 'VISA'
+  | 'MASTERCARD'
+  | 'AMERICAN_EXPRESS'
+  | 'DISCOVER'
+  | 'DINERS_CLUB'
+  | 'JCB'
+  | 'MAESTRO'
+  | 'UNKNOWN';
+
+/**
+ * Expiry date for a payment instrument.
+ */
+export interface ExpiryInput {
+  /** Month (1-12) */
+  month: number;
+  /** Four-digit year */
+  year: number;
+}
+
+/**
+ * Display fields for a payment instrument shown to the buyer.
+ */
+export interface CartPaymentInstrumentDisplayInput {
+  /** Last 4 digits of the card number */
+  last4: string;
+  /** Card brand (e.g., VISA, MASTERCARD) */
+  brand: CardBrand;
+  /** Name of the cardholder */
+  cardHolderName: string;
+  /** Card expiry date */
+  expiry: ExpiryInput;
+}
+
+/**
+ * Input type for creating/updating payment instruments, aligned with Storefront API.
+ * Display fields are grouped separately from the billing address.
+ *
+ * @see https://shopify.dev/docs/api/storefront/latest/input-objects/CartPaymentInstrumentInput
+ */
+export interface CartPaymentInstrumentInput {
+  /** Unique identifier for this payment instrument */
+  externalReference: string;
+  /** Display information for the payment instrument */
+  display: CartPaymentInstrumentDisplayInput;
+  /** Billing address for the payment instrument */
+  billingAddress: MailingAddressInput;
+}
+
+/**
  * Event emitted when the buyer intends to change their payment method.
  */
-/** Unique identifier for this event instance */
 export interface CheckoutPaymentMethodChangeStart {
+  /** Unique identifier for this event instance */
   id: string;
   /** Type of payment change event */
-  type: string;
+  type: 'paymentMethodChangeStart';
+  /** Cart state with current payment instruments */
   cart?: {
-    paymentInstruments?: Array<{
-      type: string;
-      details?: any;
-    }>;
+    paymentInstruments?: CartPaymentInstrumentInput[];
   };
 }
