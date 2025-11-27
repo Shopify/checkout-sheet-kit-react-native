@@ -329,7 +329,7 @@ public class RCTCheckoutWebView extends FrameLayout implements CheckoutEventProc
     }
 
     private WritableMap serializeToWritableMap(Object event) {
-        Map<String, Object> map = mapper.convertValue(event, new TypeReference<Map<String, Object>>() {});
+        Map<String, Object> map = mapper.convertValue(event, new TypeReference<>() {});
         return Arguments.makeNativeMap(map);
     }
 

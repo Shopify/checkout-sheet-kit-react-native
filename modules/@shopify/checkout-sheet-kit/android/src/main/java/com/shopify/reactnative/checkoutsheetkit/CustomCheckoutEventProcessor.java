@@ -192,15 +192,16 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
   // Private
 
-  private Map<String, Object> populateErrorDetails(CheckoutException checkoutError) {
-    Map<String, Object> errorMap = new HashMap<>();
-    errorMap.put("__typename", getErrorTypeName(checkoutError));
-    errorMap.put("message", checkoutError.getErrorDescription());
-    errorMap.put("recoverable", checkoutError.isRecoverable());
-    errorMap.put("code", checkoutError.getErrorCode());
+  private Map<String, Object> populateErrorDetails(CheckoutException error) {
+    Map<String, Object> errorMap = new HashMap<>(Map.of(
+      "__typename", getErrorTypeName(error),
+      "message", error.getErrorDescription(),
+      "recoverable", error.isRecoverable(),
+      "code", error.getErrorCode()
+    ));
 
-    if (checkoutError instanceof HttpException) {
-      errorMap.put("statusCode", ((HttpException) checkoutError).getStatusCode());
+    if (error instanceof HttpException) {
+      errorMap.put("statusCode", ((HttpException) error).getStatusCode());
     }
 
     return errorMap;
