@@ -24,6 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 package com.shopify.reactnative.checkoutsheetkit;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
@@ -299,9 +300,7 @@ public class RCTCheckoutWebView extends FrameLayout {
 
         @Override
         public void onFail(@NonNull CheckoutException error) {
-            WritableMap params = Arguments.createMap();
-            params.putMap("error", buildErrorMap(error));
-            sendEvent("onError", params);
+            sendEvent("onError", buildErrorMap(error));
         }
 
         @Override
@@ -324,6 +323,13 @@ public class RCTCheckoutWebView extends FrameLayout {
             } catch (Exception e) {
                 Log.e(TAG, "Error processing address change start event", e);
             }
+        }
+
+        @Override
+        public void onLinkClick(@NonNull Uri uri) {
+            WritableMap params = Arguments.createMap();
+            params.putString("url", uri.toString());
+            sendEvent("onLinkClick", params);
         }
     }
 }
