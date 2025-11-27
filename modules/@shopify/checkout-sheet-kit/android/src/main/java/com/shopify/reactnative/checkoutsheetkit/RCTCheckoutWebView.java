@@ -24,7 +24,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 package com.shopify.reactnative.checkoutsheetkit;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
@@ -32,6 +31,7 @@ import android.util.Log;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -45,54 +45,31 @@ import com.shopify.checkoutsheetkit.CheckoutOptions;
 import com.shopify.checkoutsheetkit.CheckoutWebView;
 import com.shopify.checkoutsheetkit.CheckoutWebViewEventProcessor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.Objects;
 
 import kotlin.Unit;
 
 public class RCTCheckoutWebView extends FrameLayout {
     private static final String TAG = "RCTCheckoutWebView";
-  private final ThemedReactContext context;
+    private final ThemedReactContext context;
 
-  private CheckoutWebView checkoutWebView;
+    private CheckoutWebView checkoutWebView;
     private String checkoutUrl;
     private String auth;
     private boolean pendingSetup = false;
     private CheckoutConfiguration lastConfiguration = null;
-    private final ObjectMapper mapper = new ObjectMapper();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-  private record CheckoutConfiguration(String url, String authToken) {
-
-    @Override
-    public boolean equals(Object obj) {
-      if (!(obj instanceof CheckoutConfiguration other)) {
-        return false;
-      }
-      return url.equals(other.url) &&
-        ((authToken == null && other.authToken == null) ||
-          (authToken != null && authToken.equals(other.authToken)));
-    }
-  }
+    private record CheckoutConfiguration(String url, String authToken) {}
 
     public RCTCheckoutWebView(ThemedReactContext context) {
         super(context);
         this.context = context;
-        Log.d(TAG, "RCTCheckoutWebView constructor called");
-        init();
     }
 
     public RCTCheckoutWebView(ThemedReactContext context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
-        Log.d(TAG, "RCTCheckoutWebView constructor with attrs called");
-        init();
-    }
-
-    private void init() {
-        // Empty initialization - WebView will be created when URL is set
-        Log.d(TAG, "RCTCheckoutWebView initialized");
     }
 
     public void setCheckoutUrl(String url) {
@@ -162,7 +139,7 @@ public class RCTCheckoutWebView extends FrameLayout {
       checkoutWebView.setEventProcessor(webViewEventProcessor);
 
         // Configure authentication if provided
-        CheckoutOptions options = null;
+        CheckoutOptions options = new CheckoutOptions();
         if (auth != null && !auth.isEmpty()) {
             options = new CheckoutOptions(new Authentication.Token(auth));
         }
@@ -247,8 +224,7 @@ public class RCTCheckoutWebView extends FrameLayout {
     }
 
     private void sendEvent(String eventName, WritableMap params) {
-        ReactContext reactContext = (ReactContext) getContext();
-        reactContext.getJSModule(RCTEventEmitter.class)
-            .receiveEvent(getId(), eventName, params);
+        ReactContext reactContext = this.context.getReactApplicationContext();
+        reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(getId(), eventName, params);
     }
 }
