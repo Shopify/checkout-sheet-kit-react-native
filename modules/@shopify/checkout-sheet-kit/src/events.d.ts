@@ -358,10 +358,6 @@ export interface CheckoutStartEvent {
 /**
  * Error object returned in checkout event responses.
  * Used to communicate validation or processing errors back to checkout.
- *
- * Aligns with native SDK ResponseError structure:
- * - Android: com.shopify.checkoutsheetkit.rpc.events.ResponseError
- * - iOS: ShopifyCheckoutSheetKit.ResponseError
  */
 export interface CheckoutResponseError {
   /**
@@ -527,7 +523,7 @@ export interface CheckoutAddressChangeStart {
  */
 export interface CheckoutAddressChangeStartResponse {
   /**
-   * Updated cart input with delivery addresses and optional buyer identity.
+   * Updated cart input with the delivery address to set.
    */
   cart?: CartInput;
   /**

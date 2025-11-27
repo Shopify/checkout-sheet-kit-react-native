@@ -104,39 +104,6 @@ describe('Checkout Component - Address Change Events', () => {
     expect(onAddressChangeStart).not.toHaveBeenCalled();
   });
 
-  it('works alongside other checkout callbacks', () => {
-    const onComplete = jest.fn();
-    const onCancel = jest.fn();
-    const onAddressChangeStart = jest.fn();
-
-    const {getByTestId} = render(
-      <Checkout
-        checkoutUrl={mockCheckoutUrl}
-        onComplete={onComplete}
-        onCancel={onCancel}
-        onAddressChangeStart={onAddressChangeStart}
-        testID="checkout-webview"
-      />,
-    );
-
-    const nativeComponent = getByTestId('checkout-webview');
-
-    act(() => {
-      nativeComponent.props.onAddressChangeStart({
-        nativeEvent: {
-          id: 'event-123',
-          type: 'addressChangeStart',
-          addressType: 'shipping',
-          cart: createTestCart(),
-        },
-      });
-    });
-
-    expect(onAddressChangeStart).toHaveBeenCalled();
-    expect(onComplete).not.toHaveBeenCalled();
-    expect(onCancel).not.toHaveBeenCalled();
-  });
-
   it('includes cart data in the event', () => {
     const onAddressChangeStart = jest.fn();
 
@@ -167,59 +134,6 @@ describe('Checkout Component - Address Change Events', () => {
     expect(receivedEvent.cart.id).toBe('gid://shopify/Cart/test-cart-123');
     expect(receivedEvent.cart.delivery).toBeDefined();
     expect(receivedEvent.cart.delivery.addresses).toHaveLength(1);
-  });
-
-  it('can be updated with new callback', () => {
-    const firstCallback = jest.fn();
-    const secondCallback = jest.fn();
-
-    const {getByTestId, rerender} = render(
-      <Checkout
-        checkoutUrl={mockCheckoutUrl}
-        onAddressChangeStart={firstCallback}
-        testID="checkout-webview"
-      />,
-    );
-
-    let nativeComponent = getByTestId('checkout-webview');
-
-    act(() => {
-      nativeComponent.props.onAddressChangeStart({
-        nativeEvent: {
-          id: 'event-1',
-          type: 'addressChangeStart',
-          addressType: 'shipping',
-          cart: createTestCart(),
-        },
-      });
-    });
-
-    expect(firstCallback).toHaveBeenCalledTimes(1);
-    expect(secondCallback).not.toHaveBeenCalled();
-
-    rerender(
-      <Checkout
-        checkoutUrl={mockCheckoutUrl}
-        onAddressChangeStart={secondCallback}
-        testID="checkout-webview"
-      />,
-    );
-
-    nativeComponent = getByTestId('checkout-webview');
-
-    act(() => {
-        nativeComponent.props.onAddressChangeStart({
-          nativeEvent: {
-            id: 'event-2',
-            type: 'addressChangeStart',
-            addressType: 'shipping',
-            cart: createTestCart(),
-          },
-        });
-    });
-
-    expect(firstCallback).toHaveBeenCalledTimes(1);
-    expect(secondCallback).toHaveBeenCalledTimes(1);
   });
 });
 

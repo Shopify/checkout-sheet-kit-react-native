@@ -40,7 +40,7 @@ export default function CheckoutScreen(props: {
   const ref = useRef<CheckoutRef>(null);
 
   const onCheckoutStart = (event: CheckoutStartEvent) => {
-    console.log('Checkout start', JSON.stringify(event, null, 2));
+    console.log('Start', JSON.stringify(event, null, 2));
   };
 
   const onAddressChangeStart = (event: CheckoutAddressChangeStart) => {
