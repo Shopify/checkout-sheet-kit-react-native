@@ -46,8 +46,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
+  private static final String TAG = "CustomCheckoutEventProcessor";
+
   private final ReactApplicationContext reactContext;
   private final ObjectMapper mapper = new ObjectMapper();
+  private CheckoutEventProcessor eventListener;
 
   // Geolocation-specific variables
 
@@ -60,6 +63,10 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   }
 
   // Public methods
+
+  public void setEventListener(CheckoutEventProcessor listener) {
+    this.eventListener = listener;
+  }
 
   public void invokeGeolocationCallback(boolean allow) {
     if (geolocationCallback != null) {
@@ -98,7 +105,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
       event.put("origin", origin);
       sendEventWithStringData("geolocationRequest", mapper.writeValueAsString(event));
     } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error emitting \"geolocationRequest\" event", e);
+      Log.e(TAG, "Error emitting \"geolocationRequest\" event", e);
     }
   }
 
@@ -113,58 +120,73 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
   @Override
   public void onFail(@NonNull CheckoutException checkoutError) {
-    try {
-      String data = mapper.writeValueAsString(populateErrorDetails(checkoutError));
-      sendEventWithStringData("error", data);
-    } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error processing checkout failed event", e);
+    if (eventListener != null) {
+      eventListener.onFail(checkoutError);
+    } else {
+      try {
+        String data = mapper.writeValueAsString(populateErrorDetails(checkoutError));
+        sendEventWithStringData("error", data);
+      } catch (IOException e) {
+        Log.e(TAG, "Error processing checkout failed event", e);
+      }
     }
   }
 
   @Override
   public void onCancel() {
-    sendEvent("close", null);
+    if (eventListener != null) {
+      eventListener.onCancel();
+    } else {
+      sendEvent("close", null);
+    }
   }
 
   @Override
   public void onComplete(@NonNull CheckoutCompleteEvent event) {
-    try {
-      String data = mapper.writeValueAsString(event);
-      sendEventWithStringData("complete", data);
-    } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error processing complete event", e);
+    if (eventListener != null) {
+      eventListener.onComplete(event);
+    } else {
+      try {
+        String data = mapper.writeValueAsString(event);
+        sendEventWithStringData("complete", data);
+      } catch (IOException e) {
+        Log.e(TAG, "Error processing complete event", e);
+      }
     }
   }
 
   @Override
   public void onStart(@NonNull CheckoutStartEvent event) {
-    try {
-      String data = mapper.writeValueAsString(event);
-      sendEventWithStringData("start", data);
-    } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error processing start event", e);
+    if (eventListener != null) {
+      eventListener.onStart(event);
+    } else {
+      try {
+        String data = mapper.writeValueAsString(event);
+        sendEventWithStringData("start", data);
+      } catch (IOException e) {
+        Log.e(TAG, "Error processing start event", e);
+      }
     }
   }
 
   @Override
   public void onAddressChangeStart(@NonNull CheckoutAddressChangeStart event) {
-    try {
-      CheckoutAddressChangeStartEvent params = event.getParams();
-      if (params == null) {
-        Log.e("ShopifyCheckoutSheetKit", "Address change event has null params");
-        return;
+    if (eventListener != null) {
+      eventListener.onAddressChangeStart(event);
+    } else {
+      try {
+        CheckoutAddressChangeStartEvent params = event.getParams();
+        Map<String, Object> eventData = new HashMap<>();
+        eventData.put("id", event.getId());
+        eventData.put("type", "addressChangeStart");
+        eventData.put("addressType", params.getAddressType());
+        eventData.put("cart", params.getCart());
+
+        String data = mapper.writeValueAsString(eventData);
+        sendEventWithStringData("addressChangeStart", data);
+      } catch (IOException e) {
+        Log.e(TAG, "Error processing address change start event", e);
       }
-
-      Map<String, Object> eventData = new HashMap<>();
-      eventData.put("id", event.getId());
-      eventData.put("type", "addressChangeStart");
-      eventData.put("addressType", params.getAddressType());
-      eventData.put("cart", params.getCart());
-
-      String data = mapper.writeValueAsString(eventData);
-      sendEventWithStringData("addressChangeStart", data);
-    } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error processing address change start event", e);
     }
   }
 

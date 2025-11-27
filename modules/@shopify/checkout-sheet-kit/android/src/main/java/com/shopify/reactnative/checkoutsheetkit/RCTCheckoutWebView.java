@@ -31,7 +31,6 @@ import android.util.Log;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -41,17 +40,40 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import com.shopify.checkoutsheetkit.Authentication;
+import com.shopify.checkoutsheetkit.CheckoutEventProcessor;
+import com.shopify.checkoutsheetkit.CheckoutException;
 import com.shopify.checkoutsheetkit.CheckoutOptions;
 import com.shopify.checkoutsheetkit.CheckoutWebView;
 import com.shopify.checkoutsheetkit.CheckoutWebViewEventProcessor;
+import com.shopify.checkoutsheetkit.HttpException;
+import com.shopify.checkoutsheetkit.CheckoutExpiredException;
+import com.shopify.checkoutsheetkit.ClientException;
+import com.shopify.checkoutsheetkit.ConfigurationException;
+import com.shopify.checkoutsheetkit.CheckoutSheetKitException;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
 
+import android.net.Uri;
+import android.webkit.GeolocationPermissions;
+import android.webkit.PermissionRequest;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.Map;
 import java.util.Objects;
 
 import kotlin.Unit;
 
-public class RCTCheckoutWebView extends FrameLayout {
+public class RCTCheckoutWebView extends FrameLayout implements CheckoutEventProcessor {
     private static final String TAG = "RCTCheckoutWebView";
     private final ThemedReactContext context;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     private CheckoutWebView checkoutWebView;
     private String checkoutUrl;
@@ -168,8 +190,11 @@ public class RCTCheckoutWebView extends FrameLayout {
     Activity currentActivity = this.context.getCurrentActivity();
     ReactApplicationContext reactAppContext = this.context.getReactApplicationContext();
 
+    CustomCheckoutEventProcessor eventProcessor = new CustomCheckoutEventProcessor(currentActivity, reactAppContext);
+    eventProcessor.setEventListener(this);
+
     return new CheckoutWebViewEventProcessor(
-        new CustomCheckoutEventProcessor(currentActivity, reactAppContext),
+        eventProcessor,
         (visible) -> Unit.INSTANCE, // toggleHeader
         (error) -> Unit.INSTANCE, // closeCheckoutDialogWithError
         (visibility) -> Unit.INSTANCE, // setProgressBarVisibility
@@ -223,6 +248,121 @@ public class RCTCheckoutWebView extends FrameLayout {
         // The webview will be properly cleaned up in the ViewManager's onDropViewInstance instead
     }
 
+    @Override
+    public void onStart(@NonNull CheckoutStartEvent event) {
+        try {
+            WritableMap data = serializeToWritableMap(event);
+            sendEvent("onStart", data);
+        } catch (Exception e) {
+            Log.e(TAG, "Error processing start event", e);
+        }
+    }
+
+    @Override
+    public void onComplete(@NonNull CheckoutCompleteEvent event) {
+        try {
+            WritableMap data = serializeToWritableMap(event);
+            sendEvent("onComplete", data);
+        } catch (Exception e) {
+            Log.e(TAG, "Error processing complete event", e);
+        }
+    }
+
+    @Override
+    public void onFail(@NonNull CheckoutException error) {
+        WritableMap params = Arguments.createMap();
+        params.putMap("error", buildErrorMap(error));
+        sendEvent("onError", params);
+    }
+
+    @Override
+    public void onCancel() {
+        sendEvent("onCancel", null);
+    }
+
+    @Override
+    public void onAddressChangeStart(@NonNull CheckoutAddressChangeStart event) {
+        try {
+            CheckoutAddressChangeStartEvent params = event.getParams();
+            WritableMap eventMap = Arguments.createMap();
+            eventMap.putString("id", event.getId());
+            eventMap.putString("type", "addressChangeStart");
+            eventMap.putString("addressType", params.getAddressType());
+
+            String cartData = mapper.writeValueAsString(params.getCart());
+            eventMap.putString("cartData", cartData);
+
+            sendEvent("onAddressChangeStart", eventMap);
+        } catch (Exception e) {
+            Log.e(TAG, "Error processing address change start event", e);
+        }
+    }
+
+    @Override
+    public void onLinkClick(@NonNull Uri uri) {
+        // Not used in inline view - handled by CustomCheckoutEventProcessor
+    }
+
+    @Override
+    public void onPermissionRequest(@NonNull PermissionRequest permissionRequest) {
+        // Not used in inline view
+    }
+
+    @Override
+    public boolean onShowFileChooser(
+            @NonNull WebView webView,
+            @NonNull ValueCallback<Uri[]> filePathCallback,
+            @NonNull WebChromeClient.FileChooserParams fileChooserParams) {
+        return false;
+    }
+
+    @Override
+    public void onGeolocationPermissionsShowPrompt(
+            @NonNull String origin,
+            @NonNull GeolocationPermissions.Callback callback) {
+        // Handled by CustomCheckoutEventProcessor
+    }
+
+    @Override
+    public void onGeolocationPermissionsHidePrompt() {
+        // Handled by CustomCheckoutEventProcessor
+    }
+
+    private WritableMap serializeToWritableMap(Object event) {
+        Map<String, Object> map = mapper.convertValue(event, new TypeReference<Map<String, Object>>() {});
+        return Arguments.makeNativeMap(map);
+    }
+
+    private WritableMap buildErrorMap(CheckoutException error) {
+        WritableMap errorMap = Arguments.createMap();
+        errorMap.putString("__typename", getErrorTypeName(error));
+        errorMap.putString("message", error.getErrorDescription());
+        errorMap.putBoolean("recoverable", error.isRecoverable());
+        errorMap.putString("code", error.getErrorCode());
+        if (error instanceof HttpException) {
+            errorMap.putInt("statusCode", ((HttpException) error).getStatusCode());
+        }
+        return errorMap;
+    }
+
+    private String getErrorTypeName(CheckoutException error) {
+        if (error instanceof CheckoutExpiredException) {
+            return "CheckoutExpiredError";
+        } else if (error instanceof ClientException) {
+            return "CheckoutClientError";
+        } else if (error instanceof HttpException) {
+            return "CheckoutHTTPError";
+        } else if (error instanceof ConfigurationException) {
+            return "ConfigurationError";
+        } else if (error instanceof CheckoutSheetKitException) {
+            return "InternalError";
+        } else {
+            return "UnknownError";
+        }
+    }
+
+    // Emits events back on to callbacks passed to the React Component
+    // e.g. <RCTCheckout onComplete={/* Calls this method */} />
     private void sendEvent(String eventName, WritableMap params) {
         ReactContext reactContext = this.context.getReactApplicationContext();
         reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(getId(), eventName, params);
