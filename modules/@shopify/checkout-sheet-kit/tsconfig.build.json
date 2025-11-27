@@ -1,5 +1,6 @@
 
 {
+  "exclude": ["tests"],
   "compilerOptions": {
     "rootDir": ".",
     "allowUnreachableCode": false,
