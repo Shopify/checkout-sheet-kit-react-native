@@ -32,8 +32,10 @@ target 'ReactNative' do
   pod "RNShopifyCheckoutSheetKit", :path => "../../modules/@shopify/checkout-sheet-kit"
 
   # Adjust these to point to where you cloned checkout-sheet-kit-swift
-  pod "ShopifyCheckoutSheetKit", :path => "~/src/github.com/Shopify/checkout-sheet-kit-swift"
-  pod "ShopifyCheckoutSheetKit/AcceleratedCheckouts", :path => "~/src/github.com/Shopify/checkout-sheet-kit-swift"
+  # Can be overridden via SWIFT_SDK_PATH env var (used in CI)
+  swift_sdk_path = ENV['SWIFT_SDK_PATH'] || "~/src/github.com/Shopify/checkout-sheet-kit-swift"
+  pod "ShopifyCheckoutSheetKit", :path => swift_sdk_path
+  pod "ShopifyCheckoutSheetKit/AcceleratedCheckouts", :path => swift_sdk_path
 
   target 'ReactNativeTests' do
     inherit! :complete

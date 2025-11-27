@@ -91,6 +91,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
+      - name: Checkout checkout-sheet-kit-android
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: Shopify/checkout-sheet-kit-android
+          ref: prototype/development
+          path: checkout-sheet-kit-android
+
       - name: Setup
         uses: ./.github/actions/setup
 
@@ -101,6 +108,12 @@ jobs:
           distribution: 'zulu'
           java-version: ${{ env.JAVA_VERSION }}
 
+      - name: Publish Android SDK to Maven Local
+        env:
+          GRADLE_OPTS: -Xmx4g -XX:MaxMetaspaceSize=768m
+          JAVA_HOME: ${{ steps.setup-java.outputs.path }}
+        run: ./scripts/publish_android_snapshot ./checkout-sheet-kit-android
+
       - name: Run Android tests
         timeout-minutes: 20
         env:
@@ -110,7 +123,7 @@ jobs:
           echo "JAVA_HOME: $JAVA_HOME"
           java -version
           javac -version
-          echo "STOREFRONT_DOMAIN=myshopify.com" > sample/.env
+          cp sample/.env.example sample/.env
           yarn module build
           yarn sample test:android --no-daemon
 
@@ -119,9 +132,18 @@ jobs:
     runs-on: macos-26-xlarge
     timeout-minutes: 20
     needs: [lint, test]
+    env:
+      SWIFT_SDK_PATH: ${{ github.workspace }}/checkout-sheet-kit-swift
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Checkout checkout-sheet-kit-swift
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: Shopify/checkout-sheet-kit-swift
+          ref: prototype/development
+          path: checkout-sheet-kit-swift
 
       - name: Display Current Xcode Information
         run: |
@@ -133,8 +155,21 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Setup sample environment
+        run: |
+          cp sample/.env.example sample/.env
+          yarn env-to-xcconfig
+
       - name: Install cocoapods
         uses: ./.github/actions/install-cocoapods
+        continue-on-error: true
+
+      - name: Update pods for local Swift SDK
+        run: |
+          cd sample
+          bundle install
+          cd ios
+          bundle exec pod install --repo-update
 
       - name: Run Swift tests
         run: |
