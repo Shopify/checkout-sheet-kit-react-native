@@ -23,10 +23,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 package com.shopify.reactnative.checkoutsheetkit;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 
+/**
+ * Can be used to send events back to props of instances of components
+ *
+ *     private void sendEvent(String eventName, WritableMap params) {
+ *         ReactContext reactContext = this.context.getReactApplicationContext();
+ *         int viewId = getId();
+ *         EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, viewId);
+ *         int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
+ *         eventDispatcher.dispatchEvent(new CheckoutEvent(surfaceId, viewId, eventName, params));
+ *     }
+**/
 public class CheckoutEvent extends Event<CheckoutEvent> {
     private final String eventName;
     private final WritableMap payload;
@@ -37,6 +50,7 @@ public class CheckoutEvent extends Event<CheckoutEvent> {
         this.payload = payload;
     }
 
+    @NonNull
     @Override
     public String getEventName() {
         return eventName;
