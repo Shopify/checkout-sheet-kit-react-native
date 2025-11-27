@@ -38,7 +38,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
-import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
 import com.shopify.checkoutsheetkit.Authentication;
@@ -360,27 +359,6 @@ public class RCTCheckoutWebView extends FrameLayout implements CheckoutEventProc
             return "InternalError";
         } else {
             return "UnknownError";
-        }
-    }
-
-    private static class CheckoutEvent extends Event<CheckoutEvent> {
-        private final String eventName;
-        private final WritableMap payload;
-
-        CheckoutEvent(int surfaceId, int viewId, String eventName, WritableMap payload) {
-            super(surfaceId, viewId);
-            this.eventName = eventName;
-            this.payload = payload;
-        }
-
-        @Override
-        public String getEventName() {
-            return eventName;
-        }
-
-        @Override
-        protected WritableMap getEventData() {
-            return payload != null ? payload : Arguments.createMap();
         }
     }
 
