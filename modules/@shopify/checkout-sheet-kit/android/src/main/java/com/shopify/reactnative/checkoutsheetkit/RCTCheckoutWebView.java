@@ -37,7 +37,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.UIManagerHelper;
+import com.facebook.react.uimanager.events.Event;
+import com.facebook.react.uimanager.events.EventDispatcher;
 
 import com.shopify.checkoutsheetkit.Authentication;
 import com.shopify.checkoutsheetkit.CheckoutEventProcessor;
@@ -361,10 +363,38 @@ public class RCTCheckoutWebView extends FrameLayout implements CheckoutEventProc
         }
     }
 
-    // Emits events back on to callbacks passed to the React Component
-    // e.g. <RCTCheckout onComplete={/* Calls this method */} />
+    private static class CheckoutEvent extends Event<CheckoutEvent> {
+        private final String eventName;
+        private final WritableMap payload;
+
+        CheckoutEvent(int surfaceId, int viewId, String eventName, WritableMap payload) {
+            super(surfaceId, viewId);
+            this.eventName = eventName;
+            this.payload = payload;
+        }
+
+        @Override
+        public String getEventName() {
+            return eventName;
+        }
+
+        @Override
+        protected WritableMap getEventData() {
+            return payload != null ? payload : Arguments.createMap();
+        }
+    }
+
     private void sendEvent(String eventName, WritableMap params) {
         ReactContext reactContext = this.context.getReactApplicationContext();
-        reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(getId(), eventName, params);
+        int viewId = getId();
+
+        EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, viewId);
+        if (eventDispatcher == null) {
+            Log.w(TAG, "Cannot send event '" + eventName + "': EventDispatcher not available (viewId=" + viewId + ")");
+            return;
+        }
+
+        int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
+        eventDispatcher.dispatchEvent(new CheckoutEvent(surfaceId, viewId, eventName, params));
     }
 }
