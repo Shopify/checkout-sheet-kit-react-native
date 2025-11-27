@@ -17,8 +17,6 @@ buildscript {
       classpath("com.android.tools.build:gradle:8.6.0")
       classpath("com.facebook.react:react-native-gradle-plugin")
       classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
-      classpath("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
-      classpath("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8")
     }
 }
 
