@@ -112,10 +112,7 @@ jobs:
         env:
           GRADLE_OPTS: -Xmx4g -XX:MaxMetaspaceSize=768m
           JAVA_HOME: ${{ steps.setup-java.outputs.path }}
-          CHECKOUT_SHEET_KIT_VERSION: 4.0.0-SNAPSHOT
-        run: |
-          cd checkout-sheet-kit-android
-          ./gradlew clean :lib:publishToMavenLocal
+        run: ./scripts/publish_android_snapshot ./checkout-sheet-kit-android
 
       - name: Run Android tests
         timeout-minutes: 20
