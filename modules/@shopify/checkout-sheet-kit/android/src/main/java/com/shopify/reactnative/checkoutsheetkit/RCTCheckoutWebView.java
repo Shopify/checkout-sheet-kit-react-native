@@ -187,7 +187,7 @@ public class RCTCheckoutWebView extends FrameLayout implements CheckoutEventProc
     Activity currentActivity = this.context.getCurrentActivity();
     ReactApplicationContext reactAppContext = this.context.getReactApplicationContext();
 
-    CustomCheckoutEventProcessor eventProcessor = new CustomCheckoutEventProcessor(currentActivity, reactAppContext);
+    SheetCheckoutEventProcessor eventProcessor = new SheetCheckoutEventProcessor(currentActivity, reactAppContext);
     eventProcessor.setEventListener(this);
 
     return new CheckoutWebViewEventProcessor(

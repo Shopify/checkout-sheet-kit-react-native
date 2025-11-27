@@ -39,14 +39,13 @@ import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
-  private static final String TAG = "CustomCheckoutEventProcessor";
+public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
+  private static final String TAG = "InlineCheckoutEventProcessor";
 
   private final ReactApplicationContext reactContext;
   private final ObjectMapper mapper = new ObjectMapper();
@@ -57,7 +56,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   private String geolocationOrigin;
   private GeolocationPermissions.Callback geolocationCallback;
 
-  public CustomCheckoutEventProcessor(Context context, ReactApplicationContext reactContext) {
+  public SheetCheckoutEventProcessor(Context context, ReactApplicationContext reactContext) {
     super(context);
     this.reactContext = reactContext;
   }

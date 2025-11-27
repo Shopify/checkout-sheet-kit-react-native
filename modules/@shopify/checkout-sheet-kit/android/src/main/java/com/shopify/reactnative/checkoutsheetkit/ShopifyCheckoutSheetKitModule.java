@@ -48,7 +48,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
   private CheckoutSheetKitDialog checkoutSheet;
 
-  private CustomCheckoutEventProcessor checkoutEventProcessor;
+  private SheetCheckoutEventProcessor checkoutEventProcessor;
 
   public ShopifyCheckoutSheetKitModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -88,7 +88,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   public void present(String checkoutURL, ReadableMap options) {
     Activity currentActivity = getCurrentActivity();
     if (currentActivity instanceof ComponentActivity) {
-      checkoutEventProcessor = new CustomCheckoutEventProcessor(currentActivity, this.reactContext);
+      checkoutEventProcessor = new SheetCheckoutEventProcessor(currentActivity, this.reactContext);
       CheckoutOptions checkoutOptions = parseCheckoutOptions(options);
       currentActivity.runOnUiThread(() -> {
         checkoutSheet = ShopifyCheckoutSheetKit.present(checkoutURL, (ComponentActivity) currentActivity,
