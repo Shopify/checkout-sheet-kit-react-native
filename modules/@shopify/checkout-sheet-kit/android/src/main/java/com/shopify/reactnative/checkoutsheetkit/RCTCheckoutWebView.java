@@ -66,6 +66,7 @@ import android.webkit.WebView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -178,11 +179,6 @@ public class RCTCheckoutWebView extends FrameLayout implements CheckoutEventProc
         checkoutWebView.loadCheckout(url, options);
         checkoutWebView.notifyPresented();
 
-        // Send onLoad event
-        WritableMap event = Arguments.createMap();
-        event.putString("url", url);
-        sendEvent("onLoad", event);
-
         lastConfiguration = configuration;
     }
 
@@ -285,15 +281,14 @@ public class RCTCheckoutWebView extends FrameLayout implements CheckoutEventProc
     public void onAddressChangeStart(@NonNull CheckoutAddressChangeStart event) {
         try {
             CheckoutAddressChangeStartEvent params = event.getParams();
-            WritableMap eventMap = Arguments.createMap();
-            eventMap.putString("id", event.getId());
-            eventMap.putString("type", "addressChangeStart");
-            eventMap.putString("addressType", params.getAddressType());
+            Map<String, Object> eventData = new HashMap<>();
 
-            String cartData = mapper.writeValueAsString(params.getCart());
-            eventMap.putString("cartData", cartData);
+            eventData.put("id", event.getId());
+            eventData.put("type", "addressChangeStart");
+            eventData.put("addressType", params.getAddressType());
+            eventData.put("cart", params.getCart());
 
-            sendEvent("onAddressChangeStart", eventMap);
+            sendEvent("onAddressChangeStart", serializeToWritableMap(eventData));
         } catch (Exception e) {
             Log.e(TAG, "Error processing address change start event", e);
         }

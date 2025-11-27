@@ -85,14 +85,12 @@ public class RCTCheckoutWebViewManager extends SimpleViewManager<RCTCheckoutWebV
     @Override
     public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
         Map<String, Object> events = new HashMap<>();
-        events.put("onLoad", createEventMap("onLoad"));
         events.put("onStart", createEventMap("onStart"));
         events.put("onError", createEventMap("onError"));
         events.put("onComplete", createEventMap("onComplete"));
         events.put("onCancel", createEventMap("onCancel"));
-        events.put("onClickLink", createEventMap("onClickLink"));
+        events.put("onLinkClick", createEventMap("onLinkClick"));
         events.put("onAddressChangeStart", createEventMap("onAddressChangeStart"));
-        events.put("onPaymentMethodChangeStart", createEventMap("onPaymentMethodChangeStart"));
         return events;
     }
 

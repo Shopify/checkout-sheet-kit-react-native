@@ -49,11 +49,6 @@ export interface CheckoutProps {
   auth?: string;
 
   /**
-   * Called when the webview loads
-   */
-  onLoad?: (event: {url: string}) => void;
-
-  /**
    * Called when checkout starts, providing the initial cart state
    */
   onStart?: (event: CheckoutStartEvent) => void;
@@ -87,11 +82,6 @@ export interface CheckoutProps {
   onAddressChangeStart?: (event: CheckoutAddressChangeStart) => void;
 
   /**
-   * Called when checkout requests a payment method change (e.g., for native payment selector)
-   */
-  onPaymentChangeIntent?: (event: CheckoutPaymentChangeIntent) => void;
-
-  /**
    * Style for the webview container
    */
   style?: ViewStyle;
@@ -114,23 +104,12 @@ interface NativeCheckoutWebViewProps {
   auth?: string;
   style?: ViewStyle;
   testID?: string;
-  onLoad?: (event: {nativeEvent: {url: string}}) => void;
   onStart?: (event: {nativeEvent: CheckoutStartEvent}) => void;
   onError?: (event: {nativeEvent: CheckoutException}) => void;
   onComplete?: (event: {nativeEvent: CheckoutCompleteEvent}) => void;
   onCancel?: () => void;
   onLinkClick?: (event: {nativeEvent: {url: string}}) => void;
   onAddressChangeStart?: (event: {nativeEvent: CheckoutAddressChangeStart}) => void;
-  onPaymentChangeIntent?: (event: {
-    nativeEvent: {
-      id: string;
-      type: string;
-      currentCard?: {
-        last4: string;
-        brand: string;
-      };
-    };
-  }) => void;
 }
 
 const RCTCheckoutWebView =
@@ -182,14 +161,12 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
     {
       checkoutUrl,
       auth,
-      onLoad,
       onStart,
       onError,
       onComplete,
       onCancel,
       onLinkClick,
       onAddressChangeStart,
-      onPaymentChangeIntent,
       style,
       testID,
     },
@@ -208,14 +185,6 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       return () => eventContext.unregisterWebView();
     }, [eventContext]);
 
-    const handleLoad = useCallback<
-      Required<NativeCheckoutWebViewProps>['onLoad']
-    >(
-      event => {
-        onLoad?.(event.nativeEvent);
-      },
-      [onLoad],
-    );
 
     const handleStart = useCallback<
       Required<NativeCheckoutWebViewProps>['onStart']
@@ -270,22 +239,6 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       [onAddressChangeStart],
     );
 
-    const handlePaymentChangeIntent = useCallback<
-      Required<NativeCheckoutWebViewProps>['onPaymentChangeIntent']
-    >(
-      (event: {
-        nativeEvent: {
-          id: string;
-          type: string;
-          currentCard?: {last4: string; brand: string};
-        };
-      }) => {
-        if (!event.nativeEvent) return;
-        onPaymentChangeIntent?.(event.nativeEvent);
-      },
-      [onPaymentChangeIntent],
-    );
-
     const reload = useCallback(() => {
       if (!webViewRef.current) {
         return;
@@ -314,14 +267,12 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
         auth={auth}
         style={style}
         testID={testID}
-        onLoad={handleLoad}
         onStart={handleStart}
         onError={handleError}
         onComplete={handleComplete}
         onCancel={handleCancel}
         onLinkClick={handleLinkClick}
         onAddressChangeStart={handleAddressChangeStart}
-        onPaymentChangeIntent={handlePaymentChangeIntent}
       />
     );
   },

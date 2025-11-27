@@ -39,10 +39,11 @@ export default function CheckoutScreen(props: {
   const ref = useRef<CheckoutRef>(null);
 
   const onCheckoutStart = (event: CheckoutStartEvent) => {
-    console.log('Start', JSON.stringify(event, null, 2));
+    console.log('<CheckoutScreen /> onCheckoutStart: ', event);
   };
 
   const onAddressChangeStart = (event: CheckoutAddressChangeStart) => {
+    console.log('<CheckoutScreen /> onAddressChangeStart: ', event);
     navigation.navigate('Address', {id: event.id});
   };
 
@@ -62,7 +63,7 @@ export default function CheckoutScreen(props: {
   };
 
   const onComplete = (event: CheckoutCompleteEvent) => {
-    console.log('Checkout complete', JSON.stringify(event, null, 2));
+    console.log('<CheckoutScreen /> onComplete: ', event);
     navigation.getParent()?.goBack();
   };
 
