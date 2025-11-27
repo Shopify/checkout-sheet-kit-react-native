@@ -123,7 +123,7 @@ jobs:
           echo "JAVA_HOME: $JAVA_HOME"
           java -version
           javac -version
-          echo "STOREFRONT_DOMAIN=myshopify.com" > sample/.env
+          cp sample/.env.example sample/.env
           yarn module build
           yarn sample test:android --no-daemon
 
@@ -157,8 +157,7 @@ jobs:
 
       - name: Setup sample environment
         run: |
-          echo "STOREFRONT_DOMAIN=myshopify.com" > sample/.env
-          echo "DISPLAY_NAME=Checkout Sheet Kit" >> sample/.env
+          cp sample/.env.example sample/.env
           yarn env-to-xcconfig
 
       - name: Install cocoapods
