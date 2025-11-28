@@ -136,7 +136,10 @@ public class RCTCheckoutWebViewTest {
         Handler mockHandler = mock(Handler.class);
         when(mockHandler.post(any(Runnable.class))).thenReturn(true);
         setPrivateField(webView, "mainHandler", mockHandler);
-        setPrivateField(webView, "checkoutUrl", "https://shopify.com/checkout");
+
+        webView.setCheckoutUrl("https://shopify.com/checkout");
+        reset(mockHandler);
+        when(mockHandler.post(any(Runnable.class))).thenReturn(true);
 
         webView.setCheckoutUrl("https://shopify.com/checkout");
 
@@ -145,12 +148,15 @@ public class RCTCheckoutWebViewTest {
 
     @Test
     public void testSetCheckoutUrl_withNull_clearsUrlAndLastConfiguration() throws Exception {
-        setPrivateField(webView, "checkoutUrl", "https://shopify.com/checkout");
+        RCTCheckoutWebView spyWebView = spy(new RCTCheckoutWebView(mockContext));
+        doNothing().when(spyWebView).scheduleSetupIfNeeded();
+        doNothing().when(spyWebView).removeCheckout();
 
-        webView.setCheckoutUrl(null);
+        spyWebView.setCheckoutUrl("https://shopify.com/checkout");
+        spyWebView.setCheckoutUrl(null);
 
-        assertThat(getPrivateField(webView, "checkoutUrl")).isNull();
-        assertThat(getPrivateField(webView, "lastConfiguration")).isNull();
+        assertThat(getPrivateField(spyWebView, "checkoutUrl")).isNull();
+        assertThat(getPrivateField(spyWebView, "lastConfiguration")).isNull();
     }
 
     @Test
@@ -169,7 +175,10 @@ public class RCTCheckoutWebViewTest {
         Handler mockHandler = mock(Handler.class);
         when(mockHandler.post(any(Runnable.class))).thenReturn(true);
         setPrivateField(webView, "mainHandler", mockHandler);
-        setPrivateField(webView, "auth", "existing-token");
+
+        webView.setAuth("existing-token");
+        reset(mockHandler);
+        when(mockHandler.post(any(Runnable.class))).thenReturn(true);
 
         webView.setAuth("existing-token");
 
@@ -320,6 +329,50 @@ public class RCTCheckoutWebViewTest {
         invokePrivateMethod(webView, "setup");
 
         assertThat(getPrivateField(webView, "pendingSetup")).isEqualTo(false);
+    }
+
+    @Test
+    public void testSetCheckoutUrl_withNonNullUrl_callsScheduleSetupIfNeeded() {
+        RCTCheckoutWebView spyWebView = spy(new RCTCheckoutWebView(mockContext));
+        doNothing().when(spyWebView).scheduleSetupIfNeeded();
+
+        spyWebView.setCheckoutUrl("https://shopify.com/checkout");
+
+        verify(spyWebView).scheduleSetupIfNeeded();
+    }
+
+    @Test
+    public void testSetCheckoutUrl_withNullUrl_callsRemoveCheckout() {
+        RCTCheckoutWebView spyWebView = spy(new RCTCheckoutWebView(mockContext));
+        doNothing().when(spyWebView).scheduleSetupIfNeeded();
+        doNothing().when(spyWebView).removeCheckout();
+
+        spyWebView.setCheckoutUrl("https://shopify.com/checkout");
+        spyWebView.setCheckoutUrl(null);
+
+        verify(spyWebView).removeCheckout();
+    }
+
+    @Test
+    public void testSetAuth_callsScheduleSetupIfNeeded() {
+        RCTCheckoutWebView spyWebView = spy(new RCTCheckoutWebView(mockContext));
+        doNothing().when(spyWebView).scheduleSetupIfNeeded();
+
+        spyWebView.setAuth("auth-token");
+
+        verify(spyWebView).scheduleSetupIfNeeded();
+    }
+
+    @Test
+    public void testSetCheckoutUrlAndAuth_batchesToSingleSetup() throws Exception {
+        Handler mockHandler = mock(Handler.class);
+        when(mockHandler.post(any(Runnable.class))).thenReturn(true);
+        setPrivateField(webView, "mainHandler", mockHandler);
+
+        webView.setCheckoutUrl("https://shopify.com/checkout");
+        webView.setAuth("auth-token");
+
+        verify(mockHandler, times(1)).post(any(Runnable.class));
     }
 
     private void setPrivateField(Object object, String fieldName, Object value) throws Exception {

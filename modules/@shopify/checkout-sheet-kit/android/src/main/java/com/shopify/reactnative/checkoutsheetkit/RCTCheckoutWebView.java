@@ -128,7 +128,7 @@ public class RCTCheckoutWebView extends FrameLayout {
     scheduleSetupIfNeeded();
   }
 
-  private void scheduleSetupIfNeeded() {
+  void scheduleSetupIfNeeded() {
     if (pendingSetup) {
       return;
     }
@@ -205,7 +205,7 @@ public class RCTCheckoutWebView extends FrameLayout {
     );
   }
 
-  private void removeCheckout() {
+  void removeCheckout() {
     Log.d(TAG, "removeCheckout: Called, webview exists: " + (checkoutWebView != null));
     if (checkoutWebView != null) {
       Log.d(TAG, "removeCheckout: Destroying webview");
