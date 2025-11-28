@@ -21,7 +21,13 @@ import type {RouteProp} from '@react-navigation/native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React from 'react';
 import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {useShopifyEvent} from '@shopify/checkout-sheet-kit';
+import {
+  useShopifyEvent,
+  type CardBrand,
+  type CartInput,
+  type CartPaymentInstrumentInput,
+  type MailingAddressInput,
+} from '@shopify/checkout-sheet-kit';
 import {useCart} from '../../context/Cart';
 import type {BuyNowStackParamList} from './types';
 
@@ -31,68 +37,96 @@ export default function PaymentScreen() {
   const event = useShopifyEvent(route.params.id);
   const {selectedPaymentIndex, setSelectedPaymentIndex} = useCart();
 
-  const paymentOptions = [
+  const paymentOptions: Array<{
+    id: string;
+    label: string;
+    cardHolderName: string;
+    last4: string;
+    brand: CardBrand;
+    expiry: {month: number; year: number};
+    billingAddress: MailingAddressInput;
+  }> = [
     {
+      id: 'card-personal-visa-4242',
       label: 'Personal Visa',
-      card: {
-        last4: '4242',
-        brand: 'Visa',
-      },
-      billing: {
-        useDeliveryAddress: true,
+      cardHolderName: 'John Doe',
+      last4: '4242',
+      brand: 'VISA',
+      expiry: {month: 12, year: 2028},
+      billingAddress: {
+        firstName: 'John',
+        lastName: 'Doe',
+        address1: '123 Main St',
+        city: 'San Francisco',
+        provinceCode: 'CA',
+        countryCode: 'US',
+        zip: '94102',
       },
     },
     {
+      id: 'card-business-mc-5555',
       label: 'Business MasterCard',
-      card: {
-        last4: '5555',
-        brand: 'Mastercard',
-      },
-      billing: {
-        useDeliveryAddress: true,
+      cardHolderName: 'Jane Smith',
+      last4: '5555',
+      brand: 'MASTERCARD',
+      expiry: {month: 6, year: 2027},
+      billingAddress: {
+        firstName: 'Jane',
+        lastName: 'Smith',
+        address1: '456 Market St',
+        city: 'San Francisco',
+        provinceCode: 'CA',
+        countryCode: 'US',
+        zip: '94103',
       },
     },
     {
+      id: 'card-corporate-amex-0005',
       label: 'Corporate Amex',
-      card: {
-        last4: '0005',
-        brand: 'American Express',
-      },
-      billing: {
-        useDeliveryAddress: false,
-        address: {
-          firstName: 'Corporate',
-          lastName: 'Billing',
-          address1: '123 Business Blvd',
-          address2: 'Suite 500',
-          city: 'New York',
-          provinceCode: 'NY',
-          countryCode: 'US',
-          zip: '10001',
-          phone: '+1-212-555-0100',
-          company: 'Acme Corporation',
-        },
+      cardHolderName: 'Corporate Account',
+      last4: '0005',
+      brand: 'AMERICAN_EXPRESS',
+      expiry: {month: 3, year: 2026},
+      billingAddress: {
+        firstName: 'Corporate',
+        lastName: 'Billing',
+        address1: '123 Business Blvd',
+        address2: 'Suite 500',
+        city: 'New York',
+        provinceCode: 'NY',
+        countryCode: 'US',
+        zip: '10001',
+        phone: '+1-212-555-0100',
+        company: 'Acme Corporation',
       },
     },
   ];
 
-  const handlePaymentSelection = () => {
+  const handlePaymentSelection = async () => {
     const selectedPayment = paymentOptions[selectedPaymentIndex];
-    event.respondWith({
-      card: selectedPayment!.card,
-      billing: selectedPayment!.billing,
-    });
+    if (!selectedPayment) return;
+
+    const paymentInstrument: CartPaymentInstrumentInput = {
+      externalReference: selectedPayment.id,
+      display: {
+        last4: selectedPayment.last4,
+        brand: selectedPayment.brand,
+        cardHolderName: selectedPayment.cardHolderName,
+        expiry: selectedPayment.expiry,
+      },
+      billingAddress: selectedPayment.billingAddress,
+    };
+
+    const response: CartInput = {
+      paymentInstruments: [paymentInstrument],
+    };
+
+    await event.respondWith(response);
     navigation.goBack();
   };
 
-  const getCardIcon = (brand: string) => {
-    // In a real app, you'd use actual card brand icons
-    const brandIcons: {[key: string]: string} = {
-      'Visa': '💳',
-      'Mastercard': '💳',
-      'American Express': '💳',
-    };
-    return brandIcons[brand] || '💳';
+  const getCardIcon = (_brand: CardBrand) => {
+    return '💳';
   };
 
   return (
@@ -116,16 +150,14 @@ export default function PaymentScreen() {
             </View>
             <View style={styles.paymentInfo}>
               <View style={styles.cardHeader}>
-                <Text style={styles.cardIcon}>{getCardIcon(option.card.brand)}</Text>
+                <Text style={styles.cardIcon}>{getCardIcon(option.brand)}</Text>
                 <Text style={styles.paymentLabel}>{option.label}</Text>
               </View>
               <Text style={styles.cardDetails}>
-                {option.card.brand} •••• {option.card.last4}
+                {option.brand} •••• {option.last4}
               </Text>
               <Text style={styles.billingInfo}>
-                {option.billing.useDeliveryAddress
-                  ? 'Uses delivery address'
-                  : `Separate billing: ${option.billing.address?.city}, ${option.billing.address?.provinceCode}`}
+                {option.billingAddress.city}, {option.billingAddress.provinceCode}
               </Text>
             </View>
           </TouchableOpacity>

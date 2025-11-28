@@ -118,14 +118,7 @@ interface NativeCheckoutWebViewProps {
     nativeEvent: CheckoutAddressChangeStart;
   }) => void;
   onPaymentMethodChangeStart?: (event: {
-    nativeEvent: {
-      id: string;
-      type: string;
-      currentCard?: {
-        last4: string;
-        brand: string;
-      };
-    };
+    nativeEvent: CheckoutPaymentMethodChangeStart;
   }) => void;
 }
 
@@ -259,13 +252,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
     const handlePaymentMethodChangeStart = useCallback<
       Required<NativeCheckoutWebViewProps>['onPaymentMethodChangeStart']
     >(
-      (event: {
-        nativeEvent: {
-          id: string;
-          type: string;
-          currentCard?: {last4: string; brand: string};
-        };
-      }) => {
+      event => {
         if (!event.nativeEvent) return;
         onPaymentMethodChangeStart?.(event.nativeEvent);
       },
