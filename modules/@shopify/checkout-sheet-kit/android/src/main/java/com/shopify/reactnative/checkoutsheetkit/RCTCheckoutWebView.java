@@ -66,104 +66,104 @@ import java.util.Objects;
 import kotlin.Unit;
 
 public class RCTCheckoutWebView extends FrameLayout {
-    private static final String TAG = "RCTCheckoutWebView";
-    private final ThemedReactContext context;
-    private final ObjectMapper mapper = new ObjectMapper();
+  private static final String TAG = "RCTCheckoutWebView";
+  private final ThemedReactContext context;
+  private final ObjectMapper mapper = new ObjectMapper();
 
-    private CheckoutWebView checkoutWebView;
-    private String checkoutUrl;
-    private String auth;
-    private boolean pendingSetup = false;
-    private CheckoutConfiguration lastConfiguration = null;
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+  private CheckoutWebView checkoutWebView;
+  private String checkoutUrl;
+  private String auth;
+  private boolean pendingSetup = false;
+  private CheckoutConfiguration lastConfiguration = null;
+  private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    private record CheckoutConfiguration(String url, String authToken) {}
+  private record CheckoutConfiguration(String url, String authToken) {
+  }
 
-    public RCTCheckoutWebView(ThemedReactContext context) {
-        super(context);
-        this.context = context;
+  public RCTCheckoutWebView(ThemedReactContext context) {
+    super(context);
+    this.context = context;
+  }
+
+  public void setCheckoutUrl(String url) {
+    if (Objects.equals(url, checkoutUrl)) {
+      return;
     }
 
-    public void setCheckoutUrl(String url) {
-        if (Objects.equals(url, checkoutUrl)) {
-            return;
-        }
+    checkoutUrl = url;
 
-        checkoutUrl = url;
+    if (url == null) {
+      removeCheckout();
+    } else {
+      scheduleSetupIfNeeded();
+    }
+  }
 
-        if (url == null) {
-            removeCheckout();
-        } else {
-            scheduleSetupIfNeeded();
-        }
+  public void setAuth(String authToken) {
+    if (Objects.equals(authToken, auth)) {
+      return;
     }
 
-    public void setAuth(String authToken) {
-        if (Objects.equals(authToken, auth)) {
-            return;
-        }
-
-        auth = authToken;
-        scheduleSetupIfNeeded();
-    }
+    auth = authToken;
+    scheduleSetupIfNeeded();
+  }
 
   private void scheduleSetupIfNeeded() {
-        if (pendingSetup) {
-            return;
-        }
-
-        pendingSetup = true;
-        mainHandler.post(this::setup);
+    if (pendingSetup) {
+      return;
     }
 
-    private void setup() {
-        pendingSetup = false;
+    pendingSetup = true;
+    mainHandler.post(this::setup);
+  }
 
-        if (checkoutUrl == null) {
-            removeCheckout();
-            return;
-        }
+  private void setup() {
+    pendingSetup = false;
 
-        CheckoutConfiguration newConfiguration = new CheckoutConfiguration(checkoutUrl, auth);
-        if (newConfiguration.equals(lastConfiguration)) {
-            return;
-        }
-
-        setupCheckoutWebView(checkoutUrl, newConfiguration);
+    if (checkoutUrl == null) {
+      removeCheckout();
+      return;
     }
 
-    public void setupCheckoutWebView(String url, CheckoutConfiguration configuration) {
-        Log.d(TAG, "setupCheckoutWebView: Setting up new webview for URL: " + url);
-        removeCheckout();
-
-        // Create the CheckoutWebView with null AttributeSet
-        checkoutWebView = new CheckoutWebView(this.context, null);
-        Log.d(TAG, "setupCheckoutWebView: New CheckoutWebView created");
-
-        // Set up event processor with all required parameters
-        CheckoutWebViewEventProcessor webViewEventProcessor = getCheckoutWebViewEventProcessor();
-        checkoutWebView.setEventProcessor(webViewEventProcessor);
-
-        // Configure authentication if provided
-        CheckoutOptions options = new CheckoutOptions();
-        if (auth != null && !auth.isEmpty()) {
-            options = new CheckoutOptions(new Authentication.Token(auth));
-        }
-        checkoutWebView.loadCheckout(url, options);
-        checkoutWebView.notifyPresented();
-
-        LayoutParams params = new LayoutParams(
-            LayoutParams.MATCH_PARENT,
-            LayoutParams.MATCH_PARENT
-        );
-        addView(checkoutWebView, params);
-        ///  Works around a race condition where onLayout executes before setupCheckoutWebView
-        ///  resulting in an empty view being rendered. Cannot move setup to constructor as
-        ///  checkoutUrl is undefined until setCheckoutUrl is called by RCTCheckoutWebViewManager
-        ///  requestLayout / invalidate were unsuccessful in remedying this
-        checkoutWebView.layout(0, 0, getWidth(), getHeight());
-        lastConfiguration = configuration;
+    CheckoutConfiguration newConfiguration = new CheckoutConfiguration(checkoutUrl, auth);
+    if (newConfiguration.equals(lastConfiguration)) {
+      return;
     }
+
+    setupCheckoutWebView(checkoutUrl, newConfiguration);
+  }
+
+  public void setupCheckoutWebView(String url, CheckoutConfiguration configuration) {
+    Log.d(TAG, "setupCheckoutWebView: Setting up new webview for URL: " + url);
+    removeCheckout();
+
+    // Create the CheckoutWebView with null AttributeSet
+    checkoutWebView = new CheckoutWebView(this.context, null);
+    Log.d(TAG, "setupCheckoutWebView: New CheckoutWebView created");
+
+    CheckoutWebViewEventProcessor webViewEventProcessor = getCheckoutWebViewEventProcessor();
+    checkoutWebView.setEventProcessor(webViewEventProcessor);
+
+    // Configure authentication if provided
+    CheckoutOptions options = new CheckoutOptions();
+    if (auth != null && !auth.isEmpty()) {
+      options = new CheckoutOptions(new Authentication.Token(auth));
+    }
+    checkoutWebView.loadCheckout(url, options);
+    checkoutWebView.notifyPresented();
+
+    LayoutParams params = new LayoutParams(
+      LayoutParams.MATCH_PARENT,
+      LayoutParams.MATCH_PARENT
+    );
+    addView(checkoutWebView, params);
+    ///  Works around a race condition where onLayout executes before setupCheckoutWebView
+    ///  resulting in an empty view being rendered. Cannot move setup to constructor as
+    ///  checkoutUrl is undefined until setCheckoutUrl is called by RCTCheckoutWebViewManager
+    ///  requestLayout / invalidate were unsuccessful in remedying this
+    checkoutWebView.layout(0, 0, getWidth(), getHeight());
+    lastConfiguration = configuration;
+  }
 
   @NonNull
   private CheckoutWebViewEventProcessor getCheckoutWebViewEventProcessor() {
@@ -171,165 +171,166 @@ public class RCTCheckoutWebView extends FrameLayout {
     InlineCheckoutEventProcessor eventProcessor = new InlineCheckoutEventProcessor(currentActivity);
 
     return new CheckoutWebViewEventProcessor(
-        eventProcessor,
-        (visible) -> Unit.INSTANCE, // toggleHeader
-        (error) -> Unit.INSTANCE, // closeCheckoutDialogWithError
-        (visibility) -> Unit.INSTANCE, // setProgressBarVisibility
-        (percentage) -> Unit.INSTANCE // updateProgressBarPercentage
+      eventProcessor,
+      (visible) -> Unit.INSTANCE, // toggleHeader
+      (error) -> Unit.INSTANCE, // closeCheckoutDialogWithError
+      (visibility) -> Unit.INSTANCE, // setProgressBarVisibility
+      (percentage) -> Unit.INSTANCE // updateProgressBarPercentage
     );
   }
 
   private void removeCheckout() {
-        Log.d(TAG, "removeCheckout: Called, webview exists: " + (checkoutWebView != null));
-        if (checkoutWebView != null) {
-            Log.d(TAG, "removeCheckout: Destroying webview");
-            removeView(checkoutWebView);
-            checkoutWebView.destroy();
-            checkoutWebView = null;
-        }
-        lastConfiguration = null;
+    Log.d(TAG, "removeCheckout: Called, webview exists: " + (checkoutWebView != null));
+    if (checkoutWebView != null) {
+      Log.d(TAG, "removeCheckout: Destroying webview");
+      removeView(checkoutWebView);
+      checkoutWebView.destroy();
+      checkoutWebView = null;
+    }
+    lastConfiguration = null;
+  }
+
+  public void reload() {
+    if (checkoutWebView != null) {
+      checkoutWebView.reload();
+    } else if (checkoutUrl != null) {
+      // Re-setup if WebView was destroyed but URL is still set
+      CheckoutConfiguration configuration = new CheckoutConfiguration(checkoutUrl, auth);
+      setupCheckoutWebView(checkoutUrl, configuration);
+    }
+  }
+
+  public void respondToEvent(String eventId, String responseData) {
+    Log.d(TAG, "Responding to event: " + eventId + " with data: " + responseData);
+
+    if (checkoutWebView != null) {
+      // Delegate to the WebView's respondToEvent method
+      checkoutWebView.respondToEvent(eventId, responseData);
+    } else {
+      Log.e(TAG, "CheckoutWebView is null when trying to respond to event: " + eventId);
+    }
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    Log.d(TAG, "onAttachedToWindow: View attached to window, webview exists: " + (checkoutWebView != null));
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    Log.d(TAG, "onDetachedFromWindow: View detached from window (not destroying webview), webview exists: " + (checkoutWebView != null));
+    // NOTE: We do NOT destroy the webview here to prevent issues during navigation
+    // The webview will be properly cleaned up in the ViewManager's onDropViewInstance instead
+  }
+
+  private WritableMap serializeToWritableMap(Object event) {
+    Map<String, Object> map = mapper.convertValue(event, new TypeReference<>() {
+    });
+    return Arguments.makeNativeMap(map);
+  }
+
+  private WritableMap buildErrorMap(CheckoutException error) {
+    WritableMap errorMap = Arguments.createMap();
+    errorMap.putString("__typename", getErrorTypeName(error));
+    errorMap.putString("message", error.getErrorDescription());
+    errorMap.putBoolean("recoverable", error.isRecoverable());
+    errorMap.putString("code", error.getErrorCode());
+    if (error instanceof HttpException) {
+      errorMap.putInt("statusCode", ((HttpException) error).getStatusCode());
+    }
+    return errorMap;
+  }
+
+  private String getErrorTypeName(CheckoutException error) {
+    if (error instanceof CheckoutExpiredException) {
+      return "CheckoutExpiredError";
+    } else if (error instanceof ClientException) {
+      return "CheckoutClientError";
+    } else if (error instanceof HttpException) {
+      return "CheckoutHTTPError";
+    } else if (error instanceof ConfigurationException) {
+      return "ConfigurationError";
+    } else if (error instanceof CheckoutSheetKitException) {
+      return "InternalError";
+    } else {
+      return "UnknownError";
+    }
+  }
+
+  private void sendEvent(String eventName, WritableMap params) {
+    ReactContext reactContext = this.context.getReactApplicationContext();
+    int viewId = getId();
+
+    EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, viewId);
+    if (eventDispatcher == null) {
+      Log.w(TAG, "Cannot send event '" + eventName + "': EventDispatcher not available (viewId=" + viewId + ")");
+      return;
     }
 
-    public void reload() {
-        if (checkoutWebView != null) {
-            checkoutWebView.reload();
-        } else if (checkoutUrl != null) {
-            // Re-setup if WebView was destroyed but URL is still set
-            CheckoutConfiguration configuration = new CheckoutConfiguration(checkoutUrl, auth);
-            setupCheckoutWebView(checkoutUrl, configuration);
-        }
-    }
+    int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
+    eventDispatcher.dispatchEvent(new CheckoutEvent(surfaceId, viewId, eventName, params));
+  }
 
-    public void respondToEvent(String eventId, String responseData) {
-        Log.d(TAG, "Responding to event: " + eventId + " with data: " + responseData);
+  private class InlineCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
 
-        if (checkoutWebView != null) {
-            // Delegate to the WebView's respondToEvent method
-            checkoutWebView.respondToEvent(eventId, responseData);
-        } else {
-            Log.e(TAG, "CheckoutWebView is null when trying to respond to event: " + eventId);
-        }
+    public InlineCheckoutEventProcessor(android.content.Context context) {
+      super(context);
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        Log.d(TAG, "onAttachedToWindow: View attached to window, webview exists: " + (checkoutWebView != null));
+    public void onStart(@NonNull CheckoutStartEvent event) {
+      try {
+        WritableMap data = serializeToWritableMap(event);
+        sendEvent("onStart", data);
+      } catch (Exception e) {
+        Log.e(TAG, "Error processing start event", e);
+      }
     }
 
     @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        Log.d(TAG, "onDetachedFromWindow: View detached from window (not destroying webview), webview exists: " + (checkoutWebView != null));
-        // NOTE: We do NOT destroy the webview here to prevent issues during navigation
-        // The webview will be properly cleaned up in the ViewManager's onDropViewInstance instead
+    public void onComplete(@NonNull CheckoutCompleteEvent event) {
+      try {
+        WritableMap data = serializeToWritableMap(event);
+        sendEvent("onComplete", data);
+      } catch (Exception e) {
+        Log.e(TAG, "Error processing complete event", e);
+      }
     }
 
-    private WritableMap serializeToWritableMap(Object event) {
-        Map<String, Object> map = mapper.convertValue(event, new TypeReference<>() {});
-        return Arguments.makeNativeMap(map);
+    @Override
+    public void onFail(@NonNull CheckoutException error) {
+      sendEvent("onError", buildErrorMap(error));
     }
 
-    private WritableMap buildErrorMap(CheckoutException error) {
-        WritableMap errorMap = Arguments.createMap();
-        errorMap.putString("__typename", getErrorTypeName(error));
-        errorMap.putString("message", error.getErrorDescription());
-        errorMap.putBoolean("recoverable", error.isRecoverable());
-        errorMap.putString("code", error.getErrorCode());
-        if (error instanceof HttpException) {
-            errorMap.putInt("statusCode", ((HttpException) error).getStatusCode());
-        }
-        return errorMap;
+    @Override
+    public void onCancel() {
+      sendEvent("onCancel", null);
     }
 
-    private String getErrorTypeName(CheckoutException error) {
-        if (error instanceof CheckoutExpiredException) {
-            return "CheckoutExpiredError";
-        } else if (error instanceof ClientException) {
-            return "CheckoutClientError";
-        } else if (error instanceof HttpException) {
-            return "CheckoutHTTPError";
-        } else if (error instanceof ConfigurationException) {
-            return "ConfigurationError";
-        } else if (error instanceof CheckoutSheetKitException) {
-            return "InternalError";
-        } else {
-            return "UnknownError";
-        }
+    @Override
+    public void onAddressChangeStart(@NonNull CheckoutAddressChangeStart event) {
+      try {
+        CheckoutAddressChangeStartEvent params = event.getParams();
+        Map<String, Object> eventData = new HashMap<>();
+
+        eventData.put("id", event.getId());
+        eventData.put("type", "addressChangeStart");
+        eventData.put("addressType", params.getAddressType());
+        eventData.put("cart", params.getCart());
+
+        sendEvent("onAddressChangeStart", serializeToWritableMap(eventData));
+      } catch (Exception e) {
+        Log.e(TAG, "Error processing address change start event", e);
+      }
     }
 
-    private void sendEvent(String eventName, WritableMap params) {
-        ReactContext reactContext = this.context.getReactApplicationContext();
-        int viewId = getId();
-
-        EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, viewId);
-        if (eventDispatcher == null) {
-            Log.w(TAG, "Cannot send event '" + eventName + "': EventDispatcher not available (viewId=" + viewId + ")");
-            return;
-        }
-
-        int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
-        eventDispatcher.dispatchEvent(new CheckoutEvent(surfaceId, viewId, eventName, params));
+    @Override
+    public void onLinkClick(@NonNull Uri uri) {
+      WritableMap params = Arguments.createMap();
+      params.putString("url", uri.toString());
+      sendEvent("onLinkClick", params);
     }
-
-    private class InlineCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
-
-        public InlineCheckoutEventProcessor(android.content.Context context) {
-            super(context);
-        }
-
-        @Override
-        public void onStart(@NonNull CheckoutStartEvent event) {
-            try {
-                WritableMap data = serializeToWritableMap(event);
-                sendEvent("onStart", data);
-            } catch (Exception e) {
-                Log.e(TAG, "Error processing start event", e);
-            }
-        }
-
-        @Override
-        public void onComplete(@NonNull CheckoutCompleteEvent event) {
-            try {
-                WritableMap data = serializeToWritableMap(event);
-                sendEvent("onComplete", data);
-            } catch (Exception e) {
-                Log.e(TAG, "Error processing complete event", e);
-            }
-        }
-
-        @Override
-        public void onFail(@NonNull CheckoutException error) {
-            sendEvent("onError", buildErrorMap(error));
-        }
-
-        @Override
-        public void onCancel() {
-            sendEvent("onCancel", null);
-        }
-
-        @Override
-        public void onAddressChangeStart(@NonNull CheckoutAddressChangeStart event) {
-            try {
-                CheckoutAddressChangeStartEvent params = event.getParams();
-                Map<String, Object> eventData = new HashMap<>();
-
-                eventData.put("id", event.getId());
-                eventData.put("type", "addressChangeStart");
-                eventData.put("addressType", params.getAddressType());
-                eventData.put("cart", params.getCart());
-
-                sendEvent("onAddressChangeStart", serializeToWritableMap(eventData));
-            } catch (Exception e) {
-                Log.e(TAG, "Error processing address change start event", e);
-            }
-        }
-
-        @Override
-        public void onLinkClick(@NonNull Uri uri) {
-            WritableMap params = Arguments.createMap();
-            params.putString("url", uri.toString());
-            sendEvent("onLinkClick", params);
-        }
-    }
+  }
 }

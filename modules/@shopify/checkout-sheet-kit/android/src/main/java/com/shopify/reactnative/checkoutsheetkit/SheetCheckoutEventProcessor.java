@@ -81,7 +81,7 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
   /**
    * This method is called when the checkout sheet webpage requests geolocation
    * permissions.
-   *
+   * <p>
    * Since the app needs to request permissions first before granting, we store
    * the callback and origin in memory and emit a "geolocationRequest" event to
    * the app. The app will then request the necessary geolocation permissions
@@ -92,7 +92,7 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
    */
   @Override
   public void onGeolocationPermissionsShowPrompt(@NonNull String origin,
-      @NonNull GeolocationPermissions.Callback callback) {
+                                                 @NonNull GeolocationPermissions.Callback callback) {
 
     // Store the callback and origin in memory. The kit will wait for the app to
     // request permissions first before granting.
@@ -205,13 +205,13 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
 
   private void sendEvent(String eventName, @Nullable WritableNativeMap params) {
     reactContext
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(eventName, params);
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+      .emit(eventName, params);
   }
 
   private void sendEventWithStringData(String name, String data) {
     reactContext
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(name, data);
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+      .emit(name, data);
   }
 }

@@ -25,8 +25,10 @@ package com.shopify.reactnative.checkoutsheetkit;
 
 import android.app.Activity;
 import android.content.Context;
+
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -92,7 +94,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
       CheckoutOptions checkoutOptions = parseCheckoutOptions(options);
       currentActivity.runOnUiThread(() -> {
         checkoutSheet = ShopifyCheckoutSheetKit.present(checkoutURL, (ComponentActivity) currentActivity,
-            checkoutEventProcessor, checkoutOptions);
+          checkoutEventProcessor, checkoutOptions);
       });
     }
   }
@@ -215,7 +217,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
       return false;
     }
 
-    String[] requiredColorKeys = { "backgroundColor", "progressIndicator", "headerTextColor", "headerBackgroundColor" };
+    String[] requiredColorKeys = {"backgroundColor", "progressIndicator", "headerTextColor", "headerBackgroundColor"};
 
     for (String key : requiredColorKeys) {
       if (!config.hasKey(key) || config.getString(key) == null || parseColor(config.getString(key)) == null) {
@@ -274,14 +276,14 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
     if (webViewBackground != null && progressIndicator != null && headerFont != null && headerBackground != null) {
       return new Colors(
-          webViewBackground,
-          headerBackground,
-          headerFont,
-          progressIndicator,
-          // Parameter allows passing a custom drawable, we'll just support custom color for now
-          null,
-          closeButtonColor
-        );
+        webViewBackground,
+        headerBackground,
+        headerFont,
+        progressIndicator,
+        // Parameter allows passing a custom drawable, we'll just support custom color for now
+        null,
+        closeButtonColor
+      );
     }
 
     return null;

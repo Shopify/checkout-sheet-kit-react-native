@@ -31,33 +31,33 @@ import com.facebook.react.uimanager.events.Event;
 
 /**
  * Can be used to send events back to props of instances of components
- *
- *     private void sendEvent(String eventName, WritableMap params) {
- *         ReactContext reactContext = this.context.getReactApplicationContext();
- *         int viewId = getId();
- *         EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, viewId);
- *         int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
- *         eventDispatcher.dispatchEvent(new CheckoutEvent(surfaceId, viewId, eventName, params));
- *     }
-**/
+ * <p>
+ * private void sendEvent(String eventName, WritableMap params) {
+ * ReactContext reactContext = this.context.getReactApplicationContext();
+ * int viewId = getId();
+ * EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, viewId);
+ * int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
+ * eventDispatcher.dispatchEvent(new CheckoutEvent(surfaceId, viewId, eventName, params));
+ * }
+ **/
 public class CheckoutEvent extends Event<CheckoutEvent> {
-    private final String eventName;
-    private final WritableMap payload;
+  private final String eventName;
+  private final WritableMap payload;
 
-    public CheckoutEvent(int surfaceId, int viewId, String eventName, WritableMap payload) {
-        super(surfaceId, viewId);
-        this.eventName = eventName;
-        this.payload = payload;
-    }
+  public CheckoutEvent(int surfaceId, int viewId, String eventName, WritableMap payload) {
+    super(surfaceId, viewId);
+    this.eventName = eventName;
+    this.payload = payload;
+  }
 
-    @NonNull
-    @Override
-    public String getEventName() {
-        return eventName;
-    }
+  @NonNull
+  @Override
+  public String getEventName() {
+    return eventName;
+  }
 
-    @Override
-    protected WritableMap getEventData() {
-        return payload != null ? payload : Arguments.createMap();
-    }
+  @Override
+  protected WritableMap getEventData() {
+    return payload != null ? payload : Arguments.createMap();
+  }
 }
