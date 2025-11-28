@@ -7,16 +7,12 @@ import androidx.activity.ComponentActivity;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.shopify.checkoutsheetkit.CheckoutException;
 import com.shopify.checkoutsheetkit.CheckoutExpiredException;
-import com.shopify.checkoutsheetkit.CheckoutSheetKitException;
 import com.shopify.checkoutsheetkit.ClientException;
-import com.shopify.checkoutsheetkit.ConfigurationException;
 import com.shopify.checkoutsheetkit.HttpException;
 import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
 import com.shopify.checkoutsheetkit.Preloading;
 import com.shopify.checkoutsheetkit.ColorScheme;
-import com.shopify.checkoutsheetkit.CheckoutOptions;
 import com.shopify.checkoutsheetkit.Authentication;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
@@ -29,7 +25,7 @@ import com.shopify.checkoutsheetkit.lifecycleevents.OrderConfirmation;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
 import com.shopify.reactnative.checkoutsheetkit.ShopifyCheckoutSheetKitModule;
-import com.shopify.reactnative.checkoutsheetkit.CustomCheckoutEventProcessor;
+import com.shopify.reactnative.checkoutsheetkit.SheetCheckoutEventProcessor;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +44,6 @@ import static org.mockito.Mockito.*;
 import android.content.Context;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ShopifyCheckoutSheetKitModuleTest {
@@ -400,7 +395,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   @Test
   public void testCanProcessCheckoutCompleteEvents() {
-    CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
+    SheetCheckoutEventProcessor processor = new SheetCheckoutEventProcessor(mockContext, mockReactContext);
 
     Cart cart = buildMinimalCart("cart-123", "100.00", "USD");
 
@@ -424,7 +419,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   @Test
   public void testCanProcessCheckoutStartEvents() {
-    CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
+    SheetCheckoutEventProcessor processor = new SheetCheckoutEventProcessor(mockContext, mockReactContext);
 
     Cart cart = buildMinimalCart("cart-456", "75.00", "CAD");
 
@@ -441,7 +436,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   @Test
   public void testCanProcessCheckoutAddressChangeStartEvent() {
-    CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
+    SheetCheckoutEventProcessor processor = new SheetCheckoutEventProcessor(mockContext, mockReactContext);
 
     // Create a mock CheckoutAddressChangeStart event
     CheckoutAddressChangeStart addressChangeEvent = mock(CheckoutAddressChangeStart.class);
@@ -471,7 +466,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   @Test
   public void testCanProcessCheckoutExpiredErrors() {
-    CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
+    SheetCheckoutEventProcessor processor = new SheetCheckoutEventProcessor(mockContext, mockReactContext);
 
     // Use minimal mocking - just enough to test the processing logic
     CheckoutExpiredException mockException = mock(CheckoutExpiredException.class);
@@ -489,7 +484,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   @Test
   public void testCanProcessClientErrors() {
-    CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
+    SheetCheckoutEventProcessor processor = new SheetCheckoutEventProcessor(mockContext, mockReactContext);
 
     ClientException mockException = mock(ClientException.class);
     when(mockException.getErrorDescription()).thenReturn("Customer account required");
@@ -506,7 +501,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   @Test
   public void testCanProcessHttpErrors() {
-    CustomCheckoutEventProcessor processor = new CustomCheckoutEventProcessor(mockContext, mockReactContext);
+    SheetCheckoutEventProcessor processor = new SheetCheckoutEventProcessor(mockContext, mockReactContext);
 
     HttpException mockException = mock(HttpException.class);
     when(mockException.getErrorDescription()).thenReturn("Not Found");

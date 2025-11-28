@@ -30,7 +30,13 @@ import android.webkit.GeolocationPermissions;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.shopify.checkoutsheetkit.*;
+import com.shopify.checkoutsheetkit.CheckoutException;
+import com.shopify.checkoutsheetkit.CheckoutExpiredException;
+import com.shopify.checkoutsheetkit.CheckoutSheetKitException;
+import com.shopify.checkoutsheetkit.ClientException;
+import com.shopify.checkoutsheetkit.ConfigurationException;
+import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor;
+import com.shopify.checkoutsheetkit.HttpException;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -39,11 +45,14 @@ import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
+public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
+  private static final String TAG = "SheetCheckoutEventProcessor";
+
   private final ReactApplicationContext reactContext;
   private final ObjectMapper mapper = new ObjectMapper();
 
@@ -52,7 +61,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   private String geolocationOrigin;
   private GeolocationPermissions.Callback geolocationCallback;
 
-  public CustomCheckoutEventProcessor(Context context, ReactApplicationContext reactContext) {
+  public SheetCheckoutEventProcessor(Context context, ReactApplicationContext reactContext) {
     super(context);
     this.reactContext = reactContext;
   }
@@ -72,7 +81,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   /**
    * This method is called when the checkout sheet webpage requests geolocation
    * permissions.
-   *
+   * <p>
    * Since the app needs to request permissions first before granting, we store
    * the callback and origin in memory and emit a "geolocationRequest" event to
    * the app. The app will then request the necessary geolocation permissions
@@ -82,8 +91,10 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
    * @param callback - The callback to invoke when the app requests permissions
    */
   @Override
-  public void onGeolocationPermissionsShowPrompt(@NonNull String origin,
-      @NonNull GeolocationPermissions.Callback callback) {
+  public void onGeolocationPermissionsShowPrompt(
+    @NonNull String origin,
+    @NonNull GeolocationPermissions.Callback callback
+  ) {
 
     // Store the callback and origin in memory. The kit will wait for the app to
     // request permissions first before granting.
@@ -96,7 +107,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
       event.put("origin", origin);
       sendEventWithStringData("geolocationRequest", mapper.writeValueAsString(event));
     } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error emitting \"geolocationRequest\" event", e);
+      Log.e(TAG, "Error emitting \"geolocationRequest\" event", e);
     }
   }
 
@@ -110,12 +121,12 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   }
 
   @Override
-  public void onFail(CheckoutException checkoutError) {
+  public void onFail(@NonNull CheckoutException checkoutError) {
     try {
       String data = mapper.writeValueAsString(populateErrorDetails(checkoutError));
       sendEventWithStringData("error", data);
     } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error processing checkout failed event", e);
+      Log.e(TAG, "Error processing checkout failed event", e);
     }
   }
 
@@ -130,7 +141,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
       String data = mapper.writeValueAsString(event);
       sendEventWithStringData("complete", data);
     } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error processing complete event", e);
+      Log.e(TAG, "Error processing complete event", e);
     }
   }
 
@@ -140,7 +151,7 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
       String data = mapper.writeValueAsString(event);
       sendEventWithStringData("start", data);
     } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error processing start event", e);
+      Log.e(TAG, "Error processing start event", e);
     }
   }
 
@@ -148,11 +159,6 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   public void onAddressChangeStart(@NonNull CheckoutAddressChangeStart event) {
     try {
       CheckoutAddressChangeStartEvent params = event.getParams();
-      if (params == null) {
-        Log.e("ShopifyCheckoutSheetKit", "Address change event has null params");
-        return;
-      }
-
       Map<String, Object> eventData = new HashMap<>();
       eventData.put("id", event.getId());
       eventData.put("type", "addressChangeStart");
@@ -162,21 +168,22 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
       String data = mapper.writeValueAsString(eventData);
       sendEventWithStringData("addressChangeStart", data);
     } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error processing address change start event", e);
+      Log.e(TAG, "Error processing address change start event", e);
     }
   }
 
   // Private
 
-  private Map<String, Object> populateErrorDetails(CheckoutException checkoutError) {
-    Map<String, Object> errorMap = new HashMap();
-    errorMap.put("__typename", getErrorTypeName(checkoutError));
-    errorMap.put("message", checkoutError.getErrorDescription());
-    errorMap.put("recoverable", checkoutError.isRecoverable());
-    errorMap.put("code", checkoutError.getErrorCode());
+  private Map<String, Object> populateErrorDetails(CheckoutException error) {
+    Map<String, Object> errorMap = new HashMap<>(Map.of(
+      "__typename", getErrorTypeName(error),
+      "message", error.getErrorDescription(),
+      "recoverable", error.isRecoverable(),
+      "code", error.getErrorCode()
+    ));
 
-    if (checkoutError instanceof HttpException) {
-      errorMap.put("statusCode", ((HttpException) checkoutError).getStatusCode());
+    if (error instanceof HttpException) {
+      errorMap.put("statusCode", ((HttpException) error).getStatusCode());
     }
 
     return errorMap;
@@ -200,13 +207,13 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
 
   private void sendEvent(String eventName, @Nullable WritableNativeMap params) {
     reactContext
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(eventName, params);
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+      .emit(eventName, params);
   }
 
   private void sendEventWithStringData(String name, String data) {
     reactContext
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(name, data);
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+      .emit(name, data);
   }
 }

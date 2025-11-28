@@ -30,7 +30,6 @@ import {
 import type {BuyNowStackParamList} from './types';
 import {StyleSheet} from 'react-native';
 
-
 // This component represents a screen in the consumers app that
 // wraps the shopify Checkout and provides it the auth param
 export default function CheckoutScreen(props: {
@@ -40,27 +39,26 @@ export default function CheckoutScreen(props: {
   const ref = useRef<CheckoutRef>(null);
 
   const onCheckoutStart = (event: CheckoutStartEvent) => {
-    console.log('Start', JSON.stringify(event, null, 2));
+    console.log('<CheckoutScreen /> onCheckoutStart: ', event);
   };
 
   const onAddressChangeStart = (event: CheckoutAddressChangeStart) => {
+    console.log('<CheckoutScreen /> onAddressChangeStart: ', event);
     navigation.navigate('Address', {id: event.id});
   };
 
-  const onPaymentChangeIntent = (event: {id: string}) => {
-    navigation.navigate('Payment', {id: event.id});
-  };
-
   const onCancel = () => {
+    console.log('<CheckoutScreen /> onCancel: ');
     navigation.getParent()?.goBack();
   };
 
-  const onError = () => {
+  const onError = (error: unknown) => {
+    console.log('<CheckoutScreen /> onError: ', error);
     ref.current?.reload();
   };
 
   const onComplete = (event: CheckoutCompleteEvent) => {
-    console.log('Checkout complete', JSON.stringify(event, null, 2));
+    console.log('<CheckoutScreen /> onComplete: ', event);
     navigation.getParent()?.goBack();
   };
 
@@ -72,7 +70,6 @@ export default function CheckoutScreen(props: {
       style={styles.container}
       onStart={onCheckoutStart}
       onAddressChangeStart={onAddressChangeStart}
-      onPaymentChangeIntent={onPaymentChangeIntent}
       onCancel={onCancel}
       onError={onError}
       onComplete={onComplete}

@@ -25,34 +25,39 @@ package com.shopify.reactnative.checkoutsheetkit;
 
 import androidx.annotation.NonNull;
 
-import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.events.Event;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+/**
+ * Can be used to send events back to props of instances of components
+ * <p>
+ * private void sendEvent(String eventName, WritableMap params) {
+ * ReactContext reactContext = this.context.getReactApplicationContext();
+ * int viewId = getId();
+ * EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, viewId);
+ * int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
+ * eventDispatcher.dispatchEvent(new CheckoutEvent(surfaceId, viewId, eventName, params));
+ * }
+ **/
+public class CheckoutEvent extends Event<CheckoutEvent> {
+  private final String eventName;
+  private final WritableMap payload;
 
-public class ShopifyCheckoutSheetKitPackage implements ReactPackage {
-
-  @NonNull
-  @Override
-  public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
-    List<ViewManager> managers = new ArrayList<>();
-    managers.add(new RCTCheckoutWebViewManager());
-    return managers;
+  public CheckoutEvent(int surfaceId, int viewId, String eventName, WritableMap payload) {
+    super(surfaceId, viewId);
+    this.eventName = eventName;
+    this.payload = payload;
   }
 
   @NonNull
   @Override
-  public List<NativeModule> createNativeModules(
-    @NonNull ReactApplicationContext reactContext) {
-    List<NativeModule> modules = new ArrayList<>();
-
-    modules.add(new ShopifyCheckoutSheetKitModule(reactContext));
-
-    return modules;
+  public String getEventName() {
+    return eventName;
   }
 
+  @Override
+  protected WritableMap getEventData() {
+    return payload != null ? payload : Arguments.createMap();
+  }
 }

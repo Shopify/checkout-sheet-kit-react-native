@@ -78,7 +78,6 @@ class RCTCheckoutWebView: UIView {
       scheduleSetupIfNeeded()
     }
   }
-  @objc var onLoad: RCTDirectEventBlock?
   @objc var onStart: RCTBubblingEventBlock?
   @objc var onError: RCTBubblingEventBlock?
   @objc var onComplete: RCTBubblingEventBlock?
@@ -154,7 +153,6 @@ class RCTCheckoutWebView: UIView {
     checkoutWebViewController?.view.frame = bounds
 
     webViewController.notifyPresented()
-    onLoad?(["url": url.absoluteString])
     if let configuration {
       lastConfiguration = configuration
     }

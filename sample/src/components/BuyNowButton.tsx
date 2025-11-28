@@ -1,10 +1,5 @@
 import React, {useState} from 'react';
-import {
-  Pressable,
-  Text,
-  ActivityIndicator,
-  StyleSheet,
-} from 'react-native';
+import {Pressable, Text, ActivityIndicator, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NavigationProp} from '@react-navigation/native';
 import {useMutation} from '@apollo/client';
