@@ -32,6 +32,7 @@ import {
   ActivityIndicator,
   Pressable,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 
@@ -48,6 +49,7 @@ import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 import {currency} from '../utils';
 import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
+import { fetchToken } from '../services/TokenClient';
 
 function CartScreen(): React.JSX.Element {
   const ShopifyCheckout = useShopifyCheckoutSheet();
@@ -85,7 +87,15 @@ function CartScreen(): React.JSX.Element {
 
   const presentCheckout = async () => {
     if (checkoutURL) {
-      ShopifyCheckout.present(checkoutURL);
+      const auth = await fetchToken();
+      if (!auth) {
+        Alert.alert('Error', 'Failed to authenticate');
+        return;
+      }
+
+      ShopifyCheckout.present(checkoutURL, {
+        authentication: { token: auth },
+      });
     }
   };
 
