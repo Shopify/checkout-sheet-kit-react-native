@@ -305,27 +305,6 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     ])
   }
 
-  func checkoutDidRequestCardChange(event: CheckoutCardChangeRequested) {
-    guard let id = event.id else { return }
-
-    self.events.set(key: id, event: event)
-
-    var eventData: [String: Any] = [
-      "id": event.id,
-      "type": "paymentChangeIntent",
-    ]
-
-    // Include current card info if available
-    if let currentCard = event.params.currentCard {
-      eventData["currentCard"] = [
-        "last4": currentCard.last4,
-        "brand": currentCard.brand,
-      ]
-    }
-
-    onPaymentChangeIntent?(eventData)
-  }
-
   /// Called when the buyer attempts to submit the checkout.
   ///
   /// This event is only emitted when native payment delegation is configured

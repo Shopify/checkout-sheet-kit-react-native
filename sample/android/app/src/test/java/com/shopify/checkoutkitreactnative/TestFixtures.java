@@ -76,7 +76,8 @@ public class TestFixtures {
         Collections.emptyList(), // discountCodes
         Collections.emptyList(), // appliedGiftCards
         Collections.emptyList(), // discountAllocations
-        delivery
+        delivery,
+        Collections.emptyList() // paymentInstruments
     );
   }
 
