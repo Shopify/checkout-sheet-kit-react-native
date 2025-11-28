@@ -85,6 +85,7 @@ class RCTCheckoutWebView: UIView {
   @objc var onLinkClick: RCTBubblingEventBlock?
   @objc var onAddressChangeStart: RCTBubblingEventBlock?
   @objc var onPaymentMethodChangeStart: RCTBubblingEventBlock?
+  @objc var onSubmitStart: RCTBubblingEventBlock?
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -328,5 +329,31 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     }
 
     onPaymentMethodChangeStart?(eventData)
+  }
+
+  /// Called when the buyer attempts to submit the checkout.
+  ///
+  /// This event is only emitted when native payment delegation is configured
+  /// for the authenticated app.
+  ///
+  /// - Parameter event: The submit start event containing:
+  ///   - id: Unique identifier for responding to the event
+  ///   - cart: Current cart state
+  ///   - checkout: Checkout session information
+  func checkoutDidStartSubmit(event: CheckoutSubmitStart) {
+    guard let id = event.id else { return }
+
+    self.events.set(key: id, event: event)
+
+    let cartJSON = ShopifyEventSerialization.encodeToJSON(from: event.params.cart)
+
+    onSubmitStart?([
+      "id": event.id,
+      "type": "submitStart",
+      "cart": cartJSON,
+      "checkout": [
+        "id": event.params.checkout.id
+      ],
+    ])
   }
 }

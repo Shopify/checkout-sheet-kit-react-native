@@ -129,6 +129,11 @@ SOFTWARE.
     RCT_EXPORT_VIEW_PROPERTY(onPaymentMethodChangeStart, RCTBubblingEventBlock)
 
     /**
+     * Emitted when the buyer attempts to submit the checkout
+     */
+    RCT_EXPORT_VIEW_PROPERTY(onSubmitStart, RCTBubblingEventBlock)
+
+    /**
      * Emitted when a link is clicked
      */
     RCT_EXPORT_VIEW_PROPERTY(onLinkClick, RCTBubblingEventBlock)

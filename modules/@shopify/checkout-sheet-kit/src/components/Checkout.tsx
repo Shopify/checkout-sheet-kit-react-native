@@ -24,16 +24,16 @@ import React, {
   forwardRef,
   useEffect,
 } from 'react';
-import { requireNativeComponent, UIManager, findNodeHandle } from 'react-native';
-import type { ViewStyle } from 'react-native';
+import { requireNativeComponent, UIManager, findNodeHandle, type ViewStyle } from 'react-native';
+import {useCheckoutEvents} from '../CheckoutEventProvider';
 import type {
   CheckoutAddressChangeStart,
   CheckoutCompleteEvent,
-  CheckoutException,
   CheckoutPaymentMethodChangeStart,
   CheckoutStartEvent,
-} from '..';
-import { useCheckoutEvents } from '../CheckoutEventProvider';
+  CheckoutSubmitStart
+} from '../events';
+import type { CheckoutException } from '../errors';
 
 export interface CheckoutProps {
   /**
@@ -80,12 +80,22 @@ export interface CheckoutProps {
   onAddressChangeStart?: (event: CheckoutAddressChangeStart) => void;
 
   /**
-   * Called when checkout requests a payment method change (e.g., for native payment selector)
+   * Called when the buyer attempts to submit the checkout.
+   *
+   * Note: This callback is only invoked when native payment delegation is configured
+   * for the authenticated app.
+   */
+  onSubmitStart?: (event: CheckoutSubmitStart) => void;
+  
+  /**
+   * Called when checkout starts a payment method change flow (e.g., for native picker).
+   *
+   * Note: This callback is only invoked when native address selection is enabled
+   * for the authenticated app.
    */
   onPaymentMethodChangeStart?: (
     event: CheckoutPaymentMethodChangeStart,
   ) => void;
-
   /**
    * Style for the webview container
    */
@@ -114,9 +124,8 @@ interface NativeCheckoutWebViewProps {
   onComplete?: (event: { nativeEvent: CheckoutCompleteEvent }) => void;
   onCancel?: () => void;
   onLinkClick?: (event: { nativeEvent: { url: string } }) => void;
-  onAddressChangeStart?: (event: {
-    nativeEvent: CheckoutAddressChangeStart;
-  }) => void;
+  onAddressChangeStart?: (event: { nativeEvent: CheckoutAddressChangeStart; }) => void;
+  onSubmitStart?: (event: {nativeEvent: CheckoutSubmitStart}) => void;
   onPaymentMethodChangeStart?: (event: { nativeEvent: CheckoutPaymentMethodChangeStart; }) => void;
 }
 
@@ -176,6 +185,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       onLinkClick,
       onAddressChangeStart,
       onPaymentMethodChangeStart,
+      onSubmitStart,
       style,
       testID,
     },
@@ -195,7 +205,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
     }, [eventContext]);
 
     const handleStart = useCallback<Required<NativeCheckoutWebViewProps>['onStart']>(
-      (event) => {
+      (event: {nativeEvent: CheckoutStartEvent}) => {
         onStart?.(event.nativeEvent);
       },
       [onStart],
@@ -242,11 +252,22 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       },
       [onPaymentMethodChangeStart],
     );
+      
+    const handleSubmitStart = useCallback<
+      Required<NativeCheckoutWebViewProps>['onSubmitStart']
+    >(
+      (event: {nativeEvent: CheckoutSubmitStart}) => {
+        if (!event.nativeEvent) return;
+        onSubmitStart?.(event.nativeEvent);
+      },
+      [onSubmitStart],
+    );
 
     const reload = useCallback(() => {
       if (!webViewRef.current) {
         return;
       }
+      
       const handle = findNodeHandle(webViewRef.current);
       if (!handle) {
         return;
@@ -255,7 +276,11 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       const viewConfig = UIManager.getViewManagerConfig('RCTCheckoutWebView');
       const commandId = viewConfig?.Commands?.reload ?? 'reload';
 
-      UIManager.dispatchViewManagerCommand(handle, commandId, []);
+      UIManager.dispatchViewManagerCommand(
+        handle,
+        commandId,
+        [],
+      );
     }, []);
 
     useImperativeHandle(ref, () => ({ reload }), [reload]);
@@ -274,6 +299,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
         onLinkClick={handleLinkClick}
         onAddressChangeStart={handleAddressChangeStart}
         onPaymentMethodChangeStart={handlePaymentMethodChangeStart}
+        onSubmitStart={handleSubmitStart}
       />
     );
   },

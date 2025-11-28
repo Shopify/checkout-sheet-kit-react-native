@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import type {Cart} from '../src/events.d';
+import type {Cart, CheckoutSession} from '../src/events.d';
 
 /**
  * Shared test fixtures for creating test objects.
@@ -72,6 +72,25 @@ export function createTestCart(overrides?: Partial<Cart>): Cart {
     payment: {
       instruments: [],
     },
+    ...overrides,
+  };
+}
+
+/**
+ * Creates a test CheckoutSession instance with sensible defaults.
+ *
+ * @param overrides - Optional partial CheckoutSession object to override defaults
+ * @returns A CheckoutSession instance suitable for testing
+ *
+ * @example
+ * ```typescript
+ * const checkout = createTestCheckout();
+ * const checkoutWithCustomId = createTestCheckout({ id: 'custom-session-id' });
+ * ```
+ */
+export function createTestCheckout(overrides?: Partial<CheckoutSession>): CheckoutSession {
+  return {
+    id: 'checkout-session-123',
     ...overrides,
   };
 }

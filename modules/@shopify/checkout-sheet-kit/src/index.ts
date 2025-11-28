@@ -188,6 +188,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
       case 'addressChangeStart':
         eventCallback = this.interceptEventEmission('addressChangeStart', callback);
         break;
+      case 'submitStart':
+        eventCallback = this.interceptEventEmission('submitStart', callback);
+        break;
       case 'error':
         eventCallback = this.interceptEventEmission(
           'error',
@@ -507,6 +510,8 @@ export type {
   CartPaymentInstrument,
   CartPaymentInstrumentDisplayInput,
   CartPaymentInstrumentInput,
+  PaymentTokenInput,
+  CheckoutSession,
   CheckoutAddressChangeStart,
   CheckoutAddressChangeStartResponse,
   CheckoutCompleteEvent,
@@ -514,6 +519,8 @@ export type {
   CheckoutResponseError,
   ExpiryInput,
   CheckoutStartEvent,
+  CheckoutSubmitStart,
+  CheckoutSubmitStartResponse,
   MailingAddressInput,
 } from './events.d';
 

@@ -399,7 +399,6 @@ export interface CheckoutResponseError {
 
 /**
  * Mailing address input for delivery.
- * Aligns with Storefront API MailingAddressInput.
  *
  * @see https://shopify.dev/docs/api/storefront/latest/input-objects/MailingAddressInput
  */
@@ -448,7 +447,6 @@ export interface CartDeliveryAddressInput {
 
 /**
  * Delivery-related fields for the cart.
- * Aligns with Storefront API CartDeliveryInput.
  *
  * @see https://shopify.dev/docs/api/storefront/latest/input-objects/CartDeliveryInput
  */
@@ -461,7 +459,6 @@ export interface CartDeliveryInput {
 
 /**
  * The customer associated with the cart.
- * Aligns with Storefront API CartBuyerIdentityInput.
  *
  * @see https://shopify.dev/docs/api/storefront/latest/input-objects/CartBuyerIdentityInput
  */
@@ -548,7 +545,7 @@ export interface CheckoutAddressChangeStart {
  */
 export interface CheckoutAddressChangeStartResponse {
   /**
-   * Updated cart input with the delivery address to set.
+   * Updated cart input with the delivery addresses to set.
    */
   cart?: CartInput;
   /**
@@ -620,4 +617,72 @@ export interface CheckoutPaymentMethodChangeStart {
   type: 'paymentMethodChangeStart';
   /** Cart state when the event was emitted */
   cart: Cart;
+}
+
+/**
+ * Checkout session information.
+ */
+export interface CheckoutSession {
+  /** Globally unique identifier for the checkout session */
+  id: string;
+}
+
+/**
+ * Event emitted when the buyer attempts to submit the checkout.
+ *
+ * This event is only emitted when native payment delegation is configured
+ * for the authenticated app.
+ */
+export interface CheckoutSubmitStart {
+  /**
+   * Unique identifier for this event instance.
+   * Use this ID with the CheckoutEventProvider to respond to the event.
+   */
+  id: string;
+
+  /**
+   * The event type identifier
+   */
+  type: 'submitStart';
+
+  /**
+   * The current cart state when the event was emitted.
+   */
+  cart: Cart;
+
+  /**
+   * The checkout session information.
+   */
+  checkout: CheckoutSession;
+}
+
+/**
+ * Payment token input for delegated payment processing.
+ */
+export interface PaymentTokenInput {
+  token: string;
+  tokenType: string;
+  tokenProvider: string;
+}
+
+/**
+ * Response payload for CheckoutSubmitStart event.
+ * Use with CheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
+ *
+ * Note: This response is only used when native payment delegation is enabled
+ * for the authenticated app.
+ */
+export interface CheckoutSubmitStartResponse {
+  /**
+   * Optional payment token information for delegated payment processing.
+   */
+  payment?: PaymentTokenInput;
+  /**
+   * Updated cart input with delivery addresses and optional buyer identity.
+   */
+  cart?: CartInput;
+  /**
+   * Optional array of errors if the submission failed.
+   */
+  errors?: CheckoutResponseError[];
 }
