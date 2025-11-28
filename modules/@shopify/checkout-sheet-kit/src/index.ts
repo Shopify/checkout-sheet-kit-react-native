@@ -505,7 +505,7 @@ export type {
   CartDeliveryAddressInput,
   CartDeliveryInput,
   CartInput,
-  CartPaymentTokenInput,
+  PaymentTokenInput,
   CheckoutSession,
   CheckoutAddressChangeStart,
   CheckoutAddressChangeStartResponse,

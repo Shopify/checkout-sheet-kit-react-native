@@ -586,7 +586,7 @@ export interface CheckoutSubmitStart {
 /**
  * Payment token input for delegated payment processing.
  */
-export interface CartPaymentTokenInput {
+export interface PaymentTokenInput {
   token: string;
   tokenType: string;
   tokenProvider: string;
@@ -603,7 +603,7 @@ export interface CheckoutSubmitStartResponse {
   /**
    * Optional payment token information for delegated payment processing.
    */
-  payment?: CartPaymentTokenInput;
+  payment?: PaymentTokenInput;
   /**
    * Updated cart input with delivery addresses and optional buyer identity.
    */
