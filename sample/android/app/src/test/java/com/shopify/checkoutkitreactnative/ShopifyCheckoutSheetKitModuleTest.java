@@ -3,6 +3,8 @@ package com.shopify.checkoutkitreactnative;
 import static com.shopify.checkoutkitreactnative.TestFixtures.createTestCart;
 
 import androidx.activity.ComponentActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -14,6 +16,7 @@ import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
 import com.shopify.checkoutsheetkit.Preloading;
 import com.shopify.checkoutsheetkit.ColorScheme;
 import com.shopify.checkoutsheetkit.Authentication;
+import com.shopify.checkoutsheetkit.lifecycleevents.CartPaymentInstrument;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.Cart;
@@ -44,6 +47,11 @@ import static org.mockito.Mockito.*;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ShopifyCheckoutSheetKitModuleTest {
@@ -543,18 +551,19 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   private Cart buildMinimalCart(String cartId, String amount, String currencyCode) {
     return new Cart(
-        cartId,
-        new ArrayList<>(), // lines
-        new CartCost(
-            new Money(amount, currencyCode),
-            new Money(amount, currencyCode)
-        ),
-        new CartBuyerIdentity(null, null, null, null),
-        new ArrayList<>(), // deliveryGroups
-        new ArrayList<>(), // discountCodes
-        new ArrayList<>(), // appliedGiftCards
-        new ArrayList<>(), // discountAllocations
-        new CartDelivery(new ArrayList<>())
+      cartId,
+      new ArrayList<>(), // lines
+      new CartCost(
+        new Money(amount, currencyCode),
+        new Money(amount, currencyCode)
+      ),
+      new CartBuyerIdentity(null, null, null, null),
+      new ArrayList<>(), // deliveryGroups
+      new ArrayList<>(), // discountCodes
+      new ArrayList<>(), // appliedGiftCards
+      new ArrayList<>(), // discountAllocations
+      new CartDelivery(new ArrayList<>()),
+      new ArrayList<>() { } // paymentInstruments
     );
   }
 

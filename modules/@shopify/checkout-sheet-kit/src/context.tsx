@@ -31,6 +31,7 @@ import type {
   RemoveEventListeners,
   CheckoutEvent,
   Configuration,
+  CheckoutOptions,
 } from './index.d';
 
 type Maybe<T> = T | undefined;
@@ -41,8 +42,8 @@ interface Context {
   getConfig: () => Promise<Configuration | undefined>;
   setConfig: (config: Configuration) => Promise<void>;
   removeEventListeners: RemoveEventListeners;
-  preload: (checkoutUrl: string) => void;
-  present: (checkoutUrl: string) => void;
+  preload: (checkoutUrl: string, options?: CheckoutOptions) => void;
+  present: (checkoutUrl: string, options?: CheckoutOptions) => void;
   dismiss: () => void;
   invalidate: () => void;
   version: Maybe<string>;
@@ -95,15 +96,16 @@ export function ShopifyCheckoutSheetProvider({
     instance.current?.removeEventListeners(eventName);
   }, []);
 
-  const present = useCallback((checkoutUrl: string) => {
+  const present = useCallback((checkoutUrl: string, options?: CheckoutOptions) => {
     if (checkoutUrl) {
-      instance.current?.present(checkoutUrl);
+      instance.current?.present(checkoutUrl, options
+      );
     }
   }, []);
 
-  const preload = useCallback((checkoutUrl: string) => {
+  const preload = useCallback((checkoutUrl: string, options?: CheckoutOptions) => {
     if (checkoutUrl) {
-      instance.current?.preload(checkoutUrl);
+      instance.current?.preload(checkoutUrl, options);
     }
   }, []);
 
