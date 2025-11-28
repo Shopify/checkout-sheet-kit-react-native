@@ -204,7 +204,6 @@ public class RCTCheckoutWebView extends FrameLayout {
     Log.d(TAG, "Responding to event: " + eventId + " with data: " + responseData);
 
     if (checkoutWebView != null) {
-      // Delegate to the WebView's respondToEvent method
       checkoutWebView.respondToEvent(eventId, responseData);
     } else {
       Log.e(TAG, "CheckoutWebView is null when trying to respond to event: " + eventId);

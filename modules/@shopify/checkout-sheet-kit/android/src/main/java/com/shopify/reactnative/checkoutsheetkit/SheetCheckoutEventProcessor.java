@@ -51,7 +51,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
-  private static final String TAG = "InlineCheckoutEventProcessor";
+  private static final String TAG = "SheetCheckoutEventProcessor";
 
   private final ReactApplicationContext reactContext;
   private final ObjectMapper mapper = new ObjectMapper();
