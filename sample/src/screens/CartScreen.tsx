@@ -32,7 +32,6 @@ import {
   ActivityIndicator,
   Pressable,
   RefreshControl,
-  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 
@@ -87,14 +86,10 @@ function CartScreen(): React.JSX.Element {
 
   const presentCheckout = async () => {
     if (checkoutURL) {
-      const auth = await fetchToken();
-      if (!auth) {
-        Alert.alert('Error', 'Failed to authenticate');
-        return;
-      }
+      const token = await fetchToken();
 
       ShopifyCheckout.present(checkoutURL, {
-        authentication: { token: auth },
+        authentication: token ? { token } : undefined,
       });
     }
   };
