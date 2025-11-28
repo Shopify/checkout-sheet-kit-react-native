@@ -42,7 +42,7 @@ export default function CheckoutScreen(props: {
   const eventContext = useCheckoutEvents();
 
   const onStart = (event: CheckoutStartEvent) => {
-    console.log('Start', JSON.stringify(event, null, 2));
+    console.log('<CheckoutScreen /> onStart', event);
   };
 
   const onAddressChangeStart = (event: CheckoutAddressChangeStart) => {
@@ -51,7 +51,7 @@ export default function CheckoutScreen(props: {
   };
 
   const onSubmitStart = async (event: CheckoutSubmitStart) => {
-    console.log('Submit start', JSON.stringify(event, null, 2));
+    console.log('<CheckoutScreen /> onSubmitStart', event);
     try {
       await eventContext?.respondToEvent(event.id, {
         payment: {
