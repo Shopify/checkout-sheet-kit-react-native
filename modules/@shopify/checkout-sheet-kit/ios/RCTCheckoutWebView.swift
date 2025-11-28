@@ -310,23 +310,13 @@ extension RCTCheckoutWebView: CheckoutDelegate {
 
     self.events.set(key: id, event: event)
 
+    let cartJSON = ShopifyEventSerialization.encodeToJSON(from: event.params.cart)
+    
     var eventData: [String: Any] = [
       "id": event.id,
       "type": "paymentMethodChangeStart",
+      "cart": cartJSON,
     ]
-
-    // Include cart payment instruments if available
-    if let paymentInstruments = event.params.cart?.paymentInstruments {
-      var instruments: [[String: Any]] = []
-      for instrument in paymentInstruments {
-        var instrumentData: [String: Any] = ["type": instrument.type]
-        if let details = instrument.details {
-          instrumentData["details"] = details
-        }
-        instruments.append(instrumentData)
-      }
-      eventData["cart"] = ["paymentInstruments": instruments]
-    }
 
     onPaymentMethodChangeStart?(eventData)
   }
