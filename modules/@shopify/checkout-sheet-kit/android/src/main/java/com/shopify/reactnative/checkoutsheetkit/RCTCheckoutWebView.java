@@ -183,6 +183,14 @@ public class RCTCheckoutWebView extends FrameLayout {
     lastConfiguration = configuration;
   }
 
+  @Override
+  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    super.onLayout(changed, left, top, right, bottom);
+    if (checkoutWebView != null) {
+      checkoutWebView.layout(0, 0, right - left, bottom - top);
+    }
+  }
+
   @NonNull
   private CheckoutWebViewEventProcessor getCheckoutWebViewEventProcessor() {
     Activity currentActivity = this.context.getCurrentActivity();
