@@ -24,8 +24,8 @@ import React, {
   forwardRef,
   useEffect,
 } from 'react';
-import {requireNativeComponent, UIManager, findNodeHandle} from 'react-native';
-import type {ViewStyle} from 'react-native';
+import { requireNativeComponent, UIManager, findNodeHandle } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import type {
   CheckoutAddressChangeStart,
   CheckoutCompleteEvent,
@@ -33,7 +33,7 @@ import type {
   CheckoutPaymentMethodChangeStart,
   CheckoutStartEvent,
 } from '..';
-import {useCheckoutEvents} from '../CheckoutEventProvider';
+import { useCheckoutEvents } from '../CheckoutEventProvider';
 
 export interface CheckoutProps {
   /**
@@ -109,17 +109,15 @@ interface NativeCheckoutWebViewProps {
   auth?: string;
   style?: ViewStyle;
   testID?: string;
-  onStart?: (event: {nativeEvent: CheckoutStartEvent}) => void;
-  onError?: (event: {nativeEvent: CheckoutException}) => void;
-  onComplete?: (event: {nativeEvent: CheckoutCompleteEvent}) => void;
+  onStart?: (event: { nativeEvent: CheckoutStartEvent }) => void;
+  onError?: (event: { nativeEvent: CheckoutException }) => void;
+  onComplete?: (event: { nativeEvent: CheckoutCompleteEvent }) => void;
   onCancel?: () => void;
-  onLinkClick?: (event: {nativeEvent: {url: string}}) => void;
+  onLinkClick?: (event: { nativeEvent: { url: string } }) => void;
   onAddressChangeStart?: (event: {
     nativeEvent: CheckoutAddressChangeStart;
   }) => void;
-  onPaymentMethodChangeStart?: (event: {
-    nativeEvent: CheckoutPaymentMethodChangeStart;
-  }) => void;
+  onPaymentMethodChangeStart?: (event: { nativeEvent: CheckoutPaymentMethodChangeStart; }) => void;
 }
 
 const RCTCheckoutWebView =
@@ -196,62 +194,48 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       return () => eventContext.unregisterWebView();
     }, [eventContext]);
 
-    const handleStart = useCallback<
-      Required<NativeCheckoutWebViewProps>['onStart']
-    >(
-      (event: {nativeEvent: CheckoutStartEvent}) => {
+    const handleStart = useCallback<Required<NativeCheckoutWebViewProps>['onStart']>(
+      (event) => {
         onStart?.(event.nativeEvent);
       },
       [onStart],
     );
 
-    const handleError = useCallback<
-      Required<NativeCheckoutWebViewProps>['onError']
-    >(
-      (event: {nativeEvent: CheckoutException}) => {
+    const handleError = useCallback<Required<NativeCheckoutWebViewProps>['onError']>(
+      (event) => {
         onError?.(event.nativeEvent);
       },
       [onError],
     );
 
-    const handleComplete = useCallback<
-      Required<NativeCheckoutWebViewProps>['onComplete']
-    >(
-      (event: {nativeEvent: CheckoutCompleteEvent}) => {
+    const handleComplete = useCallback<Required<NativeCheckoutWebViewProps>['onComplete']>(
+      (event) => {
         onComplete?.(event.nativeEvent);
       },
       [onComplete],
     );
 
-    const handleCancel = useCallback<
-      Required<NativeCheckoutWebViewProps>['onCancel']
-    >(() => {
+    const handleCancel = useCallback<Required<NativeCheckoutWebViewProps>['onCancel']>(() => {
       onCancel?.();
     }, [onCancel]);
 
-    const handleLinkClick = useCallback<
-      Required<NativeCheckoutWebViewProps>['onLinkClick']
-    >(
-      (event: {nativeEvent: {url: string}}) => {
+    const handleLinkClick = useCallback<Required<NativeCheckoutWebViewProps>['onLinkClick']>(
+      (event) => {
         if (!event.nativeEvent.url) return;
         onLinkClick?.(event.nativeEvent.url);
       },
       [onLinkClick],
     );
 
-    const handleAddressChangeStart = useCallback<
-      Required<NativeCheckoutWebViewProps>['onAddressChangeStart']
-    >(
-      (event: {nativeEvent: CheckoutAddressChangeStart}) => {
+    const handleAddressChangeStart = useCallback<Required<NativeCheckoutWebViewProps>['onAddressChangeStart']>(
+      (event) => {
         if (!event.nativeEvent) return;
         onAddressChangeStart?.(event.nativeEvent);
       },
       [onAddressChangeStart],
     );
 
-    const handlePaymentMethodChangeStart = useCallback<
-      Required<NativeCheckoutWebViewProps>['onPaymentMethodChangeStart']
-    >(
+    const handlePaymentMethodChangeStart = useCallback<Required<NativeCheckoutWebViewProps>['onPaymentMethodChangeStart']>(
       event => {
         if (!event.nativeEvent) return;
         onPaymentMethodChangeStart?.(event.nativeEvent);
@@ -274,7 +258,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
       UIManager.dispatchViewManagerCommand(handle, commandId, []);
     }, []);
 
-    useImperativeHandle(ref, () => ({reload}), [reload]);
+    useImperativeHandle(ref, () => ({ reload }), [reload]);
 
     return (
       <RCTCheckoutWebView
