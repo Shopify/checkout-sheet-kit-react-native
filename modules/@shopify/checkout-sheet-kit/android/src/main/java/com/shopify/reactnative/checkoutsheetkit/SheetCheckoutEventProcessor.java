@@ -91,8 +91,10 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
    * @param callback - The callback to invoke when the app requests permissions
    */
   @Override
-  public void onGeolocationPermissionsShowPrompt(@NonNull String origin,
-                                                 @NonNull GeolocationPermissions.Callback callback) {
+  public void onGeolocationPermissionsShowPrompt(
+    @NonNull String origin,
+    @NonNull GeolocationPermissions.Callback callback
+  ) {
 
     // Store the callback and origin in memory. The kit will wait for the app to
     // request permissions first before granting.

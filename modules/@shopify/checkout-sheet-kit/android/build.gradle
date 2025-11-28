@@ -100,5 +100,10 @@ dependencies {
   implementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
   implementation("com.fasterxml.jackson.core:jackson-databind:2.12.5")
   debugImplementation("com.shopify:checkout-sheet-kit:${SHOPIFY_CHECKOUT_SDK_VERSION}")
+
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.mockito:mockito-core:4.11.0'
+  testImplementation 'org.mockito:mockito-inline:5.2.0'
+  testImplementation 'org.assertj:assertj-core:3.27.6'
 }
 
