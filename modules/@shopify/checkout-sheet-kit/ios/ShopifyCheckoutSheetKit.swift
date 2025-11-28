@@ -53,7 +53,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     }
 
     override func supportedEvents() -> [String]! {
-        return ["close", "complete", "start", "error", "addressChangeStart"]
+        return ["close", "complete", "start", "error", "addressChangeStart", "submitStart"]
     }
 
     override func startObserving() {
@@ -79,6 +79,12 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     func checkoutDidStartAddressChange(event: CheckoutAddressChangeStart) {
         if hasListeners {
             sendEvent(withName: "addressChangeStart", body: ShopifyEventSerialization.serialize(checkoutAddressChangeStart: event))
+        }
+    }
+
+    func checkoutDidStartSubmit(event: CheckoutSubmitStart) {
+        if hasListeners {
+            sendEvent(withName: "submitStart", body: ShopifyEventSerialization.serialize(checkoutSubmitStart: event))
         }
     }
 

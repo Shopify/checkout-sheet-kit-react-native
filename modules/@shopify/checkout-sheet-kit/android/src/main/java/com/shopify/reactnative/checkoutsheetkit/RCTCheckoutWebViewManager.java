@@ -91,6 +91,7 @@ public class RCTCheckoutWebViewManager extends SimpleViewManager<RCTCheckoutWebV
     events.put("onCancel", createEventMap("onCancel"));
     events.put("onLinkClick", createEventMap("onLinkClick"));
     events.put("onAddressChangeStart", createEventMap("onAddressChangeStart"));
+    events.put("onSubmitStart", createEventMap("onSubmitStart"));
     return events;
   }
 

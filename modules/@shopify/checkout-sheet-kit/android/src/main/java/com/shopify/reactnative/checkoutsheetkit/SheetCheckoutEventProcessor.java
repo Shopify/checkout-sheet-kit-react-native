@@ -44,6 +44,8 @@ import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStart;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStartEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -169,6 +171,31 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
       sendEventWithStringData("addressChangeStart", data);
     } catch (IOException e) {
       Log.e(TAG, "Error processing address change start event", e);
+    }
+  }
+
+  @Override
+  public void onSubmitStart(@NonNull CheckoutSubmitStart event) {
+    try {
+      CheckoutSubmitStartEvent params = event.getParams();
+      if (params == null) {
+        Log.e("ShopifyCheckoutSheetKit", "Submit start event has null params");
+        return;
+      }
+
+      Map<String, Object> eventData = new HashMap<>();
+      eventData.put("id", event.getId());
+      eventData.put("type", "submitStart");
+      eventData.put("cart", params.getCart());
+
+      Map<String, Object> checkoutData = new HashMap<>();
+      checkoutData.put("id", params.getCheckout().getId());
+      eventData.put("checkout", checkoutData);
+
+      String data = mapper.writeValueAsString(eventData);
+      sendEventWithStringData("submitStart", data);
+    } catch (IOException e) {
+      Log.e("ShopifyCheckoutSheetKit", "Error processing submit start event", e);
     }
   }
 
