@@ -77,7 +77,27 @@ public class RCTCheckoutWebView extends FrameLayout {
   private CheckoutConfiguration lastConfiguration = null;
   private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-  private record CheckoutConfiguration(String url, String authToken) {
+  private static class CheckoutConfiguration {
+    private final String url;
+    private final String authToken;
+
+    CheckoutConfiguration(String url, String authToken) {
+      this.url = url;
+      this.authToken = authToken;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      CheckoutConfiguration that = (CheckoutConfiguration) o;
+      return Objects.equals(url, that.url) && Objects.equals(authToken, that.authToken);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(url, authToken);
+    }
   }
 
   public RCTCheckoutWebView(ThemedReactContext context) {
@@ -137,14 +157,12 @@ public class RCTCheckoutWebView extends FrameLayout {
     Log.d(TAG, "setupCheckoutWebView: Setting up new webview for URL: " + url);
     removeCheckout();
 
-    // Create the CheckoutWebView with null AttributeSet
     checkoutWebView = new CheckoutWebView(this.context, null);
     Log.d(TAG, "setupCheckoutWebView: New CheckoutWebView created");
 
     CheckoutWebViewEventProcessor webViewEventProcessor = getCheckoutWebViewEventProcessor();
     checkoutWebView.setEventProcessor(webViewEventProcessor);
 
-    // Configure authentication if provided
     CheckoutOptions options = new CheckoutOptions();
     if (auth != null && !auth.isEmpty()) {
       options = new CheckoutOptions(new Authentication.Token(auth));
