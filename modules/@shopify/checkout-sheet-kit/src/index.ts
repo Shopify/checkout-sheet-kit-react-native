@@ -503,6 +503,8 @@ export type {
   CartDeliveryInput,
   CartInput,
   CardBrand,
+  CartPayment,
+  CartPaymentInstrument,
   CartPaymentInstrumentDisplayInput,
   CartPaymentInstrumentInput,
   CheckoutAddressChangeStart,

@@ -46,6 +46,8 @@ export interface Cart {
   discountAllocations: CartDiscountAllocation[];
   /** Delivery addresses for the cart */
   delivery: CartDelivery;
+  /** Payment information for the cart */
+  payment: CartPayment;
 }
 
 /**
@@ -263,6 +265,25 @@ export interface CartDeliveryAddress {
 export type CartAddress = CartDeliveryAddress;
 
 /**
+ * Payment instrument available for selection at checkout.
+ * Output type from Storefront API.
+ *
+ * @see https://shopify.dev/docs/api/storefront/latest/objects/CartPaymentInstrument
+ */
+export interface CartPaymentInstrument {
+  externalReference: string;
+}
+
+/**
+ * Payment information available for the cart.
+ *
+ * @see https://shopify.dev/docs/api/storefront/latest/objects/CartPayment
+ */
+export interface CartPayment {
+  instruments: CartPaymentInstrument[];
+}
+
+/**
  * Discount applied to a cart line or the entire cart.
  * Shows how much was discounted and which code/promotion applied it.
  */
@@ -474,6 +495,11 @@ export interface CartInput {
    * Optional - use to apply discount codes to the cart.
    */
   discountCodes?: string[];
+  /**
+   * Payment instruments for the cart.
+   * Optional - use to update payment methods.
+   */
+  paymentInstruments?: CartPaymentInstrumentInput[];
 }
 
 /**
@@ -592,8 +618,6 @@ export interface CheckoutPaymentMethodChangeStart {
   id: string;
   /** Type of payment change event */
   type: 'paymentMethodChangeStart';
-  /** Cart state with current payment instruments */
-  cart?: {
-    paymentInstruments?: CartPaymentInstrumentInput[];
-  };
+  /** Cart state when the event was emitted */
+  cart: Cart;
 }

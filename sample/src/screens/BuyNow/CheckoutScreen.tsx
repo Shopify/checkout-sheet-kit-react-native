@@ -24,6 +24,7 @@ import {
   Checkout,
   type CheckoutAddressChangeStart,
   type CheckoutCompleteEvent,
+  type CheckoutPaymentMethodChangeStart,
   type CheckoutRef,
   type CheckoutStartEvent,
 } from '@shopify/checkout-sheet-kit';
@@ -47,7 +48,8 @@ export default function CheckoutScreen(props: {
     navigation.navigate('Address', {id: event.id});
   };
 
-  const onPaymentMethodChangeStart = (event: {id: string}) => {
+  const onPaymentMethodChangeStart = (event: CheckoutPaymentMethodChangeStart) => {
+    console.log('<CheckoutScreen /> onPaymentMethodChangeStart: ', event);
     navigation.navigate('Payment', {id: event.id});
   };
 
