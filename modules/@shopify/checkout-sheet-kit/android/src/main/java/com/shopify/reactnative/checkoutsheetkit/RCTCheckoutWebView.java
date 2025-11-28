@@ -42,6 +42,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
 import com.shopify.checkoutsheetkit.Authentication;
 import com.shopify.checkoutsheetkit.CheckoutException;
+import com.shopify.checkoutsheetkit.CheckoutPaymentMethodChangeStartParams;
 import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor;
 import com.shopify.checkoutsheetkit.CheckoutOptions;
 import com.shopify.checkoutsheetkit.CheckoutWebView;
@@ -58,7 +59,9 @@ import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutPaymentMethodChangeStart;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -346,6 +349,22 @@ public class RCTCheckoutWebView extends FrameLayout {
         eventData.put("cart", params.getCart());
 
         sendEvent("onAddressChangeStart", serializeToWritableMap(eventData));
+      } catch (Exception e) {
+        Log.e(TAG, "Error processing address change start event", e);
+      }
+    }
+
+    @Override
+    public void onPaymentMethodChangeStart(@NonNull CheckoutPaymentMethodChangeStart event) {
+      try {
+        CheckoutPaymentMethodChangeStartParams params = event.getParams();
+
+        Map<String, Object> eventData = new HashMap<>();
+        eventData.put("id", event.getId());
+        eventData.put("type", "paymentMethodChangeStart");
+        eventData.put("cart", params.getCart());
+
+        sendEvent("paymentMethodChangeStart", serializeToWritableMap(eventData));
       } catch (Exception e) {
         Log.e(TAG, "Error processing address change start event", e);
       }
