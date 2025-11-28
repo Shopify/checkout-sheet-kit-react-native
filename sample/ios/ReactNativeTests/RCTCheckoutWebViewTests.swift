@@ -313,7 +313,8 @@ class RCTCheckoutWebViewTests: XCTestCase {
             discountCodes: [],
             appliedGiftCards: [],
             discountAllocations: [],
-            delivery: CartDelivery(addresses: [])
+            delivery: CartDelivery(addresses: []),
+            payment: .init(instruments: [])
         )
         let event = CheckoutStartEvent(cart: cart)
 
@@ -347,7 +348,8 @@ private func createTestCart(
         discountCodes: [],
         appliedGiftCards: [],
         discountAllocations: [],
-        delivery: .init(addresses: [])
+        delivery: .init(addresses: []),
+        payment: .init(instruments: [])
     )
 }
 
