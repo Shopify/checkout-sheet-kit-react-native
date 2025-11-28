@@ -57,9 +57,6 @@ export function BuyNowButton({
 
     try {
       const auth = await fetchToken();
-      if (!auth) {
-        throw new Error('Authentication required for this sample app');
-      }
 
       let checkoutUrl: string;
 
