@@ -22,7 +22,7 @@ jest.mock('react-native', () => {
 
 import React from 'react';
 import {render, act} from '@testing-library/react-native';
-import {Checkout} from '../src/components/Checkout';
+import {ShopifyCheckout} from '../src/components/Checkout';
 import {createTestCart, createTestCheckout} from './testFixtures';
 
 describe('Checkout Component - Submit Start Events', () => {
@@ -32,7 +32,7 @@ describe('Checkout Component - Submit Start Events', () => {
     const onSubmitStart = jest.fn();
 
     const {getByTestId} = render(
-      <Checkout
+      <ShopifyCheckout
         checkoutUrl={mockCheckoutUrl}
         onSubmitStart={onSubmitStart}
         testID="checkout-webview"
@@ -65,7 +65,7 @@ describe('Checkout Component - Submit Start Events', () => {
 
   it('does not crash when onSubmitStart prop is not provided', () => {
     const {getByTestId} = render(
-      <Checkout checkoutUrl={mockCheckoutUrl} testID="checkout-webview" />,
+      <ShopifyCheckout checkoutUrl={mockCheckoutUrl} testID="checkout-webview" />,
     );
 
     const nativeComponent = getByTestId('checkout-webview');
@@ -88,7 +88,7 @@ describe('Checkout Component - Submit Start Events', () => {
     const onSubmitStart = jest.fn();
 
     const {getByTestId} = render(
-      <Checkout
+      <ShopifyCheckout
         checkoutUrl={mockCheckoutUrl}
         onSubmitStart={onSubmitStart}
         testID="checkout-webview"

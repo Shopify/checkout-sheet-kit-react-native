@@ -21,7 +21,7 @@ import type {NavigationProp, RouteProp} from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
 import React, {useRef} from 'react';
 import {
-  Checkout,
+  ShopifyCheckout,
   type CheckoutAddressChangeStart,
   type CheckoutCompleteEvent,
   type CheckoutPaymentMethodChangeStart,
@@ -87,7 +87,7 @@ export default function CheckoutScreen(props: {
   };
 
   return (
-    <Checkout
+    <ShopifyCheckout
       ref={ref}
       checkoutUrl={props.route.params.url}
       auth={props.route.params.auth}
