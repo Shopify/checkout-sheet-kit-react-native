@@ -24,8 +24,8 @@ import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {
   useShopifyEvent,
   type CardBrand,
-  type CartInput,
   type CartPaymentInstrumentInput,
+  type CheckoutPaymentMethodChangeStartResponse,
   type MailingAddressInput,
 } from '@shopify/checkout-sheet-kit';
 import {useCart} from '../../context/Cart';
@@ -117,8 +117,10 @@ export default function PaymentScreen() {
       billingAddress: selectedPayment.billingAddress,
     };
 
-    const response: CartInput = {
-      paymentInstruments: [paymentInstrument],
+    const response: CheckoutPaymentMethodChangeStartResponse = {
+      cart: {
+        paymentInstruments: [paymentInstrument],
+      },
     };
 
     await event.respondWith(response);

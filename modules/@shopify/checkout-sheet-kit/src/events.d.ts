@@ -620,6 +620,21 @@ export interface CheckoutPaymentMethodChangeStart {
 }
 
 /**
+ * Response payload for CheckoutPaymentMethodChangeStart event.
+ * Use with CheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
+ */
+export interface CheckoutPaymentMethodChangeStartResponse {
+  /**
+   * Updated cart input with the payment instruments to set.
+   */
+  cart?: CartInput;
+  /**
+   * Optional array of errors if the payment method selection failed.
+   */
+  errors?: CheckoutResponseError[];
+}
+
+/**
  * Checkout session information.
  */
 export interface CheckoutSession {

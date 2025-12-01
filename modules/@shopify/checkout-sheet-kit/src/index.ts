@@ -516,6 +516,7 @@ export type {
   CheckoutAddressChangeStartResponse,
   CheckoutCompleteEvent,
   CheckoutPaymentMethodChangeStart,
+  CheckoutPaymentMethodChangeStartResponse,
   CheckoutResponseError,
   ExpiryInput,
   CheckoutStartEvent,
