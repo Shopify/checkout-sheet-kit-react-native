@@ -41,7 +41,7 @@ import type {
   CheckoutSubmitStart
 } from '../events';
 
-export interface CheckoutProps {
+export interface ShopifyCheckoutProps {
   /**
    * The checkout URL to load in the webview
    */
@@ -104,14 +104,14 @@ export interface CheckoutProps {
   testID?: string;
 }
 
-export interface CheckoutRef {
+export interface ShopifyCheckoutRef {
   /**
    * Reload the current checkout page
    */
   reload: () => void;
 }
 
-interface NativeCheckoutWebViewProps {
+interface NativeShopifyCheckoutWebViewProps {
   checkoutUrl: string;
   auth?: string;
   style?: ViewStyle;
@@ -126,7 +126,7 @@ interface NativeCheckoutWebViewProps {
 }
 
 const RCTCheckoutWebView =
-  requireNativeComponent<NativeCheckoutWebViewProps>('RCTCheckoutWebView');
+  requireNativeComponent<NativeShopifyCheckoutWebViewProps>('RCTCheckoutWebView');
 
 /**
  * Checkout provides a native webview component for displaying
@@ -137,9 +137,9 @@ const RCTCheckoutWebView =
  * including Shop Pay, Apple Pay, and other payment methods.
  *
  * @example Basic usage
- * import {Checkout} from '@shopify/checkout-sheet-kit';
+ * import {ShopifyCheckout} from '@shopify/checkout-sheet-kit';
  *
- * <Checkout
+ * <ShopifyCheckout
  *   checkoutUrl="https://shop.example.com/checkouts/cn/123"
  *   onComplete={(event) => console.log('Checkout completed!', event.orderDetails)}
  *   onError={(error) => console.error('Checkout failed:', error.message)}
@@ -147,7 +147,7 @@ const RCTCheckoutWebView =
  * />
  *
  * @example Passing an app authentication token to customize checkout and receive richer events
- * <Checkout
+ * <ShopifyCheckout
  *   checkoutUrl="https://shop.example.com/checkouts/cn/123"
  *   auth="your_auth_token_here"
  *   onComplete={(event) => console.log('Checkout completed!')}
@@ -155,11 +155,11 @@ const RCTCheckoutWebView =
  *
  * @example Using with ref to reload on error
  * import {useRef} from 'react';
- * import {Checkout, CheckoutHandle} from '@shopify/checkout-sheet-kit';
+ * import {ShopifyCheckout, CheckoutHandle} from '@shopify/checkout-sheet-kit';
  *
- * const checkoutRef = useRef<CheckoutHandle>(null);
+ * const checkoutRef = useRef<ShopifyCheckoutHandle>(null);
  *
- * <Checkout
+ * <ShopifyCheckout
  *   ref={checkoutRef}
  *   checkoutUrl={url}
  *   auth={authToken}
@@ -169,7 +169,7 @@ const RCTCheckoutWebView =
  *   }}
  * />
  */
-export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
+export const ShopifyCheckout = forwardRef<ShopifyCheckoutRef, ShopifyCheckoutProps>(
   (
     {
       checkoutUrl,
@@ -201,7 +201,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
 
 
     const handleStart = useCallback<
-      Required<NativeCheckoutWebViewProps>['onStart']
+      Required<NativeShopifyCheckoutWebViewProps>['onStart']
     >(
       (event: {nativeEvent: CheckoutStartEvent}) => {
         onStart?.(event.nativeEvent);
@@ -210,7 +210,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
     );
 
     const handleError = useCallback<
-      Required<NativeCheckoutWebViewProps>['onError']
+      Required<NativeShopifyCheckoutWebViewProps>['onError']
     >(
       (event: {nativeEvent: CheckoutException}) => {
         onError?.(event.nativeEvent);
@@ -219,7 +219,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
     );
 
     const handleComplete = useCallback<
-      Required<NativeCheckoutWebViewProps>['onComplete']
+      Required<NativeShopifyCheckoutWebViewProps>['onComplete']
     >(
       (event: {nativeEvent: CheckoutCompleteEvent}) => {
         onComplete?.(event.nativeEvent);
@@ -228,13 +228,13 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
     );
 
     const handleCancel = useCallback<
-      Required<NativeCheckoutWebViewProps>['onCancel']
+      Required<NativeShopifyCheckoutWebViewProps>['onCancel']
     >(() => {
       onCancel?.();
     }, [onCancel]);
 
     const handleLinkClick = useCallback<
-      Required<NativeCheckoutWebViewProps>['onLinkClick']
+      Required<NativeShopifyCheckoutWebViewProps>['onLinkClick']
     >(
       (event: {nativeEvent: {url: string}}) => {
         if (!event.nativeEvent.url) return;
@@ -244,7 +244,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
     );
 
     const handleAddressChangeStart = useCallback<
-      Required<NativeCheckoutWebViewProps>['onAddressChangeStart']
+      Required<NativeShopifyCheckoutWebViewProps>['onAddressChangeStart']
     >(
       (event: {nativeEvent: CheckoutAddressChangeStart}) => {
         if (!event.nativeEvent) return;
@@ -254,7 +254,7 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
     );
 
     const handleSubmitStart = useCallback<
-      Required<NativeCheckoutWebViewProps>['onSubmitStart']
+      Required<NativeShopifyCheckoutWebViewProps>['onSubmitStart']
     >(
       (event: {nativeEvent: CheckoutSubmitStart}) => {
         if (!event.nativeEvent) return;
@@ -303,6 +303,6 @@ export const Checkout = forwardRef<CheckoutRef, CheckoutProps>(
   },
 );
 
-Checkout.displayName = 'Checkout';
+ShopifyCheckout.displayName = 'Checkout';
 
-export default Checkout;
+export default ShopifyCheckout;
