@@ -361,6 +361,10 @@ namespace CheckoutCompleteEvent {
  * Event emitted when checkout is completed successfully.
  */
 export interface CheckoutCompleteEvent {
+  /**
+   * The event type identifier
+   */
+  method: 'checkout.complete';
   /** Order confirmation details */
   orderConfirmation: CheckoutCompleteEvent.OrderConfirmation;
   /** Final cart state at checkout completion */
@@ -371,13 +375,17 @@ export interface CheckoutCompleteEvent {
  * Event emitted when checkout starts.
  */
 export interface CheckoutStartEvent {
+  /**
+   * The event type identifier
+   */
+  method: 'checkout.start';
   /** Initial cart state when checkout started */
   cart: Cart;
 }
 
 /**
  * Error object returned in checkout event responses.
- * Used to communicate validation or processing errors back to checkout.
+ * Used to communicate errors back to checkout.
  */
 export interface CheckoutResponseError {
   /**
@@ -389,8 +397,7 @@ export interface CheckoutResponseError {
    */
   message: string;
   /**
-   * Optional field identifier for validation errors.
-   * The field the error is related to.
+   * Optional field identifier for field-specific errors.
    *
    * @see https://shopify.dev/docs/api/checkout-ui-extensions/latest/targets
    */
@@ -515,7 +522,7 @@ export interface CheckoutAddressChangeStart {
   /**
    * The event type identifier
    */
-  type: 'addressChangeStart';
+  method: 'checkout.addressChangeStart';
 
   /**
    * The type of address being changed.
@@ -537,11 +544,6 @@ export interface CheckoutAddressChangeStart {
  *
  * Note: This response is only used when native address selection is enabled
  * for the authenticated app.
- *
- * Validation requirements:
- * - cart.delivery.addresses must contain at least one address
- * - Each address must include a countryCode
- * - countryCode must be exactly 2 characters (ISO 3166-1 alpha-2 format)
  */
 export interface CheckoutAddressChangeStartResponse {
   /**
@@ -658,7 +660,7 @@ export interface CheckoutSubmitStart {
   /**
    * The event type identifier
    */
-  type: 'submitStart';
+  method: 'checkout.submitStart';
 
   /**
    * The current cart state when the event was emitted.

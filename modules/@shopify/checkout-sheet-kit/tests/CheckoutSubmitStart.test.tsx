@@ -47,7 +47,7 @@ describe('Checkout Component - Submit Start Events', () => {
       nativeComponent.props.onSubmitStart({
         nativeEvent: {
           id: 'test-event-123',
-          type: 'submitStart',
+          method: 'checkout.submitStart',
           cart: testCart,
           checkout: testCheckout,
         },
@@ -57,7 +57,7 @@ describe('Checkout Component - Submit Start Events', () => {
     expect(onSubmitStart).toHaveBeenCalledTimes(1);
     expect(onSubmitStart).toHaveBeenCalledWith({
       id: 'test-event-123',
-      type: 'submitStart',
+      method: 'checkout.submitStart',
       cart: testCart,
       checkout: testCheckout,
     });
@@ -75,7 +75,7 @@ describe('Checkout Component - Submit Start Events', () => {
         nativeComponent.props.onSubmitStart({
           nativeEvent: {
             id: 'test-event',
-            type: 'submitStart',
+            method: 'checkout.submitStart',
             cart: createTestCart(),
             checkout: createTestCheckout(),
           },

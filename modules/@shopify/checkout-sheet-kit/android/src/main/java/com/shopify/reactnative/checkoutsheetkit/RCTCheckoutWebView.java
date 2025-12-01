@@ -41,7 +41,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
 import com.shopify.checkoutsheetkit.Authentication;
 import com.shopify.checkoutsheetkit.CheckoutException;
-import com.shopify.checkoutsheetkit.CheckoutPaymentMethodChangeStartParams;
 import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor;
 import com.shopify.checkoutsheetkit.CheckoutOptions;
 import com.shopify.checkoutsheetkit.CheckoutWebView;
@@ -53,18 +52,13 @@ import com.shopify.checkoutsheetkit.ConfigurationException;
 import com.shopify.checkoutsheetkit.CheckoutSheetKitException;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutAddressChangeStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutSubmitStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutPaymentMethodChangeStartEvent;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutPaymentMethodChangeStart;
 
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStart;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStartEvent;
-
-
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -312,7 +306,9 @@ public class RCTCheckoutWebView extends FrameLayout {
     @Override
     public void onStart(@NonNull CheckoutStartEvent event) {
       try {
-        WritableMap data = serializeToWritableMap(event);
+        WritableMap data = Arguments.createMap();
+        data.putString("method", event.getMethod());
+        data.putMap("cart", serializeToWritableMap(event.getCart()));
         sendEvent(CheckoutEventType.ON_START, data);
       } catch (Exception e) {
         Log.e(TAG, "Error processing start event", e);
@@ -322,7 +318,10 @@ public class RCTCheckoutWebView extends FrameLayout {
     @Override
     public void onComplete(@NonNull CheckoutCompleteEvent event) {
       try {
-        WritableMap data = serializeToWritableMap(event);
+        WritableMap data = Arguments.createMap();
+        data.putString("method", event.getMethod());
+        data.putMap("orderConfirmation", serializeToWritableMap(event.getOrderConfirmation()));
+        data.putMap("cart", serializeToWritableMap(event.getCart()));
         sendEvent(CheckoutEventType.ON_COMPLETE, data);
       } catch (Exception e) {
         Log.e(TAG, "Error processing complete event", e);
@@ -340,52 +339,43 @@ public class RCTCheckoutWebView extends FrameLayout {
     }
 
     @Override
-    public void onAddressChangeStart(@NonNull CheckoutAddressChangeStart event) {
+    public void onAddressChangeStart(@NonNull CheckoutAddressChangeStartEvent event) {
       try {
-        CheckoutAddressChangeStartEvent params = event.getParams();
-        Map<String, Object> eventData = new HashMap<>();
-
-        eventData.put("id", event.getId());
-        eventData.put("type", "addressChangeStart");
-        eventData.put("addressType", params.getAddressType());
-        eventData.put("cart", params.getCart());
-
-        sendEvent(CheckoutEventType.ON_ADDRESS_CHANGE_START, serializeToWritableMap(eventData));
+        WritableMap data = Arguments.createMap();
+        data.putString("id", event.getId());
+        data.putString("method", event.getMethod());
+        data.putString("addressType", event.getAddressType());
+        data.putMap("cart", serializeToWritableMap(event.getCart()));
+        sendEvent(CheckoutEventType.ON_ADDRESS_CHANGE_START, data);
       } catch (Exception e) {
         Log.e(TAG, "Error processing address change start event", e);
       }
     }
 
     @Override
-    public void onPaymentMethodChangeStart(@NonNull CheckoutPaymentMethodChangeStart event) {
+    public void onPaymentMethodChangeStart(@NonNull CheckoutPaymentMethodChangeStartEvent event) {
       try {
-        CheckoutPaymentMethodChangeStartParams params = event.getParams();
-
-        Map<String, Object> eventData = new HashMap<>();
-        eventData.put("id", event.getId());
-        eventData.put("type", "paymentMethodChangeStart");
-        eventData.put("cart", params.getCart());
-
-        sendEvent(CheckoutEventType.ON_PAYMENT_METHOD_CHANGE_START, serializeToWritableMap(eventData));
+        WritableMap data = Arguments.createMap();
+        data.putString("id", event.getId());
+        data.putString("method", event.getMethod());
+        data.putMap("cart", serializeToWritableMap(event.getCart()));
+        sendEvent(CheckoutEventType.ON_PAYMENT_METHOD_CHANGE_START, data);
       } catch (Exception e) {
         Log.e(TAG, "Error processing payment method change start event", e);
       }
     }
 
-    public void onSubmitStart(@NonNull CheckoutSubmitStart event) {
+    @Override
+    public void onSubmitStart(@NonNull CheckoutSubmitStartEvent event) {
       try {
-        CheckoutSubmitStartEvent params = event.getParams();
-        Map<String, Object> eventData = new HashMap<>();
-
-        eventData.put("id", event.getId());
-        eventData.put("type", "submitStart");
-        eventData.put("cart", params.getCart());
-
-        Map<String, Object> checkoutData = new HashMap<>();
-        checkoutData.put("id", params.getCheckout().getId());
-        eventData.put("checkout", checkoutData);
-
-        sendEvent(CheckoutEventType.ON_SUBMIT_START, serializeToWritableMap(eventData));
+        WritableMap data = Arguments.createMap();
+        data.putString("id", event.getId());
+        data.putString("method", event.getMethod());
+        data.putMap("cart", serializeToWritableMap(event.getCart()));
+        WritableMap checkout = Arguments.createMap();
+        checkout.putString("id", event.getCheckout().getId());
+        data.putMap("checkout", checkout);
+        sendEvent(CheckoutEventType.ON_SUBMIT_START, data);
       } catch (Exception e) {
         Log.e(TAG, "Error processing submit start event", e);
       }

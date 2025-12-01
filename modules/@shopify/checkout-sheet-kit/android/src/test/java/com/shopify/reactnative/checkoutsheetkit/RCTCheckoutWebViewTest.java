@@ -45,7 +45,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
 import com.shopify.checkoutsheetkit.CheckoutException;
 import com.shopify.checkoutsheetkit.CheckoutExpiredException;
-import com.shopify.checkoutsheetkit.CheckoutPaymentMethodChangeStartParams;
 import com.shopify.checkoutsheetkit.CheckoutSheetKitException;
 import com.shopify.checkoutsheetkit.CheckoutWebView;
 import com.shopify.checkoutsheetkit.ClientException;
@@ -54,11 +53,9 @@ import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor;
 import com.shopify.checkoutsheetkit.HttpException;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutPaymentMethodChangeStart;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStart;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutAddressChangeStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutSubmitStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutPaymentMethodChangeStartEvent;
 
 import org.junit.After;
 import org.junit.Before;

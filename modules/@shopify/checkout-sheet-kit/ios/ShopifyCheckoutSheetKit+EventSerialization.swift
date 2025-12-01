@@ -63,39 +63,60 @@ internal enum ShopifyEventSerialization {
      * Converts a CheckoutCompleteEvent to a React Native compatible dictionary.
      */
     static func serialize(checkoutCompleteEvent event: CheckoutCompleteEvent) -> [String: Any] {
-        return encodeToJSON(from: event)
+        return [
+            "method": event.method,
+            "orderConfirmation": encodeToJSON(from: event.orderConfirmation),
+            "cart": encodeToJSON(from: event.cart)
+        ]
     }
 
     /**
      * Converts a CheckoutStartEvent to a React Native compatible dictionary.
      */
     static func serialize(checkoutStartEvent event: CheckoutStartEvent) -> [String: Any] {
-        return encodeToJSON(from: event)
-    }
-
-    /**
-     * Converts a CheckoutAddressChangeStart to a React Native compatible dictionary.
-     */
-    static func serialize(checkoutAddressChangeStart event: CheckoutAddressChangeStart) -> [String: Any] {
         return [
-            "id": event.id as Any,
-            "type": "addressChangeStart",
-            "addressType": event.params.addressType,
-            "cart": encodeToJSON(from: event.params.cart)
+            "method": event.method,
+            "cart": encodeToJSON(from: event.cart)
         ]
     }
 
     /**
-     * Converts a CheckoutSubmitStart to a React Native compatible dictionary.
+     * Converts a CheckoutAddressChangeStartEvent to a React Native compatible dictionary.
+     * Manually constructs the dictionary to hide internal RPC implementation details.
      */
-    static func serialize(checkoutSubmitStart event: CheckoutSubmitStart) -> [String: Any] {
+    static func serialize(checkoutAddressChangeStartEvent event: CheckoutAddressChangeStartEvent) -> [String: Any] {
         return [
-            "id": event.id as Any,
-            "type": "submitStart",
-            "cart": encodeToJSON(from: event.params.cart),
+            "id": event.id,
+            "method": event.method,
+            "addressType": event.addressType,
+            "cart": encodeToJSON(from: event.cart)
+        ]
+    }
+
+    /**
+     * Converts a CheckoutSubmitStartEvent to a React Native compatible dictionary.
+     * Manually constructs the dictionary to hide internal RPC implementation details.
+     */
+    static func serialize(checkoutSubmitStartEvent event: CheckoutSubmitStartEvent) -> [String: Any] {
+        return [
+            "id": event.id,
+            "method": event.method,
+            "cart": encodeToJSON(from: event.cart),
             "checkout": [
-                "id": event.params.checkout.id
+                "id": event.checkout.id
             ]
+        ]
+    }
+
+    /**
+     * Converts a CheckoutPaymentMethodChangeStartEvent to a React Native compatible dictionary.
+     * Manually constructs the dictionary to hide internal RPC implementation details.
+     */
+    static func serialize(checkoutPaymentMethodChangeStartEvent event: CheckoutPaymentMethodChangeStartEvent) -> [String: Any] {
+        return [
+            "id": event.id,
+            "method": event.method,
+            "cart": encodeToJSON(from: event.cart)
         ]
     }
 

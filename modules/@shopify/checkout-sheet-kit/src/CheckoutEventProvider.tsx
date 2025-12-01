@@ -68,7 +68,6 @@ export const CheckoutEventProvider = ({
           viewConfig?.Commands?.respondToEvent ?? 'respondToEvent';
 
         // Call the native method to respond to the event
-        // Native side will handle event lookup and validation
         UIManager.dispatchViewManagerCommand(handle, commandId, [
           eventId,
           JSON.stringify(response),

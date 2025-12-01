@@ -32,7 +32,6 @@ import androidx.annotation.Nullable;
 
 import com.shopify.checkoutsheetkit.CheckoutException;
 import com.shopify.checkoutsheetkit.CheckoutExpiredException;
-import com.shopify.checkoutsheetkit.CheckoutPaymentMethodChangeStartParams;
 import com.shopify.checkoutsheetkit.CheckoutSheetKitException;
 import com.shopify.checkoutsheetkit.ClientException;
 import com.shopify.checkoutsheetkit.ConfigurationException;
@@ -43,12 +42,9 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutPaymentMethodChangeStart;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStart;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutAddressChangeStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutSubmitStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutPaymentMethodChangeStartEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -143,7 +139,12 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
   @Override
   public void onComplete(@NonNull CheckoutCompleteEvent event) {
     try {
-      String data = mapper.writeValueAsString(event);
+      Map<String, Object> eventMap = new HashMap<>();
+      eventMap.put("method", event.getMethod());
+      eventMap.put("orderConfirmation", event.getOrderConfirmation());
+      eventMap.put("cart", event.getCart());
+
+      String data = mapper.writeValueAsString(eventMap);
       sendEventWithStringData("complete", data);
     } catch (IOException e) {
       Log.e(TAG, "Error processing complete event", e);
@@ -153,7 +154,11 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
   @Override
   public void onStart(@NonNull CheckoutStartEvent event) {
     try {
-      String data = mapper.writeValueAsString(event);
+      Map<String, Object> eventMap = new HashMap<>();
+      eventMap.put("method", event.getMethod());
+      eventMap.put("cart", event.getCart());
+
+      String data = mapper.writeValueAsString(eventMap);
       sendEventWithStringData("start", data);
     } catch (IOException e) {
       Log.e(TAG, "Error processing start event", e);
@@ -161,16 +166,15 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
   }
 
   @Override
-  public void onAddressChangeStart(@NonNull CheckoutAddressChangeStart event) {
+  public void onAddressChangeStart(@NonNull CheckoutAddressChangeStartEvent event) {
     try {
-      CheckoutAddressChangeStartEvent params = event.getParams();
-      Map<String, Object> eventData = new HashMap<>();
-      eventData.put("id", event.getId());
-      eventData.put("type", "addressChangeStart");
-      eventData.put("addressType", params.getAddressType());
-      eventData.put("cart", params.getCart());
+      Map<String, Object> eventMap = new HashMap<>();
+      eventMap.put("id", event.getId());
+      eventMap.put("method", event.getMethod());
+      eventMap.put("addressType", event.getAddressType());
+      eventMap.put("cart", event.getCart());
 
-      String data = mapper.writeValueAsString(eventData);
+      String data = mapper.writeValueAsString(eventMap);
       sendEventWithStringData("addressChangeStart", data);
     } catch (IOException e) {
       Log.e(TAG, "Error processing address change start event", e);
@@ -178,43 +182,36 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
   }
 
   @Override
-  public void onPaymentMethodChangeStart(@NonNull CheckoutPaymentMethodChangeStart event) {
+  public void onPaymentMethodChangeStart(@NonNull CheckoutPaymentMethodChangeStartEvent event) {
     try {
-      CheckoutPaymentMethodChangeStartParams params = event.getParams();
+      Map<String, Object> eventMap = new HashMap<>();
+      eventMap.put("id", event.getId());
+      eventMap.put("method", event.getMethod());
+      eventMap.put("cart", event.getCart());
 
-      Map<String, Object> eventData = new HashMap<>();
-      eventData.put("id", event.getId());
-      eventData.put("type", "paymentMethodChangeStart");
-      eventData.put("cart", params.getCart());
-
-      String data = mapper.writeValueAsString(eventData);
+      String data = mapper.writeValueAsString(eventMap);
       sendEventWithStringData("paymentMethodChangeStart", data);
     } catch (IOException e) {
       Log.e(TAG, "Error processing payment method change start event", e);
     }
   }
-  
-  public void onSubmitStart(@NonNull CheckoutSubmitStart event) {
+
+  @Override
+  public void onSubmitStart(@NonNull CheckoutSubmitStartEvent event) {
     try {
-      CheckoutSubmitStartEvent params = event.getParams();
-      if (params == null) {
-        Log.e("ShopifyCheckoutSheetKit", "Submit start event has null params");
-        return;
-      }
+      Map<String, Object> eventMap = new HashMap<>();
+      eventMap.put("id", event.getId());
+      eventMap.put("method", event.getMethod());
+      eventMap.put("cart", event.getCart());
 
-      Map<String, Object> eventData = new HashMap<>();
-      eventData.put("id", event.getId());
-      eventData.put("type", "submitStart");
-      eventData.put("cart", params.getCart());
+      Map<String, Object> checkoutMap = new HashMap<>();
+      checkoutMap.put("id", event.getCheckout().getId());
+      eventMap.put("checkout", checkoutMap);
 
-      Map<String, Object> checkoutData = new HashMap<>();
-      checkoutData.put("id", params.getCheckout().getId());
-      eventData.put("checkout", checkoutData);
-
-      String data = mapper.writeValueAsString(eventData);
+      String data = mapper.writeValueAsString(eventMap);
       sendEventWithStringData("submitStart", data);
     } catch (IOException e) {
-      Log.e("ShopifyCheckoutSheetKit", "Error processing submit start event", e);
+      Log.e(TAG, "Error processing submit start event", e);
     }
   }
 

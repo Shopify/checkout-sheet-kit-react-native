@@ -24,7 +24,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 package com.shopify.reactnative.checkoutsheetkit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -40,18 +39,15 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.shopify.checkoutsheetkit.CheckoutException;
 import com.shopify.checkoutsheetkit.CheckoutExpiredException;
-import com.shopify.checkoutsheetkit.CheckoutPaymentMethodChangeStartParams;
 import com.shopify.checkoutsheetkit.CheckoutSheetKitException;
 import com.shopify.checkoutsheetkit.ClientException;
 import com.shopify.checkoutsheetkit.ConfigurationException;
 import com.shopify.checkoutsheetkit.HttpException;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutPaymentMethodChangeStart;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStart;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutAddressChangeStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutSubmitStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutPaymentMethodChangeStartEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -342,14 +338,13 @@ public class SheetCheckoutEventProcessorTest {
     // MARK: - onAddressChangeStart Tests
 
     @Test
-    public void testOnAddressChangeStart_emitsEventWithIdTypeAddressTypeAndCart() {
-        CheckoutAddressChangeStart event = mock(CheckoutAddressChangeStart.class);
-        CheckoutAddressChangeStartEvent params = mock(CheckoutAddressChangeStartEvent.class);
+    public void testOnAddressChangeStart_emitsEventWithIdMethodAddressTypeAndCart() {
+        CheckoutAddressChangeStartEvent event = mock(CheckoutAddressChangeStartEvent.class);
 
         when(event.getId()).thenReturn("address-event-123");
-        when(event.getParams()).thenReturn(params);
-        when(params.getAddressType()).thenReturn("shipping");
-        when(params.getCart()).thenReturn(null);
+        when(event.getMethod()).thenReturn("checkout.addressChangeStart");
+        when(event.getAddressType()).thenReturn("shipping");
+        when(event.getCart()).thenReturn(null);
 
         processor.onAddressChangeStart(event);
 
@@ -357,7 +352,7 @@ public class SheetCheckoutEventProcessorTest {
         assertThat(eventNameCaptor.getValue()).isEqualTo("addressChangeStart");
         String eventData = eventDataCaptor.getValue();
         assertThat(eventData).contains("\"id\":\"address-event-123\"");
-        assertThat(eventData).contains("\"type\":\"addressChangeStart\"");
+        assertThat(eventData).contains("\"method\":\"checkout.addressChangeStart\"");
         assertThat(eventData).contains("\"addressType\":\"shipping\"");
     }
 
@@ -367,9 +362,7 @@ public class SheetCheckoutEventProcessorTest {
         when(mockMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Serialization failed") {});
         setPrivateField(processor, "mapper", mockMapper);
 
-        CheckoutAddressChangeStart event = mock(CheckoutAddressChangeStart.class);
-        CheckoutAddressChangeStartEvent params = mock(CheckoutAddressChangeStartEvent.class);
-        when(event.getParams()).thenReturn(params);
+        CheckoutAddressChangeStartEvent event = mock(CheckoutAddressChangeStartEvent.class);
 
         processor.onAddressChangeStart(event);
 
@@ -377,25 +370,15 @@ public class SheetCheckoutEventProcessorTest {
         mockedLog.verify(() -> Log.e(eq("SheetCheckoutEventProcessor"), eq("Error processing address change start event"), any(IOException.class)));
     }
 
-    @Test
-    public void testOnAddressChangeStart_withNullParams_throwsNPE() {
-        CheckoutAddressChangeStart event = mock(CheckoutAddressChangeStart.class);
-        when(event.getParams()).thenReturn(null);
-
-        assertThatThrownBy(() -> processor.onAddressChangeStart(event))
-            .isInstanceOf(NullPointerException.class);
-    }
-
     // MARK: - onPaymentMethodChangeStart Tests
 
     @Test
-    public void testOnPaymentMethodChangeStart_emitsEventWithIdTypeAndCart() {
-        CheckoutPaymentMethodChangeStart event = mock(CheckoutPaymentMethodChangeStart.class);
-        CheckoutPaymentMethodChangeStartParams params = mock(CheckoutPaymentMethodChangeStartParams.class);
+    public void testOnPaymentMethodChangeStart_emitsEventWithIdMethodAndCart() {
+        CheckoutPaymentMethodChangeStartEvent event = mock(CheckoutPaymentMethodChangeStartEvent.class);
 
         when(event.getId()).thenReturn("payment-event-456");
-        when(event.getParams()).thenReturn(params);
-        when(params.getCart()).thenReturn(null);
+        when(event.getMethod()).thenReturn("checkout.paymentMethodChangeStart");
+        when(event.getCart()).thenReturn(null);
 
         processor.onPaymentMethodChangeStart(event);
 
@@ -403,7 +386,7 @@ public class SheetCheckoutEventProcessorTest {
         assertThat(eventNameCaptor.getValue()).isEqualTo("paymentMethodChangeStart");
         String eventData = eventDataCaptor.getValue();
         assertThat(eventData).contains("\"id\":\"payment-event-456\"");
-        assertThat(eventData).contains("\"type\":\"paymentMethodChangeStart\"");
+        assertThat(eventData).contains("\"method\":\"checkout.paymentMethodChangeStart\"");
     }
 
     @Test
@@ -412,9 +395,7 @@ public class SheetCheckoutEventProcessorTest {
         when(mockMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Serialization failed") {});
         setPrivateField(processor, "mapper", mockMapper);
 
-        CheckoutPaymentMethodChangeStart event = mock(CheckoutPaymentMethodChangeStart.class);
-        CheckoutPaymentMethodChangeStartParams params = mock(CheckoutPaymentMethodChangeStartParams.class);
-        when(event.getParams()).thenReturn(params);
+        CheckoutPaymentMethodChangeStartEvent event = mock(CheckoutPaymentMethodChangeStartEvent.class);
 
         processor.onPaymentMethodChangeStart(event);
 
@@ -422,26 +403,16 @@ public class SheetCheckoutEventProcessorTest {
         mockedLog.verify(() -> Log.e(eq("SheetCheckoutEventProcessor"), eq("Error processing payment method change start event"), any(IOException.class)));
     }
 
-    @Test
-    public void testOnPaymentMethodChangeStart_withNullParams_throwsNPE() {
-        CheckoutPaymentMethodChangeStart event = mock(CheckoutPaymentMethodChangeStart.class);
-        when(event.getParams()).thenReturn(null);
-
-        assertThatThrownBy(() -> processor.onPaymentMethodChangeStart(event))
-            .isInstanceOf(NullPointerException.class);
-    }
-
     // MARK: - onSubmitStart Tests
 
     @Test
-    public void testOnSubmitStart_emitsEventWithIdTypeCartAndCheckout() {
-        CheckoutSubmitStart event = mock(CheckoutSubmitStart.class);
-        CheckoutSubmitStartEvent params = mock(CheckoutSubmitStartEvent.class, RETURNS_DEEP_STUBS);
+    public void testOnSubmitStart_emitsEventWithIdMethodCartAndCheckout() {
+        CheckoutSubmitStartEvent event = mock(CheckoutSubmitStartEvent.class, RETURNS_DEEP_STUBS);
 
         when(event.getId()).thenReturn("submit-event-789");
-        when(event.getParams()).thenReturn(params);
-        when(params.getCart()).thenReturn(null);
-        when(params.getCheckout().getId()).thenReturn("checkout-123");
+        when(event.getMethod()).thenReturn("checkout.submitStart");
+        when(event.getCart()).thenReturn(null);
+        when(event.getCheckout().getId()).thenReturn("checkout-123");
 
         processor.onSubmitStart(event);
 
@@ -449,19 +420,8 @@ public class SheetCheckoutEventProcessorTest {
         assertThat(eventNameCaptor.getValue()).isEqualTo("submitStart");
         String eventData = eventDataCaptor.getValue();
         assertThat(eventData).contains("\"id\":\"submit-event-789\"");
-        assertThat(eventData).contains("\"type\":\"submitStart\"");
+        assertThat(eventData).contains("\"method\":\"checkout.submitStart\"");
         assertThat(eventData).contains("\"checkout\"");
-    }
-
-    @Test
-    public void testOnSubmitStart_withNullParams_logsErrorAndReturns() {
-        CheckoutSubmitStart event = mock(CheckoutSubmitStart.class);
-        when(event.getParams()).thenReturn(null);
-
-        processor.onSubmitStart(event);
-
-        verify(mockEventEmitter, never()).emit(anyString(), anyString());
-        mockedLog.verify(() -> Log.e(eq("ShopifyCheckoutSheetKit"), eq("Submit start event has null params")));
     }
 
     @Test
@@ -470,15 +430,13 @@ public class SheetCheckoutEventProcessorTest {
         when(mockMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Serialization failed") {});
         setPrivateField(processor, "mapper", mockMapper);
 
-        CheckoutSubmitStart event = mock(CheckoutSubmitStart.class);
-        CheckoutSubmitStartEvent params = mock(CheckoutSubmitStartEvent.class, RETURNS_DEEP_STUBS);
-        when(event.getParams()).thenReturn(params);
-        when(params.getCheckout().getId()).thenReturn("checkout-123");
+        CheckoutSubmitStartEvent event = mock(CheckoutSubmitStartEvent.class, RETURNS_DEEP_STUBS);
+        when(event.getCheckout().getId()).thenReturn("checkout-123");
 
         processor.onSubmitStart(event);
 
         verify(mockEventEmitter, never()).emit(anyString(), anyString());
-        mockedLog.verify(() -> Log.e(eq("ShopifyCheckoutSheetKit"), eq("Error processing submit start event"), any(IOException.class)));
+        mockedLog.verify(() -> Log.e(eq("SheetCheckoutEventProcessor"), eq("Error processing submit start event"), any(IOException.class)));
     }
 
     // MARK: - Helper Methods
