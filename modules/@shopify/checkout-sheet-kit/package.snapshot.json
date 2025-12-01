@@ -7,6 +7,7 @@
   "android/src/main/AndroidManifest.xml",
   "android/src/main/AndroidManifestNew.xml",
   "android/src/main/java/com/shopify/reactnative/checkoutsheetkit/CheckoutEvent.java",
+  "android/src/main/java/com/shopify/reactnative/checkoutsheetkit/CheckoutEventType.java",
   "android/src/main/java/com/shopify/reactnative/checkoutsheetkit/RCTCheckoutWebView.java",
   "android/src/main/java/com/shopify/reactnative/checkoutsheetkit/RCTCheckoutWebViewManager.java",
   "android/src/main/java/com/shopify/reactnative/checkoutsheetkit/SheetCheckoutEventProcessor.java",
