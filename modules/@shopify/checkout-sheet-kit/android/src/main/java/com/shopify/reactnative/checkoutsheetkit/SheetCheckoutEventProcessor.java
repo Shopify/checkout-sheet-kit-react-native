@@ -190,7 +190,7 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
       String data = mapper.writeValueAsString(eventData);
       sendEventWithStringData("paymentMethodChangeStart", data);
     } catch (IOException e) {
-      Log.e(TAG, "Error processing address change start event", e);
+      Log.e(TAG, "Error processing payment method change start event", e);
     }
   }
   

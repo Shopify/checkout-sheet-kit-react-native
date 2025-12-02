@@ -368,7 +368,7 @@ public class RCTCheckoutWebView extends FrameLayout {
 
         sendEvent(CheckoutEventType.ON_PAYMENT_METHOD_CHANGE_START, serializeToWritableMap(eventData));
       } catch (Exception e) {
-        Log.e(TAG, "Error processing address change start event", e);
+        Log.e(TAG, "Error processing payment method change start event", e);
       }
     }
 
