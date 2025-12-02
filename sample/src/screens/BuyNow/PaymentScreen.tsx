@@ -24,8 +24,6 @@ import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {
   useShopifyEvent,
   type CardBrand,
-  type CartPaymentInstrumentInput,
-  type CheckoutPaymentMethodChangeStartResponse,
   type MailingAddressInput,
 } from '@shopify/checkout-sheet-kit';
 import {useCart} from '../../context/Cart';
@@ -34,7 +32,7 @@ import type {BuyNowStackParamList} from './types';
 export default function PaymentScreen() {
   const route = useRoute<RouteProp<BuyNowStackParamList, 'Payment'>>();
   const navigation = useNavigation();
-  const event = useShopifyEvent(route.params.id);
+  const event = useShopifyEvent(route.params.id, 'addressChangeStart');
   const {selectedPaymentIndex, setSelectedPaymentIndex} = useCart();
 
   const paymentOptions: Array<{
@@ -106,24 +104,22 @@ export default function PaymentScreen() {
     const selectedPayment = paymentOptions[selectedPaymentIndex];
     if (!selectedPayment) return;
 
-    const paymentInstrument: CartPaymentInstrumentInput = {
-      externalReference: selectedPayment.id,
-      display: {
-        last4: selectedPayment.last4,
-        brand: selectedPayment.brand,
-        cardHolderName: selectedPayment.cardHolderName,
-        expiry: selectedPayment.expiry,
-      },
-      billingAddress: selectedPayment.billingAddress,
-    };
-
-    const response: CheckoutPaymentMethodChangeStartResponse = {
+    await event.respondWith({
       cart: {
-        paymentInstruments: [paymentInstrument],
+        paymentInstruments: [
+          {
+            externalReference: selectedPayment.id,
+            display: {
+              last4: selectedPayment.last4,
+              brand: selectedPayment.brand,
+              cardHolderName: selectedPayment.cardHolderName,
+              expiry: selectedPayment.expiry,
+            },
+            billingAddress: selectedPayment.billingAddress,
+          },
+        ],
       },
-    };
-
-    await event.respondWith(response);
+    });
     navigation.goBack();
   };
 

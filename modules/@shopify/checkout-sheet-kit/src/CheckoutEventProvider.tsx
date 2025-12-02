@@ -19,6 +19,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import React, {createContext, useContext, useRef, useCallback} from 'react';
 import {UIManager, findNodeHandle} from 'react-native';
+import type {
+  CheckoutAddressChangeStart,
+  CheckoutAddressChangeStartResponse,
+  CheckoutPaymentMethodChangeStart,
+  CheckoutPaymentMethodChangeStartResponse,
+} from './events';
 
 interface CheckoutEventContextType {
   registerWebView: (webViewRef: React.RefObject<any>) => void;
@@ -104,16 +110,40 @@ export function useCheckoutEvents(): CheckoutEventContextType | null {
 }
 
 /**
+ * Register Event + Response schema pairs for respondWith typings
+ */
+type Pairs =
+  | [CheckoutAddressChangeStart, CheckoutAddressChangeStartResponse]
+  | [
+      CheckoutPaymentMethodChangeStart,
+      CheckoutPaymentMethodChangeStartResponse,
+    ];
+
+type MapEventToResponse<T extends Pairs = Pairs> = {[K in T[0]['type']]: T[1]};
+type EventNames = keyof MapEventToResponse;
+
+type Event<T extends EventNames> = MapEventToResponse[T];
+
+type RespondableEvent<T extends EventNames = EventNames> = {
+  id: string;
+  type: T;
+  respondWith: (response: Event<T>) => Promise<boolean>;
+};
+/**
  * Enhanced hook for working with specific Shopify checkout events
  * @param eventId The ID of the event to work with
  */
-export function useShopifyEvent(eventId: string) {
+export function useShopifyEvent<T extends EventNames>(
+  eventId: string,
+  type: T,
+): RespondableEvent<T> {
   const eventContext = useCheckoutEvents();
 
   return {
     id: eventId,
+    type,
     respondWith: useCallback(
-      async (response: any) => {
+      async response => {
         if (!eventContext) {
           return false;
         }

@@ -20,16 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 import type {RouteProp} from '@react-navigation/native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useState} from 'react';
-import {Alert, Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  Button,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {useShopifyEvent} from '@shopify/checkout-sheet-kit';
-import type {CheckoutAddressChangeStartResponse} from '@shopify/checkout-sheet-kit';
 import {useCart} from '../../context/Cart';
 import type {BuyNowStackParamList} from './types';
 
 export default function AddressScreen() {
   const route = useRoute<RouteProp<BuyNowStackParamList, 'Address'>>();
   const navigation = useNavigation();
-  const event = useShopifyEvent(route.params.id);
+  const event = useShopifyEvent(route.params.id, 'addressChangeStart');
   const {selectedAddressIndex, setSelectedAddressIndex} = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -84,22 +90,18 @@ export default function AddressScreen() {
     setIsSubmitting(true);
 
     try {
-      const selectedAddress = addressOptions[selectedAddressIndex];
-
-      const response: CheckoutAddressChangeStartResponse = {
+      await event.respondWith({
         cart: {
           delivery: {
             addresses: [
               {
-                address: selectedAddress!.address,
+                address: addressOptions[selectedAddressIndex]!.address,
                 selected: true,
               },
             ],
           },
         },
-      };
-
-      await event.respondWith(response);
+      });
 
       await new Promise(resolve => setTimeout(resolve, 500));
 
