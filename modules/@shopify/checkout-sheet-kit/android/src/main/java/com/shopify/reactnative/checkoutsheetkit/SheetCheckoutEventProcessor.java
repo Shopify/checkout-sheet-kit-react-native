@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 
 import com.shopify.checkoutsheetkit.CheckoutException;
 import com.shopify.checkoutsheetkit.CheckoutExpiredException;
+import com.shopify.checkoutsheetkit.CheckoutPaymentMethodChangeStartParams;
 import com.shopify.checkoutsheetkit.CheckoutSheetKitException;
 import com.shopify.checkoutsheetkit.ClientException;
 import com.shopify.checkoutsheetkit.ConfigurationException;
@@ -44,6 +45,8 @@ import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutPaymentMethodChangeStart;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStart;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStartEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -175,6 +178,22 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
   }
 
   @Override
+  public void onPaymentMethodChangeStart(@NonNull CheckoutPaymentMethodChangeStart event) {
+    try {
+      CheckoutPaymentMethodChangeStartParams params = event.getParams();
+
+      Map<String, Object> eventData = new HashMap<>();
+      eventData.put("id", event.getId());
+      eventData.put("type", "paymentMethodChangeStart");
+      eventData.put("cart", params.getCart());
+
+      String data = mapper.writeValueAsString(eventData);
+      sendEventWithStringData("paymentMethodChangeStart", data);
+    } catch (IOException e) {
+      Log.e(TAG, "Error processing payment method change start event", e);
+    }
+  }
+  
   public void onSubmitStart(@NonNull CheckoutSubmitStart event) {
     try {
       CheckoutSubmitStartEvent params = event.getParams();
@@ -200,7 +219,6 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
   }
 
   // Private
-
   private Map<String, Object> populateErrorDetails(CheckoutException error) {
     Map<String, Object> errorMap = new HashMap<>(Map.of(
       "__typename", getErrorTypeName(error),

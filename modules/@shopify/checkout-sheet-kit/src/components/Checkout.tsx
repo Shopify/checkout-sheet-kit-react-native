@@ -28,18 +28,17 @@ import {
   requireNativeComponent,
   UIManager,
   findNodeHandle,
+  type ViewStyle,
 } from 'react-native';
-import type {ViewStyle} from 'react-native';
-import type {
-  CheckoutCompleteEvent,
-  CheckoutException,
-} from '..';
 import {useCheckoutEvents} from '../CheckoutEventProvider';
 import type {
   CheckoutAddressChangeStart,
+  CheckoutCompleteEvent,
+  CheckoutPaymentMethodChangeStart,
   CheckoutStartEvent,
-  CheckoutSubmitStart
+  CheckoutSubmitStart,
 } from '../events';
+import type {CheckoutException} from '../errors';
 
 export interface ShopifyCheckoutProps {
   /**
@@ -94,6 +93,15 @@ export interface ShopifyCheckoutProps {
   onSubmitStart?: (event: CheckoutSubmitStart) => void;
 
   /**
+   * Called when checkout starts a payment method change flow (e.g., for native picker).
+   *
+   * Note: This callback is only invoked when native address selection is enabled
+   * for the authenticated app.
+   */
+  onPaymentMethodChangeStart?: (
+    event: CheckoutPaymentMethodChangeStart,
+  ) => void;
+  /**
    * Style for the webview container
    */
   style?: ViewStyle;
@@ -121,12 +129,19 @@ interface NativeShopifyCheckoutWebViewProps {
   onComplete?: (event: {nativeEvent: CheckoutCompleteEvent}) => void;
   onCancel?: () => void;
   onLinkClick?: (event: {nativeEvent: {url: string}}) => void;
-  onAddressChangeStart?: (event: {nativeEvent: CheckoutAddressChangeStart}) => void;
+  onAddressChangeStart?: (event: {
+    nativeEvent: CheckoutAddressChangeStart;
+  }) => void;
   onSubmitStart?: (event: {nativeEvent: CheckoutSubmitStart}) => void;
+  onPaymentMethodChangeStart?: (event: {
+    nativeEvent: CheckoutPaymentMethodChangeStart;
+  }) => void;
 }
 
 const RCTCheckoutWebView =
-  requireNativeComponent<NativeShopifyCheckoutWebViewProps>('RCTCheckoutWebView');
+  requireNativeComponent<NativeShopifyCheckoutWebViewProps>(
+    'RCTCheckoutWebView',
+  );
 
 /**
  * Checkout provides a native webview component for displaying
@@ -169,7 +184,10 @@ const RCTCheckoutWebView =
  *   }}
  * />
  */
-export const ShopifyCheckout = forwardRef<ShopifyCheckoutRef, ShopifyCheckoutProps>(
+export const ShopifyCheckout = forwardRef<
+  ShopifyCheckoutRef,
+  ShopifyCheckoutProps
+>(
   (
     {
       checkoutUrl,
@@ -180,6 +198,7 @@ export const ShopifyCheckout = forwardRef<ShopifyCheckoutRef, ShopifyCheckoutPro
       onCancel,
       onLinkClick,
       onAddressChangeStart,
+      onPaymentMethodChangeStart,
       onSubmitStart,
       style,
       testID,
@@ -199,7 +218,6 @@ export const ShopifyCheckout = forwardRef<ShopifyCheckoutRef, ShopifyCheckoutPro
       return () => eventContext.unregisterWebView();
     }, [eventContext]);
 
-
     const handleStart = useCallback<
       Required<NativeShopifyCheckoutWebViewProps>['onStart']
     >(
@@ -212,7 +230,7 @@ export const ShopifyCheckout = forwardRef<ShopifyCheckoutRef, ShopifyCheckoutPro
     const handleError = useCallback<
       Required<NativeShopifyCheckoutWebViewProps>['onError']
     >(
-      (event: {nativeEvent: CheckoutException}) => {
+      event => {
         onError?.(event.nativeEvent);
       },
       [onError],
@@ -221,7 +239,7 @@ export const ShopifyCheckout = forwardRef<ShopifyCheckoutRef, ShopifyCheckoutPro
     const handleComplete = useCallback<
       Required<NativeShopifyCheckoutWebViewProps>['onComplete']
     >(
-      (event: {nativeEvent: CheckoutCompleteEvent}) => {
+      event => {
         onComplete?.(event.nativeEvent);
       },
       [onComplete],
@@ -236,7 +254,7 @@ export const ShopifyCheckout = forwardRef<ShopifyCheckoutRef, ShopifyCheckoutPro
     const handleLinkClick = useCallback<
       Required<NativeShopifyCheckoutWebViewProps>['onLinkClick']
     >(
-      (event: {nativeEvent: {url: string}}) => {
+      event => {
         if (!event.nativeEvent.url) return;
         onLinkClick?.(event.nativeEvent.url);
       },
@@ -246,17 +264,27 @@ export const ShopifyCheckout = forwardRef<ShopifyCheckoutRef, ShopifyCheckoutPro
     const handleAddressChangeStart = useCallback<
       Required<NativeShopifyCheckoutWebViewProps>['onAddressChangeStart']
     >(
-      (event: {nativeEvent: CheckoutAddressChangeStart}) => {
+      event => {
         if (!event.nativeEvent) return;
         onAddressChangeStart?.(event.nativeEvent);
       },
       [onAddressChangeStart],
     );
 
+    const handlePaymentMethodChangeStart = useCallback<
+      Required<NativeShopifyCheckoutWebViewProps>['onPaymentMethodChangeStart']
+    >(
+      event => {
+        if (!event.nativeEvent) return;
+        onPaymentMethodChangeStart?.(event.nativeEvent);
+      },
+      [onPaymentMethodChangeStart],
+    );
+
     const handleSubmitStart = useCallback<
       Required<NativeShopifyCheckoutWebViewProps>['onSubmitStart']
     >(
-      (event: {nativeEvent: CheckoutSubmitStart}) => {
+      event => {
         if (!event.nativeEvent) return;
         onSubmitStart?.(event.nativeEvent);
       },
@@ -267,6 +295,7 @@ export const ShopifyCheckout = forwardRef<ShopifyCheckoutRef, ShopifyCheckoutPro
       if (!webViewRef.current) {
         return;
       }
+
       const handle = findNodeHandle(webViewRef.current);
       if (!handle) {
         return;
@@ -275,11 +304,7 @@ export const ShopifyCheckout = forwardRef<ShopifyCheckoutRef, ShopifyCheckoutPro
       const viewConfig = UIManager.getViewManagerConfig('RCTCheckoutWebView');
       const commandId = viewConfig?.Commands?.reload ?? 'reload';
 
-      UIManager.dispatchViewManagerCommand(
-        handle,
-        commandId,
-        [],
-      );
+      UIManager.dispatchViewManagerCommand(handle, commandId, []);
     }, []);
 
     useImperativeHandle(ref, () => ({reload}), [reload]);
@@ -297,6 +322,7 @@ export const ShopifyCheckout = forwardRef<ShopifyCheckoutRef, ShopifyCheckoutPro
         onCancel={handleCancel}
         onLinkClick={handleLinkClick}
         onAddressChangeStart={handleAddressChangeStart}
+        onPaymentMethodChangeStart={handlePaymentMethodChangeStart}
         onSubmitStart={handleSubmitStart}
       />
     );

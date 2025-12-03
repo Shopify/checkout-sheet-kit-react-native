@@ -27,7 +27,6 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.FrameLayout;
 
@@ -42,6 +41,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
 import com.shopify.checkoutsheetkit.Authentication;
 import com.shopify.checkoutsheetkit.CheckoutException;
+import com.shopify.checkoutsheetkit.CheckoutPaymentMethodChangeStartParams;
 import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor;
 import com.shopify.checkoutsheetkit.CheckoutOptions;
 import com.shopify.checkoutsheetkit.CheckoutWebView;
@@ -55,11 +55,14 @@ import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
 import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStart;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStartEvent;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutPaymentMethodChangeStart;
+
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStart;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStartEvent;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -286,21 +289,21 @@ public class RCTCheckoutWebView extends FrameLayout {
     }
   }
 
-  private void sendEvent(String eventName, WritableMap params) {
+  private void sendEvent(CheckoutEventType eventType, WritableMap params) {
     ReactContext reactContext = this.context.getReactApplicationContext();
     int viewId = getId();
 
     EventDispatcher eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, viewId);
     if (eventDispatcher == null) {
-      Log.w(TAG, "Cannot send event '" + eventName + "': EventDispatcher not available (viewId=" + viewId + ")");
+      Log.w(TAG, "Cannot send event '" + eventType.getEventName() + "': EventDispatcher not available (viewId=" + viewId + ")");
       return;
     }
 
     int surfaceId = UIManagerHelper.getSurfaceId(reactContext);
-    eventDispatcher.dispatchEvent(new CheckoutEvent(surfaceId, viewId, eventName, params));
+    eventDispatcher.dispatchEvent(new CheckoutEvent(surfaceId, viewId, eventType.getEventName(), params));
   }
 
-  private class InlineCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
+  class InlineCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
 
     public InlineCheckoutEventProcessor(android.content.Context context) {
       super(context);
@@ -310,7 +313,7 @@ public class RCTCheckoutWebView extends FrameLayout {
     public void onStart(@NonNull CheckoutStartEvent event) {
       try {
         WritableMap data = serializeToWritableMap(event);
-        sendEvent("onStart", data);
+        sendEvent(CheckoutEventType.ON_START, data);
       } catch (Exception e) {
         Log.e(TAG, "Error processing start event", e);
       }
@@ -320,7 +323,7 @@ public class RCTCheckoutWebView extends FrameLayout {
     public void onComplete(@NonNull CheckoutCompleteEvent event) {
       try {
         WritableMap data = serializeToWritableMap(event);
-        sendEvent("onComplete", data);
+        sendEvent(CheckoutEventType.ON_COMPLETE, data);
       } catch (Exception e) {
         Log.e(TAG, "Error processing complete event", e);
       }
@@ -328,12 +331,12 @@ public class RCTCheckoutWebView extends FrameLayout {
 
     @Override
     public void onFail(@NonNull CheckoutException error) {
-      sendEvent("onError", buildErrorMap(error));
+      sendEvent(CheckoutEventType.ON_ERROR, buildErrorMap(error));
     }
 
     @Override
     public void onCancel() {
-      sendEvent("onCancel", null);
+      sendEvent(CheckoutEventType.ON_CANCEL, null);
     }
 
     @Override
@@ -347,13 +350,28 @@ public class RCTCheckoutWebView extends FrameLayout {
         eventData.put("addressType", params.getAddressType());
         eventData.put("cart", params.getCart());
 
-        sendEvent("onAddressChangeStart", serializeToWritableMap(eventData));
+        sendEvent(CheckoutEventType.ON_ADDRESS_CHANGE_START, serializeToWritableMap(eventData));
       } catch (Exception e) {
         Log.e(TAG, "Error processing address change start event", e);
       }
     }
 
     @Override
+    public void onPaymentMethodChangeStart(@NonNull CheckoutPaymentMethodChangeStart event) {
+      try {
+        CheckoutPaymentMethodChangeStartParams params = event.getParams();
+
+        Map<String, Object> eventData = new HashMap<>();
+        eventData.put("id", event.getId());
+        eventData.put("type", "paymentMethodChangeStart");
+        eventData.put("cart", params.getCart());
+
+        sendEvent(CheckoutEventType.ON_PAYMENT_METHOD_CHANGE_START, serializeToWritableMap(eventData));
+      } catch (Exception e) {
+        Log.e(TAG, "Error processing payment method change start event", e);
+      }
+    }
+
     public void onSubmitStart(@NonNull CheckoutSubmitStart event) {
       try {
         CheckoutSubmitStartEvent params = event.getParams();
@@ -367,7 +385,7 @@ public class RCTCheckoutWebView extends FrameLayout {
         checkoutData.put("id", params.getCheckout().getId());
         eventData.put("checkout", checkoutData);
 
-        sendEvent("onSubmitStart", serializeToWritableMap(eventData));
+        sendEvent(CheckoutEventType.ON_SUBMIT_START, serializeToWritableMap(eventData));
       } catch (Exception e) {
         Log.e(TAG, "Error processing submit start event", e);
       }
@@ -377,7 +395,7 @@ public class RCTCheckoutWebView extends FrameLayout {
     public void onLinkClick(@NonNull Uri uri) {
       WritableMap params = Arguments.createMap();
       params.putString("url", uri.toString());
-      sendEvent("onLinkClick", params);
+      sendEvent(CheckoutEventType.ON_LINK_CLICK, params);
     }
   }
 }

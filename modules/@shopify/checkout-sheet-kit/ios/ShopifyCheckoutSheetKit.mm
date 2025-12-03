@@ -126,7 +126,7 @@ SOFTWARE.
     /**
      * Emitted when checkout is moving to payment selection screen
      */
-    RCT_EXPORT_VIEW_PROPERTY(onPaymentChangeIntent, RCTBubblingEventBlock)
+    RCT_EXPORT_VIEW_PROPERTY(onPaymentMethodChangeStart, RCTBubblingEventBlock)
 
     /**
      * Emitted when the buyer attempts to submit the checkout

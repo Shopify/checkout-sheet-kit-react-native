@@ -24,6 +24,7 @@ import {
   ShopifyCheckout,
   type CheckoutAddressChangeStart,
   type CheckoutCompleteEvent,
+  type CheckoutPaymentMethodChangeStart,
   type CheckoutRef,
   type CheckoutStartEvent,
   type CheckoutSubmitStart,
@@ -50,6 +51,11 @@ export default function CheckoutScreen(props: {
     navigation.navigate('Address', {id: event.id});
   };
 
+  const onPaymentMethodChangeStart = (event: CheckoutPaymentMethodChangeStart) => {
+    console.log('<CheckoutScreen /> onPaymentMethodChangeStart: ', event);
+    navigation.navigate('Payment', {id: event.id});
+  }
+  
   const onSubmitStart = async (event: CheckoutSubmitStart) => {
     console.log('<CheckoutScreen /> onSubmitStart', event);
     try {
@@ -88,6 +94,7 @@ export default function CheckoutScreen(props: {
       style={styles.container}
       onStart={onStart}
       onAddressChangeStart={onAddressChangeStart}
+      onPaymentMethodChangeStart={onPaymentMethodChangeStart}
       onSubmitStart={onSubmitStart}
       onCancel={onCancel}
       onError={onError}

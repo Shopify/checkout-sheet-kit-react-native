@@ -46,6 +46,8 @@ export interface Cart {
   discountAllocations: CartDiscountAllocation[];
   /** Delivery addresses for the cart */
   delivery: CartDelivery;
+  /** Payment information for the cart */
+  payment: CartPayment;
 }
 
 /**
@@ -263,6 +265,25 @@ export interface CartDeliveryAddress {
 export type CartAddress = CartDeliveryAddress;
 
 /**
+ * Payment instrument available for selection at checkout.
+ * Output type from Storefront API.
+ *
+ * @see https://shopify.dev/docs/api/storefront/latest/objects/CartPaymentInstrument
+ */
+export interface CartPaymentInstrument {
+  externalReference: string;
+}
+
+/**
+ * Payment information available for the cart.
+ *
+ * @see https://shopify.dev/docs/api/storefront/latest/objects/CartPayment
+ */
+export interface CartPayment {
+  instruments: CartPaymentInstrument[];
+}
+
+/**
  * Discount applied to a cart line or the entire cart.
  * Shows how much was discounted and which code/promotion applied it.
  */
@@ -353,7 +374,6 @@ export interface CheckoutStartEvent {
   /** Initial cart state when checkout started */
   cart: Cart;
 }
-
 
 /**
  * Error object returned in checkout event responses.
@@ -472,6 +492,11 @@ export interface CartInput {
    * Optional - use to apply discount codes to the cart.
    */
   discountCodes?: string[];
+  /**
+   * Payment instruments for the cart.
+   * Optional - use to update payment methods.
+   */
+  paymentInstruments?: CartPaymentInstrumentInput[];
 }
 
 /**
@@ -530,20 +555,83 @@ export interface CheckoutAddressChangeStartResponse {
 }
 
 /**
+ * Card brand identifiers for payment instruments.
+ * Matches Storefront API card brand values.
+ */
+export type CardBrand =
+  | 'VISA'
+  | 'MASTERCARD'
+  | 'AMERICAN_EXPRESS'
+  | 'DISCOVER'
+  | 'DINERS_CLUB'
+  | 'JCB'
+  | 'MAESTRO'
+  | 'UNKNOWN';
+
+/**
+ * Expiry date for a payment instrument.
+ */
+export interface ExpiryInput {
+  /** Month (1-12) */
+  month: number;
+  /** Four-digit year */
+  year: number;
+}
+
+/**
+ * Display fields for a payment instrument shown to the buyer.
+ */
+export interface CartPaymentInstrumentDisplayInput {
+  /** Last 4 digits of the card number */
+  last4: string;
+  /** Card brand (e.g., VISA, MASTERCARD) */
+  brand: CardBrand;
+  /** Name of the cardholder */
+  cardHolderName: string;
+  /** Card expiry date */
+  expiry: ExpiryInput;
+}
+
+/**
+ * Input type for creating/updating payment instruments, aligned with Storefront API.
+ * Display fields are grouped separately from the billing address.
+ *
+ * @see https://shopify.dev/docs/api/storefront/latest/input-objects/CartPaymentInstrumentInput
+ */
+export interface CartPaymentInstrumentInput {
+  /** Unique identifier for this payment instrument */
+  externalReference: string;
+  /** Display information for the payment instrument */
+  display: CartPaymentInstrumentDisplayInput;
+  /** Billing address for the payment instrument */
+  billingAddress: MailingAddressInput;
+}
+
+/**
  * Event emitted when the buyer intends to change their payment method.
  */
-export interface CheckoutPaymentChangeIntent {
+export interface CheckoutPaymentMethodChangeStart {
   /** Unique identifier for this event instance */
   id: string;
   /** Type of payment change event */
-  type: string;
-  /** Current payment card information, if available */
-  currentCard?: {
-    /** Last 4 digits of the card number */
-    last4: string;
-    /** Card brand (e.g., "Visa", "Mastercard") */
-    brand: string;
-  };
+  type: 'paymentMethodChangeStart';
+  /** Cart state when the event was emitted */
+  cart: Cart;
+}
+
+/**
+ * Response payload for CheckoutPaymentMethodChangeStart event.
+ * Use with CheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
+ */
+export interface CheckoutPaymentMethodChangeStartResponse {
+  /**
+   * Updated cart input with the payment instruments to set.
+   */
+  cart?: CartInput;
+  /**
+   * Optional array of errors if the payment method selection failed.
+   */
+  errors?: CheckoutResponseError[];
 }
 
 /**

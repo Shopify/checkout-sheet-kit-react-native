@@ -322,13 +322,14 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     /// - Parameter options: Optional dictionary containing authentication
     /// - Returns: CheckoutOptions instance if options are provided, nil otherwise
     internal func parseCheckoutOptions(_ options: [AnyHashable: Any]?) -> CheckoutOptions? {
-        guard let options = options else {
+        guard let options else {
             return nil
         }
 
         // Parse authentication
         if let authDict = options["authentication"] as? [AnyHashable: Any],
-           let token = authDict["token"] as? String {
+           let token = authDict["token"] as? String
+        {
             return CheckoutOptions(authentication: .token(token))
         }
 
