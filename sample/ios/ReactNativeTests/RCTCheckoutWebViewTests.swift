@@ -250,9 +250,14 @@ class RCTCheckoutWebViewTests: XCTestCase {
             expectation.fulfill()
         }
 
+        let testCart = createTestCart(
+            id: "gid://shopify/Cart/address-cart-123",
+            subtotalAmount: "25.00",
+            totalAmount: "30.00"
+        )
         let request = CheckoutAddressChangeStart(
             id: "address-event-123",
-            params: .init(addressType: "shipping", cart: createTestCart())
+            params: .init(addressType: "shipping", cart: testCart)
         )
 
         checkoutWebView.checkoutDidStartAddressChange(event: request)
@@ -262,34 +267,53 @@ class RCTCheckoutWebViewTests: XCTestCase {
         XCTAssertEqual(receivedPayload?["id"] as? String, "address-event-123")
         XCTAssertEqual(receivedPayload?["type"] as? String, "addressChangeStart")
         XCTAssertEqual(receivedPayload?["addressType"] as? String, "shipping")
+
+        let cart = receivedPayload?["cart"] as? [String: Any]
+        XCTAssertNotNil(cart, "Cart should be included in the emitted event")
+        XCTAssertEqual(cart?["id"] as? String, "gid://shopify/Cart/address-cart-123")
+
+        let cost = cart?["cost"] as? [String: Any]
+        let subtotalAmount = cost?["subtotalAmount"] as? [String: Any]
+        XCTAssertEqual(subtotalAmount?["amount"] as? String, "25.00")
+
+        let totalAmount = cost?["totalAmount"] as? [String: Any]
+        XCTAssertEqual(totalAmount?["amount"] as? String, "30.00")
     }
 
-    func test_checkoutDidStartAddressChange_includesCartInPayload() {
-        let expectation = expectation(description: "onAddressChangeStart event emitted with cart")
-        var receivedPayload: [AnyHashable: Any]?
+    func test_checkoutDidStartAddressChange_storesEventInRegistry() {
+        checkoutWebView.onAddressChangeStart = { _ in }
 
-        checkoutWebView.onAddressChangeStart = { payload in
-            receivedPayload = payload
-            expectation.fulfill()
-        }
-
-        let testCart = createTestCart()
         let request = CheckoutAddressChangeStart(
-            id: "cart-test-event",
-            params: .init(addressType: "shipping", cart: testCart)
+            id: "address-registry-test",
+            params: .init(addressType: "billing", cart: createTestCart())
         )
 
         checkoutWebView.checkoutDidStartAddressChange(event: request)
 
-        wait(for: [expectation], timeout: 0.1)
+        XCTAssertTrue(checkoutWebView.hasStoredEvent(forKey: "address-registry-test"))
 
-        // Verify cart is included in the payload
-        XCTAssertNotNil(receivedPayload?["cart"], "Cart should be included in the emitted event")
+        let storedEvent = checkoutWebView.getStoredEvent(forKey: "address-registry-test")
+        XCTAssertNotNil(storedEvent)
+        XCTAssertEqual(storedEvent?.id, "address-registry-test")
+    }
 
-        // Verify cart structure
-        let cart = receivedPayload?["cart"] as? [String: Any]
-        XCTAssertNotNil(cart)
-        XCTAssertEqual(cart?["id"] as? String, "gid://shopify/Cart/test-cart-123")
+    func test_checkoutDidStartAddressChange_whenIdNil_doesNotEmitEventOrStoreEvent() {
+        var wasCalled = false
+        let initialEventCount = checkoutWebView.storedEventCount()
+
+        checkoutWebView.onAddressChangeStart = { _ in
+            wasCalled = true
+        }
+
+        let request = CheckoutAddressChangeStart(
+            id: nil,
+            params: .init(addressType: "shipping", cart: createTestCart())
+        )
+
+        checkoutWebView.checkoutDidStartAddressChange(event: request)
+
+        XCTAssertFalse(wasCalled, "Event should not be emitted when id is nil")
+        XCTAssertEqual(checkoutWebView.storedEventCount(), initialEventCount, "No event should be stored when id is nil")
     }
 
     func test_checkoutDidStart_whenDelegateCalled_emitsOnStartEvent() {
@@ -324,6 +348,278 @@ class RCTCheckoutWebViewTests: XCTestCase {
 
         let receivedCart = receivedPayload?["cart"] as? [String: Any]
         XCTAssertEqual(receivedCart?["id"] as? String, "gid://shopify/Cart/test-cart-123")
+    }
+
+    // MARK: - Payment Method Change Events
+
+    func test_checkoutDidStartPaymentMethodChange_whenDelegateCalled_emitsOnPaymentMethodChangeStartEvent() {
+        let expectation = expectation(description: "onPaymentMethodChangeStart event emitted")
+        var receivedPayload: [AnyHashable: Any]?
+
+        checkoutWebView.onPaymentMethodChangeStart = { payload in
+            receivedPayload = payload
+            expectation.fulfill()
+        }
+
+        let testCart = createTestCart(
+            id: "gid://shopify/Cart/payment-cart-123",
+            subtotalAmount: "50.00",
+            totalAmount: "55.00"
+        )
+        let request = CheckoutPaymentMethodChangeStart(
+            id: "payment-event-456",
+            params: .init(cart: testCart)
+        )
+
+        checkoutWebView.checkoutDidStartPaymentMethodChange(event: request)
+
+        wait(for: [expectation], timeout: 0.1)
+
+        XCTAssertEqual(receivedPayload?["id"] as? String, "payment-event-456")
+        XCTAssertEqual(receivedPayload?["type"] as? String, "paymentMethodChangeStart")
+
+        let cart = receivedPayload?["cart"] as? [String: Any]
+        XCTAssertNotNil(cart, "Cart should be included in the emitted event")
+        XCTAssertEqual(cart?["id"] as? String, "gid://shopify/Cart/payment-cart-123")
+
+        let cost = cart?["cost"] as? [String: Any]
+        let subtotalAmount = cost?["subtotalAmount"] as? [String: Any]
+        XCTAssertEqual(subtotalAmount?["amount"] as? String, "50.00")
+
+        let totalAmount = cost?["totalAmount"] as? [String: Any]
+        XCTAssertEqual(totalAmount?["amount"] as? String, "55.00")
+    }
+
+    func test_checkoutDidStartPaymentMethodChange_storesEventInRegistry() {
+        checkoutWebView.onPaymentMethodChangeStart = { _ in }
+
+        let request = CheckoutPaymentMethodChangeStart(
+            id: "payment-registry-test",
+            params: .init(cart: createTestCart())
+        )
+
+        checkoutWebView.checkoutDidStartPaymentMethodChange(event: request)
+
+        XCTAssertTrue(checkoutWebView.hasStoredEvent(forKey: "payment-registry-test"))
+
+        let storedEvent = checkoutWebView.getStoredEvent(forKey: "payment-registry-test")
+        XCTAssertNotNil(storedEvent)
+        XCTAssertEqual(storedEvent?.id, "payment-registry-test")
+    }
+
+    func test_checkoutDidStartPaymentMethodChange_whenIdNil_doesNotEmitEventOrStoreEvent() {
+        var wasCalled = false
+        let initialEventCount = checkoutWebView.storedEventCount()
+
+        checkoutWebView.onPaymentMethodChangeStart = { _ in
+            wasCalled = true
+        }
+
+        let request = CheckoutPaymentMethodChangeStart(
+            id: nil,
+            params: .init(cart: createTestCart())
+        )
+
+        checkoutWebView.checkoutDidStartPaymentMethodChange(event: request)
+
+        XCTAssertFalse(wasCalled, "Event should not be emitted when id is nil")
+        XCTAssertEqual(checkoutWebView.storedEventCount(), initialEventCount, "No event should be stored when id is nil")
+    }
+
+    // MARK: - Submit Start Events
+
+    func test_checkoutDidStartSubmit_whenDelegateCalled_emitsOnSubmitStartEvent() {
+        let expectation = expectation(description: "onSubmitStart event emitted")
+        var receivedPayload: [AnyHashable: Any]?
+
+        checkoutWebView.onSubmitStart = { payload in
+            receivedPayload = payload
+            expectation.fulfill()
+        }
+
+        let testCart = createTestCart(
+            id: "gid://shopify/Cart/submit-cart-123",
+            subtotalAmount: "100.00",
+            totalAmount: "110.00"
+        )
+        let request = createTestSubmitStartEvent(
+            id: "submit-event-789",
+            checkoutId: "checkout-123",
+            cart: testCart
+        )
+
+        checkoutWebView.checkoutDidStartSubmit(event: request)
+
+        wait(for: [expectation], timeout: 0.1)
+
+        XCTAssertEqual(receivedPayload?["id"] as? String, "submit-event-789")
+        XCTAssertEqual(receivedPayload?["type"] as? String, "submitStart")
+
+        let checkout = receivedPayload?["checkout"] as? [String: Any]
+        XCTAssertNotNil(checkout, "Checkout should be included in the emitted event")
+        XCTAssertEqual(checkout?["id"] as? String, "checkout-123")
+
+        let cart = receivedPayload?["cart"] as? [String: Any]
+        XCTAssertNotNil(cart, "Cart should be included in the emitted event")
+        XCTAssertEqual(cart?["id"] as? String, "gid://shopify/Cart/submit-cart-123")
+
+        let cost = cart?["cost"] as? [String: Any]
+        let subtotalAmount = cost?["subtotalAmount"] as? [String: Any]
+        XCTAssertEqual(subtotalAmount?["amount"] as? String, "100.00")
+
+        let totalAmount = cost?["totalAmount"] as? [String: Any]
+        XCTAssertEqual(totalAmount?["amount"] as? String, "110.00")
+    }
+
+    func test_checkoutDidStartSubmit_storesEventInRegistry() {
+        checkoutWebView.onSubmitStart = { _ in }
+
+        let request = createTestSubmitStartEvent(
+            id: "submit-registry-test",
+            checkoutId: "checkout-registry"
+        )
+
+        checkoutWebView.checkoutDidStartSubmit(event: request)
+
+        XCTAssertTrue(checkoutWebView.hasStoredEvent(forKey: "submit-registry-test"))
+
+        let storedEvent = checkoutWebView.getStoredEvent(forKey: "submit-registry-test")
+        XCTAssertNotNil(storedEvent)
+        XCTAssertEqual(storedEvent?.id, "submit-registry-test")
+    }
+
+    func test_checkoutDidStartSubmit_whenIdNil_doesNotEmitEventOrStoreEvent() {
+        var wasCalled = false
+        let initialEventCount = checkoutWebView.storedEventCount()
+
+        checkoutWebView.onSubmitStart = { _ in
+            wasCalled = true
+        }
+
+        let request = CheckoutSubmitStart(
+            id: nil,
+            params: .init(
+                cart: createTestCart(),
+                checkout: .init(id: "checkout-id")
+            )
+        )
+
+        checkoutWebView.checkoutDidStartSubmit(event: request)
+
+        XCTAssertFalse(wasCalled, "Event should not be emitted when id is nil")
+        XCTAssertEqual(checkoutWebView.storedEventCount(), initialEventCount, "No event should be stored when id is nil")
+    }
+
+    // MARK: - Cancel Events
+
+    func test_checkoutDidCancel_emitsOnCancelEvent() {
+        let expectation = expectation(description: "onCancel event emitted")
+        var wasCalled = false
+
+        checkoutWebView.onCancel = { _ in
+            wasCalled = true
+            expectation.fulfill()
+        }
+
+        checkoutWebView.checkoutDidCancel()
+
+        wait(for: [expectation], timeout: 0.1)
+
+        XCTAssertTrue(wasCalled)
+    }
+
+    // MARK: - Link Click Events
+
+    func test_checkoutDidClickLink_emitsOnLinkClickEventWithUrl() {
+        let expectation = expectation(description: "onLinkClick event emitted")
+        var receivedPayload: [AnyHashable: Any]?
+
+        checkoutWebView.onLinkClick = { payload in
+            receivedPayload = payload
+            expectation.fulfill()
+        }
+
+        let url = URL(string: "https://example.com/terms")!
+        checkoutWebView.checkoutDidClickLink(url: url)
+
+        wait(for: [expectation], timeout: 0.1)
+
+        XCTAssertEqual(receivedPayload?["url"] as? String, "https://example.com/terms")
+    }
+
+    // MARK: - Respond To Event Tests
+
+    func test_respondToEvent_whenPaymentMethodChangeResponded_removesEventFromRegistry() {
+        checkoutWebView.checkoutUrl = "https://shop.example.com/checkout"
+        checkoutWebView.auth = "valid-token"
+        checkoutWebView.flushScheduledSetup()
+        checkoutWebView.onPaymentMethodChangeStart = { _ in }
+
+        let request = CheckoutPaymentMethodChangeStart(
+            id: "payment-event-1",
+            params: .init(cart: createTestCart())
+        )
+        checkoutWebView.checkoutDidStartPaymentMethodChange(event: request)
+
+        XCTAssertTrue(checkoutWebView.hasStoredEvent(forKey: "payment-event-1"))
+
+        checkoutWebView.respondToEvent(eventId: "payment-event-1", responseData: "{}")
+
+        XCTAssertFalse(checkoutWebView.hasStoredEvent(forKey: "payment-event-1"))
+
+        XCTAssertEqual(checkoutWebView.setupCheckoutWebViewControllerCallCount, 1)
+        XCTAssertEqual(checkoutWebView.removeCheckoutWebViewControllerCallCount, 0)
+    }
+
+    func test_respondToEvent_whenSubmitStartResponded_removesEventFromRegistry() {
+        checkoutWebView.checkoutUrl = "https://shop.example.com/checkout"
+        checkoutWebView.auth = "valid-token"
+        checkoutWebView.flushScheduledSetup()
+        checkoutWebView.onSubmitStart = { _ in }
+
+        let request = createTestSubmitStartEvent(id: "submit-event-1", checkoutId: "checkout-1")
+        checkoutWebView.checkoutDidStartSubmit(event: request)
+
+        XCTAssertTrue(checkoutWebView.hasStoredEvent(forKey: "submit-event-1"))
+
+        checkoutWebView.respondToEvent(eventId: "submit-event-1", responseData: "{}")
+
+        XCTAssertFalse(checkoutWebView.hasStoredEvent(forKey: "submit-event-1"))
+
+        XCTAssertEqual(checkoutWebView.setupCheckoutWebViewControllerCallCount, 1)
+        XCTAssertEqual(checkoutWebView.removeCheckoutWebViewControllerCallCount, 0)
+    }
+
+    func test_respondToEvent_whenAddressChangeResponded_removesEventFromRegistry() {
+        checkoutWebView.checkoutUrl = "https://shop.example.com/checkout"
+        checkoutWebView.auth = "valid-token"
+        checkoutWebView.flushScheduledSetup()
+        checkoutWebView.onAddressChangeStart = { _ in }
+
+        let request = CheckoutAddressChangeStart(
+            id: "address-event-1",
+            params: .init(addressType: "shipping", cart: createTestCart())
+        )
+        checkoutWebView.checkoutDidStartAddressChange(event: request)
+
+        XCTAssertTrue(checkoutWebView.hasStoredEvent(forKey: "address-event-1"))
+
+        checkoutWebView.respondToEvent(eventId: "address-event-1", responseData: "{}")
+
+        XCTAssertFalse(checkoutWebView.hasStoredEvent(forKey: "address-event-1"))
+    }
+
+    func test_respondToEvent_whenEventNotFound_doesNothing() {
+        checkoutWebView.checkoutUrl = "https://shop.example.com/checkout"
+        checkoutWebView.auth = "valid-token"
+        checkoutWebView.flushScheduledSetup()
+
+        checkoutWebView.respondToEvent(eventId: "non-existent-event", responseData: "{}")
+
+        checkoutWebView.flushScheduledSetup()
+
+        XCTAssertEqual(checkoutWebView.setupCheckoutWebViewControllerCallCount, 1)
+        XCTAssertEqual(checkoutWebView.removeCheckoutWebViewControllerCallCount, 0)
     }
 }
 
@@ -363,6 +659,21 @@ private func createEmptyCheckoutCompleteEvent(id: String) -> CheckoutCompleteEve
             isFirstOrder: true
         ),
         cart: createTestCart()
+    )
+}
+
+/// Creates a CheckoutSubmitStart event for testing
+private func createTestSubmitStartEvent(
+    id: String,
+    checkoutId: String,
+    cart: ShopifyCheckoutSheetKit.Cart? = nil
+) -> CheckoutSubmitStart {
+    return CheckoutSubmitStart(
+        id: id,
+        params: .init(
+            cart: cart ?? createTestCart(),
+            checkout: .init(id: checkoutId)
+        )
     )
 }
 
@@ -410,7 +721,18 @@ class RCTCheckoutWebViewMock: RCTCheckoutWebView {
         work?()
     }
 
-    // Override to check if checkout exists in tests
+    func getStoredEvent(forKey key: String) -> (any RPCRequest)? {
+        return events.get(key: key)
+    }
+
+    func hasStoredEvent(forKey key: String) -> Bool {
+        return events.get(key: key) != nil
+    }
+
+    func storedEventCount() -> Int {
+        return events.count
+    }
+
     private var checkoutWebViewController: AnyObject? {
         return hasExistingCheckout ? NSObject() : nil
     }

@@ -29,9 +29,13 @@ import UIKit
 class RCTCheckoutWebView: UIView {
     private var checkoutWebViewController: CheckoutWebViewController?
 
-    private struct EventBus {
+    internal struct EventBus {
         typealias Event = any RPCRequest
         private var events: [String: Event] = [:]
+
+        var count: Int {
+            events.count
+        }
 
         func get(key: String) -> Event? {
             events[key]
@@ -50,7 +54,7 @@ class RCTCheckoutWebView: UIView {
         }
     }
 
-    private var events: EventBus = .init()
+    internal var events: EventBus = .init()
     private var pendingSetup = false
     internal var setupScheduler: (@escaping () -> Void) -> Void = { work in
         DispatchQueue.main.async(execute: work)

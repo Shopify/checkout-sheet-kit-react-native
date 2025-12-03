@@ -28,8 +28,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -41,12 +43,22 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
+import com.shopify.checkoutsheetkit.CheckoutException;
 import com.shopify.checkoutsheetkit.CheckoutExpiredException;
+import com.shopify.checkoutsheetkit.CheckoutPaymentMethodChangeStartParams;
 import com.shopify.checkoutsheetkit.CheckoutSheetKitException;
 import com.shopify.checkoutsheetkit.CheckoutWebView;
 import com.shopify.checkoutsheetkit.ClientException;
 import com.shopify.checkoutsheetkit.ConfigurationException;
+import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor;
 import com.shopify.checkoutsheetkit.HttpException;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutPaymentMethodChangeStart;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStart;
+import com.shopify.checkoutsheetkit.rpc.events.CheckoutSubmitStartEvent;
 
 import org.junit.After;
 import org.junit.Before;
@@ -374,6 +386,17 @@ public class RCTCheckoutWebViewTest {
 
         verify(mockHandler, times(1)).post(any(Runnable.class));
     }
+
+    // MARK: - InlineCheckoutEventProcessor Tests
+    // Note: The error mapping (getErrorTypeName, buildErrorMap) is shared between
+    // SheetCheckoutEventProcessor and InlineCheckoutEventProcessor. These shared
+    // mapping functions are already tested above. The InlineCheckoutEventProcessor
+    // uses sendEvent() instead of sendEventWithStringData(), but the underlying
+    // data mapping logic is identical.
+    //
+    // For comprehensive like-for-like tests of the InlineCheckoutEventProcessor event
+    // lifecycle methods, see SheetCheckoutEventProcessorTest.java which tests the same
+    // event processing patterns.
 
     private void setPrivateField(Object object, String fieldName, Object value) throws Exception {
         Field field = object.getClass().getDeclaredField(fieldName);
