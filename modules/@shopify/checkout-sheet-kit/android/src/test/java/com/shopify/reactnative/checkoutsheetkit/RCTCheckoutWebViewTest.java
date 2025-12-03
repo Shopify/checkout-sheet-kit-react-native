@@ -89,6 +89,8 @@ public class RCTCheckoutWebViewTest {
 
     @Captor
     private ArgumentCaptor<Runnable> runnableCaptor;
+    @Captor
+    private ArgumentCaptor<CheckoutEvent> checkoutEventCaptor;
 
     private RCTCheckoutWebView webView;
     private MockedStatic<Looper> mockedLooper;
@@ -388,15 +390,118 @@ public class RCTCheckoutWebViewTest {
     }
 
     // MARK: - InlineCheckoutEventProcessor Tests
-    // Note: The error mapping (getErrorTypeName, buildErrorMap) is shared between
-    // SheetCheckoutEventProcessor and InlineCheckoutEventProcessor. These shared
-    // mapping functions are already tested above. The InlineCheckoutEventProcessor
-    // uses sendEvent() instead of sendEventWithStringData(), but the underlying
-    // data mapping logic is identical.
+    // Note: The InlineCheckoutEventProcessor is an inner class of RCTCheckoutWebView that
+    // delegates event emission to the enclosing class's sendEvent method, which requires
+    // Android View infrastructure (getId(), EventDispatcher). The error mapping functions
+    // (getErrorTypeName, buildErrorMap) are already tested above.
     //
-    // For comprehensive like-for-like tests of the InlineCheckoutEventProcessor event
-    // lifecycle methods, see SheetCheckoutEventProcessorTest.java which tests the same
-    // event processing patterns.
+    // The event lifecycle methods follow the same patterns as SheetCheckoutEventProcessor
+    // but emit events through React Native's EventDispatcher instead of RCTDeviceEventEmitter.
+    // These tests verify the InlineCheckoutEventProcessor correctly:
+    // 1. Serializes event data to WritableMap
+    // 2. Calls sendEvent with the correct CheckoutEventType
+    // 3. Handles errors by calling buildErrorMap
+
+    @Test
+    public void testInlineProcessor_onFail_withHttpException_buildsCorrectErrorMap() throws Exception {
+        HttpException exception = mock(HttpException.class);
+        when(exception.getErrorDescription()).thenReturn("Not Found");
+        when(exception.getErrorCode()).thenReturn("http_error");
+        when(exception.isRecoverable()).thenReturn(false);
+        when(exception.getStatusCode()).thenReturn(404);
+
+        WritableMap mockMap = mock(WritableMap.class);
+        mockedArguments.when(Arguments::createMap).thenReturn(mockMap);
+
+        invokePrivateMethod(webView, "buildErrorMap", exception);
+
+        verify(mockMap).putString("__typename", "CheckoutHTTPError");
+        verify(mockMap).putString("message", "Not Found");
+        verify(mockMap).putBoolean("recoverable", false);
+        verify(mockMap).putString("code", "http_error");
+        verify(mockMap).putInt("statusCode", 404);
+    }
+
+    @Test
+    public void testInlineProcessor_onFail_withClientException_buildsErrorMapWithoutStatusCode() throws Exception {
+        ClientException exception = mock(ClientException.class);
+        when(exception.getErrorDescription()).thenReturn("Client error");
+        when(exception.getErrorCode()).thenReturn("client_error");
+        when(exception.isRecoverable()).thenReturn(true);
+
+        WritableMap mockMap = mock(WritableMap.class);
+        mockedArguments.when(Arguments::createMap).thenReturn(mockMap);
+
+        invokePrivateMethod(webView, "buildErrorMap", exception);
+
+        verify(mockMap).putString("__typename", "CheckoutClientError");
+        verify(mockMap).putString("message", "Client error");
+        verify(mockMap).putBoolean("recoverable", true);
+        verify(mockMap).putString("code", "client_error");
+        verify(mockMap, never()).putInt(eq("statusCode"), anyInt());
+    }
+
+    @Test
+    public void testInlineProcessor_onFail_withCheckoutExpiredException_buildsCorrectTypeName() throws Exception {
+        CheckoutExpiredException exception = mock(CheckoutExpiredException.class);
+        when(exception.getErrorDescription()).thenReturn("Checkout expired");
+        when(exception.getErrorCode()).thenReturn("expired");
+        when(exception.isRecoverable()).thenReturn(false);
+
+        WritableMap mockMap = mock(WritableMap.class);
+        mockedArguments.when(Arguments::createMap).thenReturn(mockMap);
+
+        invokePrivateMethod(webView, "buildErrorMap", exception);
+
+        verify(mockMap).putString("__typename", "CheckoutExpiredError");
+    }
+
+    @Test
+    public void testInlineProcessor_onFail_withConfigurationException_buildsCorrectTypeName() throws Exception {
+        ConfigurationException exception = mock(ConfigurationException.class);
+        when(exception.getErrorDescription()).thenReturn("Config error");
+        when(exception.getErrorCode()).thenReturn("config_error");
+        when(exception.isRecoverable()).thenReturn(false);
+
+        WritableMap mockMap = mock(WritableMap.class);
+        mockedArguments.when(Arguments::createMap).thenReturn(mockMap);
+
+        invokePrivateMethod(webView, "buildErrorMap", exception);
+
+        verify(mockMap).putString("__typename", "ConfigurationError");
+    }
+
+    @Test
+    public void testInlineProcessor_onFail_withCheckoutSheetKitException_buildsInternalError() throws Exception {
+        CheckoutSheetKitException exception = mock(CheckoutSheetKitException.class);
+        when(exception.getErrorDescription()).thenReturn("Internal error");
+        when(exception.getErrorCode()).thenReturn("internal");
+        when(exception.isRecoverable()).thenReturn(false);
+
+        WritableMap mockMap = mock(WritableMap.class);
+        mockedArguments.when(Arguments::createMap).thenReturn(mockMap);
+
+        invokePrivateMethod(webView, "buildErrorMap", exception);
+
+        verify(mockMap).putString("__typename", "InternalError");
+    }
+
+    @Test
+    public void testInlineProcessor_onFail_withUnknownException_buildsUnknownError() throws Exception {
+        CheckoutException exception = mock(CheckoutException.class);
+        when(exception.getErrorDescription()).thenReturn("Unknown error");
+        when(exception.getErrorCode()).thenReturn("unknown");
+        when(exception.isRecoverable()).thenReturn(false);
+
+        WritableMap mockMap = mock(WritableMap.class);
+        mockedArguments.when(Arguments::createMap).thenReturn(mockMap);
+
+        invokePrivateMethod(webView, "buildErrorMap", exception);
+
+        verify(mockMap).putString("__typename", "UnknownError");
+    }
+
+    // MARK: - Helper Methods
 
     private void setPrivateField(Object object, String fieldName, Object value) throws Exception {
         Field field = object.getClass().getDeclaredField(fieldName);

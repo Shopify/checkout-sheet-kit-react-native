@@ -303,7 +303,7 @@ public class RCTCheckoutWebView extends FrameLayout {
     eventDispatcher.dispatchEvent(new CheckoutEvent(surfaceId, viewId, eventType.getEventName(), params));
   }
 
-  private class InlineCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
+  class InlineCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
 
     public InlineCheckoutEventProcessor(android.content.Context context) {
       super(context);
