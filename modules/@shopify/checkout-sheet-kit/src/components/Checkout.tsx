@@ -30,7 +30,7 @@ import {
   findNodeHandle,
   type ViewStyle,
 } from 'react-native';
-import {useCheckoutEvents} from '../CheckoutEventProvider';
+import {useCheckoutEvents} from '../ShopifyCheckoutEventProvider';
 import type {
   CheckoutAddressChangeStart,
   CheckoutCompleteEvent,

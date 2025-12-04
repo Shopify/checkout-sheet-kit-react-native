@@ -531,7 +531,7 @@ export type {
   RenderStateChangeEvent,
 } from './components/AcceleratedCheckoutButtons';
 export type {ShopifyCheckoutProps as CheckoutProps, ShopifyCheckoutRef as CheckoutRef} from './components/Checkout';
-export type {CheckoutEventProviderProps} from './CheckoutEventProvider';
+export type {ShopifyCheckoutEventProviderProps} from './ShopifyCheckoutEventProvider';
 
 // Components
 export {
@@ -540,7 +540,7 @@ export {
 } from './components/AcceleratedCheckoutButtons';
 export {ShopifyCheckout} from './components/Checkout';
 export {
-  CheckoutEventProvider,
+  ShopifyCheckoutEventProvider,
   useCheckoutEvents,
   useShopifyEvent,
-} from './CheckoutEventProvider';
+} from './ShopifyCheckoutEventProvider';

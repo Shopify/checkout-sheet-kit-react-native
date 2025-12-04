@@ -515,7 +515,7 @@ export interface CartInput {
 export interface CheckoutAddressChangeStart {
   /**
    * Unique identifier for this event instance.
-   * Use this ID with the CheckoutEventProvider to respond to the event.
+   * Use this ID with the ShopifyCheckoutEventProvider to respond to the event.
    */
   id: string;
 
@@ -540,7 +540,7 @@ export interface CheckoutAddressChangeStart {
 
 /**
  * Response payload for CheckoutAddressChangeStart event.
- * Use with CheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
+ * Use with ShopifyCheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
  *
  * Note: This response is only used when native address selection is enabled
  * for the authenticated app.
@@ -653,7 +653,7 @@ export interface CheckoutSession {
 export interface CheckoutSubmitStart {
   /**
    * Unique identifier for this event instance.
-   * Use this ID with the CheckoutEventProvider to respond to the event.
+   * Use this ID with the ShopifyCheckoutEventProvider to respond to the event.
    */
   id: string;
 
@@ -684,7 +684,7 @@ export interface PaymentTokenInput {
 
 /**
  * Response payload for CheckoutSubmitStart event.
- * Use with CheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
+ * Use with ShopifyCheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
  *
  * Note: This response is only used when native payment delegation is enabled
  * for the authenticated app.

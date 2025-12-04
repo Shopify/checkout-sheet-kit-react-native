@@ -30,17 +30,17 @@ const CheckoutEventContext = createContext<CheckoutEventContextType | null>(
   null,
 );
 
-export interface CheckoutEventProviderProps {
+export interface ShopifyCheckoutEventProviderProps {
   children: React.ReactNode;
 }
 
 /**
- * CheckoutEventProvider manages active checkout events and provides methods to respond to them.
+ * ShopifyCheckoutEventProvider manages active checkout events and provides methods to respond to them.
  * This provider maintains references to active events and the webview to enable native callbacks.
  */
-export const CheckoutEventProvider = ({
+export const ShopifyCheckoutEventProvider = ({
   children,
-}: CheckoutEventProviderProps) => {
+}: ShopifyCheckoutEventProviderProps) => {
   const webViewRef = useRef<React.RefObject<any> | null>(null);
 
   const registerWebView = useCallback((ref: React.RefObject<any>) => {

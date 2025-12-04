@@ -21,7 +21,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import type {RouteProp} from '@react-navigation/native';
 import React from 'react';
 import {Button} from 'react-native';
-import {CheckoutEventProvider} from '@shopify/checkout-sheet-kit';
+import {ShopifyCheckoutEventProvider} from '@shopify/checkout-sheet-kit';
 import type {RootStackParamList} from '../../App';
 import CheckoutScreen from './CheckoutScreen';
 import AddressScreen from './AddressScreen';
@@ -40,7 +40,7 @@ type BuyNowStackProps = {
 export default function BuyNowStack(props: BuyNowStackProps) {
   const {colors} = useTheme();
   return (
-    <CheckoutEventProvider>
+    <ShopifyCheckoutEventProvider>
       <BuyNowStackNavigator.Navigator
         initialRouteName="Checkout"
         screenOptions={({navigation}) => ({
@@ -72,6 +72,6 @@ export default function BuyNowStack(props: BuyNowStackProps) {
           options={{title: 'Payment Details'}}
         />
       </BuyNowStackNavigator.Navigator>
-    </CheckoutEventProvider>
+    </ShopifyCheckoutEventProvider>
   );
 }
