@@ -25,7 +25,7 @@ import {
   type CheckoutAddressChangeStart,
   type CheckoutCompleteEvent,
   type CheckoutPaymentMethodChangeStart,
-  type CheckoutRef,
+  type ShopifyCheckoutRef,
   type CheckoutStartEvent,
   type CheckoutSubmitStart,
   useCheckoutEvents,
@@ -39,7 +39,7 @@ export default function CheckoutScreen(props: {
   route: RouteProp<BuyNowStackParamList, 'Checkout'>;
 }) {
   const navigation = useNavigation<NavigationProp<BuyNowStackParamList>>();
-  const ref = useRef<CheckoutRef>(null);
+  const ref = useRef<ShopifyCheckoutRef>(null);
   const eventContext = useCheckoutEvents();
 
   const onStart = (event: CheckoutStartEvent) => {
