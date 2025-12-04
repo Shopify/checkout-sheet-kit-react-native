@@ -22,7 +22,7 @@ jest.mock('react-native', () => {
 
 import React from 'react';
 import {render, act} from '@testing-library/react-native';
-import {Checkout} from '../src/components/Checkout';
+import {ShopifyCheckout} from '../src/components/Checkout';
 import {createTestCart} from './testFixtures';
 
 describe('Checkout Component - Start Events', () => {
@@ -32,7 +32,7 @@ describe('Checkout Component - Start Events', () => {
     const onStart = jest.fn();
 
     const {getByTestId} = render(
-      <Checkout
+      <ShopifyCheckout
         checkoutUrl={mockCheckoutUrl}
         onStart={onStart}
         testID="checkout-webview"
@@ -63,7 +63,7 @@ describe('Checkout Component - Start Events', () => {
     const onStart = jest.fn();
 
     const {getByTestId} = render(
-      <Checkout
+      <ShopifyCheckout
         checkoutUrl={mockCheckoutUrl}
         onStart={onStart}
         testID="checkout-webview"
@@ -89,7 +89,7 @@ describe('Checkout Component - Start Events', () => {
     const onStart = jest.fn();
 
     const {getByTestId} = render(
-      <Checkout
+      <ShopifyCheckout
         checkoutUrl={mockCheckoutUrl}
         onStart={onStart}
         testID="checkout-webview"
@@ -115,7 +115,7 @@ describe('Checkout Component - Start Events', () => {
 
   it('does not crash when onStart prop is not provided', () => {
     const {getByTestId} = render(
-      <Checkout checkoutUrl={mockCheckoutUrl} testID="checkout-webview" />,
+      <ShopifyCheckout checkoutUrl={mockCheckoutUrl} testID="checkout-webview" />,
     );
 
     const nativeComponent = getByTestId('checkout-webview');

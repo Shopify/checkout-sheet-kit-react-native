@@ -22,7 +22,7 @@ jest.mock('react-native', () => {
 
 import React from 'react';
 import {render, act} from '@testing-library/react-native';
-import {Checkout} from '../src/components/Checkout';
+import {ShopifyCheckout} from '../src/components/Checkout';
 import {createTestCart} from './testFixtures';
 
 describe('Checkout Component - Complete Events', () => {
@@ -41,7 +41,7 @@ describe('Checkout Component - Complete Events', () => {
     const onComplete = jest.fn();
 
     const {getByTestId} = render(
-      <Checkout
+      <ShopifyCheckout
         checkoutUrl={mockCheckoutUrl}
         onComplete={onComplete}
         testID="checkout-webview"
@@ -75,7 +75,7 @@ describe('Checkout Component - Complete Events', () => {
     const onComplete = jest.fn();
 
     const {getByTestId} = render(
-      <Checkout
+      <ShopifyCheckout
         checkoutUrl={mockCheckoutUrl}
         onComplete={onComplete}
         testID="checkout-webview"
@@ -102,7 +102,7 @@ describe('Checkout Component - Complete Events', () => {
     const onComplete = jest.fn();
 
     const {getByTestId} = render(
-      <Checkout
+      <ShopifyCheckout
         checkoutUrl={mockCheckoutUrl}
         onComplete={onComplete}
         testID="checkout-webview"
@@ -131,7 +131,7 @@ describe('Checkout Component - Complete Events', () => {
     const onComplete = jest.fn();
 
     const {getByTestId} = render(
-      <Checkout
+      <ShopifyCheckout
         checkoutUrl={mockCheckoutUrl}
         onComplete={onComplete}
         testID="checkout-webview"
@@ -161,7 +161,7 @@ describe('Checkout Component - Complete Events', () => {
 
   it('does not crash when onComplete prop is not provided', () => {
     const {getByTestId} = render(
-      <Checkout checkoutUrl={mockCheckoutUrl} testID="checkout-webview" />,
+      <ShopifyCheckout checkoutUrl={mockCheckoutUrl} testID="checkout-webview" />,
     );
 
     const nativeComponent = getByTestId('checkout-webview');
