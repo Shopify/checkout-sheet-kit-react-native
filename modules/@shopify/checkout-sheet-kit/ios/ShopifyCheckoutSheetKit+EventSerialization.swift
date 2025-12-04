@@ -82,7 +82,6 @@ internal enum ShopifyEventSerialization {
 
     /**
      * Converts a CheckoutAddressChangeStartEvent to a React Native compatible dictionary.
-     * Manually constructs the dictionary to hide internal RPC implementation details.
      */
     static func serialize(checkoutAddressChangeStartEvent event: CheckoutAddressChangeStartEvent) -> [String: Any] {
         return [
@@ -95,7 +94,6 @@ internal enum ShopifyEventSerialization {
 
     /**
      * Converts a CheckoutSubmitStartEvent to a React Native compatible dictionary.
-     * Manually constructs the dictionary to hide internal RPC implementation details.
      */
     static func serialize(checkoutSubmitStartEvent event: CheckoutSubmitStartEvent) -> [String: Any] {
         return [
@@ -110,7 +108,6 @@ internal enum ShopifyEventSerialization {
 
     /**
      * Converts a CheckoutPaymentMethodChangeStartEvent to a React Native compatible dictionary.
-     * Manually constructs the dictionary to hide internal RPC implementation details.
      */
     static func serialize(checkoutPaymentMethodChangeStartEvent event: CheckoutPaymentMethodChangeStartEvent) -> [String: Any] {
         return [

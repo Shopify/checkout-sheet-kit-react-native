@@ -240,9 +240,6 @@ class RCTCheckoutWebView: UIView {
             case let .decodingFailed(details):
                 errorMessage = "Failed to decode response: \(details)"
                 errorCode = "DECODING_ERROR"
-            @unknown default:
-                errorMessage = "Event response error"
-                errorCode = "EVENT_RESPONSE_ERROR"
             }
         } else {
             errorMessage = error.localizedDescription
