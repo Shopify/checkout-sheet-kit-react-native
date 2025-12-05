@@ -511,7 +511,6 @@ export type {
   CartPaymentInstrumentDisplayInput,
   CartPaymentInstrumentInput,
   PaymentTokenInput,
-  CheckoutSession,
   CheckoutAddressChangeStart,
   CheckoutAddressChangeStartResponse,
   CheckoutCompleteEvent,

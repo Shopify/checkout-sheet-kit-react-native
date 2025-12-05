@@ -23,7 +23,7 @@ jest.mock('react-native', () => {
 import React from 'react';
 import {render, act} from '@testing-library/react-native';
 import {ShopifyCheckout} from '../src/components/Checkout';
-import {createTestCart, createTestCheckout} from './testFixtures';
+import {createTestCart } from './testFixtures';
 
 describe('Checkout Component - Submit Start Events', () => {
   const mockCheckoutUrl = 'https://example.myshopify.com/checkout';
@@ -41,7 +41,6 @@ describe('Checkout Component - Submit Start Events', () => {
 
     const nativeComponent = getByTestId('checkout-webview');
     const testCart = createTestCart();
-    const testCheckout = createTestCheckout();
 
     act(() => {
       nativeComponent.props.onSubmitStart({
@@ -49,7 +48,7 @@ describe('Checkout Component - Submit Start Events', () => {
           id: 'test-event-123',
           method: 'checkout.submitStart',
           cart: testCart,
-          checkout: testCheckout,
+          sessionId: "checkout-session-123",
         },
       });
     });
@@ -59,7 +58,7 @@ describe('Checkout Component - Submit Start Events', () => {
       id: 'test-event-123',
       method: 'checkout.submitStart',
       cart: testCart,
-      checkout: testCheckout,
+      sessionId: "checkout-session-123",
     });
   });
 
@@ -77,7 +76,7 @@ describe('Checkout Component - Submit Start Events', () => {
             id: 'test-event',
             method: 'checkout.submitStart',
             cart: createTestCart(),
-            checkout: createTestCheckout(),
+            sessionId: "checkout-session-123",
           },
         });
       });

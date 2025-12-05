@@ -637,14 +637,6 @@ export interface CheckoutPaymentMethodChangeStartResponse {
 }
 
 /**
- * Checkout session information.
- */
-export interface CheckoutSession {
-  /** Globally unique identifier for the checkout session */
-  id: string;
-}
-
-/**
  * Event emitted when the buyer attempts to submit the checkout.
  *
  * This event is only emitted when native payment delegation is configured
@@ -670,7 +662,7 @@ export interface CheckoutSubmitStart {
   /**
    * The checkout session information.
    */
-  checkout: CheckoutSession;
+  sessionId: string;
 }
 
 /**
