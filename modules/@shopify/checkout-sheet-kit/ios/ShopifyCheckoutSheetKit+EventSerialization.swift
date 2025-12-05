@@ -100,9 +100,7 @@ internal enum ShopifyEventSerialization {
             "id": event.id,
             "method": event.method,
             "cart": encodeToJSON(from: event.cart),
-            "checkout": [
-                "id": event.checkout.id
-            ]
+            "sessionId": event.sessionId
         ]
     }
 

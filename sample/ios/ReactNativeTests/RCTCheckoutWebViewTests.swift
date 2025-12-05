@@ -407,7 +407,7 @@ class RCTCheckoutWebViewTests: XCTestCase {
                 subtotalAmount: "100.00",
                 totalAmount: "110.00"
             ),
-            checkout: Checkout(id: "checkout-123")
+            sessionId: "checkout-123"
         )
 
         checkoutWebView.checkoutDidStartSubmit(event: request)
@@ -439,7 +439,7 @@ class RCTCheckoutWebViewTests: XCTestCase {
         let request = CheckoutSubmitStartEvent.testInstance(
             id: "submit-registry-test",
             cart: createTestCart(),
-            checkout: Checkout(id: "checkout-registry")
+            sessionId: "checkout-123"
         )
 
         checkoutWebView.checkoutDidStartSubmit(event: request)
@@ -521,7 +521,7 @@ class RCTCheckoutWebViewTests: XCTestCase {
         let request = CheckoutSubmitStartEvent.testInstance(
             id: "submit-event-1",
             cart: createTestCart(),
-            checkout: Checkout(id: "checkout-1")
+            sessionId: "checkout-123"
         )
         checkoutWebView.checkoutDidStartSubmit(event: request)
 
