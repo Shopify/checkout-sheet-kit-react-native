@@ -203,10 +203,7 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
       eventMap.put("id", event.getId());
       eventMap.put("method", event.getMethod());
       eventMap.put("cart", event.getCart());
-
-      Map<String, Object> checkoutMap = new HashMap<>();
-      checkoutMap.put("id", event.getCheckout().getId());
-      eventMap.put("checkout", checkoutMap);
+      eventMap.put("sessionId", event.getSessionId());
 
       String data = mapper.writeValueAsString(eventMap);
       sendEventWithStringData("submitStart", data);

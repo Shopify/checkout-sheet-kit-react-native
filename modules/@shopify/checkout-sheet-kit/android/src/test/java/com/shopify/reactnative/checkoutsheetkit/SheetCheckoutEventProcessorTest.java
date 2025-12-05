@@ -412,7 +412,7 @@ public class SheetCheckoutEventProcessorTest {
         when(event.getId()).thenReturn("submit-event-789");
         when(event.getMethod()).thenReturn("checkout.submitStart");
         when(event.getCart()).thenReturn(null);
-        when(event.getCheckout().getId()).thenReturn("checkout-123");
+        when(event.getSessionId()).thenReturn("checkout-123");
 
         processor.onSubmitStart(event);
 
@@ -421,7 +421,7 @@ public class SheetCheckoutEventProcessorTest {
         String eventData = eventDataCaptor.getValue();
         assertThat(eventData).contains("\"id\":\"submit-event-789\"");
         assertThat(eventData).contains("\"method\":\"checkout.submitStart\"");
-        assertThat(eventData).contains("\"checkout\"");
+        assertThat(eventData).contains("\"sessionId\":\"checkout-123\"");
     }
 
     @Test
@@ -431,7 +431,7 @@ public class SheetCheckoutEventProcessorTest {
         setPrivateField(processor, "mapper", mockMapper);
 
         CheckoutSubmitStartEvent event = mock(CheckoutSubmitStartEvent.class, RETURNS_DEEP_STUBS);
-        when(event.getCheckout().getId()).thenReturn("checkout-123");
+        when(event.getSessionId()).thenReturn("checkout-123");
 
         processor.onSubmitStart(event);
 

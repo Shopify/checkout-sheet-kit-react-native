@@ -417,9 +417,7 @@ class RCTCheckoutWebViewTests: XCTestCase {
         XCTAssertEqual(receivedPayload?["id"] as? String, "submit-event-789")
         XCTAssertEqual(receivedPayload?["method"] as? String, "checkout.submitStart")
 
-        let checkout = receivedPayload?["checkout"] as? [String: Any]
-        XCTAssertNotNil(checkout, "Checkout should be included in the emitted event")
-        XCTAssertEqual(checkout?["id"] as? String, "checkout-123")
+      XCTAssertEqual(receivedPayload?["sessionId"] as? String, "checkout-123")
 
         let cart = receivedPayload?["cart"] as? [String: Any]
         XCTAssertNotNil(cart, "Cart should be included in the emitted event")

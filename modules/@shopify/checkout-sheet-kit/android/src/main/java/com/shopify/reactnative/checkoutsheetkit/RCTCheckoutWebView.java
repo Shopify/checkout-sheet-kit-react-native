@@ -372,9 +372,7 @@ public class RCTCheckoutWebView extends FrameLayout {
         data.putString("id", event.getId());
         data.putString("method", event.getMethod());
         data.putMap("cart", serializeToWritableMap(event.getCart()));
-        WritableMap checkout = Arguments.createMap();
-        checkout.putString("id", event.getCheckout().getId());
-        data.putMap("checkout", checkout);
+        data.putString("sessionId", event.getSessionId());
         sendEvent(CheckoutEventType.ON_SUBMIT_START, data);
       } catch (Exception e) {
         Log.e(TAG, "Error processing submit start event", e);
