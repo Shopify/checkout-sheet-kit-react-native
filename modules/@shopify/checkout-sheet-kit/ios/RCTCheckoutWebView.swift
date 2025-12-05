@@ -297,7 +297,7 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     ///   - addressType: Type of address being changed ("shipping" or "billing")
     ///   - cart: Current cart state
     func checkoutDidStartAddressChange(event: CheckoutAddressChangeStartEvent) {
-        self.events.set(key: event.id, event: event)
+        events.set(key: event.id, event: event)
         onAddressChangeStart?(ShopifyEventSerialization.serialize(checkoutAddressChangeStartEvent: event))
     }
 
@@ -310,7 +310,7 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     ///   - id: Unique identifier for responding to the event
     ///   - cart: Current cart state
     func checkoutDidStartPaymentMethodChange(event: CheckoutPaymentMethodChangeStartEvent) {
-        self.events.set(key: event.id, event: event)
+        events.set(key: event.id, event: event)
         onPaymentMethodChangeStart?(ShopifyEventSerialization.serialize(checkoutPaymentMethodChangeStartEvent: event))
     }
 
@@ -324,7 +324,7 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     ///   - cart: Current cart state
     ///   - checkout: Checkout session information
     func checkoutDidStartSubmit(event: CheckoutSubmitStartEvent) {
-        self.events.set(key: event.id, event: event)
+        events.set(key: event.id, event: event)
         onSubmitStart?(ShopifyEventSerialization.serialize(checkoutSubmitStartEvent: event))
     }
 }
