@@ -381,6 +381,10 @@ export interface CheckoutStartEvent {
   method: 'checkout.start';
   /** Initial cart state when checkout started */
   cart: Cart;
+  /** 
+   * Locale of the checkout 
+   **/
+  locale: string;
 }
 
 /**
@@ -512,7 +516,7 @@ export interface CartInput {
  * This event is only emitted when native address selection is enabled
  * for the authenticated app.
  */
-export interface CheckoutAddressChangeStart {
+export interface CheckoutAddressChangeStartEvent {
   /**
    * Unique identifier for this event instance.
    * Use this ID with the ShopifyCheckoutEventProvider to respond to the event.
@@ -539,13 +543,13 @@ export interface CheckoutAddressChangeStart {
 }
 
 /**
- * Response payload for CheckoutAddressChangeStart event.
+ * Response payload for CheckoutAddressChangeStartEvent event.
  * Use with ShopifyCheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
  *
  * Note: This response is only used when native address selection is enabled
  * for the authenticated app.
  */
-export interface CheckoutAddressChangeStartResponse {
+export interface CheckoutAddressChangeStartResponsePayload {
   /**
    * Updated cart input with the delivery addresses to set.
    */
@@ -612,20 +616,20 @@ export interface CartPaymentInstrumentInput {
 /**
  * Event emitted when the buyer intends to change their payment method.
  */
-export interface CheckoutPaymentMethodChangeStart {
+export interface CheckoutPaymentMethodChangeStartEvent {
   /** Unique identifier for this event instance */
   id: string;
   /** Type of payment change event */
-  type: 'paymentMethodChangeStart';
+  method: 'checkout.paymentMethodChangeStart';
   /** Cart state when the event was emitted */
   cart: Cart;
 }
 
 /**
- * Response payload for CheckoutPaymentMethodChangeStart event.
+ * Response payload for CheckoutPaymentMethodChangeStartEvent event.
  * Use with CheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
  */
-export interface CheckoutPaymentMethodChangeStartResponse {
+export interface CheckoutPaymentMethodChangeStartResponsePayload {
   /**
    * Updated cart input with the payment instruments to set.
    */
@@ -642,7 +646,7 @@ export interface CheckoutPaymentMethodChangeStartResponse {
  * This event is only emitted when native payment delegation is configured
  * for the authenticated app.
  */
-export interface CheckoutSubmitStart {
+export interface CheckoutSubmitStartEvent {
   /**
    * Unique identifier for this event instance.
    * Use this ID with the ShopifyCheckoutEventProvider to respond to the event.
@@ -675,13 +679,13 @@ export interface PaymentTokenInput {
 }
 
 /**
- * Response payload for CheckoutSubmitStart event.
+ * Response payload for CheckoutSubmitStartEvent event.
  * Use with ShopifyCheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
  *
  * Note: This response is only used when native payment delegation is enabled
  * for the authenticated app.
  */
-export interface CheckoutSubmitStartResponse {
+export interface CheckoutSubmitStartResponsePayload {
   /**
    * Optional payment token information for delegated payment processing.
    */

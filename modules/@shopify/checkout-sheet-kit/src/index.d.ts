@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import type {EmitterSubscription} from 'react-native';
-import type {CheckoutCompleteEvent, CheckoutStartEvent, CheckoutSubmitStart} from './events';
+import type {CheckoutCompleteEvent, CheckoutStartEvent, CheckoutSubmitStartEvent} from './events';
 import type {CheckoutException} from './errors';
 
 export type Maybe<T> = T | undefined;
@@ -172,10 +172,10 @@ export type CheckoutStartEventCallback = (
   event: CheckoutStartEvent,
 ) => void;
 export type CheckoutAddressChangeStartCallback = (
-  event: CheckoutAddressChangeStart,
+  event: CheckoutAddressChangeStartEvent,
 ) => void;
 export type CheckoutSubmitStartCallback = (
-  event: CheckoutSubmitStart,
+  event: CheckoutSubmitStartEvent,
 ) => void;
 
 export type CheckoutEventCallback =
