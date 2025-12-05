@@ -47,7 +47,7 @@ describe('Checkout Component - Address Change Events', () => {
       nativeComponent.props.onAddressChangeStart({
         nativeEvent: {
           id: 'test-event-123',
-          type: 'addressChangeStart',
+          method: 'checkout.addressChangeStart',
           addressType: 'shipping',
           cart: testCart,
         },
@@ -57,7 +57,7 @@ describe('Checkout Component - Address Change Events', () => {
     expect(onAddressChangeStart).toHaveBeenCalledTimes(1);
     expect(onAddressChangeStart).toHaveBeenCalledWith({
       id: 'test-event-123',
-      type: 'addressChangeStart',
+      method: 'checkout.addressChangeStart',
       addressType: 'shipping',
       cart: testCart,
     });
@@ -75,7 +75,7 @@ describe('Checkout Component - Address Change Events', () => {
         nativeComponent.props.onAddressChangeStart({
           nativeEvent: {
             id: 'test-event',
-            type: 'addressChangeStart',
+            method: 'checkout.addressChangeStart',
             addressType: 'shipping',
             cart: createTestCart(),
           },
@@ -122,7 +122,7 @@ describe('Checkout Component - Address Change Events', () => {
       nativeComponent.props.onAddressChangeStart({
         nativeEvent: {
           id: 'event-with-cart',
-          type: 'addressChangeStart',
+          method: 'checkout.addressChangeStart',
           addressType: 'shipping',
           cart: testCart,
         },

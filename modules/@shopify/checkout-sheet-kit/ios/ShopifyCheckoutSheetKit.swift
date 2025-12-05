@@ -76,15 +76,21 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         }
     }
 
-    func checkoutDidStartAddressChange(event: CheckoutAddressChangeStart) {
+    func checkoutDidStartAddressChange(event: CheckoutAddressChangeStartEvent) {
         if hasListeners {
-            sendEvent(withName: "addressChangeStart", body: ShopifyEventSerialization.serialize(checkoutAddressChangeStart: event))
+            sendEvent(withName: "addressChangeStart", body: ShopifyEventSerialization.serialize(checkoutAddressChangeStartEvent: event))
         }
     }
 
-    func checkoutDidStartSubmit(event: CheckoutSubmitStart) {
+    func checkoutDidStartSubmit(event: CheckoutSubmitStartEvent) {
         if hasListeners {
-            sendEvent(withName: "submitStart", body: ShopifyEventSerialization.serialize(checkoutSubmitStart: event))
+            sendEvent(withName: "submitStart", body: ShopifyEventSerialization.serialize(checkoutSubmitStartEvent: event))
+        }
+    }
+
+    func checkoutDidStartPaymentMethodChange(event: CheckoutPaymentMethodChangeStartEvent) {
+        if hasListeners {
+            sendEvent(withName: "paymentMethodChangeStart", body: ShopifyEventSerialization.serialize(checkoutPaymentMethodChangeStartEvent: event))
         }
     }
 

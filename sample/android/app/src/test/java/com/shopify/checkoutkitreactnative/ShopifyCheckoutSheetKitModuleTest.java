@@ -16,7 +16,7 @@ import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
 import com.shopify.checkoutsheetkit.Preloading;
 import com.shopify.checkoutsheetkit.ColorScheme;
 import com.shopify.checkoutsheetkit.Authentication;
-import com.shopify.checkoutsheetkit.lifecycleevents.CartPaymentInstrument;
+import com.shopify.checkoutsheetkit.lifecycleevents.CartPayment;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompleteEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.Cart;
@@ -25,8 +25,7 @@ import com.shopify.checkoutsheetkit.lifecycleevents.CartBuyerIdentity;
 import com.shopify.checkoutsheetkit.lifecycleevents.CartDelivery;
 import com.shopify.checkoutsheetkit.lifecycleevents.Money;
 import com.shopify.checkoutsheetkit.lifecycleevents.OrderConfirmation;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStart;
-import com.shopify.checkoutsheetkit.rpc.events.CheckoutAddressChangeStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutAddressChangeStartEvent;
 import com.shopify.reactnative.checkoutsheetkit.ShopifyCheckoutSheetKitModule;
 import com.shopify.reactnative.checkoutsheetkit.SheetCheckoutEventProcessor;
 
@@ -431,7 +430,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     Cart cart = buildMinimalCart("cart-456", "75.00", "CAD");
 
-    CheckoutStartEvent startedEvent = new CheckoutStartEvent(cart);
+    CheckoutStartEvent startedEvent = new CheckoutStartEvent("en-US", cart);
 
     processor.onStart(startedEvent);
 
@@ -446,15 +445,12 @@ public class ShopifyCheckoutSheetKitModuleTest {
   public void testCanProcessCheckoutAddressChangeStartEvent() {
     SheetCheckoutEventProcessor processor = new SheetCheckoutEventProcessor(mockContext, mockReactContext);
 
-    // Create a mock CheckoutAddressChangeStart event
-    CheckoutAddressChangeStart addressChangeEvent = mock(CheckoutAddressChangeStart.class);
+    // Create a mock CheckoutAddressChangeStartEvent with direct accessors
+    CheckoutAddressChangeStartEvent addressChangeEvent = mock(CheckoutAddressChangeStartEvent.class);
     when(addressChangeEvent.getId()).thenReturn("address-event-123");
-
-    // Create a mock CheckoutAddressChangeStartEvent for params
-    CheckoutAddressChangeStartEvent mockParams = mock(CheckoutAddressChangeStartEvent.class);
-    when(mockParams.getAddressType()).thenReturn("shipping");
-
-    when(addressChangeEvent.getParams()).thenReturn(mockParams);
+    when(addressChangeEvent.getMethod()).thenReturn("checkout.addressChangeStart");
+    when(addressChangeEvent.getAddressType()).thenReturn("shipping");
+    when(addressChangeEvent.getCart()).thenReturn(buildMinimalCart("cart-123", "50.00", "USD"));
 
     processor.onAddressChangeStart(addressChangeEvent);
 
@@ -563,7 +559,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
       new ArrayList<>(), // appliedGiftCards
       new ArrayList<>(), // discountAllocations
       new CartDelivery(new ArrayList<>()),
-      new ArrayList<>() { } // paymentInstruments
+      new CartPayment(new ArrayList<>()) // payment
     );
   }
 

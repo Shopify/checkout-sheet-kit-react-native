@@ -430,14 +430,14 @@ describe('ShopifyCheckoutSheetKit', () => {
 
         eventEmitter.emit('submitStart', {
           id: 'test-event-id',
-          type: 'submitStart',
+          method: 'checkout.submitStart',
           cart: {id: 'test-cart-id'},
           checkout: {id: 'checkout-session-123'},
         });
 
         expect(callback).toHaveBeenCalledWith({
           id: 'test-event-id',
-          type: 'submitStart',
+          method: 'checkout.submitStart',
           cart: {id: 'test-cart-id'},
           checkout: {id: 'checkout-session-123'},
         });

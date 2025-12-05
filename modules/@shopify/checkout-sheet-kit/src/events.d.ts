@@ -361,6 +361,10 @@ namespace CheckoutCompleteEvent {
  * Event emitted when checkout is completed successfully.
  */
 export interface CheckoutCompleteEvent {
+  /**
+   * The event type identifier
+   */
+  method: 'checkout.complete';
   /** Order confirmation details */
   orderConfirmation: CheckoutCompleteEvent.OrderConfirmation;
   /** Final cart state at checkout completion */
@@ -371,13 +375,21 @@ export interface CheckoutCompleteEvent {
  * Event emitted when checkout starts.
  */
 export interface CheckoutStartEvent {
+  /**
+   * The event type identifier
+   */
+  method: 'checkout.start';
   /** Initial cart state when checkout started */
   cart: Cart;
+  /** 
+   * Locale of the checkout 
+   **/
+  locale: string;
 }
 
 /**
  * Error object returned in checkout event responses.
- * Used to communicate validation or processing errors back to checkout.
+ * Used to communicate errors back to checkout.
  */
 export interface CheckoutResponseError {
   /**
@@ -389,8 +401,7 @@ export interface CheckoutResponseError {
    */
   message: string;
   /**
-   * Optional field identifier for validation errors.
-   * The field the error is related to.
+   * Optional field identifier for field-specific errors.
    *
    * @see https://shopify.dev/docs/api/checkout-ui-extensions/latest/targets
    */
@@ -505,17 +516,17 @@ export interface CartInput {
  * This event is only emitted when native address selection is enabled
  * for the authenticated app.
  */
-export interface CheckoutAddressChangeStart {
+export interface CheckoutAddressChangeStartEvent {
   /**
    * Unique identifier for this event instance.
-   * Use this ID with the CheckoutEventProvider to respond to the event.
+   * Use this ID with the ShopifyCheckoutEventProvider to respond to the event.
    */
   id: string;
 
   /**
    * The event type identifier
    */
-  type: 'addressChangeStart';
+  method: 'checkout.addressChangeStart';
 
   /**
    * The type of address being changed.
@@ -532,18 +543,13 @@ export interface CheckoutAddressChangeStart {
 }
 
 /**
- * Response payload for CheckoutAddressChangeStart event.
- * Use with CheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
+ * Response payload for CheckoutAddressChangeStartEvent event.
+ * Use with ShopifyCheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
  *
  * Note: This response is only used when native address selection is enabled
  * for the authenticated app.
- *
- * Validation requirements:
- * - cart.delivery.addresses must contain at least one address
- * - Each address must include a countryCode
- * - countryCode must be exactly 2 characters (ISO 3166-1 alpha-2 format)
  */
-export interface CheckoutAddressChangeStartResponse {
+export interface CheckoutAddressChangeStartResponsePayload {
   /**
    * Updated cart input with the delivery addresses to set.
    */
@@ -610,20 +616,20 @@ export interface CartPaymentInstrumentInput {
 /**
  * Event emitted when the buyer intends to change their payment method.
  */
-export interface CheckoutPaymentMethodChangeStart {
+export interface CheckoutPaymentMethodChangeStartEvent {
   /** Unique identifier for this event instance */
   id: string;
   /** Type of payment change event */
-  type: 'paymentMethodChangeStart';
+  method: 'checkout.paymentMethodChangeStart';
   /** Cart state when the event was emitted */
   cart: Cart;
 }
 
 /**
- * Response payload for CheckoutPaymentMethodChangeStart event.
+ * Response payload for CheckoutPaymentMethodChangeStartEvent event.
  * Use with CheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
  */
-export interface CheckoutPaymentMethodChangeStartResponse {
+export interface CheckoutPaymentMethodChangeStartResponsePayload {
   /**
    * Updated cart input with the payment instruments to set.
    */
@@ -635,30 +641,22 @@ export interface CheckoutPaymentMethodChangeStartResponse {
 }
 
 /**
- * Checkout session information.
- */
-export interface CheckoutSession {
-  /** Globally unique identifier for the checkout session */
-  id: string;
-}
-
-/**
  * Event emitted when the buyer attempts to submit the checkout.
  *
  * This event is only emitted when native payment delegation is configured
  * for the authenticated app.
  */
-export interface CheckoutSubmitStart {
+export interface CheckoutSubmitStartEvent {
   /**
    * Unique identifier for this event instance.
-   * Use this ID with the CheckoutEventProvider to respond to the event.
+   * Use this ID with the ShopifyCheckoutEventProvider to respond to the event.
    */
   id: string;
 
   /**
    * The event type identifier
    */
-  type: 'submitStart';
+  method: 'checkout.submitStart';
 
   /**
    * The current cart state when the event was emitted.
@@ -668,7 +666,7 @@ export interface CheckoutSubmitStart {
   /**
    * The checkout session information.
    */
-  checkout: CheckoutSession;
+  sessionId: string;
 }
 
 /**
@@ -681,13 +679,13 @@ export interface PaymentTokenInput {
 }
 
 /**
- * Response payload for CheckoutSubmitStart event.
- * Use with CheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
+ * Response payload for CheckoutSubmitStartEvent event.
+ * Use with ShopifyCheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
  *
  * Note: This response is only used when native payment delegation is enabled
  * for the authenticated app.
  */
-export interface CheckoutSubmitStartResponse {
+export interface CheckoutSubmitStartResponsePayload {
   /**
    * Optional payment token information for delegated payment processing.
    */

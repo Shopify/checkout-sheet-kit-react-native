@@ -22,12 +22,12 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useRef} from 'react';
 import {
   ShopifyCheckout,
-  type CheckoutAddressChangeStart,
+  type CheckoutAddressChangeStartEvent,
   type CheckoutCompleteEvent,
-  type CheckoutPaymentMethodChangeStart,
-  type CheckoutRef,
+  type CheckoutPaymentMethodChangeStartEvent,
+  type ShopifyCheckoutRef,
   type CheckoutStartEvent,
-  type CheckoutSubmitStart,
+  type CheckoutSubmitStartEvent,
   useCheckoutEvents,
 } from '@shopify/checkout-sheet-kit';
 import type {BuyNowStackParamList} from './types';
@@ -39,24 +39,26 @@ export default function CheckoutScreen(props: {
   route: RouteProp<BuyNowStackParamList, 'Checkout'>;
 }) {
   const navigation = useNavigation<NavigationProp<BuyNowStackParamList>>();
-  const ref = useRef<CheckoutRef>(null);
+  const ref = useRef<ShopifyCheckoutRef>(null);
   const eventContext = useCheckoutEvents();
 
   const onStart = (event: CheckoutStartEvent) => {
     console.log('<CheckoutScreen /> onStart', event);
   };
 
-  const onAddressChangeStart = (event: CheckoutAddressChangeStart) => {
+  const onAddressChangeStart = (event: CheckoutAddressChangeStartEvent) => {
     console.log('<CheckoutScreen /> onAddressChangeStart: ', event);
     navigation.navigate('Address', {id: event.id});
   };
 
-  const onPaymentMethodChangeStart = (event: CheckoutPaymentMethodChangeStart) => {
+  const onPaymentMethodChangeStart = (
+    event: CheckoutPaymentMethodChangeStartEvent,
+  ) => {
     console.log('<CheckoutScreen /> onPaymentMethodChangeStart: ', event);
     navigation.navigate('Payment', {id: event.id});
-  }
-  
-  const onSubmitStart = async (event: CheckoutSubmitStart) => {
+  };
+
+  const onSubmitStart = async (event: CheckoutSubmitStartEvent) => {
     console.log('<CheckoutScreen /> onSubmitStart', event);
     try {
       await eventContext?.respondToEvent(event.id, {

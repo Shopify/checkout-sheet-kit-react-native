@@ -23,7 +23,7 @@ jest.mock('react-native', () => {
 import React from 'react';
 import {render, act} from '@testing-library/react-native';
 import {ShopifyCheckout} from '../src/components/Checkout';
-import {createTestCart, createTestCheckout} from './testFixtures';
+import {createTestCart } from './testFixtures';
 
 describe('Checkout Component - Submit Start Events', () => {
   const mockCheckoutUrl = 'https://example.myshopify.com/checkout';
@@ -41,15 +41,14 @@ describe('Checkout Component - Submit Start Events', () => {
 
     const nativeComponent = getByTestId('checkout-webview');
     const testCart = createTestCart();
-    const testCheckout = createTestCheckout();
 
     act(() => {
       nativeComponent.props.onSubmitStart({
         nativeEvent: {
           id: 'test-event-123',
-          type: 'submitStart',
+          method: 'checkout.submitStart',
           cart: testCart,
-          checkout: testCheckout,
+          sessionId: "checkout-session-123",
         },
       });
     });
@@ -57,9 +56,9 @@ describe('Checkout Component - Submit Start Events', () => {
     expect(onSubmitStart).toHaveBeenCalledTimes(1);
     expect(onSubmitStart).toHaveBeenCalledWith({
       id: 'test-event-123',
-      type: 'submitStart',
+      method: 'checkout.submitStart',
       cart: testCart,
-      checkout: testCheckout,
+      sessionId: "checkout-session-123",
     });
   });
 
@@ -75,9 +74,9 @@ describe('Checkout Component - Submit Start Events', () => {
         nativeComponent.props.onSubmitStart({
           nativeEvent: {
             id: 'test-event',
-            type: 'submitStart',
+            method: 'checkout.submitStart',
             cart: createTestCart(),
-            checkout: createTestCheckout(),
+            sessionId: "checkout-session-123",
           },
         });
       });

@@ -511,17 +511,16 @@ export type {
   CartPaymentInstrumentDisplayInput,
   CartPaymentInstrumentInput,
   PaymentTokenInput,
-  CheckoutSession,
-  CheckoutAddressChangeStart,
-  CheckoutAddressChangeStartResponse,
+  CheckoutAddressChangeStartEvent,
+  CheckoutAddressChangeStartResponsePayload,
   CheckoutCompleteEvent,
-  CheckoutPaymentMethodChangeStart,
-  CheckoutPaymentMethodChangeStartResponse,
+  CheckoutPaymentMethodChangeStartEvent ,
+  CheckoutPaymentMethodChangeStartResponsePayload,
   CheckoutResponseError,
   ExpiryInput,
   CheckoutStartEvent,
-  CheckoutSubmitStart,
-  CheckoutSubmitStartResponse,
+  CheckoutSubmitStartEvent,
+  CheckoutSubmitStartResponsePayload,
   MailingAddressInput,
 } from './events.d';
 
@@ -530,8 +529,8 @@ export type {
   AcceleratedCheckoutButtonsProps,
   RenderStateChangeEvent,
 } from './components/AcceleratedCheckoutButtons';
-export type {ShopifyCheckoutProps as CheckoutProps, ShopifyCheckoutRef as CheckoutRef} from './components/Checkout';
-export type {CheckoutEventProviderProps} from './CheckoutEventProvider';
+export type {ShopifyCheckoutProps, ShopifyCheckoutRef} from './components/Checkout';
+export type {ShopifyCheckoutEventProviderProps} from './ShopifyCheckoutEventProvider';
 
 // Components
 export {
@@ -540,7 +539,7 @@ export {
 } from './components/AcceleratedCheckoutButtons';
 export {ShopifyCheckout} from './components/Checkout';
 export {
-  CheckoutEventProvider,
+  ShopifyCheckoutEventProvider,
   useCheckoutEvents,
   useShopifyEvent,
-} from './CheckoutEventProvider';
+} from './ShopifyCheckoutEventProvider';

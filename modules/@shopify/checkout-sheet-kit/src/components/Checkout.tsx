@@ -30,13 +30,13 @@ import {
   findNodeHandle,
   type ViewStyle,
 } from 'react-native';
-import {useCheckoutEvents} from '../CheckoutEventProvider';
+import {useCheckoutEvents} from '../ShopifyCheckoutEventProvider';
 import type {
-  CheckoutAddressChangeStart,
+  CheckoutAddressChangeStartEvent,
   CheckoutCompleteEvent,
-  CheckoutPaymentMethodChangeStart,
+  CheckoutPaymentMethodChangeStartEvent,
   CheckoutStartEvent,
-  CheckoutSubmitStart,
+  CheckoutSubmitStartEvent,
 } from '../events';
 import type {CheckoutException} from '../errors';
 
@@ -82,7 +82,7 @@ export interface ShopifyCheckoutProps {
    * Note: This callback is only invoked when native address selection is enabled
    * for the authenticated app.
    */
-  onAddressChangeStart?: (event: CheckoutAddressChangeStart) => void;
+  onAddressChangeStart?: (event: CheckoutAddressChangeStartEvent) => void;
 
   /**
    * Called when the buyer attempts to submit the checkout.
@@ -90,7 +90,7 @@ export interface ShopifyCheckoutProps {
    * Note: This callback is only invoked when native payment delegation is configured
    * for the authenticated app.
    */
-  onSubmitStart?: (event: CheckoutSubmitStart) => void;
+  onSubmitStart?: (event: CheckoutSubmitStartEvent) => void;
 
   /**
    * Called when checkout starts a payment method change flow (e.g., for native picker).
@@ -99,7 +99,7 @@ export interface ShopifyCheckoutProps {
    * for the authenticated app.
    */
   onPaymentMethodChangeStart?: (
-    event: CheckoutPaymentMethodChangeStart,
+    event: CheckoutPaymentMethodChangeStartEvent,
   ) => void;
   /**
    * Style for the webview container
@@ -130,11 +130,11 @@ interface NativeShopifyCheckoutWebViewProps {
   onCancel?: () => void;
   onLinkClick?: (event: {nativeEvent: {url: string}}) => void;
   onAddressChangeStart?: (event: {
-    nativeEvent: CheckoutAddressChangeStart;
+    nativeEvent: CheckoutAddressChangeStartEvent;
   }) => void;
-  onSubmitStart?: (event: {nativeEvent: CheckoutSubmitStart}) => void;
+  onSubmitStart?: (event: {nativeEvent: CheckoutSubmitStartEvent}) => void;
   onPaymentMethodChangeStart?: (event: {
-    nativeEvent: CheckoutPaymentMethodChangeStart;
+    nativeEvent: CheckoutPaymentMethodChangeStartEvent;
   }) => void;
 }
 

@@ -25,7 +25,7 @@ import {
   useShopifyEvent,
   type CardBrand,
   type CartPaymentInstrumentInput,
-  type CheckoutPaymentMethodChangeStartResponse,
+  type CheckoutPaymentMethodChangeStartResponsePayload,
   type MailingAddressInput,
 } from '@shopify/checkout-sheet-kit';
 import {useCart} from '../../context/Cart';
@@ -117,7 +117,7 @@ export default function PaymentScreen() {
       billingAddress: selectedPayment.billingAddress,
     };
 
-    const response: CheckoutPaymentMethodChangeStartResponse = {
+    const response: CheckoutPaymentMethodChangeStartResponsePayload = {
       cart: {
         paymentInstruments: [paymentInstrument],
       },

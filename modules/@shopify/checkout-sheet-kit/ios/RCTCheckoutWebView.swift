@@ -30,7 +30,7 @@ class RCTCheckoutWebView: UIView {
     private var checkoutWebViewController: CheckoutWebViewController?
 
     internal struct EventBus {
-        typealias Event = any RPCRequest
+        typealias Event = any CheckoutRequest
         private var events: [String: Event] = [:]
 
         var count: Int {
@@ -210,10 +210,10 @@ class RCTCheckoutWebView: UIView {
     }
 
     private func handleEventResponse(
-        for event: any RPCRequest,
+        for event: any CheckoutRequest,
         with responseData: String
     ) {
-        guard let id = event.id else { return }
+        let id = event.id
 
         do {
             try event.respondWith(json: responseData)
@@ -238,11 +238,8 @@ class RCTCheckoutWebView: UIView {
                 errorMessage = "Invalid response data encoding"
                 errorCode = "ENCODING_ERROR"
             case let .decodingFailed(details):
-                errorMessage = "Failed to decode address response: \(details)"
+                errorMessage = "Failed to decode response: \(details)"
                 errorCode = "DECODING_ERROR"
-            case let .validationFailed(details):
-                errorMessage = "Invalid address data: \(details)"
-                errorCode = "VALIDATION_ERROR"
             }
         } else {
             errorMessage = error.localizedDescription
@@ -299,35 +296,22 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     ///   - id: Unique identifier for responding to the event
     ///   - addressType: Type of address being changed ("shipping" or "billing")
     ///   - cart: Current cart state
-    func checkoutDidStartAddressChange(event: CheckoutAddressChangeStart) {
-        guard let id = event.id else { return }
-
-        events.set(key: id, event: event)
-
-        let cartJSON = ShopifyEventSerialization.encodeToJSON(from: event.params.cart)
-
-        onAddressChangeStart?([
-            "id": event.id,
-            "type": "addressChangeStart",
-            "addressType": event.params.addressType,
-            "cart": cartJSON
-        ])
+    func checkoutDidStartAddressChange(event: CheckoutAddressChangeStartEvent) {
+        events.set(key: event.id, event: event)
+        onAddressChangeStart?(ShopifyEventSerialization.serialize(checkoutAddressChangeStartEvent: event))
     }
 
-    func checkoutDidStartPaymentMethodChange(event: CheckoutPaymentMethodChangeStart) {
-        guard let id = event.id else { return }
-
-        events.set(key: id, event: event)
-
-        let cartJSON = ShopifyEventSerialization.encodeToJSON(from: event.params.cart)
-
-        var eventData: [String: Any] = [
-            "id": event.id,
-            "type": "paymentMethodChangeStart",
-            "cart": cartJSON
-        ]
-
-        onPaymentMethodChangeStart?(eventData)
+    /// Called when checkout starts a payment method change flow.
+    ///
+    /// This event is only emitted when native payment method selection is enabled
+    /// for the authenticated app.
+    ///
+    /// - Parameter event: The payment method change start event containing:
+    ///   - id: Unique identifier for responding to the event
+    ///   - cart: Current cart state
+    func checkoutDidStartPaymentMethodChange(event: CheckoutPaymentMethodChangeStartEvent) {
+        events.set(key: event.id, event: event)
+        onPaymentMethodChangeStart?(ShopifyEventSerialization.serialize(checkoutPaymentMethodChangeStartEvent: event))
     }
 
     /// Called when the buyer attempts to submit the checkout.
@@ -339,20 +323,8 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     ///   - id: Unique identifier for responding to the event
     ///   - cart: Current cart state
     ///   - checkout: Checkout session information
-    func checkoutDidStartSubmit(event: CheckoutSubmitStart) {
-        guard let id = event.id else { return }
-
-        events.set(key: id, event: event)
-
-        let cartJSON = ShopifyEventSerialization.encodeToJSON(from: event.params.cart)
-
-        onSubmitStart?([
-            "id": event.id,
-            "type": "submitStart",
-            "cart": cartJSON,
-            "checkout": [
-                "id": event.params.checkout.id
-            ]
-        ])
+    func checkoutDidStartSubmit(event: CheckoutSubmitStartEvent) {
+        events.set(key: event.id, event: event)
+        onSubmitStart?(ShopifyEventSerialization.serialize(checkoutSubmitStartEvent: event))
     }
 }

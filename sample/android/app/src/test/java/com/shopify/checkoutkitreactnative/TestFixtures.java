@@ -27,6 +27,7 @@ import com.shopify.checkoutsheetkit.lifecycleevents.Cart;
 import com.shopify.checkoutsheetkit.lifecycleevents.CartBuyerIdentity;
 import com.shopify.checkoutsheetkit.lifecycleevents.CartCost;
 import com.shopify.checkoutsheetkit.lifecycleevents.CartDelivery;
+import com.shopify.checkoutsheetkit.lifecycleevents.CartPayment;
 import com.shopify.checkoutsheetkit.lifecycleevents.Money;
 
 import java.util.Collections;
@@ -77,7 +78,7 @@ public class TestFixtures {
         Collections.emptyList(), // appliedGiftCards
         Collections.emptyList(), // discountAllocations
         delivery,
-        Collections.emptyList() // paymentInstruments
+        new CartPayment(Collections.emptyList()) // payment
     );
   }
 

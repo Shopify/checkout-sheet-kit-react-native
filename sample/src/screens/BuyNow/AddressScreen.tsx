@@ -22,7 +22,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {Alert, Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useShopifyEvent} from '@shopify/checkout-sheet-kit';
-import type {CheckoutAddressChangeStartResponse} from '@shopify/checkout-sheet-kit';
+import type {CheckoutAddressChangeStartResponsePayload} from '@shopify/checkout-sheet-kit';
 import {useCart} from '../../context/Cart';
 import type {BuyNowStackParamList} from './types';
 
@@ -86,7 +86,7 @@ export default function AddressScreen() {
     try {
       const selectedAddress = addressOptions[selectedAddressIndex];
 
-      const response: CheckoutAddressChangeStartResponse = {
+      const response: CheckoutAddressChangeStartResponsePayload = {
         cart: {
           delivery: {
             addresses: [
