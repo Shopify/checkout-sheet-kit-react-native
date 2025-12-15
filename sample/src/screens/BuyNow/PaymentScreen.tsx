@@ -24,9 +24,8 @@ import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {
   useShopifyEvent,
   type CardBrand,
-  type CartPaymentInstrumentInput,
+  type CartPaymentInstrument,
   type CheckoutPaymentMethodChangeStartResponsePayload,
-  type MailingAddressInput,
 } from '@shopify/checkout-sheet-kit';
 import {useCart} from '../../context/Cart';
 import type {BuyNowStackParamList} from './types';
@@ -38,66 +37,70 @@ export default function PaymentScreen() {
   const {selectedPaymentIndex, setSelectedPaymentIndex} = useCart();
 
   const paymentOptions: Array<{
-    id: string;
     label: string;
-    cardHolderName: string;
-    last4: string;
-    brand: CardBrand;
-    expiry: {month: number; year: number};
-    billingAddress: MailingAddressInput;
+    instrument: CartPaymentInstrument;
   }> = [
     {
-      id: 'card-personal-visa-4242',
       label: 'Personal Visa',
-      cardHolderName: 'John Doe',
-      last4: '4242',
-      brand: 'VISA',
-      expiry: {month: 12, year: 2028},
-      billingAddress: {
-        firstName: 'John',
-        lastName: 'Doe',
-        address1: '123 Main St',
-        city: 'San Francisco',
-        provinceCode: 'CA',
-        countryCode: 'US',
-        zip: '94102',
+      instrument: {
+        externalReferenceId: 'card-personal-visa-4242',
+        cardHolderName: 'John Doe',
+        lastDigits: '4242',
+        brand: 'VISA',
+        month: 12,
+        year: 2028,
+        billingAddress: {
+          firstName: 'John',
+          lastName: 'Doe',
+          address1: '123 Main St',
+          city: 'San Francisco',
+          provinceCode: 'CA',
+          countryCode: 'US',
+          zip: '94102',
+        },
       },
     },
     {
-      id: 'card-business-mc-5555',
       label: 'Business MasterCard',
-      cardHolderName: 'Jane Smith',
-      last4: '5555',
-      brand: 'MASTERCARD',
-      expiry: {month: 6, year: 2027},
-      billingAddress: {
-        firstName: 'Jane',
-        lastName: 'Smith',
-        address1: '456 Market St',
-        city: 'San Francisco',
-        provinceCode: 'CA',
-        countryCode: 'US',
-        zip: '94103',
+      instrument: {
+        externalReferenceId: 'card-business-mc-5555',
+        cardHolderName: 'Jane Smith',
+        lastDigits: '5555',
+        brand: 'MASTERCARD',
+        month: 6,
+        year: 2027,
+        billingAddress: {
+          firstName: 'Jane',
+          lastName: 'Smith',
+          address1: '456 Market St',
+          city: 'San Francisco',
+          provinceCode: 'CA',
+          countryCode: 'US',
+          zip: '94103',
+        },
       },
     },
     {
-      id: 'card-corporate-amex-0005',
       label: 'Corporate Amex',
-      cardHolderName: 'Corporate Account',
-      last4: '0005',
-      brand: 'AMERICAN_EXPRESS',
-      expiry: {month: 3, year: 2026},
-      billingAddress: {
-        firstName: 'Corporate',
-        lastName: 'Billing',
-        address1: '123 Business Blvd',
-        address2: 'Suite 500',
-        city: 'New York',
-        provinceCode: 'NY',
-        countryCode: 'US',
-        zip: '10001',
-        phone: '+1-212-555-0100',
-        company: 'Acme Corporation',
+      instrument: {
+        externalReferenceId: 'card-corporate-amex-0005',
+        cardHolderName: 'Corporate Account',
+        lastDigits: '0005',
+        brand: 'AMERICAN_EXPRESS',
+        month: 3,
+        year: 2026,
+        billingAddress: {
+          firstName: 'Corporate',
+          lastName: 'Billing',
+          address1: '123 Business Blvd',
+          address2: 'Suite 500',
+          city: 'New York',
+          provinceCode: 'NY',
+          countryCode: 'US',
+          zip: '10001',
+          phone: '+1-212-555-0100',
+          company: 'Acme Corporation',
+        },
       },
     },
   ];
@@ -106,20 +109,16 @@ export default function PaymentScreen() {
     const selectedPayment = paymentOptions[selectedPaymentIndex];
     if (!selectedPayment) return;
 
-    const paymentInstrument: CartPaymentInstrumentInput = {
-      externalReference: selectedPayment.id,
-      display: {
-        last4: selectedPayment.last4,
-        brand: selectedPayment.brand,
-        cardHolderName: selectedPayment.cardHolderName,
-        expiry: selectedPayment.expiry,
-      },
-      billingAddress: selectedPayment.billingAddress,
-    };
-
     const response: CheckoutPaymentMethodChangeStartResponsePayload = {
       cart: {
-        paymentInstruments: [paymentInstrument],
+        ...route.params.cart,
+        payment: {
+          methods: [
+            {
+              instruments: [selectedPayment.instrument],
+            },
+          ],
+        },
       },
     };
 
@@ -127,7 +126,7 @@ export default function PaymentScreen() {
     navigation.goBack();
   };
 
-  const getCardIcon = (_brand: CardBrand) => {
+  const getCardIcon = (_brand: CardBrand | undefined) => {
     return '💳';
   };
 
@@ -152,14 +151,14 @@ export default function PaymentScreen() {
             </View>
             <View style={styles.paymentInfo}>
               <View style={styles.cardHeader}>
-                <Text style={styles.cardIcon}>{getCardIcon(option.brand)}</Text>
+                <Text style={styles.cardIcon}>{getCardIcon(option.instrument.brand)}</Text>
                 <Text style={styles.paymentLabel}>{option.label}</Text>
               </View>
               <Text style={styles.cardDetails}>
-                {option.brand} •••• {option.last4}
+                {option.instrument.brand} •••• {option.instrument.lastDigits}
               </Text>
               <Text style={styles.billingInfo}>
-                {option.billingAddress.city}, {option.billingAddress.provinceCode}
+                {option.instrument.billingAddress?.city}, {option.instrument.billingAddress?.provinceCode}
               </Text>
             </View>
           </TouchableOpacity>

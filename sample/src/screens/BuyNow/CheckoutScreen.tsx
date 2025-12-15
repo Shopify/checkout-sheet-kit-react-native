@@ -48,24 +48,42 @@ export default function CheckoutScreen(props: {
 
   const onAddressChangeStart = (event: CheckoutAddressChangeStartEvent) => {
     console.log('<CheckoutScreen /> onAddressChangeStart: ', event);
-    navigation.navigate('Address', {id: event.id});
+    navigation.navigate('Address', {id: event.id, cart: event.cart});
   };
 
   const onPaymentMethodChangeStart = (
     event: CheckoutPaymentMethodChangeStartEvent,
   ) => {
     console.log('<CheckoutScreen /> onPaymentMethodChangeStart: ', event);
-    navigation.navigate('Payment', {id: event.id});
+    navigation.navigate('Payment', {id: event.id, cart: event.cart});
   };
 
   const onSubmitStart = async (event: CheckoutSubmitStartEvent) => {
     console.log('<CheckoutScreen /> onSubmitStart', event);
     try {
       await eventContext?.respondToEvent(event.id, {
-        payment: {
-          token: '1234567890',
-          tokenType: 'delegated',
-          tokenProvider: 'shopify',
+        cart: {
+          ...event.cart,
+          payment: {
+            methods: [
+              {
+                instruments: [
+                  {
+                    externalReferenceId: 'payment-instrument-123',
+                    credentials: [
+                      {
+                        remoteTokenPaymentCredential: {
+                          token: '1234567890',
+                          tokenType: 'delegated',
+                          tokenHandler: 'shopify',
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
         },
       });
     } catch (error) {

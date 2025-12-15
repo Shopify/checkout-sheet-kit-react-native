@@ -242,36 +242,85 @@ export interface MailingAddress {
  */
 export interface CartDelivery {
   /** List of selectable delivery addresses */
-  addresses: CartDeliveryAddress[];
+  addresses: CartSelectableAddress[];
 }
 
 /**
- * A delivery address with selection state.
+ * A selectable delivery address with selection and reuse settings.
  */
-export interface CartDeliveryAddress {
+export interface CartSelectableAddress {
   /** The mailing address details */
   address: MailingAddress;
   /** Whether this address is currently selected for delivery */
   selected?: boolean;
+  /** Whether this address should only be used for this checkout */
+  oneTimeUse?: boolean;
 }
 
 /**
  * A delivery address of the buyer that is interacting with the cart.
  * This is a union type to support future address types.
- * Currently only CartDeliveryAddress is supported.
+ * Currently only CartSelectableAddress is supported.
  *
  * @see https://shopify.dev/docs/api/storefront/latest/unions/CartAddress
  */
-export type CartAddress = CartDeliveryAddress;
+export type CartAddress = CartSelectableAddress;
+
+/**
+ * Remote token payment credential for delegated payment processing.
+ */
+export interface RemoteTokenPaymentCredential {
+  /** The payment token */
+  token: string;
+  /** The type of token (e.g., "card") */
+  tokenType: string;
+  /** The token handler (e.g., "delegated") */
+  tokenHandler: string;
+}
+
+/**
+ * Cart credential containing payment authentication data.
+ */
+export interface CartCredential {
+  /** Remote token payment credential for tokenized payments */
+  remoteTokenPaymentCredential?: RemoteTokenPaymentCredential;
+}
 
 /**
  * Payment instrument available for selection at checkout.
- * Output type from Storefront API.
+ * Represents a credit card or other payment method with its details.
  *
  * @see https://shopify.dev/docs/api/storefront/latest/objects/CartPaymentInstrument
  */
 export interface CartPaymentInstrument {
-  externalReference: string;
+  /** Type discriminator for the payment instrument */
+  __typename?: string;
+  /** Unique identifier for this payment instrument */
+  externalReferenceId: string;
+  /** Payment credentials for this instrument */
+  credentials?: CartCredential[];
+  /** Name of the cardholder */
+  cardHolderName?: string;
+  /** Last digits of the card number */
+  lastDigits?: string;
+  /** Expiry month (1-12) */
+  month?: number;
+  /** Expiry year (4-digit) */
+  year?: number;
+  /** Card brand (e.g., VISA, MASTERCARD) */
+  brand?: CardBrand;
+  /** Billing address for the payment instrument */
+  billingAddress?: MailingAddress;
+}
+
+/**
+ * A payment method containing payment instruments.
+ */
+export interface CartPaymentMethod {
+  /** Type discriminator (e.g., "CreditCardPaymentMethod") */
+  __typename?: string;
+  /** Payment instruments for this method */
+  instruments: CartPaymentInstrument[];
 }
 
 /**
@@ -280,7 +329,8 @@ export interface CartPaymentInstrument {
  * @see https://shopify.dev/docs/api/storefront/latest/objects/CartPayment
  */
 export interface CartPayment {
-  instruments: CartPaymentInstrument[];
+  /** Payment methods available for the cart */
+  methods: CartPaymentMethod[];
 }
 
 /**
@@ -409,108 +459,6 @@ export interface CheckoutResponseError {
 }
 
 /**
- * Mailing address input for delivery.
- *
- * @see https://shopify.dev/docs/api/storefront/latest/input-objects/MailingAddressInput
- */
-export interface MailingAddressInput {
-  /** First line of the address (street address or PO Box) */
-  address1?: string;
-  /** Second line of the address (apartment, suite, unit) */
-  address2?: string;
-  /** City, district, village, or town */
-  city?: string;
-  /** Company or organization name */
-  company?: string;
-  /**
-   * Two-letter country code - REQUIRED
-   * Must be exactly 2 characters (ISO 3166-1 alpha-2 format)
-   * Examples: "US", "CA", "GB", "AU"
-   */
-  countryCode: string;
-  /** First name of the customer */
-  firstName?: string;
-  /** Last name of the customer */
-  lastName?: string;
-  /** Phone number (E.164 format recommended, e.g., +16135551111) */
-  phone?: string;
-  /** Province/state code (e.g., "CA", "ON") */
-  provinceCode?: string;
-  /** Zip or postal code */
-  zip?: string;
-}
-
-/**
- * Delivery address with selection state.
- * Used within CartDeliveryInput.
- */
-export interface CartDeliveryAddressInput {
-  /**
-   * The delivery address details.
-   */
-  address: MailingAddressInput;
-  /**
-   * Whether this address is selected as the active delivery address.
-   * Optional - use to pre-select an address from multiple options.
-   */
-  selected?: boolean;
-}
-
-/**
- * Delivery-related fields for the cart.
- *
- * @see https://shopify.dev/docs/api/storefront/latest/input-objects/CartDeliveryInput
- */
-export interface CartDeliveryInput {
-  /**
-   * Array of selectable addresses presented to the buyer.
-   */
-  addresses?: CartDeliveryAddressInput[];
-}
-
-/**
- * The customer associated with the cart.
- *
- * @see https://shopify.dev/docs/api/storefront/latest/input-objects/CartBuyerIdentityInput
- */
-export interface CartBuyerIdentityInput {
-  /** Email address of the buyer */
-  email?: string;
-  /** Phone number of the buyer */
-  phone?: string;
-  /** Two-letter country code for the buyer's location */
-  countryCode?: string;
-}
-
-/**
- * Cart input for updating cart state via checkout events.
- * Mirrors the Storefront API CartInput structure.
- *
- * @see https://shopify.dev/docs/api/storefront/latest/input-objects/CartInput
- */
-export interface CartInput {
-  /**
-   * Delivery-related fields for the cart.
-   */
-  delivery?: CartDeliveryInput;
-  /**
-   * The customer associated with the cart.
-   * Optional - use to update buyer identity information.
-   */
-  buyerIdentity?: CartBuyerIdentityInput;
-  /**
-   * Case-insensitive discount codes.
-   * Optional - use to apply discount codes to the cart.
-   */
-  discountCodes?: string[];
-  /**
-   * Payment instruments for the cart.
-   * Optional - use to update payment methods.
-   */
-  paymentInstruments?: CartPaymentInstrumentInput[];
-}
-
-/**
  * Event emitted when checkout starts an address change flow.
  *
  * This event is only emitted when native address selection is enabled
@@ -551,9 +499,9 @@ export interface CheckoutAddressChangeStartEvent {
  */
 export interface CheckoutAddressChangeStartResponsePayload {
   /**
-   * Updated cart input with the delivery addresses to set.
+   * Updated cart with the delivery addresses to set.
    */
-  cart?: CartInput;
+  cart?: Cart;
   /**
    * Optional array of errors if the address selection failed.
    */
@@ -575,45 +523,6 @@ export type CardBrand =
   | 'UNKNOWN';
 
 /**
- * Expiry date for a payment instrument.
- */
-export interface ExpiryInput {
-  /** Month (1-12) */
-  month: number;
-  /** Four-digit year */
-  year: number;
-}
-
-/**
- * Display fields for a payment instrument shown to the buyer.
- */
-export interface CartPaymentInstrumentDisplayInput {
-  /** Last 4 digits of the card number */
-  last4: string;
-  /** Card brand (e.g., VISA, MASTERCARD) */
-  brand: CardBrand;
-  /** Name of the cardholder */
-  cardHolderName: string;
-  /** Card expiry date */
-  expiry: ExpiryInput;
-}
-
-/**
- * Input type for creating/updating payment instruments, aligned with Storefront API.
- * Display fields are grouped separately from the billing address.
- *
- * @see https://shopify.dev/docs/api/storefront/latest/input-objects/CartPaymentInstrumentInput
- */
-export interface CartPaymentInstrumentInput {
-  /** Unique identifier for this payment instrument */
-  externalReference: string;
-  /** Display information for the payment instrument */
-  display: CartPaymentInstrumentDisplayInput;
-  /** Billing address for the payment instrument */
-  billingAddress: MailingAddressInput;
-}
-
-/**
  * Event emitted when the buyer intends to change their payment method.
  */
 export interface CheckoutPaymentMethodChangeStartEvent {
@@ -631,9 +540,9 @@ export interface CheckoutPaymentMethodChangeStartEvent {
  */
 export interface CheckoutPaymentMethodChangeStartResponsePayload {
   /**
-   * Updated cart input with the payment instruments to set.
+   * Updated cart with the payment methods to set.
    */
-  cart?: CartInput;
+  cart?: Cart;
   /**
    * Optional array of errors if the payment method selection failed.
    */
@@ -670,30 +579,19 @@ export interface CheckoutSubmitStartEvent {
 }
 
 /**
- * Payment token input for delegated payment processing.
- */
-export interface PaymentTokenInput {
-  token: string;
-  tokenType: string;
-  tokenProvider: string;
-}
-
-/**
  * Response payload for CheckoutSubmitStartEvent event.
  * Use with ShopifyCheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
+ *
+ * Payment credentials should be provided via cart.payment.methods[].instruments[].credentials
  *
  * Note: This response is only used when native payment delegation is enabled
  * for the authenticated app.
  */
 export interface CheckoutSubmitStartResponsePayload {
   /**
-   * Optional payment token information for delegated payment processing.
+   * Updated cart with payment credentials.
    */
-  payment?: PaymentTokenInput;
-  /**
-   * Updated cart input with delivery addresses and optional buyer identity.
-   */
-  cart?: CartInput;
+  cart?: Cart;
   /**
    * Optional array of errors if the submission failed.
    */

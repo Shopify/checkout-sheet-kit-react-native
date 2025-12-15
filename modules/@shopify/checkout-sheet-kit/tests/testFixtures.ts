@@ -70,7 +70,7 @@ export function createTestCart(overrides?: Partial<Cart>): Cart {
       ],
     },
     payment: {
-      instruments: [],
+      methods: [],
     },
     ...overrides,
   };
