@@ -88,6 +88,7 @@ export default function AddressScreen() {
 
       const response: CheckoutAddressChangeStartResponsePayload = {
         cart: {
+          ...route.params.cart,
           delivery: {
             addresses: [
               {

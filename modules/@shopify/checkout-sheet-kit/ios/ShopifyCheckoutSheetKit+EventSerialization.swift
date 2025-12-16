@@ -47,19 +47,6 @@ internal enum ShopifyEventSerialization {
     }
 
     /**
-     * Converts a JSON string to a dictionary.
-     */
-    static func stringToJSON(from value: String?) -> [String: Any]? {
-        guard let data = value?.data(using: .utf8, allowLossyConversion: false) else { return [:] }
-        do {
-            return try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any]
-        } catch {
-            print("Failed to convert string to JSON: \(error)", value ?? "nil")
-            return [:]
-        }
-    }
-
-    /**
      * Converts a CheckoutCompleteEvent to a React Native compatible dictionary.
      */
     static func serialize(checkoutCompleteEvent event: CheckoutCompleteEvent) -> [String: Any] {
