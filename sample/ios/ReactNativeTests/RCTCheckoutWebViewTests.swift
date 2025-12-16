@@ -321,7 +321,7 @@ class RCTCheckoutWebViewTests: XCTestCase {
             appliedGiftCards: [],
             discountAllocations: [],
             delivery: CartDelivery(addresses: []),
-            payment: .init(instruments: [])
+            payment: .init(methods: [])
         )
         let event = CheckoutStartEvent(cart: cart, locale: "en-US")
 
@@ -589,7 +589,7 @@ private func createTestCart(
         appliedGiftCards: [],
         discountAllocations: [],
         delivery: .init(addresses: []),
-        payment: .init(instruments: [])
+        payment: .init(methods: [])
     )
 }
 
@@ -597,10 +597,10 @@ private func createTestCart(
 private func createEmptyCheckoutCompleteEvent(id: String) -> CheckoutCompleteEvent {
     return CheckoutCompleteEvent(
         orderConfirmation: OrderConfirmation(
-            url: "https://example.com/order",
             order: OrderConfirmation.Order(id: id),
-            number: "1001",
-            isFirstOrder: true
+            isFirstOrder: true,
+            url: "https://example.com/order",
+            number: "1001"
         ),
         cart: createTestCart()
     )
