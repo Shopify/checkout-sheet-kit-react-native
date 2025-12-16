@@ -115,6 +115,7 @@ export default function PaymentScreen() {
         payment: {
           methods: [
             {
+              type: 'creditCard',
               instruments: [selectedPayment.instrument],
             },
           ],

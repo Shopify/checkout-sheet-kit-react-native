@@ -67,16 +67,16 @@ export default function CheckoutScreen(props: {
           payment: {
             methods: [
               {
+                type: 'creditCard',
                 instruments: [
                   {
                     externalReferenceId: 'payment-instrument-123',
                     credentials: [
                       {
-                        remoteTokenPaymentCredential: {
-                          token: '1234567890',
-                          tokenType: 'delegated',
-                          tokenHandler: 'shopify',
-                        },
+                        type: 'remoteToken',
+                        token: '1234567890',
+                        tokenType: 'delegated',
+                        tokenHandler: 'shopify',
                       },
                     ],
                   },

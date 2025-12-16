@@ -270,6 +270,8 @@ export type CartAddress = CartSelectableAddress;
  * Remote token payment credential for delegated payment processing.
  */
 export interface RemoteTokenPaymentCredential {
+  /** Discriminator for credential type */
+  type: 'remoteToken';
   /** The payment token */
   token: string;
   /** The type of token (e.g., "card") */
@@ -279,12 +281,10 @@ export interface RemoteTokenPaymentCredential {
 }
 
 /**
- * Cart credential containing payment authentication data.
+ * Payment credential types.
+ * Uses discriminated union pattern for extensibility.
  */
-export interface CartCredential {
-  /** Remote token payment credential for tokenized payments */
-  remoteTokenPaymentCredential?: RemoteTokenPaymentCredential;
-}
+export type PaymentCredential = RemoteTokenPaymentCredential;
 
 /**
  * Payment instrument available for selection at checkout.
@@ -293,12 +293,10 @@ export interface CartCredential {
  * @see https://shopify.dev/docs/api/storefront/latest/objects/CartPaymentInstrument
  */
 export interface CartPaymentInstrument {
-  /** Type discriminator for the payment instrument */
-  __typename?: string;
   /** Unique identifier for this payment instrument */
   externalReferenceId: string;
   /** Payment credentials for this instrument */
-  credentials?: CartCredential[];
+  credentials?: PaymentCredential[];
   /** Name of the cardholder */
   cardHolderName?: string;
   /** Last digits of the card number */
@@ -315,10 +313,11 @@ export interface CartPaymentInstrument {
 
 /**
  * A payment method containing payment instruments.
+ * Uses discriminated union pattern for extensibility.
  */
 export interface CartPaymentMethod {
-  /** Type discriminator (e.g., "CreditCardPaymentMethod") */
-  __typename?: string;
+  /** Discriminator for payment method type */
+  type: 'creditCard';
   /** Payment instruments for this method */
   instruments: CartPaymentInstrument[];
 }
