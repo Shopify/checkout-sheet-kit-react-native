@@ -501,7 +501,7 @@ export type {
 export type {
   Cart,
   CartAddress,
-  CartCredential,
+  PaymentCredential,
   CartPayment,
   CartPaymentInstrument,
   CartPaymentMethod,
