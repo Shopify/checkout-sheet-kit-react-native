@@ -53,7 +53,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     }
 
     override func supportedEvents() -> [String]! {
-        return ["close", "complete", "start", "error", "addressChangeStart", "submitStart"]
+        return ["close", "complete", "start", "error", "addressChangeStart", "submitStart", "paymentMethodChangeStart"]
     }
 
     override func startObserving() {
@@ -110,7 +110,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
                 self.sendEvent(withName: "close", body: nil)
             }
 
-            self.checkoutSheet?.dismiss(animated: true)
+            // self.checkoutSheet?.dismiss(animated: true)
         }
     }
 

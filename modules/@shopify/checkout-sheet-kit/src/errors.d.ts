@@ -43,6 +43,10 @@ export enum CheckoutNativeErrorType {
   UnknownError = 'UnknownError',
 }
 
+/**
+ * @important TODO: Fix mapping here.
+ * Currently "unknown" is returned for every code
+ */
 function getCheckoutErrorCode(code: string | undefined): CheckoutErrorCode {
   const codeKey = Object.keys(CheckoutErrorCode).find(
     key => CheckoutErrorCode[key as keyof typeof CheckoutErrorCode] === code,

@@ -112,7 +112,7 @@ internal enum ShopifyEventSerialization {
      */
     static func serialize(checkoutError error: CheckoutError) -> [String: Any] {
         switch error {
-        case let .checkoutExpired(message, code, recoverable):
+        case let .expired(message, code, recoverable):
             return [
                 "__typename": "CheckoutExpiredError",
                 "message": message,
@@ -120,7 +120,7 @@ internal enum ShopifyEventSerialization {
                 "recoverable": recoverable
             ]
 
-        case let .checkoutUnavailable(message, code, recoverable):
+        case let .unavailable(message, code, recoverable):
             switch code {
             case let .clientError(clientErrorCode):
                 return [
@@ -139,7 +139,7 @@ internal enum ShopifyEventSerialization {
                 ]
             }
 
-        case let .configurationError(message, code, recoverable):
+        case let .misconfiguration(message, code, recoverable):
             return [
                 "__typename": "ConfigurationError",
                 "message": message,
@@ -147,7 +147,7 @@ internal enum ShopifyEventSerialization {
                 "recoverable": recoverable
             ]
 
-        case let .sdkError(underlying, recoverable):
+        case let .internal(underlying, recoverable):
             return [
                 "__typename": "InternalError",
                 "code": "unknown",

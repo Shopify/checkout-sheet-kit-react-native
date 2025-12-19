@@ -186,7 +186,10 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
         eventCallback = this.interceptEventEmission('start', callback);
         break;
       case 'addressChangeStart':
-        eventCallback = this.interceptEventEmission('addressChangeStart', callback);
+        eventCallback = this.interceptEventEmission(
+          'addressChangeStart',
+          callback,
+        );
         break;
       case 'submitStart':
         eventCallback = this.interceptEventEmission('submitStart', callback);
@@ -524,7 +527,10 @@ export type {
   AcceleratedCheckoutButtonsProps,
   RenderStateChangeEvent,
 } from './components/AcceleratedCheckoutButtons';
-export type {ShopifyCheckoutProps, ShopifyCheckoutRef} from './components/Checkout';
+export type {
+  ShopifyCheckoutProps,
+  ShopifyCheckoutRef,
+} from './components/Checkout';
 export type {ShopifyCheckoutEventProviderProps} from './ShopifyCheckoutEventProvider';
 
 // Components
