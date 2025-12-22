@@ -47,17 +47,18 @@ import type {
   ShopifyCheckoutSheetKit,
 } from './index.d';
 import {AcceleratedCheckoutWallet} from './index.d';
-import type {CheckoutException, CheckoutNativeError} from './errors.d';
+import type {CheckoutException} from './errors.d';
 import {
-  CheckoutExpiredError,
   CheckoutClientError,
+  CheckoutErrorCode,
+  CheckoutExpiredError,
   CheckoutHTTPError,
-  ConfigurationError,
-  InternalError,
   CheckoutNativeErrorType,
+  ConfigurationError,
   GenericError,
+  InternalError,
+  parseCheckoutError,
 } from './errors.d';
-import {CheckoutErrorCode} from './errors.d';
 import {ApplePayLabel} from './components/AcceleratedCheckoutButtons';
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
@@ -198,7 +199,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
         eventCallback = this.interceptEventEmission(
           'error',
           callback,
-          this.parseCheckoutError,
+          parseCheckoutError,
         );
         break;
       case 'geolocationRequest':
@@ -381,30 +382,6 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    */
   private permissionGranted(status: PermissionStatus): boolean {
     return status === 'granted';
-  }
-
-  /**
-   * Converts native checkout errors into appropriate error class instances
-   * @param exception The native error to parse
-   * @returns Appropriate CheckoutException instance
-   */
-  private parseCheckoutError(
-    exception: CheckoutNativeError,
-  ): CheckoutException {
-    switch (exception?.__typename) {
-      case CheckoutNativeErrorType.InternalError:
-        return new InternalError(exception);
-      case CheckoutNativeErrorType.ConfigurationError:
-        return new ConfigurationError(exception);
-      case CheckoutNativeErrorType.CheckoutClientError:
-        return new CheckoutClientError(exception);
-      case CheckoutNativeErrorType.CheckoutHTTPError:
-        return new CheckoutHTTPError(exception);
-      case CheckoutNativeErrorType.CheckoutExpiredError:
-        return new CheckoutExpiredError(exception);
-      default:
-        return new GenericError(exception);
-    }
   }
 
   /**

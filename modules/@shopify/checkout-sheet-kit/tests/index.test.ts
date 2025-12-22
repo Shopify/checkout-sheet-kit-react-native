@@ -490,8 +490,8 @@ describe('ShopifyCheckoutSheetKit', () => {
 
       const expiredError = {
         __typename: CheckoutNativeErrorType.CheckoutExpiredError,
-        message: 'Customer Account Required',
-        code: CheckoutErrorCode.cartExpired,
+        message: 'Cart Completed',
+        code: CheckoutErrorCode.cartCompleted,
         recoverable: false,
       };
 
@@ -553,6 +553,52 @@ describe('ShopifyCheckoutSheetKit', () => {
         const calledWith = callback.mock.calls[0][0];
         expect(calledWith).toBeInstanceOf(GenericError);
         expect(callback).toHaveBeenCalledWith(new GenericError(error as any));
+      });
+
+      describe('error code mapping from native UPPER_SNAKE_CASE codes', () => {
+        it.each([
+          // New checkout.error event codes from native (UPPER_SNAKE_CASE)
+          {
+            nativeCode: 'STOREFRONT_PASSWORD_REQUIRED',
+            expectedCode: CheckoutErrorCode.storefrontPasswordRequired,
+          },
+          {
+            nativeCode: 'CART_COMPLETED',
+            expectedCode: CheckoutErrorCode.cartCompleted,
+          },
+          {
+            nativeCode: 'INVALID_CART',
+            expectedCode: CheckoutErrorCode.invalidCart,
+          },
+          // Existing codes in lower_snake_case should still work
+          {
+            nativeCode: 'storefront_password_required',
+            expectedCode: CheckoutErrorCode.storefrontPasswordRequired,
+          },
+          {
+            nativeCode: 'cart_completed',
+            expectedCode: CheckoutErrorCode.cartCompleted,
+          },
+        ])(
+          'maps native code "$nativeCode" to CheckoutErrorCode.$expectedCode',
+          ({nativeCode, expectedCode}) => {
+            const instance = new ShopifyCheckoutSheet();
+            const callback = jest.fn();
+            instance.addEventListener('error', callback);
+
+            const error = {
+              __typename: CheckoutNativeErrorType.ConfigurationError,
+              message: 'Test error',
+              code: nativeCode, // Raw string from native, not enum
+              recoverable: false,
+            };
+
+            eventEmitter.emit('error', error);
+
+            const calledWith = callback.mock.calls[0][0];
+            expect(calledWith.code).toBe(expectedCode);
+          },
+        );
       });
     });
   });

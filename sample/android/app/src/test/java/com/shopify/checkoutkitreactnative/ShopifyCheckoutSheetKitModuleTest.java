@@ -474,8 +474,8 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     // Use minimal mocking - just enough to test the processing logic
     CheckoutExpiredException mockException = mock(CheckoutExpiredException.class);
-    when(mockException.getErrorDescription()).thenReturn("Cart has expired");
-    when(mockException.getErrorCode()).thenReturn("cart_expired");
+    when(mockException.getErrorDescription()).thenReturn("Cart has been completed");
+    when(mockException.getErrorCode()).thenReturn("CART_COMPLETED");
     when(mockException.isRecoverable()).thenReturn(false);
 
     processor.onFail(mockException);
@@ -483,7 +483,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
     verify(mockEventEmitter).emit(eq("error"), stringCaptor.capture());
 
     assertThat(stringCaptor.getValue())
-        .contains("CheckoutExpiredError", "Cart has expired", "cart_expired", "\"recoverable\":false");
+        .contains("CheckoutExpiredError", "Cart has been completed", "CART_COMPLETED", "\"recoverable\":false");
   }
 
   @Test

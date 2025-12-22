@@ -110,7 +110,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
                 self.sendEvent(withName: "close", body: nil)
             }
 
-            // self.checkoutSheet?.dismiss(animated: true)
+            self.checkoutSheet?.dismiss(animated: true)
         }
     }
 

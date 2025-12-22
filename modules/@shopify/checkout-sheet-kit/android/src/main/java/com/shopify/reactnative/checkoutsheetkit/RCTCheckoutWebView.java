@@ -62,8 +62,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.Objects;
 
-import kotlin.Unit;
-
 public class RCTCheckoutWebView extends FrameLayout {
   private static final String TAG = "RCTCheckoutWebView";
   private final ThemedReactContext context;
@@ -195,13 +193,7 @@ public class RCTCheckoutWebView extends FrameLayout {
     Activity currentActivity = this.context.getCurrentActivity();
     InlineCheckoutEventProcessor eventProcessor = new InlineCheckoutEventProcessor(currentActivity);
 
-    return new CheckoutWebViewEventProcessor(
-      eventProcessor,
-      (visible) -> Unit.INSTANCE, // toggleHeader
-      (error) -> Unit.INSTANCE, // closeCheckoutDialogWithError
-      (visibility) -> Unit.INSTANCE, // setProgressBarVisibility
-      (percentage) -> Unit.INSTANCE // updateProgressBarPercentage
-    );
+    return new CheckoutWebViewEventProcessor(eventProcessor);
   }
 
   void removeCheckout() {
