@@ -2,7 +2,7 @@
 set -e
 
 SDK_PATH="${1:-$HOME/src/github.com/Shopify/checkout-sheet-kit-android}"
-VERSION="${2:-4.0.0-SNAPSHOT}"
+VERSION="${2:-4.0.1-SNAPSHOT}"
 
 if [ ! -d "$SDK_PATH" ]; then
   echo "Error: checkout-sheet-kit-android not found at $SDK_PATH"
