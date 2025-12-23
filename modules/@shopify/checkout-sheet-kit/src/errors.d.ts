@@ -32,32 +32,32 @@ export enum CheckoutErrorCode {
   /**
    * The app authentication payload passed could not be decoded.
    */
-  invalidPayload = 'invalid_payload',
+  invalidPayload = 'INVALID_PAYLOAD',
 
   /**
    * The app authentication JWT signature or encrypted token signature was invalid.
    */
-  invalidSignature = 'invalid_signature',
+  invalidSignature = 'INVALID_SIGNATURE',
 
   /**
    * The app authentication access token was not valid for the shop.
    */
-  notAuthorized = 'not_authorized',
+  notAuthorized = 'NOT_AUTHORIZED',
 
   /**
    * The provided app authentication payload has expired.
    */
-  payloadExpired = 'payload_expired',
+  payloadExpired = 'PAYLOAD_EXPIRED',
 
   /**
    * The buyer must be logged in to a customer account to proceed with checkout.
    */
-  customerAccountRequired = 'customer_account_required',
+  customerAccountRequired = 'CUSTOMER_ACCOUNT_REQUIRED',
 
   /**
    * The storefront requires a password to access checkout.
    */
-  storefrontPasswordRequired = 'storefront_password_required',
+  storefrontPasswordRequired = 'STOREFRONT_PASSWORD_REQUIRED',
 
   // ============================================================================
   // Cart errors
@@ -66,12 +66,12 @@ export enum CheckoutErrorCode {
   /**
    * The cart associated with the checkout has already been completed.
    */
-  cartCompleted = 'cart_completed',
+  cartCompleted = 'CART_COMPLETED',
 
   /**
    * The cart is invalid or no longer exists.
    */
-  invalidCart = 'invalid_cart',
+  invalidCart = 'INVALID_CART',
 
   // ============================================================================
   // Client errors
@@ -80,22 +80,22 @@ export enum CheckoutErrorCode {
   /**
    * Checkout preloading has been temporarily disabled via killswitch.
    */
-  killswitchEnabled = 'killswitch_enabled',
+  killswitchEnabled = 'KILLSWITCH_ENABLED',
 
   /**
    * An unrecoverable error occurred during checkout.
    */
-  unrecoverableFailure = 'unrecoverable_failure',
+  unrecoverableFailure = 'UNRECOVERABLE_FAILURE',
 
   /**
    * A policy violation was detected during checkout.
    */
-  policyViolation = 'policy_violation',
+  policyViolation = 'POLICY_VIOLATION',
 
   /**
    * An error occurred processing a vaulted payment method.
    */
-  vaultedPaymentError = 'vaulted_payment_error',
+  vaultedPaymentError = 'VAULTED_PAYMENT_ERROR',
 
   // ============================================================================
   // Internal errors
@@ -104,27 +104,27 @@ export enum CheckoutErrorCode {
   /**
    * A client-side error occurred in the SDK.
    */
-  clientError = 'client_error',
+  clientError = 'CLIENT_ERROR',
 
   /**
    * An HTTP error occurred while communicating with the checkout.
    */
-  httpError = 'http_error',
+  httpError = 'HTTP_ERROR',
 
   /**
    * Failed to send a message to the checkout bridge.
    */
-  sendingBridgeEventError = 'error_sending_message',
+  errorSendingMessage = 'ERROR_SENDING_MESSAGE',
 
   /**
    * Failed to receive a message from the checkout bridge.
    */
-  receivingBridgeEventError = 'error_receiving_message',
+  errorReceivingMessage = 'ERROR_RECEIVING_MESSAGE',
 
   /**
    * The WebView render process has terminated unexpectedly (Android only).
    */
-  renderProcessGone = 'render_process_gone',
+  renderProcessGone = 'RENDER_PROCESS_GONE',
 
   // ============================================================================
   // Fallback
@@ -133,7 +133,7 @@ export enum CheckoutErrorCode {
   /**
    * An unknown or unrecognized error code was received.
    */
-  unknown = 'unknown',
+  unknown = 'UNKNOWN',
 }
 
 export enum CheckoutNativeErrorType {
@@ -147,13 +147,14 @@ export enum CheckoutNativeErrorType {
 
 /**
  * Maps a native error code string to a CheckoutErrorCode enum value.
+ * Handles both SCREAMING_SNAKE_CASE and snake_case formats for compatibility.
  */
 function getCheckoutErrorCode(code: string | undefined): CheckoutErrorCode {
   if (!code) {
     return CheckoutErrorCode.unknown;
   }
 
-  const normalizedCode = code.toLowerCase();
+  const normalizedCode = code.toUpperCase();
 
   const codeKey = Object.keys(CheckoutErrorCode).find(
     key => CheckoutErrorCode[key as keyof typeof CheckoutErrorCode] === normalizedCode,

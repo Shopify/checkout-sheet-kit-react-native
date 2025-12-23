@@ -375,7 +375,7 @@ describe('Checkout Component - Error Events', () => {
         nativeComponent.props.onError({
           nativeEvent: {
             __typename: 'InternalError',
-            code: 'error_sending_message',
+            code: 'ERROR_SENDING_MESSAGE',
             message: 'Failed to send bridge message',
             recoverable: false,
           },
@@ -386,7 +386,7 @@ describe('Checkout Component - Error Events', () => {
 
       expect(error).toBeInstanceOf(InternalError);
       expect(error).toMatchObject({
-        code: CheckoutErrorCode.sendingBridgeEventError,
+        code: CheckoutErrorCode.errorSendingMessage,
         message: 'Failed to send bridge message',
         recoverable: false,
         name: 'InternalError',
