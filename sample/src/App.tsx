@@ -228,8 +228,11 @@ function AppWithContext({children}: PropsWithChildren) {
 
     const addressChangeStart = shopify.addEventListener(
       'addressChangeStart',
-      (event) => {
-        console.log('[App] onAddressChangeStart event received from imperative API:', event);
+      event => {
+        console.log(
+          '[App] onAddressChangeStart event received from imperative API:',
+          event,
+        );
       },
     );
 

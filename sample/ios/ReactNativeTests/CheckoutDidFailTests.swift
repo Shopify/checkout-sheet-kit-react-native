@@ -53,9 +53,9 @@ class CheckoutDidFailTests: XCTestCase {
         let mock = mockSendEvent(eventName: "error")
         mock.startObserving()
 
-        let error = CheckoutError.checkoutExpired(
+        let error = CheckoutError.expired(
             message: "expired",
-            code: CheckoutErrorCode.cartExpired,
+            code: CheckoutError.ErrorCode.cartCompleted,
             recoverable: false
         )
 
@@ -67,10 +67,10 @@ class CheckoutDidFailTests: XCTestCase {
             return XCTFail("Event body was not available or not in the correct format")
         }
 
-        if case .checkoutExpired = error {
+        if case .expired = error {
             XCTAssertEqual(eventBody["__typename"] as? String, "CheckoutExpiredError")
             XCTAssertEqual(eventBody["message"] as? String, "expired")
-            XCTAssertEqual(eventBody["code"] as? String, CheckoutErrorCode.cartExpired.rawValue)
+            XCTAssertEqual(eventBody["code"] as? String, CheckoutError.ErrorCode.cartCompleted.rawValue)
             XCTAssertEqual(eventBody["recoverable"] as? Bool, false)
         } else {
             XCTFail("Expected checkoutExpiredError but found different error")
@@ -81,9 +81,9 @@ class CheckoutDidFailTests: XCTestCase {
         let mock = mockSendEvent(eventName: "error")
         mock.startObserving()
 
-        let error = CheckoutError.checkoutUnavailable(
-            message: "expired",
-            code: .clientError(code: CheckoutErrorCode.cartExpired),
+        let error = CheckoutError.unavailable(
+            message: "unavailable",
+            code: .clientError(code: CheckoutError.ErrorCode.unrecoverableFailure),
             recoverable: false
         )
 
@@ -95,10 +95,10 @@ class CheckoutDidFailTests: XCTestCase {
             return XCTFail("Event body was not available or not in the correct format")
         }
 
-        if case .checkoutUnavailable = error {
+        if case .unavailable = error {
             XCTAssertEqual(eventBody["__typename"] as? String, "CheckoutClientError")
-            XCTAssertEqual(eventBody["message"] as? String, "expired")
-            XCTAssertEqual(eventBody["code"] as? String, CheckoutErrorCode.cartExpired.rawValue)
+            XCTAssertEqual(eventBody["message"] as? String, "unavailable")
+            XCTAssertEqual(eventBody["code"] as? String, CheckoutError.ErrorCode.unrecoverableFailure.rawValue)
             XCTAssertEqual(eventBody["recoverable"] as? Bool, false)
         } else {
             XCTFail("Expected checkoutClientError but found different error")
@@ -109,7 +109,7 @@ class CheckoutDidFailTests: XCTestCase {
         let mock = mockSendEvent(eventName: "error")
         mock.startObserving()
 
-        let error = CheckoutError.checkoutUnavailable(
+        let error = CheckoutError.unavailable(
             message: "internal server error",
             code: .httpError(statusCode: 500),
             recoverable: true
@@ -123,7 +123,7 @@ class CheckoutDidFailTests: XCTestCase {
             return XCTFail("Event body was not available or not in the correct format")
         }
 
-        if case .checkoutUnavailable = error {
+        if case .unavailable = error {
             XCTAssertEqual(eventBody["__typename"] as? String, "CheckoutHTTPError")
             XCTAssertEqual(eventBody["message"] as? String, "internal server error")
             XCTAssertEqual(eventBody["statusCode"] as? Int, 500)
@@ -137,9 +137,9 @@ class CheckoutDidFailTests: XCTestCase {
         let mock = mockSendEvent(eventName: "error")
         mock.startObserving()
 
-        let error = CheckoutError.configurationError(
+        let error = CheckoutError.misconfiguration(
             message: "storefront password required",
-            code: CheckoutErrorCode.storefrontPasswordRequired,
+            code: CheckoutError.ErrorCode.storefrontPasswordRequired,
             recoverable: false
         )
 
@@ -151,10 +151,10 @@ class CheckoutDidFailTests: XCTestCase {
             return XCTFail("Event body was not available or not in the correct format")
         }
 
-        if case .configurationError = error {
+        if case .misconfiguration = error {
             XCTAssertEqual(eventBody["__typename"] as? String, "ConfigurationError")
             XCTAssertEqual(eventBody["message"] as? String, "storefront password required")
-            XCTAssertEqual(eventBody["code"] as? String, CheckoutErrorCode.storefrontPasswordRequired.rawValue)
+            XCTAssertEqual(eventBody["code"] as? String, CheckoutError.ErrorCode.storefrontPasswordRequired.rawValue)
             XCTAssertEqual(eventBody["recoverable"] as? Bool, false)
         } else {
             XCTFail("Expected CheckoutConfigurationError but found different error")
@@ -165,7 +165,7 @@ class CheckoutDidFailTests: XCTestCase {
         let mock = mockSendEvent(eventName: "error")
         mock.startObserving()
 
-        let error = CheckoutError.sdkError(
+        let error = CheckoutError.internal(
             underlying: NSError(domain: "com.shopify", code: 1001, userInfo: [NSLocalizedDescriptionKey: "failed"]),
             recoverable: true
         )
@@ -178,7 +178,7 @@ class CheckoutDidFailTests: XCTestCase {
             return XCTFail("Event body was not available or not in the correct format")
         }
 
-        if case .sdkError = error {
+        if case .internal = error {
             XCTAssertEqual(eventBody["__typename"] as? String, "InternalError")
             XCTAssertEqual(eventBody["message"] as? String, "failed")
             XCTAssertEqual(eventBody["recoverable"] as? Bool, true)

@@ -38,7 +38,11 @@ import type {
   CheckoutStartEvent,
   CheckoutSubmitStartEvent,
 } from '../events';
-import type {CheckoutException} from '../errors';
+import {
+  parseCheckoutError,
+  type CheckoutException,
+  type CheckoutNativeError,
+} from '../errors.d';
 
 export interface ShopifyCheckoutProps {
   /**
@@ -125,7 +129,7 @@ interface NativeShopifyCheckoutWebViewProps {
   style?: ViewStyle;
   testID?: string;
   onStart?: (event: {nativeEvent: CheckoutStartEvent}) => void;
-  onError?: (event: {nativeEvent: CheckoutException}) => void;
+  onError?: (event: {nativeEvent: CheckoutNativeError}) => void;
   onComplete?: (event: {nativeEvent: CheckoutCompleteEvent}) => void;
   onCancel?: () => void;
   onLinkClick?: (event: {nativeEvent: {url: string}}) => void;
@@ -231,7 +235,8 @@ export const ShopifyCheckout = forwardRef<
       Required<NativeShopifyCheckoutWebViewProps>['onError']
     >(
       event => {
-        onError?.(event.nativeEvent);
+        const transformedError = parseCheckoutError(event.nativeEvent);
+        onError?.(transformedError);
       },
       [onError],
     );

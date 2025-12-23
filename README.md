@@ -47,6 +47,9 @@ experiences.
 - [Checkout lifecycle](#checkout-lifecycle)
   - [`addEventListener(eventName, callback)`](#addeventlistenereventname-callback)
   - [`removeEventListeners(eventName)`](#removeeventlistenerseventname)
+  - [Error handling](#error-handling)
+    - [Error types](#error-types)
+    - [Error codes](#error-codes)
 - [Identity \& customer accounts](#identity--customer-accounts)
   - [Cart: buyer bag, identity, and preferences](#cart-buyer-bag-identity-and-preferences)
     - [Multipass](#multipass)
@@ -581,7 +584,7 @@ methods - available on both the context provider as well as the class instance.
 | `close`     | `() => void`                              | Fired when the checkout has been closed.                     |
 | `complete` | `(event: CheckoutCompleteEvent) => void` | Fired when the checkout has been successfully completed.     |
 | `start`   | `(event: CheckoutStartEvent) => void`   | Fired when the checkout has been started.                    |
-| `error`     | `(error: {message: string}) => void`      | Fired when a checkout exception has been raised.             |
+| `error`     | `(error: CheckoutException) => void`      | Fired when a checkout exception has been raised. See [Error handling](#error-handling) below. |
 
 ### `addEventListener(eventName, callback)`
 
@@ -608,9 +611,9 @@ useEffect(() => {
 
   const error = shopifyCheckout.addEventListener(
     'error',
-    (error: CheckoutError) => {
-      // Do something on checkout error
-      // console.log(error.message)
+    (error: CheckoutException) => {
+      // Handle checkout error - see "Error handling" section for details
+      console.log(error.message, error.code, error.recoverable);
     },
   );
 
@@ -627,6 +630,34 @@ useEffect(() => {
 
 On the rare occasion that you want to remove all event listeners for a given
 `eventName`, you can use the `removeEventListeners(eventName)` method.
+
+### Error handling
+
+The `error` event provides a `CheckoutException` object with detailed information about what went wrong. Each error includes:
+
+| Property      | Type                | Description                                                    |
+| ------------- | ------------------- | -------------------------------------------------------------- |
+| `message`     | `string`            | A human-readable error message.                                |
+| `code`        | `CheckoutErrorCode` | A machine-readable error code (see table below).               |
+| `recoverable` | `boolean`           | Whether the error is recoverable (e.g., retry may succeed).    |
+| `name`        | `string`            | The error class name (e.g., `ConfigurationError`).             |
+| `statusCode`  | `number` (optional) | HTTP status code (only present for `CheckoutHTTPError`).       |
+
+#### Error types
+
+Errors are returned as instances of specific error classes:
+
+| Error Class           | Description                                                                 |
+| --------------------- | --------------------------------------------------------------------------- |
+| `ConfigurationError`  | The checkout configuration is invalid (e.g., invalid credentials).          |
+| `CheckoutClientError` | A client-side error occurred (e.g., checkout unavailable).                  |
+| `CheckoutExpiredError`| The checkout session has expired or the cart is no longer valid.            |
+| `CheckoutHTTPError`   | An HTTP error occurred. Includes `statusCode` property.                     |
+| `InternalError`       | An internal SDK error occurred.                                             |
+
+#### Error codes
+
+The `code` property uses the `CheckoutErrorCode` enum. See [`errors.d.ts`](./modules/@shopify/checkout-sheet-kit/src/errors.d.ts) for the full list of error codes and their descriptions.
 
 ## Identity & customer accounts
 
