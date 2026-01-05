@@ -39,7 +39,7 @@ package com.shopify.reactnative.checkoutsheetkit;
  */
 public enum CheckoutEventType {
   ON_START("onStart"),
-  ON_ERROR("onError"),
+  ON_FAIL("onFail"),
   ON_COMPLETE("onComplete"),
   ON_CANCEL("onCancel"),
   ON_LINK_CLICK("onLinkClick"),

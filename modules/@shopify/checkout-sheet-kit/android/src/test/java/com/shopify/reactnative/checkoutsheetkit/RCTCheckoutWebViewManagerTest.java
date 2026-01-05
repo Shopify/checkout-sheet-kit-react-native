@@ -217,7 +217,7 @@ public class RCTCheckoutWebViewManagerTest {
             .containsKeys(
                 "onStart",
                 "onComplete",
-                "onError",
+                "onFail",
                 "onCancel",
                 "onLinkClick",
                 "onAddressChangeStart",

@@ -96,8 +96,8 @@ export default function CheckoutScreen(props: {
     navigation.getParent()?.goBack();
   };
 
-  const onError = (error: unknown) => {
-    console.log('<CheckoutScreen /> onError: ', error);
+  const onFail = (error: unknown) => {
+    console.log('<CheckoutScreen /> onFail: ', error);
     ref.current?.reload();
   };
 
@@ -117,7 +117,7 @@ export default function CheckoutScreen(props: {
       onPaymentMethodChangeStart={onPaymentMethodChangeStart}
       onSubmitStart={onSubmitStart}
       onCancel={onCancel}
-      onError={onError}
+      onFail={onFail}
       onComplete={onComplete}
     />
   );

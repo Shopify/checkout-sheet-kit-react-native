@@ -51,7 +51,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'ConfigurationError',
             code: 'STOREFRONT_PASSWORD_REQUIRED',
@@ -88,7 +88,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'CheckoutClientError',
             code: 'KILLSWITCH_ENABLED',
@@ -121,7 +121,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'CheckoutExpiredError',
             code: 'CART_COMPLETED',
@@ -171,7 +171,7 @@ describe('Checkout Component - Error Events', () => {
         const nativeComponent = getByTestId('checkout-webview');
 
         act(() => {
-          nativeComponent.props.onError({
+          nativeComponent.props.onFail({
             nativeEvent: {
               __typename: 'ConfigurationError',
               code: nativeCode,
@@ -196,7 +196,7 @@ describe('Checkout Component - Error Events', () => {
 
     expect(() => {
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'ConfigurationError',
             code: 'STOREFRONT_PASSWORD_REQUIRED',
@@ -223,7 +223,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'ConfigurationError',
             code: 'INVALID_PAYLOAD',
@@ -260,7 +260,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'CheckoutClientError',
             code: 'UNRECOVERABLE_FAILURE',
@@ -297,7 +297,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'CheckoutExpiredError',
             code: 'INVALID_CART',
@@ -334,7 +334,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'CheckoutHTTPError',
             code: 'http_error',
@@ -372,7 +372,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'InternalError',
             code: 'error_sending_message',
@@ -408,7 +408,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'SomeUnknownErrorType',
             code: 'some_unknown_code',
@@ -444,7 +444,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'UnknownError',
             code: 'unknown',

@@ -129,7 +129,7 @@ interface NativeShopifyCheckoutWebViewProps {
   style?: ViewStyle;
   testID?: string;
   onStart?: (event: {nativeEvent: CheckoutStartEvent}) => void;
-  onError?: (event: {nativeEvent: CheckoutNativeError}) => void;
+  onFail?: (event: {nativeEvent: CheckoutNativeError}) => void;
   onComplete?: (event: {nativeEvent: CheckoutCompleteEvent}) => void;
   onCancel?: () => void;
   onLinkClick?: (event: {nativeEvent: {url: string}}) => void;
@@ -232,7 +232,7 @@ export const ShopifyCheckout = forwardRef<
     );
 
     const handleError = useCallback<
-      Required<NativeShopifyCheckoutWebViewProps>['onError']
+      Required<NativeShopifyCheckoutWebViewProps>['onFail']
     >(
       event => {
         const transformedError = parseCheckoutError(event.nativeEvent);
@@ -322,7 +322,7 @@ export const ShopifyCheckout = forwardRef<
         style={style}
         testID={testID}
         onStart={handleStart}
-        onError={handleError}
+        onFail={handleError}
         onComplete={handleComplete}
         onCancel={handleCancel}
         onLinkClick={handleLinkClick}

@@ -106,7 +106,7 @@ SOFTWARE.
     /**
      * Emitted when checkout fails
      */
-    RCT_EXPORT_VIEW_PROPERTY(onError, RCTDirectEventBlock)
+    RCT_EXPORT_VIEW_PROPERTY(onFail, RCTBubblingEventBlock)
 
     /**
      * Emitted when checkout completes successfully
