@@ -38,12 +38,12 @@ describe('Checkout Component - Error Events', () => {
 
   describe('error transformation', () => {
     it('transforms native error to ConfigurationError class', () => {
-      const onError = jest.fn();
+      const onFail = jest.fn();
 
       const {getByTestId} = render(
         <ShopifyCheckout
           checkoutUrl={mockCheckoutUrl}
-          onError={onError}
+          onFail={onFail}
           testID="checkout-webview"
         />,
       );
@@ -51,7 +51,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'ConfigurationError',
             code: 'STOREFRONT_PASSWORD_REQUIRED',
@@ -61,9 +61,9 @@ describe('Checkout Component - Error Events', () => {
         });
       });
 
-      expect(onError).toHaveBeenCalledTimes(1);
+      expect(onFail).toHaveBeenCalledTimes(1);
 
-      const receivedError = onError.mock.calls[0][0];
+      const receivedError = onFail.mock.calls[0][0];
       expect(receivedError).toBeInstanceOf(ConfigurationError);
       expect(receivedError.code).toBe(
         CheckoutErrorCode.storefrontPasswordRequired,
@@ -75,12 +75,12 @@ describe('Checkout Component - Error Events', () => {
     });
 
     it('transforms native error to CheckoutClientError class', () => {
-      const onError = jest.fn();
+      const onFail = jest.fn();
 
       const {getByTestId} = render(
         <ShopifyCheckout
           checkoutUrl={mockCheckoutUrl}
-          onError={onError}
+          onFail={onFail}
           testID="checkout-webview"
         />,
       );
@@ -88,7 +88,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'CheckoutClientError',
             code: 'KILLSWITCH_ENABLED',
@@ -98,9 +98,9 @@ describe('Checkout Component - Error Events', () => {
         });
       });
 
-      expect(onError).toHaveBeenCalledTimes(1);
+      expect(onFail).toHaveBeenCalledTimes(1);
 
-      const receivedError = onError.mock.calls[0][0];
+      const receivedError = onFail.mock.calls[0][0];
       expect(receivedError).toBeInstanceOf(CheckoutClientError);
       // KILLSWITCH_ENABLED is now in the enum
       expect(receivedError.code).toBe(CheckoutErrorCode.killswitchEnabled);
@@ -108,12 +108,12 @@ describe('Checkout Component - Error Events', () => {
     });
 
     it('transforms native error to CheckoutExpiredError class', () => {
-      const onError = jest.fn();
+      const onFail = jest.fn();
 
       const {getByTestId} = render(
         <ShopifyCheckout
           checkoutUrl={mockCheckoutUrl}
-          onError={onError}
+          onFail={onFail}
           testID="checkout-webview"
         />,
       );
@@ -121,7 +121,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'CheckoutExpiredError',
             code: 'CART_COMPLETED',
@@ -131,9 +131,9 @@ describe('Checkout Component - Error Events', () => {
         });
       });
 
-      expect(onError).toHaveBeenCalledTimes(1);
+      expect(onFail).toHaveBeenCalledTimes(1);
 
-      const receivedError = onError.mock.calls[0][0];
+      const receivedError = onFail.mock.calls[0][0];
       expect(receivedError).toBeInstanceOf(CheckoutExpiredError);
       expect(receivedError.code).toBe(CheckoutErrorCode.cartCompleted);
       expect(receivedError.message).toBe('Cart already completed');
@@ -158,12 +158,12 @@ describe('Checkout Component - Error Events', () => {
     ])(
       'maps native code $nativeCode to CheckoutErrorCode enum',
       ({nativeCode, expectedCode}) => {
-        const onError = jest.fn();
+        const onFail = jest.fn();
 
         const {getByTestId} = render(
           <ShopifyCheckout
             checkoutUrl={mockCheckoutUrl}
-            onError={onError}
+            onFail={onFail}
             testID="checkout-webview"
           />,
         );
@@ -171,7 +171,7 @@ describe('Checkout Component - Error Events', () => {
         const nativeComponent = getByTestId('checkout-webview');
 
         act(() => {
-          nativeComponent.props.onError({
+          nativeComponent.props.onFail({
             nativeEvent: {
               __typename: 'ConfigurationError',
               code: nativeCode,
@@ -181,13 +181,13 @@ describe('Checkout Component - Error Events', () => {
           });
         });
 
-        const receivedError = onError.mock.calls[0][0];
+        const receivedError = onFail.mock.calls[0][0];
         expect(receivedError.code).toBe(expectedCode);
       },
     );
   });
 
-  it('does not crash when onError prop is not provided', () => {
+  it('does not crash when onFail prop is not provided', () => {
     const {getByTestId} = render(
       <ShopifyCheckout checkoutUrl={mockCheckoutUrl} testID="checkout-webview" />,
     );
@@ -196,7 +196,7 @@ describe('Checkout Component - Error Events', () => {
 
     expect(() => {
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'ConfigurationError',
             code: 'STOREFRONT_PASSWORD_REQUIRED',
@@ -210,12 +210,12 @@ describe('Checkout Component - Error Events', () => {
 
   describe('error object structure', () => {
     it('ConfigurationError has correct properties', () => {
-      const onError = jest.fn();
+      const onFail = jest.fn();
 
       const {getByTestId} = render(
         <ShopifyCheckout
           checkoutUrl={mockCheckoutUrl}
-          onError={onError}
+          onFail={onFail}
           testID="checkout-webview"
         />,
       );
@@ -223,7 +223,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'ConfigurationError',
             code: 'INVALID_PAYLOAD',
@@ -233,7 +233,7 @@ describe('Checkout Component - Error Events', () => {
         });
       });
 
-      const error = onError.mock.calls[0][0];
+      const error = onFail.mock.calls[0][0];
 
       expect(error).toBeInstanceOf(ConfigurationError);
       expect(error).toMatchObject({
@@ -247,12 +247,12 @@ describe('Checkout Component - Error Events', () => {
     });
 
     it('CheckoutClientError has correct properties', () => {
-      const onError = jest.fn();
+      const onFail = jest.fn();
 
       const {getByTestId} = render(
         <ShopifyCheckout
           checkoutUrl={mockCheckoutUrl}
-          onError={onError}
+          onFail={onFail}
           testID="checkout-webview"
         />,
       );
@@ -260,7 +260,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'CheckoutClientError',
             code: 'UNRECOVERABLE_FAILURE',
@@ -270,7 +270,7 @@ describe('Checkout Component - Error Events', () => {
         });
       });
 
-      const error = onError.mock.calls[0][0];
+      const error = onFail.mock.calls[0][0];
 
       expect(error).toBeInstanceOf(CheckoutClientError);
       expect(error).toMatchObject({
@@ -284,12 +284,12 @@ describe('Checkout Component - Error Events', () => {
     });
 
     it('CheckoutExpiredError has correct properties', () => {
-      const onError = jest.fn();
+      const onFail = jest.fn();
 
       const {getByTestId} = render(
         <ShopifyCheckout
           checkoutUrl={mockCheckoutUrl}
-          onError={onError}
+          onFail={onFail}
           testID="checkout-webview"
         />,
       );
@@ -297,7 +297,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'CheckoutExpiredError',
             code: 'INVALID_CART',
@@ -307,7 +307,7 @@ describe('Checkout Component - Error Events', () => {
         });
       });
 
-      const error = onError.mock.calls[0][0];
+      const error = onFail.mock.calls[0][0];
 
       expect(error).toBeInstanceOf(CheckoutExpiredError);
       expect(error).toMatchObject({
@@ -321,12 +321,12 @@ describe('Checkout Component - Error Events', () => {
     });
 
     it('CheckoutHTTPError has correct properties including statusCode', () => {
-      const onError = jest.fn();
+      const onFail = jest.fn();
 
       const {getByTestId} = render(
         <ShopifyCheckout
           checkoutUrl={mockCheckoutUrl}
-          onError={onError}
+          onFail={onFail}
           testID="checkout-webview"
         />,
       );
@@ -334,7 +334,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'CheckoutHTTPError',
             code: 'http_error',
@@ -345,7 +345,7 @@ describe('Checkout Component - Error Events', () => {
         });
       });
 
-      const error = onError.mock.calls[0][0];
+      const error = onFail.mock.calls[0][0];
 
       expect(error).toBeInstanceOf(CheckoutHTTPError);
       expect(error).toMatchObject({
@@ -359,12 +359,12 @@ describe('Checkout Component - Error Events', () => {
     });
 
     it('InternalError has correct properties', () => {
-      const onError = jest.fn();
+      const onFail = jest.fn();
 
       const {getByTestId} = render(
         <ShopifyCheckout
           checkoutUrl={mockCheckoutUrl}
-          onError={onError}
+          onFail={onFail}
           testID="checkout-webview"
         />,
       );
@@ -372,7 +372,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'InternalError',
             code: 'ERROR_SENDING_MESSAGE',
@@ -382,7 +382,7 @@ describe('Checkout Component - Error Events', () => {
         });
       });
 
-      const error = onError.mock.calls[0][0];
+      const error = onFail.mock.calls[0][0];
 
       expect(error).toBeInstanceOf(InternalError);
       expect(error).toMatchObject({
@@ -395,12 +395,12 @@ describe('Checkout Component - Error Events', () => {
     });
 
     it('GenericError is returned for unknown __typename', () => {
-      const onError = jest.fn();
+      const onFail = jest.fn();
 
       const {getByTestId} = render(
         <ShopifyCheckout
           checkoutUrl={mockCheckoutUrl}
-          onError={onError}
+          onFail={onFail}
           testID="checkout-webview"
         />,
       );
@@ -408,7 +408,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'SomeUnknownErrorType',
             code: 'some_unknown_code',
@@ -418,7 +418,7 @@ describe('Checkout Component - Error Events', () => {
         });
       });
 
-      const error = onError.mock.calls[0][0];
+      const error = onFail.mock.calls[0][0];
 
       expect(error).toBeInstanceOf(GenericError);
       expect(error).toMatchObject({
@@ -431,12 +431,12 @@ describe('Checkout Component - Error Events', () => {
     });
 
     it('GenericError preserves statusCode when provided', () => {
-      const onError = jest.fn();
+      const onFail = jest.fn();
 
       const {getByTestId} = render(
         <ShopifyCheckout
           checkoutUrl={mockCheckoutUrl}
-          onError={onError}
+          onFail={onFail}
           testID="checkout-webview"
         />,
       );
@@ -444,7 +444,7 @@ describe('Checkout Component - Error Events', () => {
       const nativeComponent = getByTestId('checkout-webview');
 
       act(() => {
-        nativeComponent.props.onError({
+        nativeComponent.props.onFail({
           nativeEvent: {
             __typename: 'UnknownError',
             code: 'unknown',
@@ -455,7 +455,7 @@ describe('Checkout Component - Error Events', () => {
         });
       });
 
-      const error = onError.mock.calls[0][0];
+      const error = onFail.mock.calls[0][0];
 
       expect(error).toBeInstanceOf(GenericError);
       expect(error).toMatchObject({

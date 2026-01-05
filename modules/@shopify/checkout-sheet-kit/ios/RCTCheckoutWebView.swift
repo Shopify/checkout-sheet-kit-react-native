@@ -87,7 +87,7 @@ class RCTCheckoutWebView: UIView {
     }
 
     @objc var onStart: RCTBubblingEventBlock?
-    @objc var onError: RCTBubblingEventBlock?
+    @objc var onFail: RCTBubblingEventBlock?
     @objc var onComplete: RCTBubblingEventBlock?
     @objc var onCancel: RCTBubblingEventBlock?
     @objc var onLinkClick: RCTBubblingEventBlock?
@@ -246,7 +246,7 @@ class RCTCheckoutWebView: UIView {
             errorCode = "UNKNOWN_ERROR"
         }
 
-        onError?([
+        onFail?([
             "error": errorMessage,
             "eventId": id,
             "code": errorCode
@@ -276,7 +276,7 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     }
 
     func checkoutDidFail(error: ShopifyCheckoutSheetKit.CheckoutError) {
-        onError?(ShopifyEventSerialization.serialize(checkoutError: error))
+        onFail?(ShopifyEventSerialization.serialize(checkoutError: error))
     }
 
     func checkoutDidClickLink(url: URL) {

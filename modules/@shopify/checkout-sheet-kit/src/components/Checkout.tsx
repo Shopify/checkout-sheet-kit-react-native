@@ -63,7 +63,7 @@ export interface ShopifyCheckoutProps {
   /**
    * Called when checkout fails
    */
-  onError?: (error: CheckoutException) => void;
+  onFail?: (error: CheckoutException) => void;
 
   /**
    * Called when checkout is completed successfully
@@ -129,7 +129,7 @@ interface NativeShopifyCheckoutWebViewProps {
   style?: ViewStyle;
   testID?: string;
   onStart?: (event: {nativeEvent: CheckoutStartEvent}) => void;
-  onError?: (event: {nativeEvent: CheckoutNativeError}) => void;
+  onFail?: (event: {nativeEvent: CheckoutNativeError}) => void;
   onComplete?: (event: {nativeEvent: CheckoutCompleteEvent}) => void;
   onCancel?: () => void;
   onLinkClick?: (event: {nativeEvent: {url: string}}) => void;
@@ -161,7 +161,7 @@ const RCTCheckoutWebView =
  * <ShopifyCheckout
  *   checkoutUrl="https://shop.example.com/checkouts/cn/123"
  *   onComplete={(event) => console.log('Checkout completed!', event.orderDetails)}
- *   onError={(error) => console.error('Checkout failed:', error.message)}
+ *   onFail={(error) => console.error('Checkout failed:', error.message)}
  *   style={{flex: 1}}
  * />
  *
@@ -182,7 +182,7 @@ const RCTCheckoutWebView =
  *   ref={checkoutRef}
  *   checkoutUrl={url}
  *   auth={authToken}
- *   onError={() => {
+ *   onFail={() => {
  *     // Reload on error
  *     checkoutRef.current?.reload();
  *   }}
@@ -197,7 +197,7 @@ export const ShopifyCheckout = forwardRef<
       checkoutUrl,
       auth,
       onStart,
-      onError,
+      onFail,
       onComplete,
       onCancel,
       onLinkClick,
@@ -232,13 +232,13 @@ export const ShopifyCheckout = forwardRef<
     );
 
     const handleError = useCallback<
-      Required<NativeShopifyCheckoutWebViewProps>['onError']
+      Required<NativeShopifyCheckoutWebViewProps>['onFail']
     >(
       event => {
         const transformedError = parseCheckoutError(event.nativeEvent);
-        onError?.(transformedError);
+        onFail?.(transformedError);
       },
-      [onError],
+      [onFail],
     );
 
     const handleComplete = useCallback<
@@ -322,7 +322,7 @@ export const ShopifyCheckout = forwardRef<
         style={style}
         testID={testID}
         onStart={handleStart}
-        onError={handleError}
+        onFail={handleError}
         onComplete={handleComplete}
         onCancel={handleCancel}
         onLinkClick={handleLinkClick}

@@ -322,7 +322,7 @@ public class RCTCheckoutWebView extends FrameLayout {
 
     @Override
     public void onFail(@NonNull CheckoutException error) {
-      sendEvent(CheckoutEventType.ON_ERROR, buildErrorMap(error));
+      sendEvent(CheckoutEventType.ON_FAIL, buildErrorMap(error));
     }
 
     @Override
