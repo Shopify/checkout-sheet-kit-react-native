@@ -469,6 +469,61 @@ describe('ShopifyCheckoutSheetKit', () => {
       });
     });
 
+    describe('Payment Method Change Start Event', () => {
+      it('parses paymentMethodChangeStart event data', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const callback = jest.fn();
+        instance.addEventListener('paymentMethodChangeStart', callback);
+
+        eventEmitter.emit('paymentMethodChangeStart', {
+          id: 'test-event-id',
+          method: 'checkout.paymentMethodChangeStart',
+          cart: {id: 'test-cart-id'},
+        });
+
+        expect(callback).toHaveBeenCalledWith({
+          id: 'test-event-id',
+          method: 'checkout.paymentMethodChangeStart',
+          cart: {id: 'test-cart-id'},
+        });
+      });
+
+      it('parses paymentMethodChangeStart event string data as JSON', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const callback = jest.fn();
+        instance.addEventListener('paymentMethodChangeStart', callback);
+
+        eventEmitter.emit(
+          'paymentMethodChangeStart',
+          JSON.stringify({
+            id: 'test-event-id',
+            method: 'checkout.paymentMethodChangeStart',
+            cart: {id: 'test-cart-id'},
+          }),
+        );
+
+        expect(callback).toHaveBeenCalledWith({
+          id: 'test-event-id',
+          method: 'checkout.paymentMethodChangeStart',
+          cart: {id: 'test-cart-id'},
+        });
+      });
+
+      it('prints an error if the paymentMethodChangeStart event data cannot be parsed', () => {
+        const mock = jest.spyOn(global.console, 'error');
+        const instance = new ShopifyCheckoutSheet();
+        const callback = jest.fn();
+        instance.addEventListener('paymentMethodChangeStart', callback);
+
+        eventEmitter.emit('paymentMethodChangeStart', 'INVALID JSON');
+
+        expect(mock).toHaveBeenCalledWith(
+          expect.any(LifecycleEventParseError),
+          'INVALID JSON',
+        );
+      });
+    });
+
     describe('Error Event', () => {
       const internalError = {
         __typename: CheckoutNativeErrorType.InternalError,
