@@ -44,6 +44,16 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         return true
     }
 
+    enum CheckoutEvent: String, CaseIterable {
+        case addressChangeStart
+        case close
+        case complete
+        case error
+        case paymentMethodChangeStart
+        case start
+        case submitStart
+    }
+
     override init() {
         ShopifyCheckoutSheetKit.configure {
             $0.platform = ShopifyCheckoutSheetKit.Platform.reactNative
@@ -53,7 +63,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     }
 
     override func supportedEvents() -> [String]! {
-        return ["close", "complete", "start", "error", "addressChangeStart", "submitStart", "paymentMethodChangeStart"]
+        return CheckoutEvent.allCases.map { $0.rawValue }
     }
 
     override func startObserving() {
@@ -65,33 +75,23 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     }
 
     func checkoutDidComplete(event: CheckoutCompleteEvent) {
-        if hasListeners {
-            sendEvent(withName: "complete", body: ShopifyEventSerialization.serialize(checkoutCompleteEvent: event))
-        }
+        emit(event: .complete, body: ShopifyEventSerialization.serialize(checkoutCompleteEvent: event))
     }
 
     func checkoutDidStart(event: CheckoutStartEvent) {
-        if hasListeners {
-            sendEvent(withName: "start", body: ShopifyEventSerialization.serialize(checkoutStartEvent: event))
-        }
+        emit(event: .start, body: ShopifyEventSerialization.serialize(checkoutStartEvent: event))
     }
 
     func checkoutDidStartAddressChange(event: CheckoutAddressChangeStartEvent) {
-        if hasListeners {
-            sendEvent(withName: "addressChangeStart", body: ShopifyEventSerialization.serialize(checkoutAddressChangeStartEvent: event))
-        }
+        emit(event: .addressChangeStart, body: ShopifyEventSerialization.serialize(checkoutAddressChangeStartEvent: event))
     }
 
     func checkoutDidStartSubmit(event: CheckoutSubmitStartEvent) {
-        if hasListeners {
-            sendEvent(withName: "submitStart", body: ShopifyEventSerialization.serialize(checkoutSubmitStartEvent: event))
-        }
+        emit(event: .submitStart, body: ShopifyEventSerialization.serialize(checkoutSubmitStartEvent: event))
     }
 
     func checkoutDidStartPaymentMethodChange(event: CheckoutPaymentMethodChangeStartEvent) {
-        if hasListeners {
-            sendEvent(withName: "paymentMethodChangeStart", body: ShopifyEventSerialization.serialize(checkoutPaymentMethodChangeStartEvent: event))
-        }
+        emit(event: .paymentMethodChangeStart, body: ShopifyEventSerialization.serialize(checkoutPaymentMethodChangeStartEvent: event))
     }
 
     func shouldRecoverFromError(error: CheckoutError) -> Bool {
@@ -99,16 +99,12 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     }
 
     func checkoutDidFail(error: ShopifyCheckoutSheetKit.CheckoutError) {
-        guard hasListeners else { return }
-
-        sendEvent(withName: "error", body: ShopifyEventSerialization.serialize(checkoutError: error))
+        emit(event: .error, body: ShopifyEventSerialization.serialize(checkoutError: error))
     }
 
     func checkoutDidCancel() {
         DispatchQueue.main.async {
-            if self.hasListeners {
-                self.sendEvent(withName: "close", body: nil)
-            }
+            self.emit(event: .close, body: nil)
 
             self.checkoutSheet?.dismiss(animated: true)
         }
@@ -172,6 +168,12 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
                 ShopifyCheckoutSheetKit.preload(checkout: url, options: checkoutOptions)
             }
         }
+    }
+
+    private func emit(event: CheckoutEvent, body: Any?) {
+        guard hasListeners else { return }
+
+        sendEvent(withName: event.rawValue, body: body)
     }
 
     private func getColorScheme(_ colorScheme: String) -> ShopifyCheckoutSheetKit.Configuration.ColorScheme {
