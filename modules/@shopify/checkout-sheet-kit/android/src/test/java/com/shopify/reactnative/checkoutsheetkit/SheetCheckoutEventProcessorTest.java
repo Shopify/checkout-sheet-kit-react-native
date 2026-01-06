@@ -312,14 +312,19 @@ public class SheetCheckoutEventProcessorTest {
     // MARK: - onStart Tests
 
     @Test
-    public void testOnStart_emitsStartEventWithSerializedData() {
+    public void testOnStart_emitsStartEventWithMethodCartAndLocale() {
         CheckoutStartEvent event = mock(CheckoutStartEvent.class);
+        when(event.getMethod()).thenReturn("checkout.start");
+        when(event.getCart()).thenReturn(null);
+        when(event.getLocale()).thenReturn("en-US");
 
         processor.onStart(event);
 
         verify(mockEventEmitter).emit(eventNameCaptor.capture(), eventDataCaptor.capture());
         assertThat(eventNameCaptor.getValue()).isEqualTo("start");
-        assertThat(eventDataCaptor.getValue()).isNotNull();
+        String eventData = eventDataCaptor.getValue();
+        assertThat(eventData).contains("\"method\":\"checkout.start\"");
+        assertThat(eventData).contains("\"locale\":\"en-US\"");
     }
 
     @Test
