@@ -157,6 +157,7 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
       Map<String, Object> eventMap = new HashMap<>();
       eventMap.put("method", event.getMethod());
       eventMap.put("cart", event.getCart());
+      eventMap.put("locale", event.getLocale());
 
       String data = mapper.writeValueAsString(eventMap);
       sendEventWithStringData("start", data);
