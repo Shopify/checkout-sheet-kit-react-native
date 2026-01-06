@@ -32,6 +32,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.webkit.GeolocationPermissions;
 
@@ -437,6 +438,35 @@ public class SheetCheckoutEventProcessorTest {
 
         verify(mockEventEmitter, never()).emit(anyString(), anyString());
         mockedLog.verify(() -> Log.e(eq("SheetCheckoutEventProcessor"), eq("Error processing submit start event"), any(IOException.class)));
+    }
+
+    // MARK: - onLinkClick Tests
+
+    @Test
+    public void testOnLinkClick_emitsLinkClickEventWithUrl() {
+        Uri mockUri = mock(Uri.class);
+        when(mockUri.toString()).thenReturn("https://example.com/terms");
+
+        processor.onLinkClick(mockUri);
+
+        verify(mockEventEmitter).emit(eventNameCaptor.capture(), eventDataCaptor.capture());
+        assertThat(eventNameCaptor.getValue()).isEqualTo("linkClick");
+        String eventData = eventDataCaptor.getValue();
+        assertThat(eventData).contains("\"url\":\"https://example.com/terms\"");
+    }
+
+    @Test
+    public void testOnLinkClick_withSerializationError_logsErrorAndDoesNotEmit() throws Exception {
+        ObjectMapper mockMapper = mock(ObjectMapper.class);
+        when(mockMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Serialization failed") {});
+        setPrivateField(processor, "mapper", mockMapper);
+
+        Uri mockUri = mock(Uri.class);
+        when(mockUri.toString()).thenReturn("https://example.com/terms");
+        processor.onLinkClick(mockUri);
+
+        verify(mockEventEmitter, never()).emit(anyString(), anyString());
+        mockedLog.verify(() -> Log.e(eq("SheetCheckoutEventProcessor"), eq("Error processing link click event"), any(IOException.class)));
     }
 
     // MARK: - Helper Methods

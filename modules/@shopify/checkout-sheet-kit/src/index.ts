@@ -43,6 +43,7 @@ import type {
   Configuration,
   Features,
   GeolocationRequestEvent,
+  LinkClickEvent,
   Maybe,
   ShopifyCheckoutSheetKit,
 } from './index.d';
@@ -207,6 +208,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
           'geolocationRequest',
           callback,
         );
+        break;
+      case 'linkClick':
+        eventCallback = this.interceptEventEmission('linkClick', callback);
         break;
       default:
         eventCallback = callback;
@@ -475,6 +479,7 @@ export type {
   Configuration,
   Features,
   GeolocationRequestEvent,
+  LinkClickEvent,
 };
 
 // Event types

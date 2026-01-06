@@ -154,16 +154,22 @@ export type CheckoutEvent =
   | 'error'
   | 'addressChangeStart'
   | 'submitStart'
-  | 'geolocationRequest';
+  | 'geolocationRequest'
+  | 'linkClick';
 
 export interface GeolocationRequestEvent {
   origin: string;
+}
+
+export interface LinkClickEvent {
+  url: string;
 }
 
 export type CloseEventCallback = () => void;
 export type GeolocationRequestEventCallback = (
   event: GeolocationRequestEvent,
 ) => void;
+export type LinkClickEventCallback = (event: LinkClickEvent) => void;
 export type CheckoutExceptionCallback = (error: CheckoutException) => void;
 export type CheckoutCompleteEventCallback = (
   event: CheckoutCompleteEvent,
@@ -185,7 +191,8 @@ export type CheckoutEventCallback =
   | CheckoutStartEventCallback
   | CheckoutAddressChangeStartCallback
   | CheckoutSubmitStartCallback
-  | GeolocationRequestEventCallback;
+  | GeolocationRequestEventCallback
+  | LinkClickEventCallback;
 
 /**
  * Available wallet types for accelerated checkout
@@ -281,6 +288,11 @@ function addEventListener(
 function addEventListener(
   event: 'geolocationRequest',
   callback: GeolocationRequestEventCallback,
+): Maybe<EmitterSubscription>;
+
+function addEventListener(
+  event: 'linkClick',
+  callback: LinkClickEventCallback,
 ): Maybe<EmitterSubscription>;
 
 function removeEventListeners(event: CheckoutEvent): void;

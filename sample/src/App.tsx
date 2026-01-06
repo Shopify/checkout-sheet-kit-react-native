@@ -243,12 +243,17 @@ function AppWithContext({children}: PropsWithChildren) {
       },
     );
 
+    const linkClick = shopify.addEventListener('linkClick', event => {
+      console.log('[App] linkClick event received:', event.url);
+    });
+
     return () => {
       completed?.remove();
       started?.remove();
       addressChangeStart?.remove();
       close?.remove();
       error?.remove();
+      linkClick?.remove();
     };
   }, [shopify, eventHandlers]);
 

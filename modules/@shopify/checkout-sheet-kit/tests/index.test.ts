@@ -458,6 +458,42 @@ describe('ShopifyCheckoutSheetKit', () => {
       });
     });
 
+    describe('LinkClick Event', () => {
+      it('parses linkClick event string data as JSON', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const callback = jest.fn();
+        instance.addEventListener('linkClick', callback);
+
+        eventEmitter.emit(
+          'linkClick',
+          JSON.stringify({url: 'https://example.com/terms'}),
+        );
+        expect(callback).toHaveBeenCalledWith({url: 'https://example.com/terms'});
+      });
+
+      it('parses linkClick event JSON data', () => {
+        const instance = new ShopifyCheckoutSheet();
+        const callback = jest.fn();
+        instance.addEventListener('linkClick', callback);
+
+        eventEmitter.emit('linkClick', {url: 'https://example.com/privacy'});
+        expect(callback).toHaveBeenCalledWith({url: 'https://example.com/privacy'});
+      });
+
+      it('prints an error if the linkClick event data cannot be parsed', () => {
+        const mock = jest.spyOn(global.console, 'error');
+        const instance = new ShopifyCheckoutSheet();
+        const callback = jest.fn();
+        instance.addEventListener('linkClick', callback);
+
+        eventEmitter.emit('linkClick', 'INVALID JSON');
+        expect(mock).toHaveBeenCalledWith(
+          expect.any(LifecycleEventParseError),
+          'INVALID JSON',
+        );
+      });
+    });
+
     describe('Error Event', () => {
       const internalError = {
         __typename: CheckoutNativeErrorType.InternalError,

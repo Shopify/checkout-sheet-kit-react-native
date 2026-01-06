@@ -52,6 +52,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         case paymentMethodChangeStart
         case start
         case submitStart
+        case linkClick
     }
 
     override init() {
@@ -108,6 +109,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
             self.checkoutSheet?.dismiss(animated: true)
         }
+    }
+
+    func checkoutDidClickLink(url: URL) {
+        emit(event: .linkClick, body: ["url": url.absoluteString])
     }
 
     @objc override func constantsToExport() -> [AnyHashable: Any]! {

@@ -24,6 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 package com.shopify.reactnative.checkoutsheetkit;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.webkit.GeolocationPermissions;
 
@@ -209,6 +210,17 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
       sendEventWithStringData("submitStart", data);
     } catch (IOException e) {
       Log.e(TAG, "Error processing submit start event", e);
+    }
+  }
+
+  @Override
+  public void onLinkClick(@NonNull Uri uri) {
+    try {
+      Map<String, Object> event = new HashMap<>();
+      event.put("url", uri.toString());
+      sendEventWithStringData("linkClick", mapper.writeValueAsString(event));
+    } catch (IOException e) {
+      Log.e(TAG, "Error processing link click event", e);
     }
   }
 

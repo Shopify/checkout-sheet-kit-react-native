@@ -250,6 +250,20 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
         XCTAssertTrue((mock.checkoutSheet as! MockCheckoutSheet).dismissWasCalled)
     }
 
+    /// checkoutDidClickLink
+    func testCheckoutDidClickLinkSendsEvent() {
+        let mock = mockSendEvent(eventName: "linkClick")
+
+        mock.startObserving()
+
+        let testURL = URL(string: "https://example.com/terms")!
+        mock.checkoutDidClickLink(url: testURL)
+
+        XCTAssertTrue(mock.didSendEvent)
+        let body = mock.eventBody as? [String: String]
+        XCTAssertEqual(body?["url"], "https://example.com/terms")
+    }
+
     /// CheckoutOptions parsing
     func testCanPresentCheckoutWithAuthenticationOptions() {
         let options: [AnyHashable: Any] = [
