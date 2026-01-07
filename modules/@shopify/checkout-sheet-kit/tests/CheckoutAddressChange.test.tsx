@@ -22,7 +22,7 @@ jest.mock('react-native', () => {
 
 import React from 'react';
 import {render, act} from '@testing-library/react-native';
-import {ShopifyCheckout} from '../src/components/Checkout';
+import {ShopifyCheckout} from '../src/components/ShopifyCheckout';
 import {createTestCart} from './testFixtures';
 
 describe('Checkout Component - Address Change Events', () => {
@@ -65,7 +65,10 @@ describe('Checkout Component - Address Change Events', () => {
 
   it('does not crash when onAddressChangeStart prop is not provided', () => {
     const {getByTestId} = render(
-      <ShopifyCheckout checkoutUrl={mockCheckoutUrl} testID="checkout-webview" />,
+      <ShopifyCheckout
+        checkoutUrl={mockCheckoutUrl}
+        testID="checkout-webview"
+      />,
     );
 
     const nativeComponent = getByTestId('checkout-webview');
@@ -136,4 +139,3 @@ describe('Checkout Component - Address Change Events', () => {
     expect(receivedEvent.cart.delivery.addresses).toHaveLength(1);
   });
 });
-

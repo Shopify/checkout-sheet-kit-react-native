@@ -37,7 +37,7 @@ import type {
   CheckoutPaymentMethodChangeStartEvent,
   CheckoutStartEvent,
   CheckoutSubmitStartEvent,
-} from '../events';
+} from '../events.d';
 import {
   parseCheckoutError,
   type CheckoutException,
@@ -334,6 +334,6 @@ export const ShopifyCheckout = forwardRef<
   },
 );
 
-ShopifyCheckout.displayName = 'Checkout';
+ShopifyCheckout.displayName = 'ShopifyCheckout';
 
 export default ShopifyCheckout;
