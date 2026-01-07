@@ -180,36 +180,25 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     let eventCallback;
 
     switch (event) {
-      case 'complete':
-        eventCallback = this.interceptEventEmission('complete', callback);
-        break;
-      case 'start':
-        eventCallback = this.interceptEventEmission('start', callback);
-        break;
-      case 'addressChangeStart':
-        eventCallback = this.interceptEventEmission(
-          'addressChangeStart',
-          callback,
-        );
-        break;
-      case 'submitStart':
-        eventCallback = this.interceptEventEmission('submitStart', callback);
-        break;
       case 'error':
-        eventCallback = this.interceptEventEmission(
-          'error',
+        eventCallback = this.parseEventData(
+          event,
           callback,
           parseCheckoutError,
         );
         break;
+      case 'addressChangeStart':
+      case 'complete':
       case 'geolocationRequest':
-        eventCallback = this.interceptEventEmission(
-          'geolocationRequest',
-          callback,
-        );
+      case 'start':
+      case 'submitStart':
+        eventCallback = this.parseEventData(event, callback);
+        break;
+      case 'close':
+        eventCallback = callback;
         break;
       default:
-        eventCallback = callback;
+        assertNever(`Unhandled event "${event}" received`);
     }
 
     return ShopifyCheckoutSheet.eventEmitter.addListener(event, eventCallback);
@@ -391,7 +380,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * @param transformData Optional function to transform the event data
    * @returns Function that handles the event emission
    */
-  private interceptEventEmission(
+  private parseEventData(
     event: CheckoutEvent,
     callback: CheckoutEventCallback,
     transformData?: (data: any) => any,
@@ -428,6 +417,10 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
       }
     };
   }
+}
+
+function assertNever(message: string): never {
+  throw new Error(message);
 }
 
 export class LifecycleEventParseError extends Error {
