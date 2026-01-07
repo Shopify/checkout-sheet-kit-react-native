@@ -38,13 +38,34 @@ import type {
   CheckoutOptions,
 } from './index.d';
 
-interface WebviewContextType {
+type Maybe<T> = T | undefined;
+
+interface Context {
+  acceleratedCheckoutsAvailable: boolean;
+  addEventListener: AddEventListener;
+  getConfig: () => Promise<Configuration | undefined>;
+  setConfig: (config: Configuration) => Promise<void>;
+  removeEventListeners: RemoveEventListeners;
+  preload: (checkoutUrl: string, options?: CheckoutOptions) => void;
+  present: (checkoutUrl: string, options?: CheckoutOptions) => void;
+  dismiss: () => void;
+  invalidate: () => void;
+  version: Maybe<string>;
+  respondToEvent: (eventId: string, response: any) => Promise<boolean>;
+}
+
+interface InternalContext extends Context {
+  registerWebView: (ref: React.RefObject<any>) => void;
+  unregisterWebView: () => void;
+}
+
+interface WebviewState {
   registerWebView: (ref: React.RefObject<any>) => void;
   unregisterWebView: () => void;
   respondToEvent: (eventId: string, response: any) => Promise<boolean>;
 }
 
-function useWebview(): WebviewContextType {
+function useWebview(): WebviewState {
   const webViewRef = useRef<React.RefObject<any> | null>(null);
 
   const registerWebView = useCallback((ref: React.RefObject<any>) => {
@@ -83,23 +104,8 @@ function useWebview(): WebviewContextType {
   return {registerWebView, unregisterWebView, respondToEvent};
 }
 
-type Maybe<T> = T | undefined;
-
-interface Context extends WebviewContextType {
-  acceleratedCheckoutsAvailable: boolean;
-  addEventListener: AddEventListener;
-  getConfig: () => Promise<Configuration | undefined>;
-  setConfig: (config: Configuration) => Promise<void>;
-  removeEventListeners: RemoveEventListeners;
-  preload: (checkoutUrl: string, options?: CheckoutOptions) => void;
-  present: (checkoutUrl: string, options?: CheckoutOptions) => void;
-  dismiss: () => void;
-  invalidate: () => void;
-  version: Maybe<string>;
-}
-
-const ShopifyCheckoutSheetContext = React.createContext<Context>(
-  null as unknown as Context,
+const ShopifyCheckoutSheetContext = React.createContext<InternalContext>(
+  null as unknown as InternalContext,
 );
 
 interface Props {
@@ -181,7 +187,7 @@ export function ShopifyCheckoutSheetProvider({
     return instance.current?.getConfig();
   }, []);
 
-  const context = useMemo((): Context => {
+  const context = useMemo((): InternalContext => {
     return {
       acceleratedCheckoutsAvailable,
       addEventListener,
@@ -219,14 +225,31 @@ export function ShopifyCheckoutSheetProvider({
   );
 }
 
-export function useShopifyCheckoutSheet() {
+export function useShopifyCheckoutSheet(): Context {
   const context = React.useContext(ShopifyCheckoutSheetContext);
   if (!context) {
     throw new Error(
       'useShopifyCheckoutSheet must be used from within a ShopifyCheckoutSheetContext',
     );
   }
-  return context;
+  return useMemo(() => {
+    const {registerWebView, unregisterWebView, ...publicContext} = context;
+    return publicContext;
+  }, [context]);
+}
+
+export function useWebviewRegistration(webViewRef: React.RefObject<any>) {
+  const context = React.useContext(ShopifyCheckoutSheetContext);
+  if (!context) {
+    throw new Error(
+      'useWebviewRegistration must be used within ShopifyCheckoutSheetProvider',
+    );
+  }
+
+  useEffect(() => {
+    context.registerWebView(webViewRef);
+    return () => context.unregisterWebView();
+  }, [context, webViewRef]);
 }
 
 export function useShopifyEvent(eventId: string) {

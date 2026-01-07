@@ -22,15 +22,13 @@ import React, {
   useCallback,
   useImperativeHandle,
   forwardRef,
-  useEffect,
 } from 'react';
+import {UIManager, findNodeHandle, type ViewStyle} from 'react-native';
+import {useWebviewRegistration} from '../context';
 import {
-  requireNativeComponent,
-  UIManager,
-  findNodeHandle,
-  type ViewStyle,
-} from 'react-native';
-import {useShopifyCheckoutSheet} from '../context';
+  RCTCheckoutWebView,
+  type NativeShopifyCheckoutWebViewProps,
+} from '../native/RCTCheckoutWebView';
 import type {
   CheckoutAddressChangeStartEvent,
   CheckoutCompleteEvent,
@@ -38,11 +36,7 @@ import type {
   CheckoutStartEvent,
   CheckoutSubmitStartEvent,
 } from '../events.d';
-import {
-  parseCheckoutError,
-  type CheckoutException,
-  type CheckoutNativeError,
-} from '../errors.d';
+import {parseCheckoutError, type CheckoutException} from '../errors.d';
 
 export interface ShopifyCheckoutProps {
   /**
@@ -123,30 +117,6 @@ export interface ShopifyCheckoutRef {
   reload: () => void;
 }
 
-interface NativeShopifyCheckoutWebViewProps {
-  checkoutUrl: string;
-  auth?: string;
-  style?: ViewStyle;
-  testID?: string;
-  onStart?: (event: {nativeEvent: CheckoutStartEvent}) => void;
-  onFail?: (event: {nativeEvent: CheckoutNativeError}) => void;
-  onComplete?: (event: {nativeEvent: CheckoutCompleteEvent}) => void;
-  onCancel?: () => void;
-  onLinkClick?: (event: {nativeEvent: {url: string}}) => void;
-  onAddressChangeStart?: (event: {
-    nativeEvent: CheckoutAddressChangeStartEvent;
-  }) => void;
-  onSubmitStart?: (event: {nativeEvent: CheckoutSubmitStartEvent}) => void;
-  onPaymentMethodChangeStart?: (event: {
-    nativeEvent: CheckoutPaymentMethodChangeStartEvent;
-  }) => void;
-}
-
-const RCTCheckoutWebView =
-  requireNativeComponent<NativeShopifyCheckoutWebViewProps>(
-    'RCTCheckoutWebView',
-  );
-
 /**
  * Checkout provides a native webview component for displaying
  * Shopify checkout pages directly within your React Native app.
@@ -211,12 +181,7 @@ export const ShopifyCheckout = forwardRef<
   ) => {
     const webViewRef =
       useRef<React.ComponentRef<typeof RCTCheckoutWebView>>(null);
-    const {registerWebView, unregisterWebView} = useShopifyCheckoutSheet();
-
-    useEffect(() => {
-      registerWebView(webViewRef);
-      return () => unregisterWebView();
-    }, [registerWebView, unregisterWebView]);
+    useWebviewRegistration(webViewRef);
 
     const handleStart = useCallback<
       Required<NativeShopifyCheckoutWebViewProps>['onStart']

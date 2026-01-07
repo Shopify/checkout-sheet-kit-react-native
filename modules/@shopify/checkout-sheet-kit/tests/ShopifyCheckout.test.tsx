@@ -1,36 +1,16 @@
-// Mock the native view component BEFORE imports
-jest.mock('react-native', () => {
-  const RN = jest.requireActual('react-native');
-  const React = jest.requireActual('react');
-
-  RN.UIManager.getViewManagerConfig = jest.fn(() => ({
-    Commands: {reload: 'reload'},
-  }));
-
-  RN.UIManager.dispatchViewManagerCommand = jest.fn();
-
-  RN.findNodeHandle = jest.fn(() => 123);
-
-  // Create mock component
-  const MockRCTCheckoutWebView = React.forwardRef((props: any, ref: any) => {
-    React.useImperativeHandle(ref, () => ({}));
-    return React.createElement('View', props);
-  });
-
-  return Object.setPrototypeOf(
-    {
-      requireNativeComponent: jest.fn(() => MockRCTCheckoutWebView),
-    },
-    RN,
-  );
-});
+jest.mock('../src/native/RCTCheckoutWebView');
+jest.mock('react-native');
 
 import React, {createRef} from 'react';
 import {render, act} from '@testing-library/react-native';
 import {ShopifyCheckout} from '../src/components/ShopifyCheckout';
 import type {ShopifyCheckoutRef} from '../src/components/ShopifyCheckout';
-import {ShopifyCheckoutEventProvider} from '../src/ShopifyCheckoutEventProvider';
+import {ShopifyCheckoutSheetProvider} from '../src/context';
 import {createTestCart} from './testFixtures';
+
+const Wrapper = ({children}: {children: React.ReactNode}) => (
+  <ShopifyCheckoutSheetProvider>{children}</ShopifyCheckoutSheetProvider>
+);
 
 describe('Checkout Component', () => {
   const mockCheckoutUrl = 'https://example.myshopify.com/checkout';
@@ -53,6 +33,7 @@ describe('Checkout Component', () => {
           onCancel={onCancel}
           testID="checkout-webview"
         />,
+        {wrapper: Wrapper},
       );
 
       const nativeComponent = getByTestId('checkout-webview');
@@ -76,6 +57,7 @@ describe('Checkout Component', () => {
           onLinkClick={onLinkClick}
           testID="checkout-webview"
         />,
+        {wrapper: Wrapper},
       );
 
       const nativeComponent = getByTestId('checkout-webview');
@@ -99,6 +81,7 @@ describe('Checkout Component', () => {
           onLinkClick={onLinkClick}
           testID="checkout-webview"
         />,
+        {wrapper: Wrapper},
       );
 
       const nativeComponent = getByTestId('checkout-webview');
@@ -124,6 +107,7 @@ describe('Checkout Component', () => {
           onPaymentMethodChangeStart={onPaymentMethodChangeStart}
           testID="checkout-webview"
         />,
+        {wrapper: Wrapper},
       );
 
       const nativeComponent = getByTestId('checkout-webview');
@@ -155,6 +139,7 @@ describe('Checkout Component', () => {
           onPaymentMethodChangeStart={onPaymentMethodChangeStart}
           testID="checkout-webview"
         />,
+        {wrapper: Wrapper},
       );
 
       const nativeComponent = getByTestId('checkout-webview');
@@ -176,6 +161,7 @@ describe('Checkout Component', () => {
           onPaymentMethodChangeStart={onPaymentMethodChangeStart}
           testID="checkout-webview"
         />,
+        {wrapper: Wrapper},
       );
 
       const nativeComponent = getByTestId('checkout-webview');
@@ -207,45 +193,11 @@ describe('Checkout Component', () => {
           checkoutUrl={mockCheckoutUrl}
           testID="checkout-webview"
         />,
+        {wrapper: Wrapper},
       );
 
       expect(ref.current).toBeDefined();
       expect(typeof ref.current?.reload).toBe('function');
-    });
-  });
-
-  describe('ShopifyCheckoutEventProvider integration', () => {
-    it('registers webview with event provider on mount', () => {
-      const registerWebView = jest.fn();
-      const unregisterWebView = jest.fn();
-
-      jest.doMock('../src/ShopifyCheckoutEventProvider', () => ({
-        useCheckoutEvents: () => ({
-          registerWebView,
-          unregisterWebView,
-          respondToEvent: jest.fn(),
-        }),
-      }));
-
-      render(
-        <ShopifyCheckoutEventProvider>
-          <ShopifyCheckout
-            checkoutUrl={mockCheckoutUrl}
-            testID="checkout-webview"
-          />
-        </ShopifyCheckoutEventProvider>,
-      );
-    });
-
-    it('works without event provider wrapper', () => {
-      expect(() => {
-        render(
-          <ShopifyCheckout
-            checkoutUrl={mockCheckoutUrl}
-            testID="checkout-webview"
-          />,
-        );
-      }).not.toThrow();
     });
   });
 
@@ -273,6 +225,7 @@ describe('Checkout Component', () => {
           onSubmitStart={onSubmitStart}
           testID="checkout-webview"
         />,
+        {wrapper: Wrapper},
       );
 
       const nativeComponent = getByTestId('checkout-webview');

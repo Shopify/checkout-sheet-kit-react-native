@@ -1,10 +1,11 @@
-import React, {useRef, useEffect} from 'react';
+import React, {useRef} from 'react';
 import {render, act} from '@testing-library/react-native';
 import {NativeModules, Platform, UIManager, findNodeHandle} from 'react-native';
 import {
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
   useShopifyEvent,
+  useWebviewRegistration,
 } from '../src/context';
 import {ApplePayContactField, ColorScheme, type Configuration} from '../src';
 
@@ -397,7 +398,9 @@ describe('ShopifyCheckoutSheetContext without provider', () => {
 
     expect(() => {
       render(<HookTestComponent onHookValue={() => {}} />);
-    }).toThrow('useShopifyCheckoutSheet must be used from within a ShopifyCheckoutSheetContext');
+    }).toThrow(
+      'useShopifyCheckoutSheet must be used from within a ShopifyCheckoutSheetContext',
+    );
 
     errorSpy.mockRestore();
   });
@@ -436,15 +439,15 @@ describe('useWebview behavior (via useShopifyCheckoutSheet)', () => {
   });
 
   it('respondToEvent dispatches native command when webview is registered', async () => {
-    const WebViewRegistrar = ({onHookValue}: {onHookValue: (value: any) => void}) => {
+    const WebViewRegistrar = ({
+      onHookValue,
+    }: {
+      onHookValue: (value: any) => void;
+    }) => {
       const hookValue = useShopifyCheckoutSheet();
       const webViewRef = useRef({current: {}});
-
-      useEffect(() => {
-        hookValue.registerWebView(webViewRef);
-        onHookValue(hookValue);
-      }, [hookValue, onHookValue]);
-
+      useWebviewRegistration(webViewRef);
+      onHookValue(hookValue);
       return null;
     };
 
@@ -475,15 +478,15 @@ describe('useWebview behavior (via useShopifyCheckoutSheet)', () => {
   it('respondToEvent returns false when findNodeHandle returns null', async () => {
     (findNodeHandle as jest.Mock).mockReturnValueOnce(null);
 
-    const WebViewRegistrar = ({onHookValue}: {onHookValue: (value: any) => void}) => {
+    const WebViewRegistrar = ({
+      onHookValue,
+    }: {
+      onHookValue: (value: any) => void;
+    }) => {
       const hookValue = useShopifyCheckoutSheet();
       const webViewRef = useRef({current: {}});
-
-      useEffect(() => {
-        hookValue.registerWebView(webViewRef);
-        onHookValue(hookValue);
-      }, [hookValue, onHookValue]);
-
+      useWebviewRegistration(webViewRef);
+      onHookValue(hookValue);
       return null;
     };
 
@@ -525,17 +528,15 @@ describe('useShopifyEvent', () => {
       onEvent,
     }: {
       eventId: string;
-      onEvent: (event: {id: string; respondWith: (response: any) => Promise<boolean>}) => void;
+      onEvent: (event: {
+        id: string;
+        respondWith: (response: any) => Promise<boolean>;
+      }) => void;
     }) => {
-      const {registerWebView} = useShopifyCheckoutSheet();
-      const event = useShopifyEvent(eventId);
       const webViewRef = useRef({current: {}});
-
-      useEffect(() => {
-        registerWebView(webViewRef);
-        onEvent(event);
-      }, [registerWebView, event, onEvent]);
-
+      useWebviewRegistration(webViewRef);
+      const event = useShopifyEvent(eventId);
+      onEvent(event);
       return null;
     };
 
@@ -573,7 +574,10 @@ describe('useShopifyEvent', () => {
       onEvent,
     }: {
       eventId: string;
-      onEvent: (event: {id: string; respondWith: (response: any) => Promise<boolean>}) => void;
+      onEvent: (event: {
+        id: string;
+        respondWith: (response: any) => Promise<boolean>;
+      }) => void;
     }) => {
       const event = useShopifyEvent(eventId);
       onEvent(event);
