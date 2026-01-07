@@ -43,6 +43,18 @@ const StyleSheet = {
   flatten: jest.fn(style => style),
 };
 
+const UIManager = {
+  getViewManagerConfig: jest.fn(() => ({
+    Commands: {
+      respondToEvent: 'respondToEvent',
+      reload: 'reload',
+    },
+  })),
+  dispatchViewManagerCommand: jest.fn(),
+};
+
+const findNodeHandle = jest.fn(() => 1);
+
 const exampleConfig = {preloading: true};
 
 const ShopifyCheckoutSheetKit = {
@@ -75,4 +87,6 @@ module.exports = {
     },
   },
   StyleSheet,
+  UIManager,
+  findNodeHandle,
 };

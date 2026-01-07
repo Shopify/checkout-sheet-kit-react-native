@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useRef, useEffect} from 'react';
 import {render, act} from '@testing-library/react-native';
-import {NativeModules, Platform} from 'react-native';
+import {NativeModules, Platform, UIManager, findNodeHandle} from 'react-native';
 import {
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
+  useShopifyEvent,
 } from '../src/context';
 import {ApplePayContactField, ColorScheme, type Configuration} from '../src';
 
@@ -397,6 +398,201 @@ describe('ShopifyCheckoutSheetContext without provider', () => {
     expect(() => {
       render(<HookTestComponent onHookValue={() => {}} />);
     }).toThrow('useShopifyCheckoutSheet must be used from within a ShopifyCheckoutSheetContext');
+
+    errorSpy.mockRestore();
+  });
+});
+
+describe('useWebview behavior (via useShopifyCheckoutSheet)', () => {
+  const Wrapper = ({children}: {children: React.ReactNode}) => (
+    <ShopifyCheckoutSheetProvider configuration={config}>
+      {children}
+    </ShopifyCheckoutSheetProvider>
+  );
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('respondToEvent returns false when no webview is registered', async () => {
+    let hookValue: any;
+    const onHookValue = (value: any) => {
+      hookValue = value;
+    };
+
+    render(
+      <Wrapper>
+        <HookTestComponent onHookValue={onHookValue} />
+      </Wrapper>,
+    );
+
+    let result: boolean = true;
+    await act(async () => {
+      result = await hookValue.respondToEvent('event-123', {foo: 'bar'});
+    });
+
+    expect(result).toBe(false);
+    expect(UIManager.dispatchViewManagerCommand).not.toHaveBeenCalled();
+  });
+
+  it('respondToEvent dispatches native command when webview is registered', async () => {
+    const WebViewRegistrar = ({onHookValue}: {onHookValue: (value: any) => void}) => {
+      const hookValue = useShopifyCheckoutSheet();
+      const webViewRef = useRef({current: {}});
+
+      useEffect(() => {
+        hookValue.registerWebView(webViewRef);
+        onHookValue(hookValue);
+      }, [hookValue, onHookValue]);
+
+      return null;
+    };
+
+    let hookValue: any;
+    const onHookValue = (value: any) => {
+      hookValue = value;
+    };
+
+    render(
+      <Wrapper>
+        <WebViewRegistrar onHookValue={onHookValue} />
+      </Wrapper>,
+    );
+
+    let result: boolean = false;
+    await act(async () => {
+      result = await hookValue.respondToEvent('event-123', {foo: 'bar'});
+    });
+
+    expect(result).toBe(true);
+    expect(UIManager.dispatchViewManagerCommand).toHaveBeenCalledWith(
+      1,
+      'respondToEvent',
+      ['event-123', JSON.stringify({foo: 'bar'})],
+    );
+  });
+
+  it('respondToEvent returns false when findNodeHandle returns null', async () => {
+    (findNodeHandle as jest.Mock).mockReturnValueOnce(null);
+
+    const WebViewRegistrar = ({onHookValue}: {onHookValue: (value: any) => void}) => {
+      const hookValue = useShopifyCheckoutSheet();
+      const webViewRef = useRef({current: {}});
+
+      useEffect(() => {
+        hookValue.registerWebView(webViewRef);
+        onHookValue(hookValue);
+      }, [hookValue, onHookValue]);
+
+      return null;
+    };
+
+    let hookValue: any;
+    const onHookValue = (value: any) => {
+      hookValue = value;
+    };
+
+    render(
+      <Wrapper>
+        <WebViewRegistrar onHookValue={onHookValue} />
+      </Wrapper>,
+    );
+
+    let result: boolean = true;
+    await act(async () => {
+      result = await hookValue.respondToEvent('event-123', {foo: 'bar'});
+    });
+
+    expect(result).toBe(false);
+    expect(UIManager.dispatchViewManagerCommand).not.toHaveBeenCalled();
+  });
+});
+
+describe('useShopifyEvent', () => {
+  const Wrapper = ({children}: {children: React.ReactNode}) => (
+    <ShopifyCheckoutSheetProvider configuration={config}>
+      {children}
+    </ShopifyCheckoutSheetProvider>
+  );
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('respondWith delegates to context.respondToEvent with correct eventId', async () => {
+    const ShopifyEventUser = ({
+      eventId,
+      onEvent,
+    }: {
+      eventId: string;
+      onEvent: (event: {id: string; respondWith: (response: any) => Promise<boolean>}) => void;
+    }) => {
+      const {registerWebView} = useShopifyCheckoutSheet();
+      const event = useShopifyEvent(eventId);
+      const webViewRef = useRef({current: {}});
+
+      useEffect(() => {
+        registerWebView(webViewRef);
+        onEvent(event);
+      }, [registerWebView, event, onEvent]);
+
+      return null;
+    };
+
+    let eventHook: any;
+    const onEvent = (event: any) => {
+      eventHook = event;
+    };
+
+    render(
+      <Wrapper>
+        <ShopifyEventUser eventId="test-event-456" onEvent={onEvent} />
+      </Wrapper>,
+    );
+
+    expect(eventHook.id).toBe('test-event-456');
+
+    let result: boolean = false;
+    await act(async () => {
+      result = await eventHook.respondWith({payment: 'data'});
+    });
+
+    expect(result).toBe(true);
+    expect(UIManager.dispatchViewManagerCommand).toHaveBeenCalledWith(
+      1,
+      'respondToEvent',
+      ['test-event-456', JSON.stringify({payment: 'data'})],
+    );
+  });
+
+  it('respondWith returns false when used outside provider', async () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+    const ShopifyEventUser = ({
+      eventId,
+      onEvent,
+    }: {
+      eventId: string;
+      onEvent: (event: {id: string; respondWith: (response: any) => Promise<boolean>}) => void;
+    }) => {
+      const event = useShopifyEvent(eventId);
+      onEvent(event);
+      return null;
+    };
+
+    let eventHook: any;
+    const onEvent = (event: any) => {
+      eventHook = event;
+    };
+
+    render(<ShopifyEventUser eventId="test-event-789" onEvent={onEvent} />);
+
+    let result: boolean = true;
+    await act(async () => {
+      result = await eventHook.respondWith({data: 'test'});
+    });
+
+    expect(result).toBe(false);
 
     errorSpy.mockRestore();
   });

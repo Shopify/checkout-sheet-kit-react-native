@@ -30,7 +30,7 @@ import {
   findNodeHandle,
   type ViewStyle,
 } from 'react-native';
-import {useCheckoutEvents} from '../ShopifyCheckoutEventProvider';
+import {useShopifyCheckoutSheet} from '../context';
 import type {
   CheckoutAddressChangeStartEvent,
   CheckoutCompleteEvent,
@@ -211,16 +211,12 @@ export const ShopifyCheckout = forwardRef<
   ) => {
     const webViewRef =
       useRef<React.ComponentRef<typeof RCTCheckoutWebView>>(null);
-    const eventContext = useCheckoutEvents();
+    const {registerWebView, unregisterWebView} = useShopifyCheckoutSheet();
 
-    // Register webview reference with the event provider
     useEffect(() => {
-      if (!eventContext) return;
-
-      eventContext.registerWebView(webViewRef);
-
-      return () => eventContext.unregisterWebView();
-    }, [eventContext]);
+      registerWebView(webViewRef);
+      return () => unregisterWebView();
+    }, [registerWebView, unregisterWebView]);
 
     const handleStart = useCallback<
       Required<NativeShopifyCheckoutWebViewProps>['onStart']

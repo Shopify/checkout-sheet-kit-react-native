@@ -7,6 +7,21 @@ jest.mock('react-native', () => {
     Commands: {},
   }));
 
+  RN.NativeModules.ShopifyCheckoutSheetKit = {
+    version: '0.7.0',
+    preload: jest.fn(),
+    present: jest.fn(),
+    dismiss: jest.fn(),
+    invalidateCache: jest.fn(),
+    getConfig: jest.fn(async () => ({preloading: true})),
+    setConfig: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListeners: jest.fn(),
+    initiateGeolocationRequest: jest.fn(),
+    configureAcceleratedCheckouts: jest.fn(),
+    isAcceleratedCheckoutAvailable: jest.fn(),
+  };
+
   // Create mock component
   const MockRCTCheckoutWebView = (props: any) => {
     return React.createElement('View', props);
@@ -23,7 +38,12 @@ jest.mock('react-native', () => {
 import React from 'react';
 import {render, act} from '@testing-library/react-native';
 import {ShopifyCheckout} from '../src/components/ShopifyCheckout';
+import {ShopifyCheckoutSheetProvider} from '../src/context';
 import {createTestCart} from './testFixtures';
+
+const Wrapper = ({children}: {children: React.ReactNode}) => (
+  <ShopifyCheckoutSheetProvider>{children}</ShopifyCheckoutSheetProvider>
+);
 
 describe('Checkout Component - Complete Events', () => {
   const mockCheckoutUrl = 'https://example.myshopify.com/checkout';
@@ -46,6 +66,7 @@ describe('Checkout Component - Complete Events', () => {
         onComplete={onComplete}
         testID="checkout-webview"
       />,
+      {wrapper: Wrapper},
     );
 
     const nativeComponent = getByTestId('checkout-webview');
@@ -80,6 +101,7 @@ describe('Checkout Component - Complete Events', () => {
         onComplete={onComplete}
         testID="checkout-webview"
       />,
+      {wrapper: Wrapper},
     );
 
     const nativeComponent = getByTestId('checkout-webview');
@@ -107,6 +129,7 @@ describe('Checkout Component - Complete Events', () => {
         onComplete={onComplete}
         testID="checkout-webview"
       />,
+      {wrapper: Wrapper},
     );
 
     const nativeComponent = getByTestId('checkout-webview');
@@ -136,6 +159,7 @@ describe('Checkout Component - Complete Events', () => {
         onComplete={onComplete}
         testID="checkout-webview"
       />,
+      {wrapper: Wrapper},
     );
 
     const nativeComponent = getByTestId('checkout-webview');
@@ -161,10 +185,8 @@ describe('Checkout Component - Complete Events', () => {
 
   it('does not crash when onComplete prop is not provided', () => {
     const {getByTestId} = render(
-      <ShopifyCheckout
-        checkoutUrl={mockCheckoutUrl}
-        testID="checkout-webview"
-      />,
+      <ShopifyCheckout checkoutUrl={mockCheckoutUrl} testID="checkout-webview" />,
+      {wrapper: Wrapper},
     );
 
     const nativeComponent = getByTestId('checkout-webview');

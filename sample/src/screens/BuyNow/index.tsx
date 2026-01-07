@@ -21,7 +21,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import type {RouteProp} from '@react-navigation/native';
 import React from 'react';
 import {Button} from 'react-native';
-import {ShopifyCheckoutEventProvider} from '@shopify/checkout-sheet-kit';
 import type {RootStackParamList} from '../../App';
 import CheckoutScreen from './CheckoutScreen';
 import AddressScreen from './AddressScreen';
@@ -40,41 +39,39 @@ type BuyNowStackProps = {
 export default function BuyNowStack(props: BuyNowStackProps) {
   const {colors} = useTheme();
   return (
-    <ShopifyCheckoutEventProvider>
-      <BuyNowStackNavigator.Navigator
-        initialRouteName="Checkout"
-        screenOptions={({navigation}) => ({
-          headerStyle: {backgroundColor: colors.webviewHeaderBackgroundColor},
-          headerTintColor: colors.webviewHeaderTextColor,
-          // eslint-disable-next-line react/no-unstable-nested-components
-          headerRight: () => (
-            <Button
-              title="Cancel"
-              color="black"
-              onPress={() => navigation.getParent()?.goBack()}
-            />
-          ),
-        })}>
-        <BuyNowStackNavigator.Screen
-          name="Checkout"
-          component={CheckoutScreen} // This component renders the @shopify CheckoutWebView component
-          initialParams={{
-            url: props.route.params.url,
-            auth: props.route.params.auth,
-          }}
-          options={{title: 'Shopify Checkout'}}
-        />
-        <BuyNowStackNavigator.Screen
-          name="Address"
-          component={AddressScreen}
-          options={{title: 'Shipping Address'}}
-        />
-        <BuyNowStackNavigator.Screen
-          name="Payment"
-          component={PaymentScreen}
-          options={{title: 'Payment Details'}}
-        />
-      </BuyNowStackNavigator.Navigator>
-    </ShopifyCheckoutEventProvider>
+    <BuyNowStackNavigator.Navigator
+      initialRouteName="Checkout"
+      screenOptions={({navigation}) => ({
+        headerStyle: {backgroundColor: colors.webviewHeaderBackgroundColor},
+        headerTintColor: colors.webviewHeaderTextColor,
+        // eslint-disable-next-line react/no-unstable-nested-components
+        headerRight: () => (
+          <Button
+            title="Cancel"
+            color="black"
+            onPress={() => navigation.getParent()?.goBack()}
+          />
+        ),
+      })}>
+      <BuyNowStackNavigator.Screen
+        name="Checkout"
+        component={CheckoutScreen} // This component renders the @shopify CheckoutWebView component
+        initialParams={{
+          url: props.route.params.url,
+          auth: props.route.params.auth,
+        }}
+        options={{title: 'Shopify Checkout'}}
+      />
+      <BuyNowStackNavigator.Screen
+        name="Address"
+        component={AddressScreen}
+        options={{title: 'Shipping Address'}}
+      />
+      <BuyNowStackNavigator.Screen
+        name="Payment"
+        component={PaymentScreen}
+        options={{title: 'Payment Details'}}
+      />
+    </BuyNowStackNavigator.Navigator>
   );
 }

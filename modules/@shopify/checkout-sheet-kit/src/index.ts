@@ -32,7 +32,11 @@ import type {
   EventSubscription,
   PermissionStatus,
 } from 'react-native';
-import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
+import {
+  ShopifyCheckoutSheetProvider,
+  useShopifyCheckoutSheet,
+  useShopifyEvent,
+} from './context';
 import {ApplePayContactField, ColorScheme} from './index.d';
 import type {
   AcceleratedCheckoutConfiguration,
@@ -461,6 +465,7 @@ export {
   ShopifyCheckoutSheet,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
+  useShopifyEvent,
 };
 
 // Error classes
@@ -519,16 +524,9 @@ export type {
   ShopifyCheckoutProps,
   ShopifyCheckoutRef,
 } from './components/ShopifyCheckout';
-export type {ShopifyCheckoutEventProviderProps} from './ShopifyCheckoutEventProvider';
-
 // Components
 export {
   AcceleratedCheckoutButtons,
   RenderState,
 } from './components/AcceleratedCheckoutButtons';
 export {ShopifyCheckout} from './components/ShopifyCheckout';
-export {
-  ShopifyCheckoutEventProvider,
-  useCheckoutEvents,
-  useShopifyEvent,
-} from './ShopifyCheckoutEventProvider';

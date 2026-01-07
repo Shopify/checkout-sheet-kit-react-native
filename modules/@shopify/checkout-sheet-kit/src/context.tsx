@@ -23,7 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import React, {useCallback, useMemo, useRef, useEffect, useState} from 'react';
 import type {PropsWithChildren} from 'react';
-import {type EmitterSubscription} from 'react-native';
+import {
+  type EmitterSubscription,
+  UIManager,
+  findNodeHandle,
+} from 'react-native';
 import {ShopifyCheckoutSheet} from './index';
 import type {Features} from './index.d';
 import type {
@@ -34,9 +38,54 @@ import type {
   CheckoutOptions,
 } from './index.d';
 
+interface WebviewContextType {
+  registerWebView: (ref: React.RefObject<any>) => void;
+  unregisterWebView: () => void;
+  respondToEvent: (eventId: string, response: any) => Promise<boolean>;
+}
+
+function useWebview(): WebviewContextType {
+  const webViewRef = useRef<React.RefObject<any> | null>(null);
+
+  const registerWebView = useCallback((ref: React.RefObject<any>) => {
+    webViewRef.current = ref;
+  }, []);
+
+  const unregisterWebView = useCallback(() => {
+    webViewRef.current = null;
+  }, []);
+
+  const respondToEvent = useCallback(
+    async (eventId: string, response: any): Promise<boolean> => {
+      if (!webViewRef.current?.current) {
+        return false;
+      }
+      try {
+        const handle = findNodeHandle(webViewRef.current.current);
+        if (!handle) {
+          return false;
+        }
+        const viewConfig = UIManager.getViewManagerConfig('RCTCheckoutWebView');
+        const commandId =
+          viewConfig?.Commands?.respondToEvent ?? 'respondToEvent';
+        UIManager.dispatchViewManagerCommand(handle, commandId, [
+          eventId,
+          JSON.stringify(response),
+        ]);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [],
+  );
+
+  return {registerWebView, unregisterWebView, respondToEvent};
+}
+
 type Maybe<T> = T | undefined;
 
-interface Context {
+interface Context extends WebviewContextType {
   acceleratedCheckoutsAvailable: boolean;
   addEventListener: AddEventListener;
   getConfig: () => Promise<Configuration | undefined>;
@@ -66,6 +115,7 @@ export function ShopifyCheckoutSheetProvider({
   const [acceleratedCheckoutsAvailable, setAcceleratedCheckoutsAvailable] =
     useState(false);
   const instance = useRef<ShopifyCheckoutSheet | null>(null);
+  const webview = useWebview();
 
   if (!instance.current) {
     instance.current = new ShopifyCheckoutSheet(configuration, features);
@@ -143,6 +193,9 @@ export function ShopifyCheckoutSheetProvider({
       invalidate,
       removeEventListeners,
       version: instance.current?.version,
+      registerWebView: webview.registerWebView,
+      unregisterWebView: webview.unregisterWebView,
+      respondToEvent: webview.respondToEvent,
     };
   }, [
     acceleratedCheckoutsAvailable,
@@ -154,6 +207,9 @@ export function ShopifyCheckoutSheetProvider({
     preload,
     present,
     invalidate,
+    webview.registerWebView,
+    webview.unregisterWebView,
+    webview.respondToEvent,
   ]);
 
   return (
@@ -171,6 +227,25 @@ export function useShopifyCheckoutSheet() {
     );
   }
   return context;
+}
+
+export function useShopifyEvent(eventId: string) {
+  const context = React.useContext(ShopifyCheckoutSheetContext);
+
+  const respondWith = useCallback(
+    async (response: any) => {
+      if (!context) {
+        return false;
+      }
+      return await context.respondToEvent(eventId, response);
+    },
+    [eventId, context],
+  );
+
+  return {
+    id: eventId,
+    respondWith,
+  };
 }
 
 export default ShopifyCheckoutSheetContext;

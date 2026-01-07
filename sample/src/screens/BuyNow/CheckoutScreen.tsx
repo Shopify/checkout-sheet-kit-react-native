@@ -28,7 +28,7 @@ import {
   type ShopifyCheckoutRef,
   type CheckoutStartEvent,
   type CheckoutSubmitStartEvent,
-  useCheckoutEvents,
+  useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
 import type {BuyNowStackParamList} from './types';
 import {StyleSheet} from 'react-native';
@@ -40,7 +40,7 @@ export default function CheckoutScreen(props: {
 }) {
   const navigation = useNavigation<NavigationProp<BuyNowStackParamList>>();
   const ref = useRef<ShopifyCheckoutRef>(null);
-  const eventContext = useCheckoutEvents();
+  const {respondToEvent} = useShopifyCheckoutSheet();
 
   const onStart = (event: CheckoutStartEvent) => {
     console.log('<CheckoutScreen /> onStart', event);
@@ -61,7 +61,7 @@ export default function CheckoutScreen(props: {
   const onSubmitStart = async (event: CheckoutSubmitStartEvent) => {
     console.log('<CheckoutScreen /> onSubmitStart', event);
     try {
-      await eventContext?.respondToEvent(event.id, {
+      await respondToEvent(event.id, {
         cart: {
           ...event.cart,
           payment: {
