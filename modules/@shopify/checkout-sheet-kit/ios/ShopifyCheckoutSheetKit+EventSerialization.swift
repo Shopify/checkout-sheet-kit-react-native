@@ -63,7 +63,8 @@ internal enum ShopifyEventSerialization {
     static func serialize(checkoutStartEvent event: CheckoutStartEvent) -> [String: Any] {
         return [
             "method": event.method,
-            "cart": encodeToJSON(from: event.cart)
+            "cart": encodeToJSON(from: event.cart),
+            "locale": event.locale
         ]
     }
 

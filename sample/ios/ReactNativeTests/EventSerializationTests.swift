@@ -23,7 +23,7 @@
 
 import Foundation
 @testable import RNShopifyCheckoutSheetKit
-import ShopifyCheckoutSheetKit
+@testable import ShopifyCheckoutSheetKit
 import XCTest
 
 @available(iOS 16.0, *)
@@ -59,5 +59,32 @@ class EventSerializationTests: XCTestCase {
         let url = URL(string: "https://shopify.dev/test")!
         let serialized = ShopifyEventSerialization.serialize(clickEvent: url)
         XCTAssertEqual(serialized["url"], url)
+    }
+
+    // MARK: - CheckoutStartEvent
+
+    func testCheckoutStartEventSerialization() throws {
+        let cart = Cart(
+            id: "gid://shopify/Cart/test-cart-123",
+            lines: [],
+            cost: CartCost(
+                subtotalAmount: Money(amount: "100.00", currencyCode: "USD"),
+                totalAmount: Money(amount: "100.00", currencyCode: "USD")
+            ),
+            buyerIdentity: CartBuyerIdentity(email: nil, phone: nil, customer: nil, countryCode: nil),
+            deliveryGroups: [],
+            discountCodes: [],
+            appliedGiftCards: [],
+            discountAllocations: [],
+            delivery: CartDelivery(addresses: []),
+            payment: CartPayment(methods: [])
+        )
+        let event = CheckoutStartEvent(cart: cart, locale: "en-US")
+
+        let serialized = ShopifyEventSerialization.serialize(checkoutStartEvent: event)
+
+        XCTAssertEqual(serialized["method"] as? String, "checkout.start")
+        XCTAssertNotNil(serialized["cart"])
+        XCTAssertEqual(serialized["locale"] as? String, "en-US")
     }
 }
