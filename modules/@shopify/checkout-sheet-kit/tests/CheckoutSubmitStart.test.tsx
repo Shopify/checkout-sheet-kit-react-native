@@ -22,8 +22,8 @@ jest.mock('react-native', () => {
 
 import React from 'react';
 import {render, act} from '@testing-library/react-native';
-import {ShopifyCheckout} from '../src/components/Checkout';
-import {createTestCart } from './testFixtures';
+import {ShopifyCheckout} from '../src/components/ShopifyCheckout';
+import {createTestCart} from './testFixtures';
 
 describe('Checkout Component - Submit Start Events', () => {
   const mockCheckoutUrl = 'https://example.myshopify.com/checkout';
@@ -48,7 +48,7 @@ describe('Checkout Component - Submit Start Events', () => {
           id: 'test-event-123',
           method: 'checkout.submitStart',
           cart: testCart,
-          sessionId: "checkout-session-123",
+          sessionId: 'checkout-session-123',
         },
       });
     });
@@ -58,13 +58,16 @@ describe('Checkout Component - Submit Start Events', () => {
       id: 'test-event-123',
       method: 'checkout.submitStart',
       cart: testCart,
-      sessionId: "checkout-session-123",
+      sessionId: 'checkout-session-123',
     });
   });
 
   it('does not crash when onSubmitStart prop is not provided', () => {
     const {getByTestId} = render(
-      <ShopifyCheckout checkoutUrl={mockCheckoutUrl} testID="checkout-webview" />,
+      <ShopifyCheckout
+        checkoutUrl={mockCheckoutUrl}
+        testID="checkout-webview"
+      />,
     );
 
     const nativeComponent = getByTestId('checkout-webview');
@@ -76,7 +79,7 @@ describe('Checkout Component - Submit Start Events', () => {
             id: 'test-event',
             method: 'checkout.submitStart',
             cart: createTestCart(),
-            sessionId: "checkout-session-123",
+            sessionId: 'checkout-session-123',
           },
         });
       });

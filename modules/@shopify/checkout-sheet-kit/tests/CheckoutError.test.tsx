@@ -22,7 +22,7 @@ jest.mock('react-native', () => {
 
 import React from 'react';
 import {render, act} from '@testing-library/react-native';
-import {ShopifyCheckout} from '../src/components/Checkout';
+import {ShopifyCheckout} from '../src/components/ShopifyCheckout';
 import {
   CheckoutErrorCode,
   ConfigurationError,
@@ -141,20 +141,53 @@ describe('Checkout Component - Error Events', () => {
 
     it.each([
       // Configuration errors
-      {nativeCode: 'INVALID_PAYLOAD', expectedCode: CheckoutErrorCode.invalidPayload},
-      {nativeCode: 'INVALID_SIGNATURE', expectedCode: CheckoutErrorCode.invalidSignature},
-      {nativeCode: 'NOT_AUTHORIZED', expectedCode: CheckoutErrorCode.notAuthorized},
-      {nativeCode: 'PAYLOAD_EXPIRED', expectedCode: CheckoutErrorCode.payloadExpired},
-      {nativeCode: 'CUSTOMER_ACCOUNT_REQUIRED', expectedCode: CheckoutErrorCode.customerAccountRequired},
-      {nativeCode: 'STOREFRONT_PASSWORD_REQUIRED', expectedCode: CheckoutErrorCode.storefrontPasswordRequired},
+      {
+        nativeCode: 'INVALID_PAYLOAD',
+        expectedCode: CheckoutErrorCode.invalidPayload,
+      },
+      {
+        nativeCode: 'INVALID_SIGNATURE',
+        expectedCode: CheckoutErrorCode.invalidSignature,
+      },
+      {
+        nativeCode: 'NOT_AUTHORIZED',
+        expectedCode: CheckoutErrorCode.notAuthorized,
+      },
+      {
+        nativeCode: 'PAYLOAD_EXPIRED',
+        expectedCode: CheckoutErrorCode.payloadExpired,
+      },
+      {
+        nativeCode: 'CUSTOMER_ACCOUNT_REQUIRED',
+        expectedCode: CheckoutErrorCode.customerAccountRequired,
+      },
+      {
+        nativeCode: 'STOREFRONT_PASSWORD_REQUIRED',
+        expectedCode: CheckoutErrorCode.storefrontPasswordRequired,
+      },
       // Expired checkout errors
-      {nativeCode: 'CART_COMPLETED', expectedCode: CheckoutErrorCode.cartCompleted},
+      {
+        nativeCode: 'CART_COMPLETED',
+        expectedCode: CheckoutErrorCode.cartCompleted,
+      },
       {nativeCode: 'INVALID_CART', expectedCode: CheckoutErrorCode.invalidCart},
       // Client errors
-      {nativeCode: 'KILLSWITCH_ENABLED', expectedCode: CheckoutErrorCode.killswitchEnabled},
-      {nativeCode: 'UNRECOVERABLE_FAILURE', expectedCode: CheckoutErrorCode.unrecoverableFailure},
-      {nativeCode: 'POLICY_VIOLATION', expectedCode: CheckoutErrorCode.policyViolation},
-      {nativeCode: 'VAULTED_PAYMENT_ERROR', expectedCode: CheckoutErrorCode.vaultedPaymentError},
+      {
+        nativeCode: 'KILLSWITCH_ENABLED',
+        expectedCode: CheckoutErrorCode.killswitchEnabled,
+      },
+      {
+        nativeCode: 'UNRECOVERABLE_FAILURE',
+        expectedCode: CheckoutErrorCode.unrecoverableFailure,
+      },
+      {
+        nativeCode: 'POLICY_VIOLATION',
+        expectedCode: CheckoutErrorCode.policyViolation,
+      },
+      {
+        nativeCode: 'VAULTED_PAYMENT_ERROR',
+        expectedCode: CheckoutErrorCode.vaultedPaymentError,
+      },
     ])(
       'maps native code $nativeCode to CheckoutErrorCode enum',
       ({nativeCode, expectedCode}) => {
@@ -189,7 +222,10 @@ describe('Checkout Component - Error Events', () => {
 
   it('does not crash when onFail prop is not provided', () => {
     const {getByTestId} = render(
-      <ShopifyCheckout checkoutUrl={mockCheckoutUrl} testID="checkout-webview" />,
+      <ShopifyCheckout
+        checkoutUrl={mockCheckoutUrl}
+        testID="checkout-webview"
+      />,
     );
 
     const nativeComponent = getByTestId('checkout-webview');
@@ -469,4 +505,3 @@ describe('Checkout Component - Error Events', () => {
     });
   });
 });
-
