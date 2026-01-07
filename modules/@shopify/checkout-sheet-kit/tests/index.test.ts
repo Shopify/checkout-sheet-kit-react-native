@@ -167,6 +167,17 @@ describe('ShopifyCheckoutSheetKit', () => {
       );
     });
 
+    it('throws an error when an unhandled event is received', () => {
+      const instance = new ShopifyCheckoutSheet();
+      const eventName = 'unknownEvent';
+      const callback = jest.fn();
+
+      expect(() => {
+        // @ts-expect-error Testing runtime check for invalid event
+        instance.addEventListener(eventName, callback);
+      }).toThrow('Unhandled event "unknownEvent" received');
+    });
+
     describe('Completed Event', () => {
       it('parses complete event string data as JSON', () => {
         const instance = new ShopifyCheckoutSheet();
