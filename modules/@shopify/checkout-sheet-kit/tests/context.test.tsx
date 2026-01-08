@@ -1,5 +1,6 @@
 import React, {useRef} from 'react';
-import {render, act} from '@testing-library/react-native';
+import {render, act, renderHook, screen} from '@testing-library/react-native';
+import {Text} from 'react-native';
 import {NativeModules, Platform, UIManager, findNodeHandle} from 'react-native';
 import {
   ShopifyCheckoutSheetProvider,
@@ -16,17 +17,10 @@ const config: Configuration = {
 
 jest.mock('react-native');
 
-const HookTestComponent = ({
-  onHookValue,
-}: {
-  onHookValue: (value: any) => void;
-}) => {
-  const hookValue = useShopifyCheckoutSheet();
-  onHookValue(hookValue);
-  return null;
+const ContextConsumer = () => {
+  const context = useShopifyCheckoutSheet();
+  return <Text testID="context-ready">{String(context.version)}</Text>;
 };
-
-const MockChild = () => null;
 
 describe('ShopifyCheckoutSheetProvider', () => {
   const TestComponent = ({children}: {children: React.ReactNode}) => (
@@ -39,34 +33,40 @@ describe('ShopifyCheckoutSheetProvider', () => {
     jest.clearAllMocks();
   });
 
-  it('renders without crashing', () => {
+  it('renders without crashing', async () => {
     const component = render(
       <TestComponent>
-        <MockChild />
+        <ContextConsumer />
       </TestComponent>,
     );
+
+    await screen.findByTestId('context-ready');
 
     expect(component).toBeTruthy();
   });
 
-  it('creates ShopifyCheckoutSheet instance with configuration', () => {
+  it('creates ShopifyCheckoutSheet instance with configuration', async () => {
     render(
       <TestComponent>
-        <MockChild />
+        <ContextConsumer />
       </TestComponent>,
     );
+
+    await screen.findByTestId('context-ready');
 
     expect(
       NativeModules.ShopifyCheckoutSheetKit.setConfig,
     ).toHaveBeenCalledWith(config);
   });
 
-  it('skips configuration when no configuration is provided', () => {
+  it('skips configuration when no configuration is provided', async () => {
     render(
       <ShopifyCheckoutSheetProvider>
-        <MockChild />
+        <ContextConsumer />
       </ShopifyCheckoutSheetProvider>,
     );
+
+    await screen.findByTestId('context-ready');
 
     expect(
       NativeModules.ShopifyCheckoutSheetKit.setConfig,
@@ -104,13 +104,11 @@ describe('ShopifyCheckoutSheetProvider', () => {
 
     render(
       <ShopifyCheckoutSheetProvider configuration={configWithAccelerated}>
-        <MockChild />
+        <ContextConsumer />
       </ShopifyCheckoutSheetProvider>,
     );
 
-    await act(async () => {
-      await Promise.resolve();
-    });
+    await screen.findByTestId('context-ready');
 
     expect(
       NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts,
@@ -125,18 +123,22 @@ describe('ShopifyCheckoutSheetProvider', () => {
     );
   });
 
-  it('reuses the same instance across re-renders', () => {
+  it('reuses the same instance across re-renders', async () => {
     const {rerender} = render(
       <TestComponent>
-        <MockChild />
+        <ContextConsumer />
       </TestComponent>,
     );
 
+    await screen.findByTestId('context-ready');
+
     rerender(
       <TestComponent>
-        <MockChild />
+        <ContextConsumer />
       </TestComponent>,
     );
+
+    await screen.findByTestId('context-ready');
 
     expect(
       NativeModules.ShopifyCheckoutSheetKit.setConfig.mock.calls,
@@ -156,54 +158,27 @@ describe('useShopifyCheckoutSheet', () => {
   });
 
   it('provides addEventListener function', () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
+    const {result} = renderHook(() => useShopifyCheckoutSheet(), {wrapper: Wrapper});
 
-    render(
-      <Wrapper>
-        <HookTestComponent onHookValue={onHookValue} />
-      </Wrapper>,
-    );
-
-    expect(hookValue.addEventListener).toBeDefined();
-    expect(typeof hookValue.addEventListener).toBe('function');
+    expect(result.current.addEventListener).toBeDefined();
+    expect(typeof result.current.addEventListener).toBe('function');
   });
 
   it('provides removeEventListeners function', () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
-
-    render(
-      <Wrapper>
-        <HookTestComponent onHookValue={onHookValue} />
-      </Wrapper>,
-    );
+    const {result} = renderHook(() => useShopifyCheckoutSheet(), {wrapper: Wrapper});
 
     act(() => {
-      hookValue.removeEventListeners('close');
+      result.current.removeEventListeners('close');
     });
 
-    expect(hookValue.removeEventListeners).toBeDefined();
+    expect(result.current.removeEventListeners).toBeDefined();
   });
 
   it('provides present function and calls it with checkoutUrl', () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
-
-    render(
-      <Wrapper>
-        <HookTestComponent onHookValue={onHookValue} />
-      </Wrapper>,
-    );
+    const {result} = renderHook(() => useShopifyCheckoutSheet(), {wrapper: Wrapper});
 
     act(() => {
-      hookValue.present(checkoutUrl);
+      result.current.present(checkoutUrl);
     });
 
     expect(NativeModules.ShopifyCheckoutSheetKit.present).toHaveBeenCalledWith(
@@ -213,19 +188,10 @@ describe('useShopifyCheckoutSheet', () => {
   });
 
   it('does not call present with empty checkoutUrl', () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
-
-    render(
-      <Wrapper>
-        <HookTestComponent onHookValue={onHookValue} />
-      </Wrapper>,
-    );
+    const {result} = renderHook(() => useShopifyCheckoutSheet(), {wrapper: Wrapper});
 
     act(() => {
-      hookValue.present('');
+      result.current.present('');
     });
 
     expect(
@@ -234,19 +200,10 @@ describe('useShopifyCheckoutSheet', () => {
   });
 
   it('provides preload function and calls it with checkoutUrl', () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
-
-    render(
-      <Wrapper>
-        <HookTestComponent onHookValue={onHookValue} />
-      </Wrapper>,
-    );
+    const {result} = renderHook(() => useShopifyCheckoutSheet(), {wrapper: Wrapper});
 
     act(() => {
-      hookValue.preload(checkoutUrl);
+      result.current.preload(checkoutUrl);
     });
 
     expect(NativeModules.ShopifyCheckoutSheetKit.preload).toHaveBeenCalledWith(
@@ -256,19 +213,10 @@ describe('useShopifyCheckoutSheet', () => {
   });
 
   it('does not call preload with empty checkoutUrl', () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
-
-    render(
-      <Wrapper>
-        <HookTestComponent onHookValue={onHookValue} />
-      </Wrapper>,
-    );
+    const {result} = renderHook(() => useShopifyCheckoutSheet(), {wrapper: Wrapper});
 
     act(() => {
-      hookValue.preload('');
+      result.current.preload('');
     });
 
     expect(
@@ -277,19 +225,10 @@ describe('useShopifyCheckoutSheet', () => {
   });
 
   it('provides invalidate function', () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
-
-    render(
-      <Wrapper>
-        <HookTestComponent onHookValue={onHookValue} />
-      </Wrapper>,
-    );
+    const {result} = renderHook(() => useShopifyCheckoutSheet(), {wrapper: Wrapper});
 
     act(() => {
-      hookValue.invalidate();
+      result.current.invalidate();
     });
 
     expect(
@@ -298,40 +237,22 @@ describe('useShopifyCheckoutSheet', () => {
   });
 
   it('provides dismiss function', () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
-
-    render(
-      <Wrapper>
-        <HookTestComponent onHookValue={onHookValue} />
-      </Wrapper>,
-    );
+    const {result} = renderHook(() => useShopifyCheckoutSheet(), {wrapper: Wrapper});
 
     act(() => {
-      hookValue.dismiss();
+      result.current.dismiss();
     });
 
     expect(NativeModules.ShopifyCheckoutSheetKit.dismiss).toHaveBeenCalled();
   });
 
   it('provides setConfig function', () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
+    const {result} = renderHook(() => useShopifyCheckoutSheet(), {wrapper: Wrapper});
 
     const newConfig = {colorScheme: ColorScheme.light};
 
-    render(
-      <Wrapper>
-        <HookTestComponent onHookValue={onHookValue} />
-      </Wrapper>,
-    );
-
     act(() => {
-      hookValue.setConfig(newConfig);
+      result.current.setConfig(newConfig);
     });
 
     expect(
@@ -340,19 +261,10 @@ describe('useShopifyCheckoutSheet', () => {
   });
 
   it('provides getConfig function', async () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
-
-    render(
-      <Wrapper>
-        <HookTestComponent onHookValue={onHookValue} />
-      </Wrapper>,
-    );
+    const {result} = renderHook(() => useShopifyCheckoutSheet(), {wrapper: Wrapper});
 
     await act(async () => {
-      const config = await hookValue.getConfig();
+      const config = await result.current.getConfig();
       expect(config).toEqual({preloading: true});
     });
 
@@ -360,35 +272,17 @@ describe('useShopifyCheckoutSheet', () => {
   });
 
   it('provides version from the instance', () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
+    const {result} = renderHook(() => useShopifyCheckoutSheet(), {wrapper: Wrapper});
 
-    render(
-      <Wrapper>
-        <HookTestComponent onHookValue={onHookValue} />
-      </Wrapper>,
-    );
-
-    expect(hookValue.version).toBe('0.7.0');
+    expect(result.current.version).toBe('0.7.0');
   });
 
   it('addEventListener returns subscription object', () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
+    const {result} = renderHook(() => useShopifyCheckoutSheet(), {wrapper: Wrapper});
 
-    render(
-      <Wrapper>
-        <HookTestComponent onHookValue={onHookValue} />
-      </Wrapper>,
-    );
-
-    const subscription = hookValue.addEventListener('close', jest.fn());
+    const subscription = result.current.addEventListener('close', jest.fn());
     expect(subscription).toBeDefined();
-    expect(subscription.remove).toBeDefined();
+    expect(subscription?.remove).toBeDefined();
   });
 });
 
@@ -397,7 +291,7 @@ describe('ShopifyCheckoutSheetContext without provider', () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation();
 
     expect(() => {
-      render(<HookTestComponent onHookValue={() => {}} />);
+      renderHook(() => useShopifyCheckoutSheet());
     }).toThrow(
       'useShopifyCheckoutSheet must be used from within a ShopifyCheckoutSheetContext',
     );
@@ -418,56 +312,31 @@ describe('useWebview behavior (via useShopifyCheckoutSheet)', () => {
   });
 
   it('respondToEvent returns false when no webview is registered', async () => {
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
+    const {result} = renderHook(() => useShopifyCheckoutSheet(), {wrapper: Wrapper});
 
-    render(
-      <Wrapper>
-        <HookTestComponent onHookValue={onHookValue} />
-      </Wrapper>,
-    );
-
-    let result: boolean = true;
+    let returnValue: boolean = true;
     await act(async () => {
-      result = await hookValue.respondToEvent('event-123', {foo: 'bar'});
+      returnValue = await result.current.respondToEvent('event-123', {foo: 'bar'});
     });
 
-    expect(result).toBe(false);
+    expect(returnValue).toBe(false);
     expect(UIManager.dispatchViewManagerCommand).not.toHaveBeenCalled();
   });
 
   it('respondToEvent dispatches native command when webview is registered', async () => {
-    const WebViewRegistrar = ({
-      onHookValue,
-    }: {
-      onHookValue: (value: any) => void;
-    }) => {
+    const {result} = renderHook(() => {
       const hookValue = useShopifyCheckoutSheet();
       const webViewRef = useRef({current: {}});
       useWebviewRegistration(webViewRef);
-      onHookValue(hookValue);
-      return null;
-    };
+      return hookValue;
+    }, {wrapper: Wrapper});
 
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
-
-    render(
-      <Wrapper>
-        <WebViewRegistrar onHookValue={onHookValue} />
-      </Wrapper>,
-    );
-
-    let result: boolean = false;
+    let returnValue: boolean = false;
     await act(async () => {
-      result = await hookValue.respondToEvent('event-123', {foo: 'bar'});
+      returnValue = await result.current.respondToEvent('event-123', {foo: 'bar'});
     });
 
-    expect(result).toBe(true);
+    expect(returnValue).toBe(true);
     expect(UIManager.dispatchViewManagerCommand).toHaveBeenCalledWith(
       1,
       'respondToEvent',
@@ -478,35 +347,19 @@ describe('useWebview behavior (via useShopifyCheckoutSheet)', () => {
   it('respondToEvent returns false when findNodeHandle returns null', async () => {
     (findNodeHandle as jest.Mock).mockReturnValueOnce(null);
 
-    const WebViewRegistrar = ({
-      onHookValue,
-    }: {
-      onHookValue: (value: any) => void;
-    }) => {
+    const {result} = renderHook(() => {
       const hookValue = useShopifyCheckoutSheet();
       const webViewRef = useRef({current: {}});
       useWebviewRegistration(webViewRef);
-      onHookValue(hookValue);
-      return null;
-    };
+      return hookValue;
+    }, {wrapper: Wrapper});
 
-    let hookValue: any;
-    const onHookValue = (value: any) => {
-      hookValue = value;
-    };
-
-    render(
-      <Wrapper>
-        <WebViewRegistrar onHookValue={onHookValue} />
-      </Wrapper>,
-    );
-
-    let result: boolean = true;
+    let returnValue: boolean = true;
     await act(async () => {
-      result = await hookValue.respondToEvent('event-123', {foo: 'bar'});
+      returnValue = await result.current.respondToEvent('event-123', {foo: 'bar'});
     });
 
-    expect(result).toBe(false);
+    expect(returnValue).toBe(false);
     expect(UIManager.dispatchViewManagerCommand).not.toHaveBeenCalled();
   });
 });
@@ -523,42 +376,20 @@ describe('useShopifyEvent', () => {
   });
 
   it('respondWith delegates to context.respondToEvent with correct eventId', async () => {
-    const ShopifyEventUser = ({
-      eventId,
-      onEvent,
-    }: {
-      eventId: string;
-      onEvent: (event: {
-        id: string;
-        respondWith: (response: any) => Promise<boolean>;
-      }) => void;
-    }) => {
+    const {result} = renderHook(() => {
       const webViewRef = useRef({current: {}});
       useWebviewRegistration(webViewRef);
-      const event = useShopifyEvent(eventId);
-      onEvent(event);
-      return null;
-    };
+      return useShopifyEvent('test-event-456');
+    }, {wrapper: Wrapper});
 
-    let eventHook: any;
-    const onEvent = (event: any) => {
-      eventHook = event;
-    };
+    expect(result.current.id).toBe('test-event-456');
 
-    render(
-      <Wrapper>
-        <ShopifyEventUser eventId="test-event-456" onEvent={onEvent} />
-      </Wrapper>,
-    );
-
-    expect(eventHook.id).toBe('test-event-456');
-
-    let result: boolean = false;
+    let returnValue: boolean = false;
     await act(async () => {
-      result = await eventHook.respondWith({payment: 'data'});
+      returnValue = await result.current.respondWith({payment: 'data'});
     });
 
-    expect(result).toBe(true);
+    expect(returnValue).toBe(true);
     expect(UIManager.dispatchViewManagerCommand).toHaveBeenCalledWith(
       1,
       'respondToEvent',
@@ -569,13 +400,8 @@ describe('useShopifyEvent', () => {
   it('throws error when used outside provider', () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation();
 
-    const ShopifyEventUser = ({eventId}: {eventId: string}) => {
-      useShopifyEvent(eventId);
-      return null;
-    };
-
     expect(() => {
-      render(<ShopifyEventUser eventId="test-event-789" />);
+      renderHook(() => useShopifyEvent('test-event-789'));
     }).toThrow('useShopifyEvent must be used within ShopifyCheckoutSheetProvider');
 
     errorSpy.mockRestore();

@@ -39,6 +39,11 @@ const requireNativeComponent = (..._args: any[]) => {
     });
 };
 
+const Text = (props: any) => {
+  const React = require('react');
+  return React.createElement('Text', props, props.children);
+};
+
 const StyleSheet = {
   flatten: jest.fn(style => style),
 };
@@ -64,12 +69,12 @@ const ShopifyCheckoutSheetKit = {
   dismiss: jest.fn(),
   invalidateCache: jest.fn(),
   getConfig: jest.fn(async () => exampleConfig),
-  setConfig: jest.fn(),
+  setConfig: jest.fn(async () => {}),
   addEventListener: jest.fn(),
   removeEventListeners: jest.fn(),
   initiateGeolocationRequest: jest.fn(),
   configureAcceleratedCheckouts: jest.fn(),
-  isAcceleratedCheckoutAvailable: jest.fn(),
+  isAcceleratedCheckoutAvailable: jest.fn(async () => false),
 };
 
 // CommonJS export for Jest manual mock resolution
@@ -89,4 +94,5 @@ module.exports = {
   StyleSheet,
   UIManager,
   findNodeHandle,
+  Text,
 };
