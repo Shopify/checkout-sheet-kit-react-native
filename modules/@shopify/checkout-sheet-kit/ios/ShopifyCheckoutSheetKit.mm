@@ -134,6 +134,11 @@ SOFTWARE.
     RCT_EXPORT_VIEW_PROPERTY(onSubmitStart, RCTBubblingEventBlock)
 
     /**
+     * Emitted when checkout primary action changes (enabled/disabled/loading)
+     */
+    RCT_EXPORT_VIEW_PROPERTY(onPrimaryActionChange, RCTBubblingEventBlock)
+
+    /**
      * Emitted when a link is clicked
      */
     RCT_EXPORT_VIEW_PROPERTY(onLinkClick, RCTBubblingEventBlock)

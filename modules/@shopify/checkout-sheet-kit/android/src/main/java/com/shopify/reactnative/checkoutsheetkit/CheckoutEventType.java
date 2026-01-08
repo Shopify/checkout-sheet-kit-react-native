@@ -45,7 +45,8 @@ public enum CheckoutEventType {
   ON_LINK_CLICK("onLinkClick"),
   ON_ADDRESS_CHANGE_START("onAddressChangeStart"),
   ON_PAYMENT_METHOD_CHANGE_START("onPaymentMethodChangeStart"),
-  ON_SUBMIT_START("onSubmitStart");
+  ON_SUBMIT_START("onSubmitStart"),
+  ON_PRIMARY_ACTION_CHANGE("onPrimaryActionChange");
 
   private final String eventName;
 

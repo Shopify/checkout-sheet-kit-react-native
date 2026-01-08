@@ -37,6 +37,7 @@ import type {
   CheckoutPaymentMethodChangeStartEvent,
   CheckoutStartEvent,
   CheckoutSubmitStartEvent,
+  CheckoutPrimaryActionChangeEvent,
 } from '../events.d';
 import {
   parseCheckoutError,
@@ -105,6 +106,13 @@ export interface ShopifyCheckoutProps {
   onPaymentMethodChangeStart?: (
     event: CheckoutPaymentMethodChangeStartEvent,
   ) => void;
+
+  /**
+   * Called when the checkout primary action changes state (pay/review, enabled/loading/etc).
+   */
+  onPrimaryActionChange?: (
+    event: CheckoutPrimaryActionChangeEvent,
+  ) => void;
   /**
    * Style for the webview container
    */
@@ -139,6 +147,9 @@ interface NativeShopifyCheckoutWebViewProps {
   onSubmitStart?: (event: {nativeEvent: CheckoutSubmitStartEvent}) => void;
   onPaymentMethodChangeStart?: (event: {
     nativeEvent: CheckoutPaymentMethodChangeStartEvent;
+  }) => void;
+  onPrimaryActionChange?: (event: {
+    nativeEvent: CheckoutPrimaryActionChangeEvent;
   }) => void;
 }
 
@@ -204,6 +215,7 @@ export const ShopifyCheckout = forwardRef<
       onAddressChangeStart,
       onPaymentMethodChangeStart,
       onSubmitStart,
+      onPrimaryActionChange,
       style,
       testID,
     },
@@ -296,6 +308,16 @@ export const ShopifyCheckout = forwardRef<
       [onSubmitStart],
     );
 
+    const handlePrimaryActionChange = useCallback<
+      Required<NativeShopifyCheckoutWebViewProps>['onPrimaryActionChange']
+    >(
+      event => {
+        if (!event.nativeEvent) return;
+        onPrimaryActionChange?.(event.nativeEvent);
+      },
+      [onPrimaryActionChange],
+    );
+
     const reload = useCallback(() => {
       if (!webViewRef.current) {
         return;
@@ -329,6 +351,7 @@ export const ShopifyCheckout = forwardRef<
         onAddressChangeStart={handleAddressChangeStart}
         onPaymentMethodChangeStart={handlePaymentMethodChangeStart}
         onSubmitStart={handleSubmitStart}
+        onPrimaryActionChange={handlePrimaryActionChange}
       />
     );
   },

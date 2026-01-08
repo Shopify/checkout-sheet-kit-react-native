@@ -94,6 +94,7 @@ class RCTCheckoutWebView: UIView {
     @objc var onAddressChangeStart: RCTBubblingEventBlock?
     @objc var onPaymentMethodChangeStart: RCTBubblingEventBlock?
     @objc var onSubmitStart: RCTBubblingEventBlock?
+    @objc var onPrimaryActionChange: RCTBubblingEventBlock?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -312,6 +313,10 @@ extension RCTCheckoutWebView: CheckoutDelegate {
     func checkoutDidStartPaymentMethodChange(event: CheckoutPaymentMethodChangeStartEvent) {
         events.set(key: event.id, event: event)
         onPaymentMethodChangeStart?(ShopifyEventSerialization.serialize(checkoutPaymentMethodChangeStartEvent: event))
+    }
+
+    func checkoutDidChangePrimaryAction(event: CheckoutPrimaryActionChangeEvent) {
+        onPrimaryActionChange?(ShopifyEventSerialization.serialize(checkoutPrimaryActionChangeEvent: event))
     }
 
     /// Called when the buyer attempts to submit the checkout.

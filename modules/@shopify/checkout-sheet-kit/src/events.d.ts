@@ -578,6 +578,31 @@ export interface CheckoutSubmitStartEvent {
 }
 
 /**
+ * Event emitted when the checkout primary action changes state.
+ */
+export interface CheckoutPrimaryActionChangeEvent {
+  /**
+   * The event type identifier
+   */
+  method: 'checkout.primaryActionChange';
+
+  /**
+   * The current state of the primary action.
+   */
+  state: 'enabled' | 'disabled' | 'loading';
+
+  /**
+   * The current primary action label.
+   */
+  action: 'pay' | 'review';
+
+  /**
+   * The current cart state when the event was emitted.
+   */
+  cart: Cart;
+}
+
+/**
  * Response payload for CheckoutSubmitStartEvent event.
  * Use with ShopifyCheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
  *

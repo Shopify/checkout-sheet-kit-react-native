@@ -45,6 +45,7 @@ import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutAddressChangeStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutSubmitStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutPaymentMethodChangeStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutPrimaryActionChangeEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -210,6 +211,22 @@ public class SheetCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
       sendEventWithStringData("submitStart", data);
     } catch (IOException e) {
       Log.e(TAG, "Error processing submit start event", e);
+    }
+  }
+
+  @Override
+  public void onPrimaryActionChange(@NonNull CheckoutPrimaryActionChangeEvent event) {
+    try {
+      Map<String, Object> eventMap = new HashMap<>();
+      eventMap.put("method", event.getMethod());
+      eventMap.put("state", event.getState());
+      eventMap.put("action", event.getAction());
+      eventMap.put("cart", event.getCart());
+
+      String data = mapper.writeValueAsString(eventMap);
+      sendEventWithStringData("primaryActionChange", data);
+    } catch (IOException e) {
+      Log.e(TAG, "Error processing primary action change event", e);
     }
   }
 

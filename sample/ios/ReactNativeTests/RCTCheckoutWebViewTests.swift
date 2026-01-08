@@ -417,7 +417,7 @@ class RCTCheckoutWebViewTests: XCTestCase {
         XCTAssertEqual(receivedPayload?["id"] as? String, "submit-event-789")
         XCTAssertEqual(receivedPayload?["method"] as? String, "checkout.submitStart")
 
-      XCTAssertEqual(receivedPayload?["sessionId"] as? String, "checkout-123")
+        XCTAssertEqual(receivedPayload?["sessionId"] as? String, "checkout-123")
 
         let cart = receivedPayload?["cart"] as? [String: Any]
         XCTAssertNotNil(cart, "Cart should be included in the emitted event")
@@ -429,6 +429,34 @@ class RCTCheckoutWebViewTests: XCTestCase {
 
         let totalAmount = cost?["totalAmount"] as? [String: Any]
         XCTAssertEqual(totalAmount?["amount"] as? String, "110.00")
+    }
+
+    func test_checkoutDidChangePrimaryAction_whenDelegateCalled_emitsOnPrimaryActionChangeEvent() {
+        let expectation = expectation(description: "onPrimaryActionChange event emitted")
+        var receivedPayload: [AnyHashable: Any]?
+
+        checkoutWebView.onPrimaryActionChange = { payload in
+            receivedPayload = payload
+            expectation.fulfill()
+        }
+
+        let event = CheckoutPrimaryActionChangeEvent(
+            state: "enabled",
+            action: "pay",
+            cart: createTestCart()
+        )
+
+        checkoutWebView.checkoutDidChangePrimaryAction(event: event)
+
+        wait(for: [expectation], timeout: 0.1)
+
+        XCTAssertEqual(receivedPayload?["method"] as? String, "checkout.primaryActionChange")
+        XCTAssertEqual(receivedPayload?["state"] as? String, "enabled")
+        XCTAssertEqual(receivedPayload?["action"] as? String, "pay")
+
+        let cart = receivedPayload?["cart"] as? [String: Any]
+        XCTAssertNotNil(cart)
+        XCTAssertEqual(cart?["id"] as? String, "gid://shopify/Cart/test-cart-123")
     }
 
     func test_checkoutDidStartSubmit_storesEventInRegistry() {

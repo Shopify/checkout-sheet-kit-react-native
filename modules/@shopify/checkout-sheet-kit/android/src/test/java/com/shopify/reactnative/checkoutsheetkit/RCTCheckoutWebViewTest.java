@@ -56,6 +56,7 @@ import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutAddressChangeStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutSubmitStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutPaymentMethodChangeStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutPrimaryActionChangeEvent;
 
 import org.junit.After;
 import org.junit.Before;
@@ -496,6 +497,24 @@ public class RCTCheckoutWebViewTest {
         invokePrivateMethod(webView, "buildErrorMap", exception);
 
         verify(mockMap).putString("__typename", "UnknownError");
+    }
+
+    @Test
+    public void testInlineProcessor_onPrimaryActionChange_emitsEvent() throws Exception {
+        CheckoutPrimaryActionChangeEvent event = mock(CheckoutPrimaryActionChangeEvent.class, RETURNS_DEEP_STUBS);
+        when(event.getMethod()).thenReturn("checkout.primaryActionChange");
+        when(event.getState()).thenReturn("enabled");
+        when(event.getAction()).thenReturn("pay");
+        when(event.getCart()).thenReturn(null);
+
+        RCTCheckoutWebView spyWebView = spy(webView);
+        doNothing().when(spyWebView).sendEvent(any(), any());
+
+        RCTCheckoutWebView.InlineCheckoutEventProcessor processor = spyWebView.new InlineCheckoutEventProcessor(mockContext);
+
+        processor.onPrimaryActionChange(event);
+
+        verify(spyWebView).sendEvent(eq(CheckoutEventType.ON_PRIMARY_ACTION_CHANGE), any());
     }
 
     // MARK: - Helper Methods

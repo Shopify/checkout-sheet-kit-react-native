@@ -19,7 +19,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import type {NavigationProp, RouteProp} from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
-import React, {useRef} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import {
   ShopifyCheckout,
   type CheckoutAddressChangeStartEvent,
@@ -28,10 +28,11 @@ import {
   type ShopifyCheckoutRef,
   type CheckoutStartEvent,
   type CheckoutSubmitStartEvent,
+  type CheckoutPrimaryActionChangeEvent,
   useCheckoutEvents,
 } from '@shopify/checkout-sheet-kit';
 import type {BuyNowStackParamList} from './types';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View, TouchableOpacity, Text, ActivityIndicator} from 'react-native';
 
 // This component represents a screen in the consumers app that
 // wraps the shopify Checkout and provides it the auth param
@@ -41,6 +42,12 @@ export default function CheckoutScreen(props: {
   const navigation = useNavigation<NavigationProp<BuyNowStackParamList>>();
   const ref = useRef<ShopifyCheckoutRef>(null);
   const eventContext = useCheckoutEvents();
+  const [primaryAction, setPrimaryAction] = useState<CheckoutPrimaryActionChangeEvent>({
+    method: 'checkout.primaryActionChange',
+    state: 'disabled',
+    action: 'pay',
+    cart: props.route.params.cart ?? ({} as any),
+  });
 
   const onStart = (event: CheckoutStartEvent) => {
     console.log('<CheckoutScreen /> onStart', event);
@@ -91,6 +98,14 @@ export default function CheckoutScreen(props: {
     }
   };
 
+  const onPrimaryActionChange = (event: CheckoutPrimaryActionChangeEvent) => {
+    setPrimaryAction(event);
+  };
+
+  const buttonLabel = useMemo(() => {
+    return primaryAction.action === 'review' ? 'Review order' : 'Pay now';
+  }, [primaryAction.action]);
+
   const onCancel = () => {
     console.log('<CheckoutScreen /> onCancel: ');
     navigation.getParent()?.goBack();
@@ -107,24 +122,66 @@ export default function CheckoutScreen(props: {
   };
 
   return (
-    <ShopifyCheckout
-      ref={ref}
-      checkoutUrl={props.route.params.url}
-      auth={props.route.params.auth}
-      style={styles.container}
-      onStart={onStart}
-      onAddressChangeStart={onAddressChangeStart}
-      onPaymentMethodChangeStart={onPaymentMethodChangeStart}
-      onSubmitStart={onSubmitStart}
-      onCancel={onCancel}
-      onFail={onFail}
-      onComplete={onComplete}
-    />
+    <View style={styles.container}>
+      <ShopifyCheckout
+        ref={ref}
+        checkoutUrl={props.route.params.url}
+        auth={props.route.params.auth}
+        style={styles.container}
+        onStart={onStart}
+        onAddressChangeStart={onAddressChangeStart}
+        onPaymentMethodChangeStart={onPaymentMethodChangeStart}
+        onSubmitStart={onSubmitStart}
+        onPrimaryActionChange={onPrimaryActionChange}
+        onCancel={onCancel}
+        onFail={onFail}
+        onComplete={onComplete}
+      />
+
+      <View style={styles.overlayContainer} pointerEvents="box-none">
+        <View style={styles.buttonWrapper}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              primaryAction.state !== 'enabled' && styles.buttonDisabled,
+            ]}
+            disabled={primaryAction.state !== 'enabled'}
+            onPress={() => ref.current?.reload()}>
+            {primaryAction.state === 'loading' ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>{buttonLabel}</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  overlayContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'flex-end',
+  },
+  buttonWrapper: {
+    padding: 16,
+  },
+  button: {
+    backgroundColor: '#111827',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: '#9CA3AF',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });

@@ -48,6 +48,7 @@ import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutAddressChangeStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutSubmitStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutPaymentMethodChangeStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutPrimaryActionChangeEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -427,6 +428,24 @@ public class SheetCheckoutEventProcessorTest {
         assertThat(eventData).contains("\"id\":\"submit-event-789\"");
         assertThat(eventData).contains("\"method\":\"checkout.submitStart\"");
         assertThat(eventData).contains("\"sessionId\":\"checkout-123\"");
+    }
+
+    @Test
+    public void testOnPrimaryActionChange_emitsEventWithStateActionAndCart() {
+        CheckoutPrimaryActionChangeEvent event = mock(CheckoutPrimaryActionChangeEvent.class, RETURNS_DEEP_STUBS);
+        when(event.getMethod()).thenReturn("checkout.primaryActionChange");
+        when(event.getState()).thenReturn("enabled");
+        when(event.getAction()).thenReturn("review");
+        when(event.getCart()).thenReturn(null);
+
+        processor.onPrimaryActionChange(event);
+
+        verify(mockEventEmitter).emit(eventNameCaptor.capture(), eventDataCaptor.capture());
+        assertThat(eventNameCaptor.getValue()).isEqualTo("primaryActionChange");
+        String eventData = eventDataCaptor.getValue();
+        assertThat(eventData).contains("\"method\":\"checkout.primaryActionChange\"");
+        assertThat(eventData).contains("\"state\":\"enabled\"");
+        assertThat(eventData).contains("\"action\":\"review\"");
     }
 
     @Test

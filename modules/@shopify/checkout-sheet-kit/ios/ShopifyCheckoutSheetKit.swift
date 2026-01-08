@@ -50,6 +50,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         case complete
         case error
         case paymentMethodChangeStart
+        case primaryActionChange
         case start
         case submitStart
     }
@@ -92,6 +93,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
     func checkoutDidStartPaymentMethodChange(event: CheckoutPaymentMethodChangeStartEvent) {
         emit(event: .paymentMethodChangeStart, body: ShopifyEventSerialization.serialize(checkoutPaymentMethodChangeStartEvent: event))
+    }
+
+    func checkoutDidChangePrimaryAction(event: CheckoutPrimaryActionChangeEvent) {
+        emit(event: .primaryActionChange, body: ShopifyEventSerialization.serialize(checkoutPrimaryActionChangeEvent: event))
     }
 
     func shouldRecoverFromError(error: CheckoutError) -> Bool {

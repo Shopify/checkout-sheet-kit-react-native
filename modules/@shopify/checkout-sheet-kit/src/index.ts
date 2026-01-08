@@ -191,6 +191,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
       case 'complete':
       case 'geolocationRequest':
       case 'start':
+      case 'primaryActionChange':
       case 'submitStart':
         eventCallback = this.parseEventData(event, callback);
         break;
@@ -483,6 +484,7 @@ export type {
   CheckoutAddressChangeStartEvent,
   CheckoutAddressChangeStartResponsePayload,
   CheckoutCompleteEvent,
+  CheckoutPrimaryActionChangeEvent,
   CheckoutPaymentMethodChangeStartEvent,
   CheckoutPaymentMethodChangeStartResponsePayload,
   CheckoutResponseError,

@@ -259,6 +259,7 @@ describe('Checkout Component', () => {
       const onAddressChangeStart = jest.fn();
       const onPaymentMethodChangeStart = jest.fn();
       const onSubmitStart = jest.fn();
+      const onPrimaryActionChange = jest.fn();
 
       const {getByTestId} = render(
         <ShopifyCheckout
@@ -271,6 +272,7 @@ describe('Checkout Component', () => {
           onAddressChangeStart={onAddressChangeStart}
           onPaymentMethodChangeStart={onPaymentMethodChangeStart}
           onSubmitStart={onSubmitStart}
+          onPrimaryActionChange={onPrimaryActionChange}
           testID="checkout-webview"
         />,
       );
@@ -286,6 +288,18 @@ describe('Checkout Component', () => {
       expect(onStart).toHaveBeenCalledTimes(1);
 
       act(() => {
+        nativeComponent.props.onPrimaryActionChange({
+          nativeEvent: {
+            method: 'checkout.primaryActionChange',
+            state: 'enabled',
+            action: 'pay',
+            cart: testCart,
+          },
+        });
+      });
+      expect(onPrimaryActionChange).toHaveBeenCalledTimes(1);
+
+      act(() => {
         nativeComponent.props.onCancel();
       });
       expect(onCancel).toHaveBeenCalledTimes(1);
@@ -296,6 +310,62 @@ describe('Checkout Component', () => {
         });
       });
       expect(onLinkClick).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('onPrimaryActionChange callback', () => {
+    it('calls onPrimaryActionChange callback with event data', () => {
+      const onPrimaryActionChange = jest.fn();
+      const testCart = createTestCart();
+
+      const {getByTestId} = render(
+        <ShopifyCheckout
+          checkoutUrl={mockCheckoutUrl}
+          onPrimaryActionChange={onPrimaryActionChange}
+          testID="checkout-webview"
+        />,
+      );
+
+      const nativeComponent = getByTestId('checkout-webview');
+
+      act(() => {
+        nativeComponent.props.onPrimaryActionChange({
+          nativeEvent: {
+            method: 'checkout.primaryActionChange',
+            state: 'disabled',
+            action: 'review',
+            cart: testCart,
+          },
+        });
+      });
+
+      expect(onPrimaryActionChange).toHaveBeenCalledTimes(1);
+      expect(onPrimaryActionChange).toHaveBeenCalledWith({
+        method: 'checkout.primaryActionChange',
+        state: 'disabled',
+        action: 'review',
+        cart: testCart,
+      });
+    });
+
+    it('does not call callback when nativeEvent is missing', () => {
+      const onPrimaryActionChange = jest.fn();
+
+      const {getByTestId} = render(
+        <ShopifyCheckout
+          checkoutUrl={mockCheckoutUrl}
+          onPrimaryActionChange={onPrimaryActionChange}
+          testID="checkout-webview"
+        />,
+      );
+
+      const nativeComponent = getByTestId('checkout-webview');
+
+      act(() => {
+        nativeComponent.props.onPrimaryActionChange({});
+      });
+
+      expect(onPrimaryActionChange).not.toHaveBeenCalled();
     });
   });
 });

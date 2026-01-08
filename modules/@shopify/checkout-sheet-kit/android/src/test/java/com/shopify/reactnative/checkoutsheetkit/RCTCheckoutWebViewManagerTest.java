@@ -222,7 +222,8 @@ public class RCTCheckoutWebViewManagerTest {
                 "onLinkClick",
                 "onAddressChangeStart",
                 "onPaymentMethodChangeStart",
-                "onSubmitStart"
+                "onSubmitStart",
+                "onPrimaryActionChange"
             );
     }
 

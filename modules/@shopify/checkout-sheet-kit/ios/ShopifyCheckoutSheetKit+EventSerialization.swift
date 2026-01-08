@@ -103,6 +103,18 @@ internal enum ShopifyEventSerialization {
         ]
     }
 
+    /**
+     * Converts a CheckoutPrimaryActionChangeEvent to a React Native compatible dictionary.
+     */
+    static func serialize(checkoutPrimaryActionChangeEvent event: CheckoutPrimaryActionChangeEvent) -> [String: Any] {
+        return [
+            "method": event.method,
+            "state": event.state,
+            "action": event.action,
+            "cart": encodeToJSON(from: event.cart)
+        ]
+    }
+
     static func serialize(clickEvent url: URL) -> [String: URL] {
         return ["url": url]
     }

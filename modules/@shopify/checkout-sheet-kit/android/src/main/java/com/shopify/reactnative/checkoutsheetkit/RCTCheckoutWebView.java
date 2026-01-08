@@ -55,6 +55,7 @@ import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutAddressChangeStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutSubmitStartEvent;
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutPaymentMethodChangeStartEvent;
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutPrimaryActionChangeEvent;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -368,6 +369,20 @@ public class RCTCheckoutWebView extends FrameLayout {
         sendEvent(CheckoutEventType.ON_SUBMIT_START, data);
       } catch (Exception e) {
         Log.e(TAG, "Error processing submit start event", e);
+      }
+    }
+
+    @Override
+    public void onPrimaryActionChange(@NonNull CheckoutPrimaryActionChangeEvent event) {
+      try {
+        WritableMap data = Arguments.createMap();
+        data.putString("method", event.getMethod());
+        data.putString("state", event.getState());
+        data.putString("action", event.getAction());
+        data.putMap("cart", serializeToWritableMap(event.getCart()));
+        sendEvent(CheckoutEventType.ON_PRIMARY_ACTION_CHANGE, data);
+      } catch (Exception e) {
+        Log.e(TAG, "Error processing primary action change event", e);
       }
     }
 
