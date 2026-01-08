@@ -566,37 +566,17 @@ describe('useShopifyEvent', () => {
     );
   });
 
-  it('respondWith returns false when used outside provider', async () => {
+  it('throws error when used outside provider', () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation();
 
-    const ShopifyEventUser = ({
-      eventId,
-      onEvent,
-    }: {
-      eventId: string;
-      onEvent: (event: {
-        id: string;
-        respondWith: (response: any) => Promise<boolean>;
-      }) => void;
-    }) => {
-      const event = useShopifyEvent(eventId);
-      onEvent(event);
+    const ShopifyEventUser = ({eventId}: {eventId: string}) => {
+      useShopifyEvent(eventId);
       return null;
     };
 
-    let eventHook: any;
-    const onEvent = (event: any) => {
-      eventHook = event;
-    };
-
-    render(<ShopifyEventUser eventId="test-event-789" onEvent={onEvent} />);
-
-    let result: boolean = true;
-    await act(async () => {
-      result = await eventHook.respondWith({data: 'test'});
-    });
-
-    expect(result).toBe(false);
+    expect(() => {
+      render(<ShopifyEventUser eventId="test-event-789" />);
+    }).toThrow('useShopifyEvent must be used within ShopifyCheckoutSheetProvider');
 
     errorSpy.mockRestore();
   });

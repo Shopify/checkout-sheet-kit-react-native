@@ -254,12 +254,14 @@ export function useWebviewRegistration(webViewRef: React.RefObject<any>) {
 
 export function useShopifyEvent(eventId: string) {
   const context = React.useContext(ShopifyCheckoutSheetContext);
+  if (!context) {
+    throw new Error(
+      'useShopifyEvent must be used within ShopifyCheckoutSheetProvider',
+    );
+  }
 
   const respondWith = useCallback(
     async (response: any) => {
-      if (!context) {
-        return false;
-      }
       return await context.respondToEvent(eventId, response);
     },
     [eventId, context],
