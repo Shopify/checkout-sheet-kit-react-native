@@ -233,6 +233,7 @@ export function useShopifyCheckoutSheet(): Context {
     );
   }
   return useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructuring to remove from return type
     const {registerWebView, unregisterWebView, ...publicContext} = context;
     return publicContext;
   }, [context]);
