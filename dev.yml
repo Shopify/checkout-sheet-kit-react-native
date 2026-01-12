@@ -56,6 +56,32 @@ commands:
     run: |
       yarn module build
       yarn build:android
+    subcommands:
+      ios:
+        desc: Build iOS sample app
+        run: yarn sample build:ios
+      android:
+        desc: Build Android sample app
+        run: yarn sample build:android
+
+  test:
+    desc: Run all tests (Jest unit tests)
+    run: yarn test
+    subcommands:
+      ios:
+        desc: Run iOS integration tests
+        run: yarn sample test:ios
+      android:
+        desc: Run Android integration tests
+        run: yarn sample test:android
+
+  style:
+    desc: Run linting across module, sample, and Swift code
+    aliases: [lint]
+    run: |
+      yarn module lint
+      yarn sample lint
+      ./scripts/lint_swift
 
   server:
     desc: 'Start development server'
