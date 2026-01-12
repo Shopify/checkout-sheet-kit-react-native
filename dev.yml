@@ -20,30 +20,29 @@ up:
   - custom:
       name: Install NPM dependencies
       met?: ls -l | grep node_modules
-      meet: |
-        yarn
+      meet: yarn
+  - custom:
+      name: Sample .env file exists
+      met?: test -f sample/.env
+      meet: cp ./sample/.env.example ./sample/.env
   - custom:
       name: Generate iOS xcconfig from env
       met?:
         test -f sample/ios/JSEnvironment.xcconfig && test sample/.env -ot
         sample/ios/JSEnvironment.xcconfig
-      meet: |
-        yarn env-to-xcconfig
+      meet: yarn env-to-xcconfig
   - custom:
       name: Install gems
       met?: (cd sample/ios && bundle check)
-      meet: |
-        (cd sample/ios && bundle install)
+      meet: (cd sample/ios && bundle install)
   - custom:
       name: Install pods
       met?: (cd sample/ios && bundle exec pod check --ignore-dev-pods)
-      meet: |
-        yarn pod-install
+      meet: yarn pod-install
   - custom:
       name: Build node module
       met?: (cd modules/@shopify/checkout-sheet-kit && ls -l | grep lib)
-      meet: |
-        yarn module build
+      meet: yarn module build
 
 check:
   lint_swift: ./scripts/lint_swift
@@ -56,6 +55,35 @@ commands:
     run: |
       yarn module build
       yarn build:android
+    subcommands:
+      ios:
+        desc: Build iOS sample app
+        run: yarn sample build:ios
+      android:
+        desc: Build Android sample app
+        run: yarn sample build:android
+
+  test:
+    desc: Run all tests (Jest, iOS, Android)
+    run: |
+      yarn test
+      yarn sample test:ios
+      yarn sample test:android
+    subcommands:
+      ios:
+        desc: Run iOS integration tests
+        run: yarn sample test:ios
+      android:
+        desc: Run Android integration tests
+        run: yarn sample test:android
+
+  style:
+    desc: Run linting across module, sample, and Swift code
+    aliases: [lint]
+    run: |
+      yarn module lint
+      yarn sample lint
+      ./scripts/lint_swift
 
   server:
     desc: 'Start development server'
@@ -63,7 +91,22 @@ commands:
 
   ios:
     desc: 'Run iOS simulator'
-    run: yarn sample ios
+    run: |
+      if [[ ! -f sample/.env ]]; then
+        echo ""
+        echo "╔════════════════════════════════════════════════════════════════╗"
+        echo "║  ❌ ERROR: Missing .env configuration file                     ║"
+        echo "╠════════════════════════════════════════════════════════════════╣"
+        echo "║                                                                ║"
+        echo "║  To fix, run:                                                  ║"
+        echo "║    cp sample/.env.example sample/.env                          ║"
+        echo "║                                                                ║"
+        echo "║  Then update with your storefront credentials.                 ║"
+        echo "╚════════════════════════════════════════════════════════════════╝"
+        echo ""
+        exit 1
+      fi
+      yarn sample ios
 
   android:
     desc: 'Run Android emulator'
@@ -83,4 +126,6 @@ commands:
   fix:
     desc: Fix linting
     run: |
+      yarn module format
+      yarn sample format
       ./scripts/lint_swift fix

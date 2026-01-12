@@ -430,8 +430,8 @@ export interface CheckoutStartEvent {
   method: 'checkout.start';
   /** Initial cart state when checkout started */
   cart: Cart;
-  /** 
-   * Locale of the checkout 
+  /**
+   * Locale of the checkout
    **/
   locale: string;
 }

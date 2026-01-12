@@ -78,7 +78,8 @@ export function ShopifyCheckoutSheetProvider({
       }
 
       await instance.current?.setConfig(configuration);
-      const isAvailable = await instance.current.isAcceleratedCheckoutAvailable();
+      const isAvailable =
+        await instance.current.isAcceleratedCheckoutAvailable();
       setAcceleratedCheckoutsAvailable(isAvailable);
     }
 
@@ -96,18 +97,23 @@ export function ShopifyCheckoutSheetProvider({
     instance.current?.removeEventListeners(eventName);
   }, []);
 
-  const present = useCallback((checkoutUrl: string, options?: CheckoutOptions) => {
-    if (checkoutUrl) {
-      instance.current?.present(checkoutUrl, options
-      );
-    }
-  }, []);
+  const present = useCallback(
+    (checkoutUrl: string, options?: CheckoutOptions) => {
+      if (checkoutUrl) {
+        instance.current?.present(checkoutUrl, options);
+      }
+    },
+    [],
+  );
 
-  const preload = useCallback((checkoutUrl: string, options?: CheckoutOptions) => {
-    if (checkoutUrl) {
-      instance.current?.preload(checkoutUrl, options);
-    }
-  }, []);
+  const preload = useCallback(
+    (checkoutUrl: string, options?: CheckoutOptions) => {
+      if (checkoutUrl) {
+        instance.current?.preload(checkoutUrl, options);
+      }
+    },
+    [],
+  );
 
   const invalidate = useCallback(() => {
     instance.current?.invalidate();
