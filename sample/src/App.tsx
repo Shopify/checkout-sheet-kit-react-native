@@ -236,6 +236,16 @@ function AppWithContext({children}: PropsWithChildren) {
       },
     );
 
+    const paymentMethodChangeStart = shopify.addEventListener(
+      'paymentMethodChangeStart',
+      event => {
+        console.log(
+          '[App] onPaymentMethodChangeStart event received from imperative API:',
+          event,
+        );
+      },
+    );
+
     const error = shopify.addEventListener(
       'error',
       (error: CheckoutException) => {
@@ -247,6 +257,7 @@ function AppWithContext({children}: PropsWithChildren) {
       completed?.remove();
       started?.remove();
       addressChangeStart?.remove();
+      paymentMethodChangeStart?.remove();
       close?.remove();
       error?.remove();
     };

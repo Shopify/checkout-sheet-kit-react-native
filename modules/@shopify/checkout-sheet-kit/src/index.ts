@@ -180,6 +180,24 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     let eventCallback;
 
     switch (event) {
+      case 'complete':
+        eventCallback = this.parseEventData('complete', callback);
+        break;
+      case 'start':
+        eventCallback = this.parseEventData('start', callback);
+        break;
+      case 'addressChangeStart':
+        eventCallback = this.parseEventData('addressChangeStart', callback);
+        break;
+      case 'submitStart':
+        eventCallback = this.parseEventData('submitStart', callback);
+        break;
+      case 'paymentMethodChangeStart':
+        eventCallback = this.parseEventData(
+          'paymentMethodChangeStart',
+          callback,
+        );
+        break;
       case 'error':
         eventCallback = this.parseEventData(
           event,

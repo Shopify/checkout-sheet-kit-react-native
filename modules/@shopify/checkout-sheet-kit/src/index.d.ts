@@ -153,6 +153,7 @@ export type CheckoutEvent =
   | 'start'
   | 'error'
   | 'addressChangeStart'
+  | 'paymentMethodChangeStart'
   | 'submitStart'
   | 'geolocationRequest';
 
@@ -174,6 +175,9 @@ export type CheckoutStartEventCallback = (
 export type CheckoutAddressChangeStartCallback = (
   event: CheckoutAddressChangeStartEvent,
 ) => void;
+export type CheckoutPaymentMethodChangeStartCallback = (
+  event: CheckoutPaymentMethodChangeStartEvent,
+) => void;
 export type CheckoutSubmitStartCallback = (
   event: CheckoutSubmitStartEvent,
 ) => void;
@@ -185,6 +189,7 @@ export type CheckoutEventCallback =
   | CheckoutStartEventCallback
   | CheckoutAddressChangeStartCallback
   | CheckoutSubmitStartCallback
+  | CheckoutPaymentMethodChangeStartCallback
   | GeolocationRequestEventCallback;
 
 /**
@@ -266,6 +271,11 @@ function addEventListener(
 function addEventListener(
   event: 'addressChangeStart',
   callback: CheckoutAddressChangeStartCallback,
+): Maybe<EmitterSubscription>;
+
+function addEventListener(
+  event: 'paymentMethodChangeStart',
+  callback: CheckoutPaymentMethodChangeStartCallback,
 ): Maybe<EmitterSubscription>;
 
 function addEventListener(
