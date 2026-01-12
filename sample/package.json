@@ -9,7 +9,7 @@
     "build:android": "sh ./scripts/build_android",
     "release:android": "sh ./scripts/release_android",
     "build:ios": "sh ./scripts/build_ios",
-    "lint": "yarn typecheck && eslint .",
+    "lint": "yarn typecheck && eslint . && prettier . --check",
     "format": "eslint . --fix && prettier . --write",
     "ios": "react-native run-ios --simulator 'iPhone 15 Pro'",
     "start": "react-native start -- --simulator 'iPhone 15 Pro' --reset-cache",
