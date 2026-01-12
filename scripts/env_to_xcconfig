@@ -17,7 +17,18 @@ fi
 convert_env_to_xcconfig() {
     # Check if .env file exists
     if [[ ! -f "$ENV_FILE_PATH" ]]; then
-        echo "Error: .env file not found at $ENV_FILE_PATH" >&2
+        echo "" >&2
+        echo "╔════════════════════════════════════════════════════════════════╗" >&2
+        echo "║  ❌ ERROR: Missing .env configuration file                     ║" >&2
+        echo "╠════════════════════════════════════════════════════════════════╣" >&2
+        echo "║  File not found: $ENV_FILE_PATH" >&2
+        echo "║                                                                ║" >&2
+        echo "║  To fix, run:                                                  ║" >&2
+        echo "║    cp sample/.env.example sample/.env                          ║" >&2
+        echo "║                                                                ║" >&2
+        echo "║  Then update with your storefront credentials.                 ║" >&2
+        echo "╚════════════════════════════════════════════════════════════════╝" >&2
+        echo "" >&2
         exit 1
     fi
 

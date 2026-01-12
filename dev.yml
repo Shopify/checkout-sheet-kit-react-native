@@ -23,6 +23,14 @@ up:
       meet: |
         yarn
   - custom:
+      name: Sample .env file exists
+      met?: test -f sample/.env
+      meet: |
+        echo "❌ Missing sample/.env file"
+        echo "Copy from .env.example: cp sample/.env.example sample/.env"
+        echo "Then update with your storefront credentials"
+        exit 1
+  - custom:
       name: Generate iOS xcconfig from env
       met?:
         test -f sample/ios/JSEnvironment.xcconfig && test sample/.env -ot
@@ -92,7 +100,22 @@ commands:
 
   ios:
     desc: 'Run iOS simulator'
-    run: yarn sample ios
+    run: |
+      if [[ ! -f sample/.env ]]; then
+        echo ""
+        echo "╔════════════════════════════════════════════════════════════════╗"
+        echo "║  ❌ ERROR: Missing .env configuration file                     ║"
+        echo "╠════════════════════════════════════════════════════════════════╣"
+        echo "║                                                                ║"
+        echo "║  To fix, run:                                                  ║"
+        echo "║    cp sample/.env.example sample/.env                          ║"
+        echo "║                                                                ║"
+        echo "║  Then update with your storefront credentials.                 ║"
+        echo "╚════════════════════════════════════════════════════════════════╝"
+        echo ""
+        exit 1
+      fi
+      yarn sample ios
 
   android:
     desc: 'Run Android emulator'

@@ -407,7 +407,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\nif [[ -z $DISPLAY_NAME ]]; then\n    echo \"DISPLAY_NAME is nil\" \n    exit 1\nfi\n\n";
+			shellScript = "if [[ -z $DISPLAY_NAME ]]; then\n    echo \"error: DISPLAY_NAME is nil - .env file may be missing or invalid\"\n    echo \"Run: cp sample/.env.example sample/.env\"\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		E5E915CDFAA811FAB9901380 /* [CP] Embed Pods Frameworks */ = {
