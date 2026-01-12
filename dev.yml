@@ -65,8 +65,11 @@ commands:
         run: yarn sample build:android
 
   test:
-    desc: Run all tests (Jest unit tests)
-    run: yarn test
+    desc: Run all tests (Jest, iOS, Android)
+    run: |
+      yarn test
+      yarn sample test:ios
+      yarn sample test:android
     subcommands:
       ios:
         desc: Run iOS integration tests
