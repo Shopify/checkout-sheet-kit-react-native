@@ -20,38 +20,29 @@ up:
   - custom:
       name: Install NPM dependencies
       met?: ls -l | grep node_modules
-      meet: |
-        yarn
+      meet: yarn
   - custom:
       name: Sample .env file exists
       met?: test -f sample/.env
-      meet: |
-        echo "❌ Missing sample/.env file"
-        echo "Copy from .env.example: cp sample/.env.example sample/.env"
-        echo "Then update with your storefront credentials"
-        exit 1
+      meet: cp ./sample/.env.example ./sample/.env
   - custom:
       name: Generate iOS xcconfig from env
       met?:
         test -f sample/ios/JSEnvironment.xcconfig && test sample/.env -ot
         sample/ios/JSEnvironment.xcconfig
-      meet: |
-        yarn env-to-xcconfig
+      meet: yarn env-to-xcconfig
   - custom:
       name: Install gems
       met?: (cd sample/ios && bundle check)
-      meet: |
-        (cd sample/ios && bundle install)
+      meet: (cd sample/ios && bundle install)
   - custom:
       name: Install pods
       met?: (cd sample/ios && bundle exec pod check --ignore-dev-pods)
-      meet: |
-        yarn pod-install
+      meet: yarn pod-install
   - custom:
       name: Build node module
       met?: (cd modules/@shopify/checkout-sheet-kit && ls -l | grep lib)
-      meet: |
-        yarn module build
+      meet: yarn module build
 
 check:
   lint_swift: ./scripts/lint_swift
