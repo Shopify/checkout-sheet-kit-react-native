@@ -53,8 +53,12 @@ type AddingToCartAction =
 const checkoutURLState = atom<Context['checkoutURL']>(defaultCheckoutURL);
 const cartIdState = atom<Context['cartId']>(defaultCartId);
 const totalQuantityState = atom<Context['totalQuantity']>(defaultTotalQuantity);
-const selectedAddressIndexState = atom<Context['selectedAddressIndex']>(defaultSelectedAddressIndex);
-const selectedPaymentIndexState = atom<Context['selectedPaymentIndex']>(defaultSelectedPaymentIndex);
+const selectedAddressIndexState = atom<Context['selectedAddressIndex']>(
+  defaultSelectedAddressIndex,
+);
+const selectedPaymentIndexState = atom<Context['selectedPaymentIndex']>(
+  defaultSelectedPaymentIndex,
+);
 
 export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const shopify = useShopifyCheckoutSheet();
@@ -65,9 +69,13 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   // Keep track of the number of items in the cart
   const [totalQuantity, setTotalQuantity] = useAtom(totalQuantityState);
   // Keep track of the selected address index
-  const [selectedAddressIndex, setSelectedAddressIndex] = useAtom(selectedAddressIndexState);
+  const [selectedAddressIndex, setSelectedAddressIndex] = useAtom(
+    selectedAddressIndexState,
+  );
   // Keep track of the selected payment index
-  const [selectedPaymentIndex, setSelectedPaymentIndex] = useAtom(selectedPaymentIndexState);
+  const [selectedPaymentIndex, setSelectedPaymentIndex] = useAtom(
+    selectedPaymentIndexState,
+  );
   // Maintain a loading state for items being added to the cart
   const addingToCartReducer = (
     state: Set<string>,
@@ -99,7 +107,13 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
     setTotalQuantity(0);
     setSelectedAddressIndex(defaultSelectedAddressIndex);
     setSelectedPaymentIndex(defaultSelectedPaymentIndex);
-  }, [setCartId, setCheckoutURL, setTotalQuantity, setSelectedAddressIndex, setSelectedPaymentIndex]);
+  }, [
+    setCartId,
+    setCheckoutURL,
+    setTotalQuantity,
+    setSelectedAddressIndex,
+    setSelectedPaymentIndex,
+  ]);
 
   useEffect(() => {
     const subscription = shopify.addEventListener('complete', () => {

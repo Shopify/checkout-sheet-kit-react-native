@@ -1,0 +1,4 @@
+ios/Pods/
+vendor/
+node_modules/
+android/build/

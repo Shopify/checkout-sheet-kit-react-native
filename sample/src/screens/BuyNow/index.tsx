@@ -58,7 +58,10 @@ export default function BuyNowStack(props: BuyNowStackProps) {
         <BuyNowStackNavigator.Screen
           name="Checkout"
           component={CheckoutScreen} // This component renders the @shopify CheckoutWebView component
-          initialParams={{url: props.route.params.url, auth: props.route.params.auth}}
+          initialParams={{
+            url: props.route.params.url,
+            auth: props.route.params.auth,
+          }}
           options={{title: 'Shopify Checkout'}}
         />
         <BuyNowStackNavigator.Screen

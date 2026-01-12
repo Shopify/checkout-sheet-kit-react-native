@@ -109,4 +109,6 @@ commands:
   fix:
     desc: Fix linting
     run: |
+      yarn module format
+      yarn sample format
       ./scripts/lint_swift fix

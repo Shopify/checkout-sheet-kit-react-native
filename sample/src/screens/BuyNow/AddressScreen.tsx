@@ -20,7 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 import type {RouteProp} from '@react-navigation/native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useState} from 'react';
-import {Alert, Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  Button,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {useShopifyEvent} from '@shopify/checkout-sheet-kit';
 import type {CheckoutAddressChangeStartResponsePayload} from '@shopify/checkout-sheet-kit';
 import {useCart} from '../../context/Cart';
@@ -110,11 +117,9 @@ export default function AddressScreen() {
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to update address';
 
-      Alert.alert(
-        'Address Update Failed',
-        errorMessage,
-        [{text: 'OK', onPress: () => setIsSubmitting(false)}],
-      );
+      Alert.alert('Address Update Failed', errorMessage, [
+        {text: 'OK', onPress: () => setIsSubmitting(false)},
+      ]);
     }
   };
 

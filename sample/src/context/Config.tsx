@@ -36,8 +36,9 @@ const ConfigContext = createContext<Context>({
 export const ConfigProvider: React.FC<
   PropsWithChildren<{config?: AppConfig}>
 > = ({children, config}) => {
-  const [appConfig, setInternalAppConfig] =
-    useState<AppConfig>(config ?? defaultAppConfig);
+  const [appConfig, setInternalAppConfig] = useState<AppConfig>(
+    config ?? defaultAppConfig,
+  );
   const {setColorScheme} = useTheme();
 
   // Update theme when appConfig changes (not just initial config prop)

@@ -152,14 +152,17 @@ export default function PaymentScreen() {
             </View>
             <View style={styles.paymentInfo}>
               <View style={styles.cardHeader}>
-                <Text style={styles.cardIcon}>{getCardIcon(option.instrument.brand)}</Text>
+                <Text style={styles.cardIcon}>
+                  {getCardIcon(option.instrument.brand)}
+                </Text>
                 <Text style={styles.paymentLabel}>{option.label}</Text>
               </View>
               <Text style={styles.cardDetails}>
                 {option.instrument.brand} •••• {option.instrument.lastDigits}
               </Text>
               <Text style={styles.billingInfo}>
-                {option.instrument.billingAddress?.city}, {option.instrument.billingAddress?.provinceCode}
+                {option.instrument.billingAddress?.city},{' '}
+                {option.instrument.billingAddress?.provinceCode}
               </Text>
             </View>
           </TouchableOpacity>

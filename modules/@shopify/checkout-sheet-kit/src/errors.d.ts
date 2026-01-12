@@ -157,7 +157,9 @@ function getCheckoutErrorCode(code: string | undefined): CheckoutErrorCode {
   const normalizedCode = code.toUpperCase();
 
   const codeKey = Object.keys(CheckoutErrorCode).find(
-    key => CheckoutErrorCode[key as keyof typeof CheckoutErrorCode] === normalizedCode,
+    key =>
+      CheckoutErrorCode[key as keyof typeof CheckoutErrorCode] ===
+      normalizedCode,
   );
 
   return codeKey

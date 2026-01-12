@@ -16,6 +16,7 @@
     "clean": "rm -rf lib",
     "build": "bob build",
     "lint": "yarn typecheck && eslint src",
+    "format": "eslint src --fix && prettier src --write",
     "typecheck": "tsc --noEmit"
   },
   "files": [

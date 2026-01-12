@@ -48,7 +48,7 @@ import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
 import {currency} from '../utils';
 import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
-import { fetchToken } from '../services/TokenClient';
+import {fetchToken} from '../services/TokenClient';
 
 function CartScreen(): React.JSX.Element {
   const ShopifyCheckout = useShopifyCheckoutSheet();
@@ -89,7 +89,7 @@ function CartScreen(): React.JSX.Element {
       const token = await fetchToken();
 
       ShopifyCheckout.present(checkoutURL, {
-        authentication: token ? { token } : undefined,
+        authentication: token ? {token} : undefined,
       });
     }
   };
