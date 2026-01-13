@@ -1,4 +1,5 @@
-ios/Pods/
+ios/
+android/
 vendor/
 node_modules/
 android/build/
