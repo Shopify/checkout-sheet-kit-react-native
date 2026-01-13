@@ -209,11 +209,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
           parseCheckoutError,
         );
         break;
-      case 'addressChangeStart':
-      case 'complete':
       case 'geolocationRequest':
-      case 'start':
-      case 'submitStart':
         eventCallback = this.parseEventData(event, callback);
         break;
       case 'close':
