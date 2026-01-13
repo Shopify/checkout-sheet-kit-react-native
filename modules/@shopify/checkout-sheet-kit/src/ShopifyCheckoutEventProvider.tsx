@@ -17,13 +17,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import React, {createContext, useContext, useRef, useCallback} from 'react';
-import {UIManager, findNodeHandle} from 'react-native';
+import React, { createContext, useContext, useRef, useCallback } from 'react';
+import { UIManager, findNodeHandle } from 'react-native';
 
 interface CheckoutEventContextType {
   registerWebView: (webViewRef: React.RefObject<any>) => void;
   unregisterWebView: () => void;
-  respondToEvent: (eventId: string, response: any) => Promise<boolean>;
+  respondToEvent: (eventId: string, response: any) => boolean;
 }
 
 const CheckoutEventContext = createContext<CheckoutEventContextType | null>(
@@ -52,7 +52,7 @@ export const ShopifyCheckoutEventProvider = ({
   }, []);
 
   const respondToEvent = useCallback(
-    async (eventId: string, response: any): Promise<boolean> => {
+    (eventId: string, response: any): boolean => {
       if (!webViewRef.current?.current) {
         return false;
       }
@@ -112,11 +112,11 @@ export function useShopifyEvent(eventId: string) {
   return {
     id: eventId,
     respondWith: useCallback(
-      async (response: any) => {
+      (response: any) => {
         if (!eventContext) {
           return false;
         }
-        return await eventContext.respondToEvent(eventId, response);
+        return eventContext.respondToEvent(eventId, response);
       },
       [eventId, eventContext],
     ),
