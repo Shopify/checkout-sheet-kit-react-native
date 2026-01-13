@@ -596,3 +596,12 @@ export interface CheckoutSubmitStartResponsePayload {
    */
   errors?: CheckoutResponseError[];
 }
+
+/**
+ * Union type of all checkout event response payloads.
+ * Use with ShopifyCheckoutEventProvider.respondToEvent() or useShopifyEvent().respondWith()
+ */
+export type CheckoutEventResponsePayload =
+  | CheckoutAddressChangeStartResponsePayload
+  | CheckoutPaymentMethodChangeStartResponsePayload
+  | CheckoutSubmitStartResponsePayload;

@@ -19,11 +19,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 import React, {createContext, useContext, useRef, useCallback} from 'react';
 import {UIManager, findNodeHandle} from 'react-native';
+import type {CheckoutEventResponsePayload} from './events.d';
 
 interface CheckoutEventContextType {
   registerWebView: (webViewRef: React.RefObject<any>) => void;
   unregisterWebView: () => void;
-  respondToEvent: (eventId: string, response: any) => Promise<boolean>;
+  respondToEvent: (
+    eventId: string,
+    response: CheckoutEventResponsePayload,
+  ) => Promise<boolean>;
 }
 
 const CheckoutEventContext = createContext<CheckoutEventContextType | null>(
@@ -52,7 +56,10 @@ export const ShopifyCheckoutEventProvider = ({
   }, []);
 
   const respondToEvent = useCallback(
-    async (eventId: string, response: any): Promise<boolean> => {
+    async (
+      eventId: string,
+      response: CheckoutEventResponsePayload,
+    ): Promise<boolean> => {
       if (!webViewRef.current?.current) {
         return false;
       }
@@ -112,7 +119,7 @@ export function useShopifyEvent(eventId: string) {
   return {
     id: eventId,
     respondWith: useCallback(
-      async (response: any) => {
+      async (response: CheckoutEventResponsePayload) => {
         if (!eventContext) {
           return false;
         }

@@ -501,6 +501,7 @@ export type {
   CheckoutAddressChangeStartEvent,
   CheckoutAddressChangeStartResponsePayload,
   CheckoutCompleteEvent,
+  CheckoutEventResponsePayload,
   CheckoutPaymentMethodChangeStartEvent,
   CheckoutPaymentMethodChangeStartResponsePayload,
   CheckoutResponseError,
