@@ -33,7 +33,7 @@ import type {
   PermissionStatus,
 } from 'react-native';
 import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
-import {ApplePayContactField, ColorScheme} from './index.d';
+import {ApplePayContactField, ColorScheme, LogLevel} from './index.d';
 import type {
   AcceleratedCheckoutConfiguration,
   CheckoutEvent,
@@ -516,6 +516,7 @@ export {
   ApplePayContactField,
   ApplePayLabel,
   ColorScheme,
+  LogLevel,
   ShopifyCheckoutSheet,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,

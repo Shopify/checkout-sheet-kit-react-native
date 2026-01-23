@@ -124,6 +124,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
     resultConfig.putBoolean("preloading", checkoutConfig.getPreloading().getEnabled());
     resultConfig.putString("colorScheme", colorSchemeToString(checkoutConfig.getColorScheme()));
+    resultConfig.putString("logLevel", logLevelToString(checkoutConfig.getLogLevel()));
 
     promise.resolve(resultConfig);
   }
@@ -135,6 +136,13 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     ShopifyCheckoutSheetKit.configure(configuration -> {
       if (config.hasKey("preloading")) {
         configuration.setPreloading(new Preloading(config.getBoolean("preloading")));
+      }
+
+      if (config.hasKey("logLevel")) {
+        LogLevel logLevel = getLogLevel(config.getString("logLevel"));
+        configuration.setLogLevel(logLevel);
+      } else {
+        configuration.setLogLevel(LogLevel.ERROR);
       }
 
       if (config.hasKey("colorScheme")) {
@@ -187,6 +195,26 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
   private String colorSchemeToString(ColorScheme colorScheme) {
     return colorScheme.getId();
+  }
+
+  private LogLevel getLogLevel(String logLevel) {
+    if (logLevel == null) {
+      return LogLevel.ERROR;
+    }
+
+    switch (logLevel.toLowerCase()) {
+      case "debug":
+        return LogLevel.DEBUG;
+      default:
+        return LogLevel.ERROR;
+    }
+  }
+
+  private String logLevelToString(LogLevel logLevel) {
+    if (logLevel == LogLevel.DEBUG) {
+      return "debug";
+    }
+    return "error";
   }
 
   private boolean isValidColorConfig(ReadableMap config) {
@@ -257,10 +285,10 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
           headerBackground,
           headerFont,
           progressIndicator,
-          // Parameter allows passing a custom drawable, we'll just support custom color for now
+          // Parameter allows passing a custom drawable, we'll just support custom color
+          // for now
           null,
-          closeButtonColor
-        );
+          closeButtonColor);
     }
 
     return null;

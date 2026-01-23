@@ -41,6 +41,7 @@ import type {Configuration, Features} from '@shopify/checkout-sheet-kit';
 import {
   ApplePayContactField,
   ColorScheme,
+  LogLevel,
   ShopifyCheckoutSheetProvider,
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
@@ -179,6 +180,7 @@ class StorefrontURL {
 }
 
 const checkoutKitConfigDefaults: Configuration = {
+  logLevel: LogLevel.debug,
   colorScheme: ColorScheme.dark,
   preloading: true,
   colors: {

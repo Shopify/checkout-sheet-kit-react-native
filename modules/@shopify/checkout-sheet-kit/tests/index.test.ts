@@ -13,8 +13,7 @@ import {
   GenericError,
   AcceleratedCheckoutWallet,
   RenderState,
-} from '../src';
-import {
+  LogLevel,
   ColorScheme,
   CheckoutNativeErrorType,
   type Configuration,
@@ -49,6 +48,15 @@ describe('Exports', () => {
       expect(RenderState.Loading).toBe('loading');
       expect(RenderState.Rendered).toBe('rendered');
       expect(RenderState.Error).toBe('error');
+    });
+  });
+
+  describe('LogLevel enum', () => {
+    it('exports correct log levels', () => {
+      expect(LogLevel.all).toBe('all');
+      expect(LogLevel.debug).toBe('debug');
+      expect(LogLevel.error).toBe('error');
+      expect(LogLevel.none).toBe('none');
     });
   });
 });
@@ -94,6 +102,18 @@ describe('ShopifyCheckoutSheetKit', () => {
       expect(
         NativeModules.ShopifyCheckoutSheetKit.setConfig,
       ).toHaveBeenCalledWith(config);
+    });
+
+    it('calls `setConfig` with logLevel configuration', () => {
+      const instance = new ShopifyCheckoutSheet();
+      const configWithLogLevel: Configuration = {
+        colorScheme: ColorScheme.automatic,
+        logLevel: LogLevel.debug,
+      };
+      instance.setConfig(configWithLogLevel);
+      expect(
+        NativeModules.ShopifyCheckoutSheetKit.setConfig,
+      ).toHaveBeenCalledWith(configWithLogLevel);
     });
   });
 
