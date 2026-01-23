@@ -205,6 +205,10 @@ export interface AcceleratedCheckoutConfiguration {
 
   /**
    * Customer information for personalized checkout
+   *
+   * @todo v4: Change to union type to match Swift SDK:
+   * `{ accessToken: string } | { email: string; phoneNumber: string }`
+   * This will enforce mutually exclusive customer identification patterns.
    */
   customer?: {
     email?: string;

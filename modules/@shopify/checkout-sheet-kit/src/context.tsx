@@ -76,6 +76,16 @@ export function ShopifyCheckoutSheetProvider({
         return;
       }
 
+      const customer = configuration.acceleratedCheckouts?.customer;
+      if (customer?.accessToken && (customer?.email || customer?.phoneNumber)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          '[ShopifyCheckoutSheetKit] Providing both accessToken and email/phoneNumber in customer config is deprecated. ' +
+            'Use accessToken alone for authenticated customers (email/phone will be fetched from Shopify account), ' +
+            'or provide email/phoneNumber without accessToken for guests.',
+        );
+      }
+
       await instance.current?.setConfig(configuration);
       setAcceleratedCheckoutsAvailable(
         instance.current.acceleratedCheckoutsReady,
