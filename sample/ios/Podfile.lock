@@ -2484,7 +2484,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNShopifyCheckoutSheetKit (3.4.0):
+  - RNShopifyCheckoutSheetKit (3.5.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2511,8 +2511,8 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - ShopifyCheckoutSheetKit (~> 3.4.0)
-    - ShopifyCheckoutSheetKit/AcceleratedCheckouts (~> 3.4.0)
+    - ShopifyCheckoutSheetKit (~> 3.5.0)
+    - ShopifyCheckoutSheetKit/AcceleratedCheckouts (~> 3.5.0)
     - SocketRocket
     - Yoga
   - RNVectorIcons (10.3.0):
@@ -2544,11 +2544,11 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ShopifyCheckoutSheetKit (3.4.0):
-    - ShopifyCheckoutSheetKit/Core (= 3.4.0)
-  - ShopifyCheckoutSheetKit/AcceleratedCheckouts (3.4.0):
+  - ShopifyCheckoutSheetKit (3.5.0):
+    - ShopifyCheckoutSheetKit/Core (= 3.5.0)
+  - ShopifyCheckoutSheetKit/AcceleratedCheckouts (3.5.0):
     - ShopifyCheckoutSheetKit/Core
-  - ShopifyCheckoutSheetKit/Core (3.4.0)
+  - ShopifyCheckoutSheetKit/Core (3.5.0)
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
@@ -2882,9 +2882,9 @@ SPEC CHECKSUMS:
   RNGestureHandler: eeb622199ef1fb3a076243131095df1c797072f0
   RNReanimated: 288616f9c66ff4b0911f3862ffcf4104482a2adc
   RNScreens: 3fc29af06302e1f1c18a7829fe57cbc2c0259912
-  RNShopifyCheckoutSheetKit: c6c08fbeaf22de14c5d1d0a745329e96b0722f79
+  RNShopifyCheckoutSheetKit: 13a5ac0a5f517b7df5ee202539a82b17d82b71e4
   RNVectorIcons: be4d047a76ad307ffe54732208fb0498fcb8477f
-  ShopifyCheckoutSheetKit: 2251f2708752ad0b8a7f7baf1ee527d2167b0d4b
+  ShopifyCheckoutSheetKit: b63973f5aadcab5d6483871f36f3d3f19ec67e12
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: a742cc68e8366fcfc681808162492bc0aa7a9498
 
