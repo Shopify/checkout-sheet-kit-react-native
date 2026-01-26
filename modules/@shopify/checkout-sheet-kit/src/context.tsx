@@ -80,9 +80,9 @@ export function ShopifyCheckoutSheetProvider({
       if (customer?.accessToken && (customer?.email || customer?.phoneNumber)) {
         // eslint-disable-next-line no-console
         console.warn(
-          '[ShopifyCheckoutSheetKit] Providing both accessToken and email/phoneNumber in customer config is deprecated. ' +
-            'Use accessToken alone for authenticated customers (email/phone will be fetched from Shopify account), ' +
-            'or provide email/phoneNumber without accessToken for guests.',
+          '[ShopifyCheckoutSheetKit] Providing both accessToken && (email || phoneNumber) in customer config is deprecated and will be removed in v4.' +
+            'Supply only accessToken for authenticated customers (email/phone will be fetched from Shopify account), ' +
+            'or provide email/phoneNumber for guests.',
         );
       }
 
