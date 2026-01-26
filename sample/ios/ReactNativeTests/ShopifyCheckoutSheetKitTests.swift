@@ -243,6 +243,16 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.logLevel, LogLevel.error)
   }
 
+  func testSetConfigWithoutLogLevelDefaultsToError() {
+    let configuration: [AnyHashable: Any] = [
+      "preloading": true
+    ]
+
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.logLevel, LogLevel.error)
+  }
+
   func testGetConfigIncludesLogLevel() {
     let configuration: [AnyHashable: Any] = [
       "logLevel": "debug"

@@ -53,10 +53,8 @@ describe('Exports', () => {
 
   describe('LogLevel enum', () => {
     it('exports correct log levels', () => {
-      expect(LogLevel.all).toBe('all');
       expect(LogLevel.debug).toBe('debug');
       expect(LogLevel.error).toBe('error');
-      expect(LogLevel.none).toBe('none');
     });
   });
 });

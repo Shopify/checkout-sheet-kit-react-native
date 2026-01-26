@@ -200,6 +200,8 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
         if let logLevel = configuration["logLevel"] as? String {
             ShopifyCheckoutSheetKit.configuration.logLevel = ShopifyCheckoutSheetKit.LogLevel(rawValue: logLevel.lowercased()) ?? defaultLogLevel
+        } else {
+            ShopifyCheckoutSheetKit.configuration.logLevel = defaultLogLevel
         }
 
         NotificationCenter.default.post(name: Notification.Name("CheckoutKitConfigurationUpdated"), object: nil)
