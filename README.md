@@ -319,6 +319,7 @@ instance of the `ShopifyCheckoutSheet` class.
 | `colorScheme` |          | `automatic` | Sets the color scheme for the checkout.                                                                                                                        |
 | `preloading`  |          | `true`      | Enable/disable [preloading](#preloading).                                                                                                                      |
 | `colors`      |          | `{}`        | An object with `ios` and `android` properties to override the colors for iOS and Android platforms individually. See [`colors`](#colors) for more information. |
+| `logLevel`    |          | `error`     | Sets the log level for the native SDK. Use `LogLevel.debug` for verbose logging during development, or `LogLevel.error` for production.                        |
 
 Here's an example of how a fully customized configuration object might look:
 
@@ -326,12 +327,14 @@ Here's an example of how a fully customized configuration object might look:
 import {
   ColorScheme,
   Configuration,
+  LogLevel,
   ShopifyCheckoutSheetProvider,
 } from '@shopify/checkout-sheet-kit';
 
 const config: Configuration = {
   colorScheme: ColorScheme.web,
   preloading: true,
+  logLevel: LogLevel.error,
   colors: {
     ios: {
       backgroundColor: '#f0f0e8',
