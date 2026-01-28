@@ -47,6 +47,22 @@ export enum ColorScheme {
   web = 'web_default',
 }
 
+/**
+ * Log level for the checkout sheet kit.
+ * Controls the verbosity of logs emitted by the native SDK.
+ * @defaults to error
+ */
+export enum LogLevel {
+  /**
+   * Show debug logs.
+   */
+  debug = 'debug',
+  /**
+   * Show only error logs.
+   */
+  error = 'error',
+}
+
 export interface IosColors {
   /**
    * A HEX color value for customizing the color of the progress bar.
@@ -115,6 +131,13 @@ interface CommonConfiguration {
    *  2. Add "<string name="checkout_web_view_title">Checkout</string>"
    */
   title?: string;
+  /**
+   * Sets the log level for the checkout sheet kit.
+   * Controls the verbosity of logs emitted by the native SDK.
+   *
+   * @default LogLevel.error
+   */
+  logLevel?: LogLevel;
 }
 
 export type Configuration = CommonConfiguration & {

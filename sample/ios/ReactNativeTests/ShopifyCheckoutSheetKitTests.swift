@@ -44,6 +44,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
         ShopifyCheckoutSheetKit.configuration.preloading = Configuration.Preloading(enabled: true)
         ShopifyCheckoutSheetKit.configuration.colorScheme = .automatic
         ShopifyCheckoutSheetKit.configuration.closeButtonTintColor = nil
+        ShopifyCheckoutSheetKit.configuration.logLevel = LogLevel.error
     }
 
     private func getShopifyCheckoutSheetKit() -> RCTShopifyCheckoutSheetKit {
@@ -170,6 +171,153 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     XCTAssertNotNil(result?["closeButtonColor"])
     let returnedColor = result?["closeButtonColor"] as? UIColor
     XCTAssertEqual(returnedColor, UIColor(hex: "#00FF00"))
+  }
+
+  func testConfigureWithLogLevelDebug() {
+    let configuration: [AnyHashable: Any] = [
+      "logLevel": "debug"
+    ]
+
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.logLevel, LogLevel.debug)
+  }
+
+  func testConfigureWithLogLevelError() {
+    let configuration: [AnyHashable: Any] = [
+      "logLevel": "error"
+    ]
+
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.logLevel, LogLevel.error)
+  }
+
+  func testConfigureWithLogLevelNone() {
+    let configuration: [AnyHashable: Any] = [
+      "logLevel": "none"
+    ]
+
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.logLevel, LogLevel.none)
+  }
+
+  func testConfigureWithInvalidLogLevelDefaultsToError() {
+    let configuration: [AnyHashable: Any] = [
+      "logLevel": "invalid"
+    ]
+
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.logLevel, LogLevel.error)
+  }
+
+  func testLogLevelHandlesUppercaseDebug() {
+    let configuration: [AnyHashable: Any] = [
+      "logLevel": "DEBUG"
+    ]
+
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.logLevel, LogLevel.debug)
+  }
+
+  func testLogLevelHandlesMixedCaseDebug() {
+    let configuration: [AnyHashable: Any] = [
+      "logLevel": "Debug"
+    ]
+
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.logLevel, LogLevel.debug)
+  }
+
+  func testLogLevelHandlesUppercaseError() {
+    let configuration: [AnyHashable: Any] = [
+      "logLevel": "ERROR"
+    ]
+
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.logLevel, LogLevel.error)
+  }
+
+  func testSetConfigWithoutLogLevelDefaultsToError() {
+    let configuration: [AnyHashable: Any] = [
+      "preloading": true
+    ]
+
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    XCTAssertEqual(ShopifyCheckoutSheetKit.configuration.logLevel, LogLevel.error)
+  }
+
+  func testGetConfigIncludesLogLevel() {
+    let configuration: [AnyHashable: Any] = [
+      "logLevel": "debug"
+    ]
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    var result: [String: Any]?
+    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+
+    XCTAssertEqual(result?["logLevel"] as? String, "debug")
+  }
+
+  func testGetConfigReturnsDefaultLogLevel() {
+    var result: [String: Any]?
+    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+
+    XCTAssertEqual(result?["logLevel"] as? String, "error")
+  }
+
+  func testGetConfigReturnsDebugForDebugLogLevel() {
+    let configuration: [AnyHashable: Any] = [
+      "logLevel": "debug"
+    ]
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    var result: [String: Any]?
+    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+
+    XCTAssertEqual(result?["logLevel"] as? String, "debug")
+  }
+
+  func testGetConfigReturnsErrorForErrorLogLevel() {
+    let configuration: [AnyHashable: Any] = [
+      "logLevel": "error"
+    ]
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    var result: [String: Any]?
+    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+
+    XCTAssertEqual(result?["logLevel"] as? String, "error")
+  }
+
+  func testGetConfigReturnsErrorForNoneLogLevel() {
+    let configuration: [AnyHashable: Any] = [
+      "logLevel": "none"
+    ]
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    var result: [String: Any]?
+    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+
+    XCTAssertEqual(result?["logLevel"] as? String, "error")
+  }
+
+  func testGetConfigReturnsErrorForInvalidLogLevel() {
+    let configuration: [AnyHashable: Any] = [
+      "logLevel": "invalid"
+    ]
+    shopifyCheckoutSheetKit.setConfig(configuration)
+
+    var result: [String: Any]?
+    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+
+    XCTAssertEqual(result?["logLevel"] as? String, "error")
   }
 
     /// checkoutDidComplete

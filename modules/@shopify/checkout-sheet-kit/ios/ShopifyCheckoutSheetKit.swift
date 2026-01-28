@@ -35,6 +35,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     internal var checkoutSheet: UIViewController?
     private var acceleratedCheckoutsConfiguration: Any?
     private var acceleratedCheckoutsApplePayConfiguration: Any?
+    private var defaultLogLevel: LogLevel = .error
 
     override var methodQueue: DispatchQueue! {
         return DispatchQueue.main
@@ -197,6 +198,12 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
             ShopifyCheckoutSheetKit.configuration.closeButtonTintColor = UIColor(hex: closeButtonColorHex)
         }
 
+        if let logLevel = configuration["logLevel"] as? String {
+            ShopifyCheckoutSheetKit.configuration.logLevel = ShopifyCheckoutSheetKit.LogLevel(rawValue: logLevel.lowercased()) ?? defaultLogLevel
+        } else {
+            ShopifyCheckoutSheetKit.configuration.logLevel = defaultLogLevel
+        }
+
         NotificationCenter.default.post(name: Notification.Name("CheckoutKitConfigurationUpdated"), object: nil)
     }
 
@@ -207,7 +214,8 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
             "colorScheme": ShopifyCheckoutSheetKit.configuration.colorScheme.rawValue,
             "tintColor": ShopifyCheckoutSheetKit.configuration.tintColor,
             "backgroundColor": ShopifyCheckoutSheetKit.configuration.backgroundColor,
-            "closeButtonColor": ShopifyCheckoutSheetKit.configuration.closeButtonTintColor
+            "closeButtonColor": ShopifyCheckoutSheetKit.configuration.closeButtonTintColor,
+            "logLevel": logLevelToString(ShopifyCheckoutSheetKit.configuration.logLevel)
         ]
 
         resolve(config)
@@ -303,6 +311,17 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
                 throw NSError(domain: "ShopifyCheckoutSheetKit", code: 1, userInfo: ["message": message])
             }
             return field
+        }
+    }
+
+    private func logLevelToString(_ logLevel: LogLevel) -> String {
+        switch logLevel {
+        case .all, .debug:
+            return "debug"
+        case .error:
+            return "error"
+        default:
+            return "error"
         }
     }
 }

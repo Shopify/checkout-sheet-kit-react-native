@@ -2,8 +2,11 @@ package com.shopify.checkoutkitreactnative;
 
 import androidx.activity.ComponentActivity;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaOnlyMap;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.shopify.checkoutsheetkit.CheckoutException;
 import com.shopify.checkoutsheetkit.CheckoutExpiredException;
@@ -14,6 +17,7 @@ import com.shopify.checkoutsheetkit.HttpException;
 import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
 import com.shopify.checkoutsheetkit.Preloading;
 import com.shopify.checkoutsheetkit.ColorScheme;
+import com.shopify.checkoutsheetkit.LogLevel;
 import com.shopify.checkoutsheetkit.pixelevents.PixelEvent;
 import com.shopify.checkoutsheetkit.pixelevents.StandardPixelEvent;
 import com.shopify.checkoutsheetkit.pixelevents.CustomPixelEvent;
@@ -65,6 +69,10 @@ public class ShopifyCheckoutSheetKitModuleTest {
   // Store initial configuration to restore after each test
   private Preloading initialPreloading;
   private ColorScheme initialColorScheme;
+  private LogLevel initialLogLevel;
+
+  // Mock for Arguments.createMap() to avoid native library loading
+  private MockedStatic<Arguments> mockedArguments;
 
   // Test constants for color configuration
   private static final String BACKGROUND_COLOR = "#FFFFFF";
@@ -80,6 +88,9 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   @Before
   public void setup() {
+    mockedArguments = Mockito.mockStatic(Arguments.class);
+    mockedArguments.when(Arguments::createMap).thenAnswer(invocation -> new JavaOnlyMap());
+
     when(mockReactContext.getCurrentActivity()).thenReturn(mockComponentActivity);
     when(mockReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class))
         .thenReturn(mockEventEmitter);
@@ -88,14 +99,21 @@ public class ShopifyCheckoutSheetKitModuleTest {
     // Capture initial configuration state to restore after each test
     initialPreloading = ShopifyCheckoutSheetKitModule.checkoutConfig.getPreloading();
     initialColorScheme = ShopifyCheckoutSheetKitModule.checkoutConfig.getColorScheme();
+    initialLogLevel = ShopifyCheckoutSheetKitModule.checkoutConfig.getLogLevel();
   }
 
   @After
   public void tearDown() {
+    // Close mocked static
+    if (mockedArguments != null) {
+      mockedArguments.close();
+    }
+
     // Reset configuration to initial state after each test
     ShopifyCheckoutSheetKit.configure(configuration -> {
       configuration.setPreloading(initialPreloading);
       configuration.setColorScheme(initialColorScheme);
+      configuration.setLogLevel(initialLogLevel);
       ShopifyCheckoutSheetKitModule.checkoutConfig = configuration;
     });
   }
@@ -294,12 +312,176 @@ public class ShopifyCheckoutSheetKitModuleTest {
     androidColors.putString("closeButtonColor", "invalid-color");
     JavaOnlyMap config = createConfigWithAndroidColors("light", androidColors);
 
-    // The method should not throw an exception when given invalid close button color
+    // The method should not throw an exception when given invalid close button
+    // color
     shopifyCheckoutSheetKitModule.setConfig(config);
 
     // Verify the color scheme was set correctly despite invalid close button color
     assertThat(ShopifyCheckoutSheetKitModule.checkoutConfig.getColorScheme().getId())
         .isEqualTo("light");
+  }
+
+  /**
+   * Log Level Configuration
+   */
+
+  @Test
+  public void testCanSetLogLevelDebug() {
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putString("logLevel", "debug");
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    assertThat(ShopifyCheckoutSheetKitModule.checkoutConfig.getLogLevel())
+        .isEqualTo(LogLevel.DEBUG);
+  }
+
+  @Test
+  public void testCanSetLogLevelError() {
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putString("logLevel", "error");
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    assertThat(ShopifyCheckoutSheetKitModule.checkoutConfig.getLogLevel())
+        .isEqualTo(LogLevel.ERROR);
+  }
+
+  @Test
+  public void testCanSetLogLevelNone() {
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putString("logLevel", "none");
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    // "none" maps to ERROR on Android (closest equivalent)
+    assertThat(ShopifyCheckoutSheetKitModule.checkoutConfig.getLogLevel())
+        .isEqualTo(LogLevel.ERROR);
+  }
+
+  @Test
+  public void testInvalidLogLevelDefaultsToError() {
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putString("logLevel", "invalid");
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    assertThat(ShopifyCheckoutSheetKitModule.checkoutConfig.getLogLevel())
+        .isEqualTo(LogLevel.ERROR);
+  }
+
+  @Test
+  public void testLogLevelHandlesUppercaseDebug() {
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putString("logLevel", "DEBUG");
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    assertThat(ShopifyCheckoutSheetKitModule.checkoutConfig.getLogLevel())
+        .isEqualTo(LogLevel.DEBUG);
+  }
+
+  @Test
+  public void testLogLevelHandlesMixedCaseDebug() {
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putString("logLevel", "Debug");
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    assertThat(ShopifyCheckoutSheetKitModule.checkoutConfig.getLogLevel())
+        .isEqualTo(LogLevel.DEBUG);
+  }
+
+  @Test
+  public void testLogLevelHandlesUppercaseError() {
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putString("logLevel", "ERROR");
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    assertThat(ShopifyCheckoutSheetKitModule.checkoutConfig.getLogLevel())
+        .isEqualTo(LogLevel.ERROR);
+  }
+
+  @Test
+  public void testSetConfigWithoutLogLevelDefaultsToError() {
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putBoolean("preloading", true);
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    assertThat(ShopifyCheckoutSheetKitModule.checkoutConfig.getLogLevel())
+        .isEqualTo(LogLevel.ERROR);
+  }
+
+  @Test
+  public void testGetConfigReturnsDebugForDebugLogLevel() {
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putString("logLevel", "debug");
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    PromiseMock promise = new PromiseMock();
+    shopifyCheckoutSheetKitModule.getConfig(promise);
+
+    assertThat(promise.resolvedValue).isNotNull();
+    JavaOnlyMap result = (JavaOnlyMap) promise.resolvedValue;
+    assertThat(result.getString("logLevel")).isEqualTo("debug");
+  }
+
+  @Test
+  public void testGetConfigReturnsErrorForErrorLogLevel() {
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putString("logLevel", "error");
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    PromiseMock promise = new PromiseMock();
+    shopifyCheckoutSheetKitModule.getConfig(promise);
+
+    assertThat(promise.resolvedValue).isNotNull();
+    JavaOnlyMap result = (JavaOnlyMap) promise.resolvedValue;
+    assertThat(result.getString("logLevel")).isEqualTo("error");
+  }
+
+  @Test
+  public void testGetConfigReturnsErrorForNoneLogLevel() {
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putString("logLevel", "none");
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    PromiseMock promise = new PromiseMock();
+    shopifyCheckoutSheetKitModule.getConfig(promise);
+
+    assertThat(promise.resolvedValue).isNotNull();
+    JavaOnlyMap result = (JavaOnlyMap) promise.resolvedValue;
+    assertThat(result.getString("logLevel")).isEqualTo("error");
+  }
+
+  @Test
+  public void testGetConfigReturnsErrorForInvalidLogLevel() {
+    JavaOnlyMap config = new JavaOnlyMap();
+    config.putString("logLevel", "invalid");
+
+    shopifyCheckoutSheetKitModule.setConfig(config);
+
+    PromiseMock promise = new PromiseMock();
+    shopifyCheckoutSheetKitModule.getConfig(promise);
+
+    assertThat(promise.resolvedValue).isNotNull();
+    JavaOnlyMap result = (JavaOnlyMap) promise.resolvedValue;
+    assertThat(result.getString("logLevel")).isEqualTo("error");
+  }
+
+  @Test
+  public void testGetConfigReturnsDefaultLogLevel() {
+    PromiseMock promise = new PromiseMock();
+    shopifyCheckoutSheetKitModule.getConfig(promise);
+
+    assertThat(promise.resolvedValue).isNotNull();
+    JavaOnlyMap result = (JavaOnlyMap) promise.resolvedValue;
+    assertThat(result.getString("logLevel")).isEqualTo("error");
   }
 
   /**
@@ -316,8 +498,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
         "2023-01-01T00:00:00Z",
         EventType.STANDARD,
         null,
-        null
-    );
+        null);
 
     processor.onWebPixelEvent(standardEvent);
 
@@ -337,8 +518,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
         "2023-01-01T00:00:00Z",
         EventType.CUSTOM,
         null,
-        "{\"customAttribute\":\"value\"}"
-    );
+        "{\"customAttribute\":\"value\"}");
 
     processor.onWebPixelEvent(customEvent);
 
@@ -409,7 +589,8 @@ public class ShopifyCheckoutSheetKitModuleTest {
     verify(mockEventEmitter).emit(eq("error"), stringCaptor.capture());
 
     assertThat(stringCaptor.getValue())
-        .contains("CheckoutClientError", "Customer account required", "customer_account_required", "\"recoverable\":true");
+        .contains("CheckoutClientError", "Customer account required", "customer_account_required",
+            "\"recoverable\":true");
   }
 
   @Test
@@ -488,5 +669,75 @@ public class ShopifyCheckoutSheetKitModuleTest {
     config.putString("colorScheme", colorScheme);
     config.putMap("colors", colorsConfig);
     return config;
+  }
+
+  private static class PromiseMock implements Promise {
+    public Object resolvedValue;
+    public String rejectedCode;
+    public String rejectedMessage;
+    public Throwable rejectedThrowable;
+
+    @Override
+    public void resolve(Object value) {
+      resolvedValue = value;
+    }
+
+    @Override
+    public void reject(String code, String message) {
+      rejectedCode = code;
+      rejectedMessage = message;
+    }
+
+    @Override
+    public void reject(String code, Throwable throwable) {
+      rejectedCode = code;
+      rejectedThrowable = throwable;
+    }
+
+    @Override
+    public void reject(String code, String message, Throwable throwable) {
+      rejectedCode = code;
+      rejectedMessage = message;
+      rejectedThrowable = throwable;
+    }
+
+    @Override
+    public void reject(Throwable throwable) {
+      rejectedThrowable = throwable;
+    }
+
+    @Override
+    public void reject(Throwable throwable, WritableMap userInfo) {
+      rejectedThrowable = throwable;
+    }
+
+    @Override
+    public void reject(String code, WritableMap userInfo) {
+      rejectedCode = code;
+    }
+
+    @Override
+    public void reject(String code, Throwable throwable, WritableMap userInfo) {
+      rejectedCode = code;
+      rejectedThrowable = throwable;
+    }
+
+    @Override
+    public void reject(String code, String message, WritableMap userInfo) {
+      rejectedCode = code;
+      rejectedMessage = message;
+    }
+
+    @Override
+    public void reject(String code, String message, Throwable throwable, WritableMap userInfo) {
+      rejectedCode = code;
+      rejectedMessage = message;
+      rejectedThrowable = throwable;
+    }
+
+    @Override
+    public void reject(String message) {
+      rejectedMessage = message;
+    }
   }
 }
