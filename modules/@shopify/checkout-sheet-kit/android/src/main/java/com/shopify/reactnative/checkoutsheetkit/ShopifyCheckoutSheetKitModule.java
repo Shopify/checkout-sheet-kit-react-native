@@ -31,8 +31,9 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridge.WritableMap;
 import com.shopify.checkoutsheetkit.*;
 
 import java.util.HashMap;
@@ -120,7 +121,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getConfig(Promise promise) {
-    WritableNativeMap resultConfig = new WritableNativeMap();
+    WritableMap resultConfig = Arguments.createMap();
 
     resultConfig.putBoolean("preloading", checkoutConfig.getPreloading().getEnabled());
     resultConfig.putString("colorScheme", colorSchemeToString(checkoutConfig.getColorScheme()));

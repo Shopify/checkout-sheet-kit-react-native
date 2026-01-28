@@ -2,6 +2,7 @@ package com.shopify.checkoutkitreactnative;
 
 import androidx.activity.ComponentActivity;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -70,6 +71,9 @@ public class ShopifyCheckoutSheetKitModuleTest {
   private ColorScheme initialColorScheme;
   private LogLevel initialLogLevel;
 
+  // Mock for Arguments.createMap() to avoid native library loading
+  private MockedStatic<Arguments> mockedArguments;
+
   // Test constants for color configuration
   private static final String BACKGROUND_COLOR = "#FFFFFF";
   private static final String PROGRESS_INDICATOR = "#000000";
@@ -84,6 +88,9 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   @Before
   public void setup() {
+    mockedArguments = Mockito.mockStatic(Arguments.class);
+    mockedArguments.when(Arguments::createMap).thenAnswer(invocation -> new JavaOnlyMap());
+
     when(mockReactContext.getCurrentActivity()).thenReturn(mockComponentActivity);
     when(mockReactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class))
         .thenReturn(mockEventEmitter);
@@ -97,6 +104,11 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   @After
   public void tearDown() {
+    // Close mocked static
+    if (mockedArguments != null) {
+      mockedArguments.close();
+    }
+
     // Reset configuration to initial state after each test
     ShopifyCheckoutSheetKit.configure(configuration -> {
       configuration.setPreloading(initialPreloading);
