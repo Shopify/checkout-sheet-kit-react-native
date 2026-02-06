@@ -8,11 +8,11 @@ import React, {
 } from 'react';
 import {ColorScheme} from '@shopify/checkout-sheet-kit';
 import {useTheme} from './Theme';
+import {BuyerIdentityMode} from '../auth/types';
 
 export interface AppConfig {
   colorScheme: ColorScheme;
-  prefillBuyerInformation: boolean;
-  customerAuthenticated: boolean;
+  buyerIdentityMode: BuyerIdentityMode;
 }
 
 interface Context {
@@ -22,8 +22,7 @@ interface Context {
 
 const defaultAppConfig: AppConfig = {
   colorScheme: ColorScheme.automatic,
-  prefillBuyerInformation: false,
-  customerAuthenticated: false,
+  buyerIdentityMode: BuyerIdentityMode.Guest,
 };
 
 const ConfigContext = createContext<Context>({

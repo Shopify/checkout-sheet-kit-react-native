@@ -1,5 +1,6 @@
 import Config from 'react-native-config';
 import type {AppConfig} from './context/Config';
+import {BuyerIdentityMode} from './auth/types';
 
 const {
   EMAIL,
@@ -15,30 +16,43 @@ const {
   PHONE,
 } = Config;
 
-export function createBuyerIdentityCartInput(appConfig: AppConfig) {
-  if (!appConfig.prefillBuyerInformation) {
-    return {};
-  }
-
-  return {
-    buyerIdentity: {
-      email: EMAIL,
-      deliveryAddressPreferences: {
-        deliveryAddress: {
-          address1: ADDRESS_1,
-          address2: ADDRESS_2,
-          city: CITY,
-          company: COMPANY,
-          country: COUNTRY,
-          firstName: FIRST_NAME,
-          lastName: LAST_NAME,
-          phone: PHONE,
-          province: PROVINCE,
-          zip: ZIP,
+export function createBuyerIdentityCartInput(
+  appConfig: AppConfig,
+  customerAccessToken?: string,
+) {
+  switch (appConfig.buyerIdentityMode) {
+    case BuyerIdentityMode.Guest:
+      return {};
+    case BuyerIdentityMode.Hardcoded:
+      return {
+        buyerIdentity: {
+          email: EMAIL,
+          deliveryAddressPreferences: {
+            deliveryAddress: {
+              address1: ADDRESS_1,
+              address2: ADDRESS_2,
+              city: CITY,
+              company: COMPANY,
+              country: COUNTRY,
+              firstName: FIRST_NAME,
+              lastName: LAST_NAME,
+              phone: PHONE,
+              province: PROVINCE,
+              zip: ZIP,
+            },
+          },
         },
-      },
-    },
-  };
+      };
+    case BuyerIdentityMode.CustomerAccount:
+      if (!customerAccessToken) {
+        return {};
+      }
+      return {
+        buyerIdentity: {
+          customerAccessToken,
+        },
+      };
+  }
 }
 
 const fallbackLocale = 'en-CA';

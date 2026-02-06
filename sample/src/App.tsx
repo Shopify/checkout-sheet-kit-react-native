@@ -51,6 +51,7 @@ import type {
   PixelEvent,
 } from '@shopify/checkout-sheet-kit';
 import {ConfigProvider, useConfig} from './context/Config';
+import {BuyerIdentityMode} from './auth/types';
 import {
   ThemeProvider,
   darkColors,
@@ -237,8 +238,7 @@ function AppWithContext({children}: PropsWithChildren) {
       config={{
         colorScheme:
           checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
-        prefillBuyerInformation: false,
-        customerAuthenticated: false,
+        buyerIdentityMode: BuyerIdentityMode.Guest,
       }}>
       <ApolloProvider client={client}>
         <CartProvider>
@@ -372,21 +372,19 @@ function AppWithCheckoutKit({children}: PropsWithChildren) {
          * We're reading the customer email and phone number from the environment variables here,
          * but in a real app you would derive these values from your backend.
          */
-        customer: appConfig.customerAuthenticated
-          ? {
-              email: env.EMAIL!,
-              phoneNumber: env.PHONE!,
-            }
-          : undefined,
+        customer:
+          appConfig.buyerIdentityMode === BuyerIdentityMode.Hardcoded
+            ? {
+                email: env.EMAIL!,
+                phoneNumber: env.PHONE!,
+              }
+            : undefined,
         wallets: {
           applePay: {
-            /**
-             * In cases where customers are authenticated, email/phone will be provided through the customer property,
-             * In cases where customers are NOT authenticated, we will collect email and phone number via the Apple Pay sheet.
-             */
-            contactFields: appConfig.customerAuthenticated
-              ? []
-              : [ApplePayContactField.email, ApplePayContactField.phone],
+            contactFields:
+              appConfig.buyerIdentityMode === BuyerIdentityMode.Hardcoded
+                ? []
+                : [ApplePayContactField.email, ApplePayContactField.phone],
             merchantIdentifier: env.STOREFRONT_MERCHANT_IDENTIFIER!,
           },
         },

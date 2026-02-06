@@ -41,6 +41,10 @@ import {
 import type {Colors} from '../context/Theme';
 import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
+import {
+  BuyerIdentityMode,
+  BuyerIdentityModeDisplayNames,
+} from '../auth/types';
 
 enum SectionType {
   Switch = 'switch',
@@ -59,7 +63,7 @@ interface SwitchItem {
 interface SingleSelectItem {
   type: SectionType.SingleSelect;
   title: string;
-  value: ColorScheme;
+  value: ColorScheme | BuyerIdentityMode;
   selected: boolean;
 }
 
@@ -83,6 +87,7 @@ function isTextItem(item: any): item is TextItem {
 
 interface SectionData {
   title: string;
+  footer?: string;
   data: readonly (SwitchItem | SingleSelectItem | TextItem)[];
 }
 
@@ -106,9 +111,9 @@ function SettingsScreen() {
     (item: SingleSelectItem) => {
       setAppConfig({
         ...appConfig,
-        colorScheme: item.value,
+        colorScheme: item.value as ColorScheme,
       });
-      setColorScheme(item.value);
+      setColorScheme(item.value as ColorScheme);
     },
     [appConfig, setAppConfig, setColorScheme],
   );
@@ -123,21 +128,17 @@ function SettingsScreen() {
     setPreloadingEnabled(newPreloadingValue);
   }, [shopify]);
 
-  const handleTogglePrefill = useCallback(() => {
-    clearCart();
-    setAppConfig({
-      ...appConfig,
-      prefillBuyerInformation: !appConfig.prefillBuyerInformation,
-      customerAuthenticated: !appConfig.customerAuthenticated,
-    });
-  }, [appConfig, clearCart, setAppConfig]);
-
-  const handleToggleCustomerAuthenticated = useCallback(() => {
-    setAppConfig({
-      ...appConfig,
-      customerAuthenticated: !appConfig.customerAuthenticated,
-    });
-  }, [appConfig, setAppConfig]);
+  const handleBuyerIdentityModeChange = useCallback(
+    (item: SingleSelectItem) => {
+      const newMode = item.value as BuyerIdentityMode;
+      clearCart();
+      setAppConfig({
+        ...appConfig,
+        buyerIdentityMode: newMode,
+      });
+    },
+    [appConfig, clearCart, setAppConfig],
+  );
 
   const configurationOptions: readonly SwitchItem[] = useMemo(
     () => [
@@ -147,28 +148,19 @@ function SettingsScreen() {
         value: preloadingEnabled,
         handler: handleTogglePreloading,
       },
-      {
-        title: 'Prefill buyer information',
-        type: SectionType.Switch,
-        value: appConfig.prefillBuyerInformation,
-        handler: handleTogglePrefill,
-      },
-      {
-        title: 'Use authenticated customer',
-        description:
-          'When toggled on, customer information will be attached to cart from your app settings. When toggled off, customer information will be collected from the Apple Pay sheet.',
-        type: SectionType.Switch,
-        value: appConfig.customerAuthenticated,
-        handler: handleToggleCustomerAuthenticated,
-      },
     ],
-    [
-      appConfig,
-      preloadingEnabled,
-      handleTogglePrefill,
-      handleTogglePreloading,
-      handleToggleCustomerAuthenticated,
-    ],
+    [preloadingEnabled, handleTogglePreloading],
+  );
+
+  const buyerIdentityOptions: readonly SingleSelectItem[] = useMemo(
+    () =>
+      Object.values(BuyerIdentityMode).map(mode => ({
+        title: BuyerIdentityModeDisplayNames[mode],
+        type: SectionType.SingleSelect as const,
+        value: mode,
+        selected: appConfig.buyerIdentityMode === mode,
+      })),
+    [appConfig.buyerIdentityMode],
   );
 
   const themeOptions: readonly SingleSelectItem[] = useMemo(
@@ -229,6 +221,12 @@ function SettingsScreen() {
         data: configurationOptions,
       },
       {
+        title: 'Authentication',
+        footer:
+          'Prefills buyer identity at checkout. Changing this setting will clear your cart.',
+        data: buyerIdentityOptions,
+      },
+      {
         title: 'Theme',
         data: themeOptions,
       },
@@ -237,7 +235,12 @@ function SettingsScreen() {
         data: informationalItems,
       },
     ],
-    [themeOptions, configurationOptions, informationalItems],
+    [
+      themeOptions,
+      configurationOptions,
+      buyerIdentityOptions,
+      informationalItems,
+    ],
   );
 
   return (
@@ -245,7 +248,7 @@ function SettingsScreen() {
       <SectionList
         sections={sections}
         keyExtractor={item => item.title}
-        renderItem={({item}) => {
+        renderItem={({item, section}) => {
           if (isSwitchItem(item)) {
             return (
               <SwitchItem styles={styles} item={item} onChange={item.handler} />
@@ -253,11 +256,16 @@ function SettingsScreen() {
           }
 
           if (isSingleSelectItem(item)) {
+            const isAuthSection = section.title === 'Authentication';
             return (
               <SelectItem
                 item={item}
                 styles={styles}
-                onPress={() => handleColorSchemeChange(item)}
+                onPress={() =>
+                  isAuthSection
+                    ? handleBuyerIdentityModeChange(item)
+                    : handleColorSchemeChange(item)
+                }
               />
             );
           }
@@ -273,6 +281,13 @@ function SettingsScreen() {
             <Text style={styles.sectionText}>{title}</Text>
           </View>
         )}
+        renderSectionFooter={({section: {footer}}) =>
+          footer ? (
+            <View style={styles.sectionFooter}>
+              <Text style={styles.sectionFooterText}>{footer}</Text>
+            </View>
+          ) : null
+        }
       />
     </SafeAreaView>
   );
@@ -381,6 +396,15 @@ function createStyles(colors: Colors) {
       color: '#9f9f9f',
       marginTop: 10,
       marginBottom: -10,
+    },
+    sectionFooter: {
+      paddingHorizontal: 16,
+      paddingTop: 8,
+      paddingBottom: 4,
+    },
+    sectionFooterText: {
+      fontSize: 12,
+      color: colors.textSubdued,
     },
   });
 }
