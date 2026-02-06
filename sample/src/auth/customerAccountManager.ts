@@ -222,7 +222,7 @@ export async function logout(): Promise<void> {
         id_token_hint: tokens.idToken,
       });
       await fetch(`${getLogoutEndpoint()}?${params.toString()}`, {
-        method: 'POST',
+        method: 'GET',
       });
     } catch {
       log('Server-side logout request failed');
