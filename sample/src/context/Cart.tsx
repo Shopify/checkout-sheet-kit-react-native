@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
+import {Alert} from 'react-native';
 import {atom, useAtom} from 'jotai';
 import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
@@ -72,7 +73,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const defaultSet: Set<string> = new Set();
   const [addingToCart, dispatch] = useReducer(addingToCartReducer, defaultSet);
   const {appConfig} = useConfig();
-  const {getValidAccessToken} = useAuth();
+  const {getValidAccessToken, isAuthenticated} = useAuth();
 
   const {mutations, queries} = useShopify();
   const [createCart] = mutations.cartCreate;
@@ -87,8 +88,13 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   }, [setCartId, setCheckoutURL, setTotalQuantity]);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      clearCart();
+    }
+  }, [isAuthenticated, clearCart]);
+
+  useEffect(() => {
     const subscription = shopify.addEventListener('completed', () => {
-      // Clear the cart ID and checkout URL when the checkout is completed
       clearCart();
     });
 
@@ -131,6 +137,19 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       let id = cartId;
 
       dispatch({type: 'add', variantId});
+
+      if (
+        !id &&
+        appConfig.buyerIdentityMode === BuyerIdentityMode.CustomerAccount &&
+        !isAuthenticated
+      ) {
+        dispatch({type: 'remove', variantId});
+        Alert.alert(
+          'Sign in required',
+          'Sign in on the Account tab or change the Buyer Identity setting to add items to your cart.',
+        );
+        return;
+      }
 
       if (!id) {
         let customerAccessToken: string | undefined;
@@ -187,6 +206,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       fetchCart,
       preloadCheckout,
       getValidAccessToken,
+      isAuthenticated,
     ],
   );
 

@@ -40,7 +40,6 @@ import {
 } from '@shopify/checkout-sheet-kit';
 import type {Colors} from '../context/Theme';
 import {useTheme} from '../context/Theme';
-import {useCart} from '../context/Cart';
 import {useNavigation} from '@react-navigation/native';
 import {useAuth} from '../context/Auth';
 import {
@@ -95,7 +94,6 @@ interface SectionData {
 
 function SettingsScreen() {
   const shopify = useShopifyCheckoutSheet();
-  const {clearCart} = useCart();
   const {appConfig, setAppConfig} = useConfig();
   const {colors, setColorScheme} = useTheme();
   const styles = createStyles(colors);
@@ -141,13 +139,12 @@ function SettingsScreen() {
       ) {
         logout();
       }
-      clearCart();
       setAppConfig({
         ...appConfig,
         buyerIdentityMode: newMode,
       });
     },
-    [appConfig, clearCart, logout, setAppConfig],
+    [appConfig, logout, setAppConfig],
   );
 
   const configurationOptions: readonly SwitchItem[] = useMemo(
