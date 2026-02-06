@@ -7,6 +7,7 @@ import React, {
   useState,
 } from 'react';
 import {ColorScheme} from '@shopify/checkout-sheet-kit';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {useTheme} from './Theme';
 import {BuyerIdentityMode} from '../auth/types';
 
@@ -19,6 +20,8 @@ interface Context {
   appConfig: AppConfig;
   setAppConfig: (config: AppConfig) => void;
 }
+
+const CONFIG_STORAGE_KEY = 'app_config';
 
 const defaultAppConfig: AppConfig = {
   colorScheme: ColorScheme.automatic,
@@ -38,14 +41,35 @@ export const ConfigProvider: React.FC<
   const {setColorScheme} = useTheme();
 
   useEffect(() => {
-    setColorScheme(config?.colorScheme ?? ColorScheme.automatic);
+    async function restoreConfig() {
+      try {
+        const raw = await EncryptedStorage.getItem(CONFIG_STORAGE_KEY);
+        if (raw) {
+          const saved = JSON.parse(raw) as Partial<AppConfig>;
+          const restored: AppConfig = {
+            ...defaultAppConfig,
+            ...config,
+            ...saved,
+          };
+          setInternalAppConfig(restored);
+          setColorScheme(restored.colorScheme);
+          return;
+        }
+      } catch {}
+      setColorScheme(config?.colorScheme ?? ColorScheme.automatic);
+    }
+    restoreConfig();
   }, [config, setColorScheme]);
 
-  const setAppConfig = useCallback((config: AppConfig) => {
+  const setAppConfig = useCallback((newConfig: AppConfig) => {
     console.groupCollapsed('APP CONFIG UPDATE');
-    console.log(config);
+    console.log(newConfig);
     console.groupEnd();
-    setInternalAppConfig(config);
+    setInternalAppConfig(newConfig);
+    EncryptedStorage.setItem(
+      CONFIG_STORAGE_KEY,
+      JSON.stringify(newConfig),
+    ).catch(() => {});
   }, []);
 
   const value = useMemo(

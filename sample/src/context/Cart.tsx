@@ -10,6 +10,8 @@ import {atom, useAtom} from 'jotai';
 import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
 import {useConfig} from './Config';
+import {useAuth} from './Auth';
+import {BuyerIdentityMode} from '../auth/types';
 import {createBuyerIdentityCartInput} from '../utils';
 
 interface Context {
@@ -70,6 +72,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const defaultSet: Set<string> = new Set();
   const [addingToCart, dispatch] = useReducer(addingToCartReducer, defaultSet);
   const {appConfig} = useConfig();
+  const {getValidAccessToken} = useAuth();
 
   const {mutations, queries} = useShopify();
   const [createCart] = mutations.cartCreate;
@@ -130,9 +133,19 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       dispatch({type: 'add', variantId});
 
       if (!id) {
-        const cartInput = createBuyerIdentityCartInput(appConfig);
+        let customerAccessToken: string | undefined;
+        if (
+          appConfig.buyerIdentityMode === BuyerIdentityMode.CustomerAccount
+        ) {
+          customerAccessToken =
+            (await getValidAccessToken()) ?? undefined;
+        }
+        const cartInput = createBuyerIdentityCartInput(
+          appConfig,
+          customerAccessToken,
+        );
         const cart = await createCart({variables: {input: cartInput}});
-        id = cart.data.cartCreate.cart.id;
+        id = cart.data.cartCreate.cart?.id;
 
         if (id) {
           setCartId(id);
@@ -173,6 +186,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setCartId,
       fetchCart,
       preloadCheckout,
+      getValidAccessToken,
     ],
   );
 

@@ -413,10 +413,10 @@ function AppWithCheckoutKit({children}: PropsWithChildren) {
             : undefined,
         wallets: {
           applePay: {
-            contactFields:
-              appConfig.buyerIdentityMode === BuyerIdentityMode.Hardcoded
-                ? []
-                : [ApplePayContactField.email, ApplePayContactField.phone],
+            contactFields: [
+              ApplePayContactField.email,
+              ApplePayContactField.phone,
+            ],
             merchantIdentifier: env.STOREFRONT_MERCHANT_IDENTIFIER!,
           },
         },

@@ -41,6 +41,8 @@ import {
 import type {Colors} from '../context/Theme';
 import {useTheme} from '../context/Theme';
 import {useCart} from '../context/Cart';
+import {useNavigation} from '@react-navigation/native';
+import {useAuth} from '../context/Auth';
 import {
   BuyerIdentityMode,
   BuyerIdentityModeDisplayNames,
@@ -128,16 +130,24 @@ function SettingsScreen() {
     setPreloadingEnabled(newPreloadingValue);
   }, [shopify]);
 
+  const {isAuthenticated, customerEmail, tokenExpiresAt, logout} = useAuth();
+
   const handleBuyerIdentityModeChange = useCallback(
     (item: SingleSelectItem) => {
       const newMode = item.value as BuyerIdentityMode;
+      if (
+        appConfig.buyerIdentityMode === BuyerIdentityMode.CustomerAccount &&
+        newMode !== BuyerIdentityMode.CustomerAccount
+      ) {
+        logout();
+      }
       clearCart();
       setAppConfig({
         ...appConfig,
         buyerIdentityMode: newMode,
       });
     },
-    [appConfig, clearCart, setAppConfig],
+    [appConfig, clearCart, logout, setAppConfig],
   );
 
   const configurationOptions: readonly SwitchItem[] = useMemo(
@@ -281,13 +291,29 @@ function SettingsScreen() {
             <Text style={styles.sectionText}>{title}</Text>
           </View>
         )}
-        renderSectionFooter={({section: {footer}}) =>
-          footer ? (
-            <View style={styles.sectionFooter}>
-              <Text style={styles.sectionFooterText}>{footer}</Text>
+        renderSectionFooter={({section}) => {
+          const isAuthSection = section.title === 'Authentication';
+          return (
+            <View>
+              {isAuthSection && (
+                <BuyerIdentityDetails
+                  mode={appConfig.buyerIdentityMode}
+                  isAuthenticated={isAuthenticated}
+                  customerEmail={customerEmail}
+                  tokenExpiresAt={tokenExpiresAt}
+                  styles={styles}
+                />
+              )}
+              {section.footer ? (
+                <View style={styles.sectionFooter}>
+                  <Text style={styles.sectionFooterText}>
+                    {section.footer}
+                  </Text>
+                </View>
+              ) : null}
             </View>
-          ) : null
-        }
+          );
+        }}
       />
     </SafeAreaView>
   );
@@ -350,6 +376,70 @@ function TextItem({item, styles}: TextItemProps) {
   );
 }
 
+interface BuyerIdentityDetailsProps {
+  mode: BuyerIdentityMode;
+  isAuthenticated: boolean;
+  customerEmail: string | null;
+  tokenExpiresAt: number | null;
+  styles: ReturnType<typeof createStyles>;
+}
+
+function BuyerIdentityDetails({
+  mode,
+  isAuthenticated: authenticated,
+  customerEmail: email,
+  tokenExpiresAt: expiresAt,
+  styles,
+}: BuyerIdentityDetailsProps) {
+  const navigation = useNavigation();
+
+  switch (mode) {
+    case BuyerIdentityMode.Guest:
+      return null;
+    case BuyerIdentityMode.Hardcoded:
+      return (
+        <View style={styles.sectionFooter}>
+          <Text style={styles.sectionFooterText}>
+            Populates Cart Buyer Identity with values from .env
+          </Text>
+        </View>
+      );
+    case BuyerIdentityMode.CustomerAccount:
+      if (authenticated) {
+        return (
+          <View style={styles.sectionFooter}>
+            <Text style={[styles.sectionFooterText, {color: '#f5a623'}]}>
+              Changing Buyer Identity will log you out.
+            </Text>
+            <View style={styles.detailRow}>
+              <Text style={styles.sectionFooterText}>
+                User: {email ?? 'Unknown'}
+              </Text>
+              <Pressable onPress={() => navigation.navigate('Account' as never)}>
+                <Text style={styles.linkText}>Change user</Text>
+              </Pressable>
+            </View>
+            {expiresAt && (
+              <Text style={styles.sectionFooterText}>
+                Expires: {new Date(expiresAt).toLocaleString()}
+              </Text>
+            )}
+          </View>
+        );
+      }
+      return (
+        <View style={styles.sectionFooter}>
+          <Pressable
+            style={styles.detailRow}
+            onPress={() => navigation.navigate('Account' as never)}>
+            <Text style={styles.sectionFooterText}>Sign in on the </Text>
+            <Text style={styles.linkText}>Account tab</Text>
+          </Pressable>
+        </View>
+      );
+  }
+}
+
 function createStyles(colors: Colors) {
   return StyleSheet.create({
     list: {
@@ -405,6 +495,15 @@ function createStyles(colors: Colors) {
     sectionFooterText: {
       fontSize: 12,
       color: colors.textSubdued,
+    },
+    detailRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    linkText: {
+      fontSize: 12,
+      color: '#007AFF',
     },
   });
 }

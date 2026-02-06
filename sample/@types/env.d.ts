@@ -14,4 +14,7 @@ declare module '@env' {
   export const PROVINCE: string;
   export const ZIP: string;
   export const PHONE: string;
+
+  export const CUSTOMER_ACCOUNT_API_CLIENT_ID: string;
+  export const CUSTOMER_ACCOUNT_API_SHOP_ID: string;
 }

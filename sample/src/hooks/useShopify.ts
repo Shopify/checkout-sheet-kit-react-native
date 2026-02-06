@@ -149,6 +149,11 @@ const CREATE_CART_MUTATION = gql`
         id
         checkoutUrl
       }
+      userErrors {
+        code
+        field
+        message
+      }
     }
   }
 `;
