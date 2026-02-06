@@ -36,6 +36,8 @@ import Icon from 'react-native-vector-icons/Entypo';
 
 import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import AccountScreen from './screens/AccountScreen';
+import LoginScreen from './screens/LoginScreen';
 
 import type {Configuration, Features} from '@shopify/checkout-sheet-kit';
 import {
@@ -61,6 +63,7 @@ import {
   useTheme,
 } from './context/Theme';
 import {CartProvider, useCart} from './context/Cart';
+import {AuthProvider} from './context/Auth';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import type {ProductVariant, ShopifyProduct} from '../@types';
@@ -96,11 +99,18 @@ export type RootStackParamList = {
   ProductDetails: {product: ShopifyProduct; variant?: ProductVariant};
   Cart: undefined;
   CartModal: undefined;
+  Account: undefined;
   Settings: undefined;
+};
+
+export type AccountStackParamList = {
+  AccountHome: undefined;
+  Login: undefined;
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const AccountStack = createNativeStackNavigator<AccountStackParamList>();
 
 export const cache = new InMemoryCache();
 
@@ -240,12 +250,14 @@ function AppWithContext({children}: PropsWithChildren) {
           checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
         buyerIdentityMode: BuyerIdentityMode.Guest,
       }}>
-      <ApolloProvider client={client}>
-        <CartProvider>
-          <StatusBar barStyle="default" />
-          {children}
-        </CartProvider>
-      </ApolloProvider>
+      <AuthProvider>
+        <ApolloProvider client={client}>
+          <CartProvider>
+            <StatusBar barStyle="default" />
+            {children}
+          </CartProvider>
+        </ApolloProvider>
+      </AuthProvider>
     </ConfigProvider>
   );
 }
@@ -302,6 +314,26 @@ function CartIcon({onPress}: {onPress: () => void}) {
     <Pressable onPress={onPress} testID="header-cart-icon">
       <Icon name="shopping-basket" size={24} color={theme.colors.secondary} />
     </Pressable>
+  );
+}
+
+function AccountStackScreen() {
+  return (
+    <AccountStack.Navigator>
+      <AccountStack.Screen
+        name="AccountHome"
+        component={AccountScreen}
+        options={{headerTitle: 'Account'}}
+      />
+      <AccountStack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{
+          title: 'Sign In',
+          presentation: 'modal',
+        }}
+      />
+    </AccountStack.Navigator>
   );
 }
 
@@ -471,6 +503,15 @@ function Routes() {
           tabBarButtonTestID: 'cart-tab',
           tabBarIcon: createNavigationIcon('shopping-bag'),
           tabBarBadge: totalQuantity > 0 ? totalQuantity : undefined,
+        }}
+      />
+      <Tab.Screen
+        name="Account"
+        component={AccountStackScreen}
+        options={{
+          headerShown: false,
+          tabBarButtonTestID: 'account-tab',
+          tabBarIcon: createNavigationIcon('user'),
         }}
       />
       <Tab.Screen

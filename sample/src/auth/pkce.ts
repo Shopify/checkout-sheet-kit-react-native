@@ -1,25 +1,28 @@
-import SHA256 from 'crypto-js/sha256';
-import WordArray from 'crypto-js/lib-typedarrays';
-import Base64 from 'crypto-js/enc-base64';
+import crypto from 'react-native-quick-crypto';
 
-function base64URLEncode(wordArray: CryptoJS.lib.WordArray): string {
-  return Base64.stringify(wordArray)
+function base64URLEncode(buffer: ArrayBufferLike): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]!);
+  }
+  return btoa(binary)
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=/g, '');
 }
 
 export function generateCodeVerifier(): string {
-  const randomBytes = WordArray.random(32);
-  return base64URLEncode(randomBytes);
+  const bytes = crypto.randomBytes(32);
+  return base64URLEncode(bytes.buffer);
 }
 
 export function generateCodeChallenge(verifier: string): string {
-  const hash = SHA256(verifier);
-  return base64URLEncode(hash);
+  const hash = crypto.createHash('sha256').update(verifier).digest();
+  return base64URLEncode(hash.buffer);
 }
 
 export function generateState(): string {
-  const randomBytes = WordArray.random(27);
-  return base64URLEncode(randomBytes);
+  const bytes = crypto.randomBytes(27);
+  return base64URLEncode(bytes.buffer);
 }
