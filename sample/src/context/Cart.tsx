@@ -88,10 +88,8 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   }, [setCartId, setCheckoutURL, setTotalQuantity]);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      clearCart();
-    }
-  }, [isAuthenticated, clearCart]);
+    clearCart();
+  }, [appConfig.buyerIdentityMode, clearCart]);
 
   useEffect(() => {
     const subscription = shopify.addEventListener('completed', () => {
