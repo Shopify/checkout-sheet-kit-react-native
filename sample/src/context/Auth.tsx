@@ -8,6 +8,18 @@ import React, {
 } from 'react';
 import * as customerAccountManager from '../auth/customerAccountManager';
 
+interface Session {
+  isAuthenticated: boolean;
+  email: string | null;
+  tokenExpiresAt: number | null;
+}
+
+const defaultSession: Session = {
+  isAuthenticated: false,
+  email: null,
+  tokenExpiresAt: null,
+};
+
 interface AuthContextValue {
   isAuthenticated: boolean;
   customerEmail: string | null;
@@ -31,20 +43,20 @@ const AuthContext = createContext<AuthContextValue>({
 });
 
 export const AuthProvider: React.FC<PropsWithChildren> = ({children}) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [customerEmail, setCustomerEmail] = useState<string | null>(null);
+  const [session, setSession] = useState<Session>(defaultSession);
   const [isLoading, setIsLoading] = useState(true);
-  const [tokenExpiresAt, setTokenExpiresAt] = useState<number | null>(null);
 
   useEffect(() => {
     async function restoreSession() {
       try {
-        const session = await customerAccountManager.checkExistingSession();
-        setIsAuthenticated(session.isAuthenticated);
-        setCustomerEmail(session.email);
-        setTokenExpiresAt(session.tokenExpiresAt);
+        const restored = await customerAccountManager.checkExistingSession();
+        setSession({
+          isAuthenticated: restored.isAuthenticated,
+          email: restored.email,
+          tokenExpiresAt: restored.tokenExpiresAt,
+        });
       } catch {
-        setIsAuthenticated(false);
+        setSession(defaultSession);
       } finally {
         setIsLoading(false);
       }
@@ -67,9 +79,11 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({children}) => {
         const email = customerAccountManager.extractEmailFromIdToken(
           tokens.idToken,
         );
-        setIsAuthenticated(true);
-        setCustomerEmail(email);
-        setTokenExpiresAt(tokens.expiresAt);
+        setSession({
+          isAuthenticated: true,
+          email,
+          tokenExpiresAt: tokens.expiresAt,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -79,9 +93,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({children}) => {
 
   const logout = useCallback(async () => {
     await customerAccountManager.logout();
-    setIsAuthenticated(false);
-    setCustomerEmail(null);
-    setTokenExpiresAt(null);
+    setSession(defaultSession);
   }, []);
 
   const getValidAccessToken = useCallback(async () => {
@@ -90,25 +102,16 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({children}) => {
 
   const value = useMemo(
     () => ({
-      isAuthenticated,
-      customerEmail,
+      isAuthenticated: session.isAuthenticated,
+      customerEmail: session.email,
       isLoading,
-      tokenExpiresAt,
+      tokenExpiresAt: session.tokenExpiresAt,
       login,
       logout,
       getValidAccessToken,
       handleAuthCallback,
     }),
-    [
-      isAuthenticated,
-      customerEmail,
-      isLoading,
-      tokenExpiresAt,
-      login,
-      logout,
-      getValidAccessToken,
-      handleAuthCallback,
-    ],
+    [session, isLoading, login, logout, getValidAccessToken, handleAuthCallback],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

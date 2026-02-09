@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import type {PropsWithChildren, ReactNode} from 'react';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Appearance, Linking, Pressable, StatusBar} from 'react-native';
 import {
   NavigationContainer,
@@ -63,7 +63,7 @@ import {
   useTheme,
 } from './context/Theme';
 import {CartProvider, useCart} from './context/Cart';
-import {AuthProvider} from './context/Auth';
+import {AuthProvider, useAuth} from './context/Auth';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import type {ProductVariant, ShopifyProduct} from '../@types';
@@ -244,21 +244,12 @@ function AppWithContext({children}: PropsWithChildren) {
   }, [shopify, eventHandlers]);
 
   return (
-    <ConfigProvider
-      config={{
-        colorScheme:
-          checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
-        buyerIdentityMode: BuyerIdentityMode.Guest,
-      }}>
-      <AuthProvider>
-        <ApolloProvider client={client}>
-          <CartProvider>
-            <StatusBar barStyle="default" />
-            {children}
-          </CartProvider>
-        </ApolloProvider>
-      </AuthProvider>
-    </ConfigProvider>
+    <ApolloProvider client={client}>
+      <CartProvider>
+        <StatusBar barStyle="default" />
+        {children}
+      </CartProvider>
+    </ApolloProvider>
   );
 }
 
@@ -339,6 +330,24 @@ function AccountStackScreen() {
 
 function AppWithCheckoutKit({children}: PropsWithChildren) {
   const {appConfig} = useConfig();
+  const {isAuthenticated, customerEmail, getValidAccessToken} = useAuth();
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+
+  const fetchAccessToken = useCallback(async () => {
+    if (
+      appConfig.buyerIdentityMode === BuyerIdentityMode.CustomerAccount &&
+      isAuthenticated
+    ) {
+      const token = await getValidAccessToken();
+      setAccessToken(token);
+    } else {
+      setAccessToken(null);
+    }
+  }, [appConfig.buyerIdentityMode, isAuthenticated, getValidAccessToken]);
+
+  useEffect(() => {
+    fetchAccessToken();
+  }, [fetchAccessToken]);
 
   const updatedColors = getColors(
     appConfig.colorScheme,
@@ -410,7 +419,13 @@ function AppWithCheckoutKit({children}: PropsWithChildren) {
                 email: env.EMAIL!,
                 phoneNumber: env.PHONE!,
               }
-            : undefined,
+            : appConfig.buyerIdentityMode ===
+                  BuyerIdentityMode.CustomerAccount && isAuthenticated
+              ? {
+                  email: customerEmail ?? undefined,
+                  accessToken: accessToken ?? undefined,
+                }
+              : undefined,
         wallets: {
           applePay: {
             contactFields: [
@@ -422,7 +437,7 @@ function AppWithCheckoutKit({children}: PropsWithChildren) {
         },
       },
     } as Configuration;
-  }, [appConfig, checkoutKitThemeConfig]);
+  }, [appConfig, checkoutKitThemeConfig, isAuthenticated, customerEmail, accessToken]);
 
   return (
     <ShopifyCheckoutSheetProvider
@@ -534,13 +549,22 @@ function App() {
   return (
     <ErrorBoundary>
       <AppWithTheme>
-        <AppWithCheckoutKit>
-          <AppWithContext>
-            <AppWithNavigation>
-              <Routes />
-            </AppWithNavigation>
-          </AppWithContext>
-        </AppWithCheckoutKit>
+        <ConfigProvider
+          config={{
+            colorScheme:
+              checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
+            buyerIdentityMode: BuyerIdentityMode.Guest,
+          }}>
+          <AuthProvider>
+            <AppWithCheckoutKit>
+              <AppWithContext>
+                <AppWithNavigation>
+                  <Routes />
+                </AppWithNavigation>
+              </AppWithContext>
+            </AppWithCheckoutKit>
+          </AuthProvider>
+        </ConfigProvider>
       </AppWithTheme>
     </ErrorBoundary>
   );

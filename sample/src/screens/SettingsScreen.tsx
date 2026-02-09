@@ -429,7 +429,7 @@ function BuyerIdentityDetails({
           <Pressable
             style={styles.detailRow}
             onPress={() => navigation.navigate('Account' as never)}>
-            <Text style={styles.sectionFooterText}>Sign in on the </Text>
+            <Text style={styles.sectionFooterText}>Sign in on the</Text>
             <Text style={styles.linkText}>Account tab</Text>
           </Pressable>
         </View>

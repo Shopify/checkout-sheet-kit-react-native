@@ -127,7 +127,7 @@ function createStyles(colors: Colors) {
     benefitsList: {
       alignSelf: 'stretch',
       marginBottom: 24,
-      paddingHorizontal: 16,
+      paddingHorizontal: 32,
     },
     benefitItem: {
       fontSize: 14,
