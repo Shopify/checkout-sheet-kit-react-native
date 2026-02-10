@@ -648,9 +648,9 @@ and log the status of a checkout session.
 
 For behavioural monitoring,
 ["standard"](https://shopify.dev/docs/api/web-pixels-api/standard-events) and
-["custom"](https://shopify.dev/docs/api/web-pixels-api/emitting-data) Web
+["custom"](https://shopify.dev/docs/api/web-pixels-api#custom-web-pixels) Web
 Pixel events normally available to web pixels will be relayed back to your
-application through the "pixel" event listener. Web pixels do not execute
+application through the "pixel" event listener, see: [subscribing to custom events](https://shopify.dev/docs/api/web-pixels-api/emitting-data). Web pixels do not execute
 in checkout sheet kit checkouts.
 App developers should only subscribe to pixel events if they have proper levels of consent from merchants/buyers and are responsible for adherence to Apple's privacy policy and local regulations like GDPR and
 ePrivacy directive before disseminating these events to first-party and
