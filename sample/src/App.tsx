@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import type {PropsWithChildren, ReactNode} from 'react';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Appearance, Linking, Pressable, StatusBar} from 'react-native';
 import {
   NavigationContainer,
@@ -36,6 +36,8 @@ import Icon from 'react-native-vector-icons/Entypo';
 
 import CatalogScreen from './screens/CatalogScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import AccountScreen from './screens/AccountScreen';
+import LoginScreen from './screens/LoginScreen';
 
 import type {Configuration, Features} from '@shopify/checkout-sheet-kit';
 import {
@@ -51,6 +53,7 @@ import type {
   PixelEvent,
 } from '@shopify/checkout-sheet-kit';
 import {ConfigProvider, useConfig} from './context/Config';
+import {BuyerIdentityMode} from './auth/types';
 import {
   ThemeProvider,
   darkColors,
@@ -60,6 +63,7 @@ import {
   useTheme,
 } from './context/Theme';
 import {CartProvider, useCart} from './context/Cart';
+import {AuthProvider, useAuth} from './context/Auth';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import type {ProductVariant, ShopifyProduct} from '../@types';
@@ -95,11 +99,18 @@ export type RootStackParamList = {
   ProductDetails: {product: ShopifyProduct; variant?: ProductVariant};
   Cart: undefined;
   CartModal: undefined;
+  Account: undefined;
   Settings: undefined;
+};
+
+export type AccountStackParamList = {
+  AccountHome: undefined;
+  Login: undefined;
 };
 
 const Tab = createBottomTabNavigator<RootStackParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const AccountStack = createNativeStackNavigator<AccountStackParamList>();
 
 export const cache = new InMemoryCache();
 
@@ -233,20 +244,12 @@ function AppWithContext({children}: PropsWithChildren) {
   }, [shopify, eventHandlers]);
 
   return (
-    <ConfigProvider
-      config={{
-        colorScheme:
-          checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
-        prefillBuyerInformation: false,
-        customerAuthenticated: false,
-      }}>
-      <ApolloProvider client={client}>
-        <CartProvider>
-          <StatusBar barStyle="default" />
-          {children}
-        </CartProvider>
-      </ApolloProvider>
-    </ConfigProvider>
+    <ApolloProvider client={client}>
+      <CartProvider>
+        <StatusBar barStyle="default" />
+        {children}
+      </CartProvider>
+    </ApolloProvider>
   );
 }
 
@@ -305,8 +308,46 @@ function CartIcon({onPress}: {onPress: () => void}) {
   );
 }
 
+function AccountStackScreen() {
+  return (
+    <AccountStack.Navigator>
+      <AccountStack.Screen
+        name="AccountHome"
+        component={AccountScreen}
+        options={{headerTitle: 'Account'}}
+      />
+      <AccountStack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{
+          title: 'Sign In',
+          presentation: 'modal',
+        }}
+      />
+    </AccountStack.Navigator>
+  );
+}
+
 function AppWithCheckoutKit({children}: PropsWithChildren) {
   const {appConfig} = useConfig();
+  const {isAuthenticated, customerEmail, getValidAccessToken} = useAuth();
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+
+  const fetchAccessToken = useCallback(async () => {
+    if (
+      appConfig.buyerIdentityMode === BuyerIdentityMode.CustomerAccount &&
+      isAuthenticated
+    ) {
+      const token = await getValidAccessToken();
+      setAccessToken(token);
+    } else {
+      setAccessToken(null);
+    }
+  }, [appConfig.buyerIdentityMode, isAuthenticated, getValidAccessToken]);
+
+  useEffect(() => {
+    fetchAccessToken();
+  }, [fetchAccessToken]);
 
   const updatedColors = getColors(
     appConfig.colorScheme,
@@ -372,27 +413,31 @@ function AppWithCheckoutKit({children}: PropsWithChildren) {
          * We're reading the customer email and phone number from the environment variables here,
          * but in a real app you would derive these values from your backend.
          */
-        customer: appConfig.customerAuthenticated
-          ? {
-              email: env.EMAIL!,
-              phoneNumber: env.PHONE!,
-            }
-          : undefined,
+        customer:
+          appConfig.buyerIdentityMode === BuyerIdentityMode.Hardcoded
+            ? {
+                email: env.EMAIL!,
+                phoneNumber: env.PHONE!,
+              }
+            : appConfig.buyerIdentityMode ===
+                  BuyerIdentityMode.CustomerAccount && isAuthenticated
+              ? {
+                  email: customerEmail ?? undefined,
+                  accessToken: accessToken ?? undefined,
+                }
+              : undefined,
         wallets: {
           applePay: {
-            /**
-             * In cases where customers are authenticated, email/phone will be provided through the customer property,
-             * In cases where customers are NOT authenticated, we will collect email and phone number via the Apple Pay sheet.
-             */
-            contactFields: appConfig.customerAuthenticated
-              ? []
-              : [ApplePayContactField.email, ApplePayContactField.phone],
+            contactFields: [
+              ApplePayContactField.email,
+              ApplePayContactField.phone,
+            ],
             merchantIdentifier: env.STOREFRONT_MERCHANT_IDENTIFIER!,
           },
         },
       },
     } as Configuration;
-  }, [appConfig, checkoutKitThemeConfig]);
+  }, [appConfig, checkoutKitThemeConfig, isAuthenticated, customerEmail, accessToken]);
 
   return (
     <ShopifyCheckoutSheetProvider
@@ -476,6 +521,15 @@ function Routes() {
         }}
       />
       <Tab.Screen
+        name="Account"
+        component={AccountStackScreen}
+        options={{
+          headerShown: false,
+          tabBarButtonTestID: 'account-tab',
+          tabBarIcon: createNavigationIcon('user'),
+        }}
+      />
+      <Tab.Screen
         name="Settings"
         component={SettingsScreen}
         options={{
@@ -495,13 +549,22 @@ function App() {
   return (
     <ErrorBoundary>
       <AppWithTheme>
-        <AppWithCheckoutKit>
-          <AppWithContext>
-            <AppWithNavigation>
-              <Routes />
-            </AppWithNavigation>
-          </AppWithContext>
-        </AppWithCheckoutKit>
+        <ConfigProvider
+          config={{
+            colorScheme:
+              checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
+            buyerIdentityMode: BuyerIdentityMode.Guest,
+          }}>
+          <AuthProvider>
+            <AppWithCheckoutKit>
+              <AppWithContext>
+                <AppWithNavigation>
+                  <Routes />
+                </AppWithNavigation>
+              </AppWithContext>
+            </AppWithCheckoutKit>
+          </AuthProvider>
+        </ConfigProvider>
       </AppWithTheme>
     </ErrorBoundary>
   );
