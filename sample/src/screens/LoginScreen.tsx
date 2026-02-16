@@ -5,20 +5,26 @@ import type {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {AccountStackParamList} from '../App';
 import {useAuth} from '../context/Auth';
-import {getCallbackScheme} from '../auth/customerAccountManager';
+import {
+  CustomerAccountManager,
+  customerAccountManager,
+} from '../auth/customerAccountManager';
 import type {Colors} from '../context/Theme';
 import {useTheme} from '../context/Theme';
 
 type Props = NativeStackScreenProps<AccountStackParamList, 'Login'>;
 
 function LoginScreen({navigation}: Props) {
-  const {login, handleAuthCallback} = useAuth();
+  const {handleAuthCallback} = useAuth();
   const {colors} = useTheme();
   const styles = createStyles(colors);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const authorizationURL = useMemo(() => login(), [login]);
-  const callbackScheme = useMemo(() => getCallbackScheme(), []);
+  const authorizationURL = useMemo(
+    () => customerAccountManager.buildAuthorizationURL(),
+    [],
+  );
+  const callbackScheme = CustomerAccountManager.callbackScheme;
 
   const handleNavigationRequest = useCallback(
     (request: ShouldStartLoadRequest): boolean => {

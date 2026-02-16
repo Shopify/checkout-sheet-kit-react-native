@@ -9,20 +9,22 @@ function base64URLEncode(buffer: ArrayBufferLike): string {
   return btoa(binary)
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
-    .replace(/=/g, '');
+    .replace(/[=]/g, '');
 }
 
-export function generateCodeVerifier(): string {
-  const bytes = crypto.randomBytes(32);
-  return base64URLEncode(bytes.buffer);
-}
+export class PKCE {
+  static generateCodeVerifier(): string {
+    const bytes = crypto.randomBytes(32);
+    return base64URLEncode(bytes.buffer);
+  }
 
-export function generateCodeChallenge(verifier: string): string {
-  const hash = crypto.createHash('sha256').update(verifier).digest();
-  return base64URLEncode(hash.buffer);
-}
+  static generateCodeChallenge(verifier: string): string {
+    const hash = crypto.createHash('sha256').update(verifier).digest();
+    return base64URLEncode(hash.buffer);
+  }
 
-export function generateState(): string {
-  const bytes = crypto.randomBytes(27);
-  return base64URLEncode(bytes.buffer);
+  static generateState(): string {
+    const bytes = crypto.randomBytes(27);
+    return base64URLEncode(bytes.buffer);
+  }
 }

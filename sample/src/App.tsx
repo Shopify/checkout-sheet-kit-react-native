@@ -63,7 +63,7 @@ import {
   useTheme,
 } from './context/Theme';
 import {CartProvider, useCart} from './context/Cart';
-import {AuthProvider, useAuth} from './context/Auth';
+import {useAuth} from './context/Auth';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 import type {ProductVariant, ShopifyProduct} from '../@types';
@@ -555,15 +555,13 @@ function App() {
               checkoutKitConfigDefaults.colorScheme ?? ColorScheme.automatic,
             buyerIdentityMode: BuyerIdentityMode.Guest,
           }}>
-          <AuthProvider>
-            <AppWithCheckoutKit>
-              <AppWithContext>
-                <AppWithNavigation>
-                  <Routes />
-                </AppWithNavigation>
-              </AppWithContext>
-            </AppWithCheckoutKit>
-          </AuthProvider>
+          <AppWithCheckoutKit>
+            <AppWithContext>
+              <AppWithNavigation>
+                <Routes />
+              </AppWithNavigation>
+            </AppWithContext>
+          </AppWithCheckoutKit>
         </ConfigProvider>
       </AppWithTheme>
     </ErrorBoundary>
