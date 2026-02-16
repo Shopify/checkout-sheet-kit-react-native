@@ -52,8 +52,14 @@ import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
 function CartScreen(): React.JSX.Element {
   const ShopifyCheckout = useShopifyCheckoutSheet();
   const [refreshing, setRefreshing] = React.useState(false);
-  const {cartId, checkoutURL, totalQuantity, removeFromCart, addingToCart} =
-    useCart();
+  const {
+    cartId,
+    checkoutURL,
+    totalQuantity,
+    removeFromCart,
+    updateCartLineQuantity,
+    addingToCart,
+  } = useCart();
   const {queries} = useShopify();
   const eventHandlers = useShopifyEventHandlers(
     'Cart - AcceleratedCheckoutButtons',
@@ -136,6 +142,12 @@ function CartScreen(): React.JSX.Element {
               quantity={node.quantity}
               loading={addingToCart.has(node.id)}
               onRemove={() => removeFromCart(node.id)}
+              onDecrement={() =>
+                updateCartLineQuantity(node.id, node.quantity - 1)
+              }
+              onIncrement={() =>
+                updateCartLineQuantity(node.id, node.quantity + 1)
+              }
             />
           ))}
         </View>
@@ -214,12 +226,16 @@ function CartItem({
   item,
   quantity,
   onRemove,
+  onDecrement,
+  onIncrement,
   loading,
 }: {
   item: CartLineItem;
   quantity: number;
   loading?: boolean;
   onRemove: () => void;
+  onDecrement: () => void;
+  onIncrement: () => void;
 }) {
   const {colors, cornerRadius} = useTheme();
   const styles = createStyles(colors, cornerRadius);
@@ -247,7 +263,21 @@ function CartItem({
           <Text style={styles.productTitle}>
             {item.merchandise.product.title}
           </Text>
-          <Text style={styles.productDescription}>Quantity: {quantity}</Text>
+          <View style={styles.quantityRow}>
+            <Pressable
+              style={styles.quantityButton}
+              onPress={onDecrement}
+              disabled={loading}>
+              <Text style={styles.quantityButtonText}>-</Text>
+            </Pressable>
+            <Text style={styles.quantityText}>{quantity}</Text>
+            <Pressable
+              style={styles.quantityButton}
+              onPress={onIncrement}
+              disabled={loading}>
+              <Text style={styles.quantityButtonText}>+</Text>
+            </Pressable>
+          </View>
         </View>
         <View>
           <Text style={styles.productPrice}>
@@ -346,9 +376,31 @@ function createStyles(colors: Colors, cornerRadius: number) {
       lineHeight: 20,
       color: colors.text,
     },
-    productDescription: {
+    quantityRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 4,
+    },
+    quantityButton: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    quantityButtonText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    quantityText: {
       fontSize: 14,
-      color: colors.textSubdued,
+      color: colors.text,
+      marginHorizontal: 10,
+      minWidth: 20,
+      textAlign: 'center',
     },
     productPrice: {
       fontSize: 15,

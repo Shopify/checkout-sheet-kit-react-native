@@ -23,6 +23,7 @@ interface Context {
   clearCart: () => void;
   addToCart: (variantId: string) => Promise<void>;
   removeFromCart: (variantId: string) => Promise<void>;
+  updateCartLineQuantity: (lineId: string, quantity: number) => Promise<void>;
 }
 
 const defaultCartId = undefined;
@@ -36,6 +37,7 @@ const CartContext = createContext<Context>({
   addingToCart: new Set(),
   addToCart: async () => {},
   removeFromCart: async () => {},
+  updateCartLineQuantity: async () => {},
   clearCart: () => {},
 });
 
@@ -78,6 +80,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const {mutations, queries} = useShopify();
   const [createCart] = mutations.cartCreate;
   const [addLineItems] = mutations.cartLinesAdd;
+  const [updateLineItems] = mutations.cartLinesUpdate;
   const [removeLineItems] = mutations.cartLinesRemove;
   const [fetchCart] = queries.cart;
 
@@ -251,12 +254,64 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
     ],
   );
 
+  const updateCartLineQuantity = useCallback(
+    async (lineId: string, quantity: number) => {
+      if (!cartId) {
+        return;
+      }
+
+      dispatch({type: 'add', variantId: lineId});
+
+      if (quantity <= 0) {
+        await removeFromCart(lineId);
+        dispatch({type: 'remove', variantId: lineId});
+        return;
+      }
+
+      const {data} = await updateLineItems({
+        variables: {
+          cartId,
+          lines: [{id: lineId, quantity}],
+        },
+      });
+
+      const updatedCheckoutUrl = data.cartLinesUpdate.cart.checkoutUrl;
+
+      setCheckoutURL(updatedCheckoutUrl);
+      setTotalQuantity(data.cartLinesUpdate.cart.totalQuantity);
+
+      if (updatedCheckoutUrl) {
+        console.log('invalidating and preloading checkout');
+        shopify.invalidate();
+        shopify.preload(updatedCheckoutUrl);
+      }
+
+      await fetchCart({
+        variables: {
+          cartId,
+        },
+      });
+
+      dispatch({type: 'remove', variantId: lineId});
+    },
+    [
+      cartId,
+      removeFromCart,
+      updateLineItems,
+      setCheckoutURL,
+      setTotalQuantity,
+      shopify,
+      fetchCart,
+    ],
+  );
+
   const value = useMemo(
     () => ({
       cartId,
       checkoutURL,
       addToCart,
       removeFromCart,
+      updateCartLineQuantity,
       totalQuantity,
       addingToCart,
       clearCart,
@@ -266,6 +321,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       checkoutURL,
       addToCart,
       removeFromCart,
+      updateCartLineQuantity,
       totalQuantity,
       addingToCart,
       clearCart,

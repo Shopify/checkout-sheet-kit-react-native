@@ -174,6 +174,22 @@ const ADD_TO_CART_MUTATION = gql`
   }
 `;
 
+const UPDATE_CART_LINES_MUTATION = gql`
+  mutation UpdateCartLines(
+    $cartId: ID!
+    $lines: [CartLineUpdateInput!]!
+    $country: CountryCode = CA
+  ) @inContext(country: $country) {
+    cartLinesUpdate(cartId: $cartId, lines: $lines) {
+      cart {
+        id
+        checkoutUrl
+        totalQuantity
+      }
+    }
+  }
+`;
+
 const REMOVE_FROM_CART_MUTATION = gql`
   mutation RemoveFromCart(
     $cartId: ID!
@@ -209,6 +225,10 @@ function useShopify() {
   });
   const cartCreate = useMutation(CREATE_CART_MUTATION, includeCountry);
   const cartLinesAdd = useMutation(ADD_TO_CART_MUTATION, includeCountry);
+  const cartLinesUpdate = useMutation(
+    UPDATE_CART_LINES_MUTATION,
+    includeCountry,
+  );
   const cartLinesRemove = useMutation(
     REMOVE_FROM_CART_MUTATION,
     includeCountry,
@@ -222,6 +242,7 @@ function useShopify() {
     mutations: {
       cartCreate,
       cartLinesAdd,
+      cartLinesUpdate,
       cartLinesRemove,
     },
   };
