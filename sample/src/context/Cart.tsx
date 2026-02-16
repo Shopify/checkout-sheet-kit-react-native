@@ -6,10 +6,13 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
+import {Alert} from 'react-native';
 import {atom, useAtom} from 'jotai';
 import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
 import {useConfig} from './Config';
+import {useAuth} from './Auth';
+import {BuyerIdentityMode} from '../auth/types';
 import {createBuyerIdentityCartInput} from '../utils';
 
 interface Context {
@@ -70,6 +73,7 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   const defaultSet: Set<string> = new Set();
   const [addingToCart, dispatch] = useReducer(addingToCartReducer, defaultSet);
   const {appConfig} = useConfig();
+  const {getValidAccessToken, isAuthenticated} = useAuth();
 
   const {mutations, queries} = useShopify();
   const [createCart] = mutations.cartCreate;
@@ -84,8 +88,11 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   }, [setCartId, setCheckoutURL, setTotalQuantity]);
 
   useEffect(() => {
+    clearCart();
+  }, [appConfig.buyerIdentityMode, clearCart]);
+
+  useEffect(() => {
     const subscription = shopify.addEventListener('completed', () => {
-      // Clear the cart ID and checkout URL when the checkout is completed
       clearCart();
     });
 
@@ -129,10 +136,33 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
 
       dispatch({type: 'add', variantId});
 
+      if (
+        !id &&
+        appConfig.buyerIdentityMode === BuyerIdentityMode.CustomerAccount &&
+        !isAuthenticated
+      ) {
+        dispatch({type: 'remove', variantId});
+        Alert.alert(
+          'Sign in required',
+          'Sign in on the Account tab or change the Buyer Identity setting to add items to your cart.',
+        );
+        return;
+      }
+
       if (!id) {
-        const cartInput = createBuyerIdentityCartInput(appConfig);
+        let customerAccessToken: string | undefined;
+        if (
+          appConfig.buyerIdentityMode === BuyerIdentityMode.CustomerAccount
+        ) {
+          customerAccessToken =
+            (await getValidAccessToken()) ?? undefined;
+        }
+        const cartInput = createBuyerIdentityCartInput(
+          appConfig,
+          customerAccessToken,
+        );
         const cart = await createCart({variables: {input: cartInput}});
-        id = cart.data.cartCreate.cart.id;
+        id = cart.data.cartCreate.cart?.id;
 
         if (id) {
           setCartId(id);
@@ -173,6 +203,8 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
       setCartId,
       fetchCart,
       preloadCheckout,
+      getValidAccessToken,
+      isAuthenticated,
     ],
   );
 

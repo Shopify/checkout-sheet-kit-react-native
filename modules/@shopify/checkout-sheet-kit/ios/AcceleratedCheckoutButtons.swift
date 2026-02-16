@@ -89,7 +89,7 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
 
     // MARK: - Props
 
-    /// Note that prop values are intentionally nil so that the kit defaults are used
+    // Note that prop values are intentionally nil so that the kit defaults are used
 
     /**
      * Accepts either { cartId } or { variantId, quantity }.
@@ -162,10 +162,10 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
     }
 
     private func setupView() {
-        /// Configuration will be set via a static method from the main module
+        // Configuration will be set via a static method from the main module
         configuration = AcceleratedCheckoutConfiguration.shared.configuration
 
-        /// Find the parent view controller
+        // Find the parent view controller
         DispatchQueue.main.async { [weak self] in
             self?.parentViewController = self?.findViewController()
         }
@@ -187,7 +187,7 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
             object: nil
         )
 
-        /// Fire initial size change event
+        // Fire initial size change event
         resizeWallets()
     }
 
@@ -259,7 +259,7 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
             return
         }
 
-        /// Map wallets if provided; otherwise let the kit decide the defaults
+        // Map wallets if provided; otherwise let the kit decide the defaults
         let shopifyWallets: [Wallet]? = wallets != nil ? shopifyWallets : nil
 
         var buttons: AcceleratedCheckoutButtons
@@ -276,14 +276,14 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
             return
         }
 
-        /// Attach modifiers (wallets, applePayLabel, cornerRadius)
+        // Attach modifiers (wallets, applePayLabel, cornerRadius)
         buttons = attachModifiers(to: buttons, wallets: shopifyWallets, applePayLabel: PayWithApplePayButtonLabel.from(applePayLabel))
-        /// Attach event handlers
+        // Attach event handlers
         buttons = attachEventListeners(to: buttons)
 
         var view: AnyView
 
-        /// Attach config (and Apple Pay config if available)
+        // Attach config (and Apple Pay config if available)
         if let applePayConfig = AcceleratedCheckoutConfiguration.shared.applePayConfiguration {
             view = AnyView(buttons.environmentObject(config).environmentObject(applePayConfig))
         } else {
@@ -316,7 +316,7 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
 
         instance = buttons
 
-        /// Fire size change event
+        // Fire size change event
         resizeWallets()
     }
 

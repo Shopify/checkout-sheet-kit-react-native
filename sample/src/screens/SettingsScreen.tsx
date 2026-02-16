@@ -40,7 +40,12 @@ import {
 } from '@shopify/checkout-sheet-kit';
 import type {Colors} from '../context/Theme';
 import {useTheme} from '../context/Theme';
-import {useCart} from '../context/Cart';
+import {useNavigation} from '@react-navigation/native';
+import {useAuth} from '../context/Auth';
+import {
+  BuyerIdentityMode,
+  BuyerIdentityModeDisplayNames,
+} from '../auth/types';
 
 enum SectionType {
   Switch = 'switch',
@@ -59,7 +64,7 @@ interface SwitchItem {
 interface SingleSelectItem {
   type: SectionType.SingleSelect;
   title: string;
-  value: ColorScheme;
+  value: ColorScheme | BuyerIdentityMode;
   selected: boolean;
 }
 
@@ -83,12 +88,12 @@ function isTextItem(item: any): item is TextItem {
 
 interface SectionData {
   title: string;
+  footer?: string;
   data: readonly (SwitchItem | SingleSelectItem | TextItem)[];
 }
 
 function SettingsScreen() {
   const shopify = useShopifyCheckoutSheet();
-  const {clearCart} = useCart();
   const {appConfig, setAppConfig} = useConfig();
   const {colors, setColorScheme} = useTheme();
   const styles = createStyles(colors);
@@ -106,9 +111,9 @@ function SettingsScreen() {
     (item: SingleSelectItem) => {
       setAppConfig({
         ...appConfig,
-        colorScheme: item.value,
+        colorScheme: item.value as ColorScheme,
       });
-      setColorScheme(item.value);
+      setColorScheme(item.value as ColorScheme);
     },
     [appConfig, setAppConfig, setColorScheme],
   );
@@ -123,21 +128,24 @@ function SettingsScreen() {
     setPreloadingEnabled(newPreloadingValue);
   }, [shopify]);
 
-  const handleTogglePrefill = useCallback(() => {
-    clearCart();
-    setAppConfig({
-      ...appConfig,
-      prefillBuyerInformation: !appConfig.prefillBuyerInformation,
-      customerAuthenticated: !appConfig.customerAuthenticated,
-    });
-  }, [appConfig, clearCart, setAppConfig]);
+  const {isAuthenticated, customerEmail, tokenExpiresAt, logout} = useAuth();
 
-  const handleToggleCustomerAuthenticated = useCallback(() => {
-    setAppConfig({
-      ...appConfig,
-      customerAuthenticated: !appConfig.customerAuthenticated,
-    });
-  }, [appConfig, setAppConfig]);
+  const handleBuyerIdentityModeChange = useCallback(
+    (item: SingleSelectItem) => {
+      const newMode = item.value as BuyerIdentityMode;
+      if (
+        appConfig.buyerIdentityMode === BuyerIdentityMode.CustomerAccount &&
+        newMode !== BuyerIdentityMode.CustomerAccount
+      ) {
+        logout();
+      }
+      setAppConfig({
+        ...appConfig,
+        buyerIdentityMode: newMode,
+      });
+    },
+    [appConfig, logout, setAppConfig],
+  );
 
   const configurationOptions: readonly SwitchItem[] = useMemo(
     () => [
@@ -147,28 +155,19 @@ function SettingsScreen() {
         value: preloadingEnabled,
         handler: handleTogglePreloading,
       },
-      {
-        title: 'Prefill buyer information',
-        type: SectionType.Switch,
-        value: appConfig.prefillBuyerInformation,
-        handler: handleTogglePrefill,
-      },
-      {
-        title: 'Use authenticated customer',
-        description:
-          'When toggled on, customer information will be attached to cart from your app settings. When toggled off, customer information will be collected from the Apple Pay sheet.',
-        type: SectionType.Switch,
-        value: appConfig.customerAuthenticated,
-        handler: handleToggleCustomerAuthenticated,
-      },
     ],
-    [
-      appConfig,
-      preloadingEnabled,
-      handleTogglePrefill,
-      handleTogglePreloading,
-      handleToggleCustomerAuthenticated,
-    ],
+    [preloadingEnabled, handleTogglePreloading],
+  );
+
+  const buyerIdentityOptions: readonly SingleSelectItem[] = useMemo(
+    () =>
+      Object.values(BuyerIdentityMode).map(mode => ({
+        title: BuyerIdentityModeDisplayNames[mode],
+        type: SectionType.SingleSelect as const,
+        value: mode,
+        selected: appConfig.buyerIdentityMode === mode,
+      })),
+    [appConfig.buyerIdentityMode],
   );
 
   const themeOptions: readonly SingleSelectItem[] = useMemo(
@@ -229,6 +228,12 @@ function SettingsScreen() {
         data: configurationOptions,
       },
       {
+        title: 'Authentication',
+        footer:
+          'Prefills buyer identity at checkout. Changing this setting will clear your cart.',
+        data: buyerIdentityOptions,
+      },
+      {
         title: 'Theme',
         data: themeOptions,
       },
@@ -237,7 +242,12 @@ function SettingsScreen() {
         data: informationalItems,
       },
     ],
-    [themeOptions, configurationOptions, informationalItems],
+    [
+      themeOptions,
+      configurationOptions,
+      buyerIdentityOptions,
+      informationalItems,
+    ],
   );
 
   return (
@@ -245,7 +255,7 @@ function SettingsScreen() {
       <SectionList
         sections={sections}
         keyExtractor={item => item.title}
-        renderItem={({item}) => {
+        renderItem={({item, section}) => {
           if (isSwitchItem(item)) {
             return (
               <SwitchItem styles={styles} item={item} onChange={item.handler} />
@@ -253,11 +263,16 @@ function SettingsScreen() {
           }
 
           if (isSingleSelectItem(item)) {
+            const isAuthSection = section.title === 'Authentication';
             return (
               <SelectItem
                 item={item}
                 styles={styles}
-                onPress={() => handleColorSchemeChange(item)}
+                onPress={() =>
+                  isAuthSection
+                    ? handleBuyerIdentityModeChange(item)
+                    : handleColorSchemeChange(item)
+                }
               />
             );
           }
@@ -273,6 +288,29 @@ function SettingsScreen() {
             <Text style={styles.sectionText}>{title}</Text>
           </View>
         )}
+        renderSectionFooter={({section}) => {
+          const isAuthSection = section.title === 'Authentication';
+          return (
+            <View>
+              {isAuthSection && (
+                <BuyerIdentityDetails
+                  mode={appConfig.buyerIdentityMode}
+                  isAuthenticated={isAuthenticated}
+                  customerEmail={customerEmail}
+                  tokenExpiresAt={tokenExpiresAt}
+                  styles={styles}
+                />
+              )}
+              {section.footer ? (
+                <View style={styles.sectionFooter}>
+                  <Text style={styles.sectionFooterText}>
+                    {section.footer}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+          );
+        }}
       />
     </SafeAreaView>
   );
@@ -335,6 +373,70 @@ function TextItem({item, styles}: TextItemProps) {
   );
 }
 
+interface BuyerIdentityDetailsProps {
+  mode: BuyerIdentityMode;
+  isAuthenticated: boolean;
+  customerEmail: string | null;
+  tokenExpiresAt: number | null;
+  styles: ReturnType<typeof createStyles>;
+}
+
+function BuyerIdentityDetails({
+  mode,
+  isAuthenticated: authenticated,
+  customerEmail: email,
+  tokenExpiresAt: expiresAt,
+  styles,
+}: BuyerIdentityDetailsProps) {
+  const navigation = useNavigation();
+
+  switch (mode) {
+    case BuyerIdentityMode.Guest:
+      return null;
+    case BuyerIdentityMode.Hardcoded:
+      return (
+        <View style={styles.sectionFooter}>
+          <Text style={styles.sectionFooterText}>
+            Populates Cart Buyer Identity with values from .env
+          </Text>
+        </View>
+      );
+    case BuyerIdentityMode.CustomerAccount:
+      if (authenticated) {
+        return (
+          <View style={styles.sectionFooter}>
+            <Text style={[styles.sectionFooterText, {color: '#f5a623'}]}>
+              Changing Buyer Identity will log you out.
+            </Text>
+            <View style={styles.detailRow}>
+              <Text style={styles.sectionFooterText}>
+                User: {email ?? 'Unknown'}
+              </Text>
+              <Pressable onPress={() => navigation.navigate('Account' as never)}>
+                <Text style={styles.linkText}>Change user</Text>
+              </Pressable>
+            </View>
+            {expiresAt && (
+              <Text style={styles.sectionFooterText}>
+                Expires: {new Date(expiresAt).toLocaleString()}
+              </Text>
+            )}
+          </View>
+        );
+      }
+      return (
+        <View style={styles.sectionFooter}>
+          <Pressable
+            style={styles.detailRow}
+            onPress={() => navigation.navigate('Account' as never)}>
+            <Text style={styles.sectionFooterText}>Sign in on the</Text>
+            <Text style={styles.linkText}>Account tab</Text>
+          </Pressable>
+        </View>
+      );
+  }
+}
+
 function createStyles(colors: Colors) {
   return StyleSheet.create({
     list: {
@@ -381,6 +483,24 @@ function createStyles(colors: Colors) {
       color: '#9f9f9f',
       marginTop: 10,
       marginBottom: -10,
+    },
+    sectionFooter: {
+      paddingHorizontal: 16,
+      paddingTop: 8,
+      paddingBottom: 4,
+    },
+    sectionFooterText: {
+      fontSize: 12,
+      color: colors.textSubdued,
+    },
+    detailRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    linkText: {
+      fontSize: 12,
+      color: '#007AFF',
     },
   });
 }
