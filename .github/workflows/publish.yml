@@ -10,6 +10,9 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -34,11 +37,10 @@ jobs:
 
       - name: Prepare release
         run: |
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
           cp README.md modules/@shopify/checkout-sheet-kit
           yarn module clean
           yarn module build
           cd modules/@shopify/checkout-sheet-kit
           npm publish --access public --tag ${{ steps.npm-tag.outputs.tag }}
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: '' # Empty string forces OIDC
