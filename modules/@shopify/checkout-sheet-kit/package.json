@@ -9,6 +9,10 @@
   "description": "A React Native library for Shopify's Checkout Kit.",
   "author": "Shopify",
   "homepage": "https://github.com/shopify/checkout-sheet-kit-react-native",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Shopify/checkout-sheet-kit-react-native"
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
