@@ -6,14 +6,14 @@ type: node
 
 up:
   - packages:
-    - swiftlint
-    - ccache
+      - swiftlint
+      - ccache
   - ruby
   - xcode:
-      version: '26.0'
+      version: '26.1'
       runtimes:
         ios:
-          - '26.0'
+          - '26.1'
   - node:
       version: v22.14.0
       yarn: 1.22.22
@@ -44,7 +44,6 @@ check:
   lint_sample: yarn sample lint
 
 commands:
-
   server:
     desc: 'Start development server'
     run: yarn sample start --reset-cache
