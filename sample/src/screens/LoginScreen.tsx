@@ -5,6 +5,8 @@ import type {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {AccountStackParamList} from '../App';
 import {useAuth} from '../context/Auth';
+import {useConfig} from '../context/Config';
+import {BuyerIdentityMode} from '../auth/types';
 import {
   CustomerAccountManager,
   customerAccountManager,
@@ -16,6 +18,7 @@ type Props = NativeStackScreenProps<AccountStackParamList, 'Login'>;
 
 function LoginScreen({navigation}: Props) {
   const {handleAuthCallback} = useAuth();
+  const {appConfig, setAppConfig} = useConfig();
   const {colors} = useTheme();
   const styles = createStyles(colors);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -38,7 +41,13 @@ function LoginScreen({navigation}: Props) {
 
         if (code && state) {
           handleAuthCallback(code, state)
-            .then(() => navigation.goBack())
+            .then(() => {
+              setAppConfig({
+                ...appConfig,
+                buyerIdentityMode: BuyerIdentityMode.CustomerAccount,
+              });
+              navigation.goBack();
+            })
             .catch(() => {
               setIsProcessing(false);
               navigation.goBack();
@@ -52,7 +61,7 @@ function LoginScreen({navigation}: Props) {
 
       return true;
     },
-    [callbackScheme, handleAuthCallback, navigation],
+    [appConfig, callbackScheme, handleAuthCallback, navigation, setAppConfig],
   );
 
   if (isProcessing) {
