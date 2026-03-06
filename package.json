@@ -47,7 +47,7 @@
     "prettier": "^3.2.5",
     "react": "19.1.0",
     "react-native": "0.80.2",
-    "react-native-dotenv": "^3.4.9",
+    "react-native-dotenv": "^3.4.11",
     "react-native-gesture-handler": "2.26.0",
     "react-native-gradle-plugin": "^0.71.19",
     "react-test-renderer": "19.1.0",
