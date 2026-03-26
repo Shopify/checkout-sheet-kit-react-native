@@ -15,22 +15,11 @@ type FailEvent = Readonly<{
 }>;
 
 type CompleteEvent = Readonly<{
-  orderDetails: {
+  orderDetails: Readonly<{
     id: string;
-    cart: {
-      token: string;
-      lines: ReadonlyArray<
-        Readonly<{
-          title: string;
-          quantity: Double;
-          merchandiseId?: string;
-          productId?: string;
-        }>
-      >;
-    };
     email?: string;
     phone?: string;
-  };
+  }>;
 }>;
 
 type RenderStateChangeEvent = Readonly<{
