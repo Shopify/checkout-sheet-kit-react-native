@@ -10,10 +10,11 @@ up:
       - ccache
   - ruby
   - xcode:
-      version: '26.1'
+      version: "26.2"
       runtimes:
         ios:
-          - '26.1'
+          - version: 23C54 # 26.2
+            architecture_variant: arm64
   - node:
       version: v22.14.0
       yarn: 1.22.22
