@@ -103,6 +103,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         ]
     }
 
+    @objc func getConstants() -> [AnyHashable: Any]! {
+        return constantsToExport()
+    }
+
     static func getRootViewController() -> UIViewController? {
         return (
             UIApplication.shared.connectedScenes
@@ -300,6 +304,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         let available = AcceleratedCheckoutConfiguration.shared.available && AcceleratedCheckoutConfiguration.shared.applePayAvailable
 
         resolve(available)
+    }
+
+    @objc func initiateGeolocationRequest(_ allow: Bool) {
+        // No-op on iOS — geolocation permission is handled natively
     }
 
     // MARK: - Private
