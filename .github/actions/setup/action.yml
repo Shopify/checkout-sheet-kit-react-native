@@ -7,7 +7,7 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3.8.2
       with:
-        node-version: 22
+        node-version: 22.22.1
         registry-url: 'https://registry.npmjs.org'
 
     # TODO: Can be removed once node-version is 24 as this will be the minimum
