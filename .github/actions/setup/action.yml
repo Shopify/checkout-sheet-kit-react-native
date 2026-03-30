@@ -22,7 +22,7 @@ runs:
 
     # TODO: Can be removed once node-version is 24 as this will be the minimum
     - name: Install npm 11
-      run: npm install -g npm@11 || echo "::warning::npm upgrade failed — not required for yarn-based CI"
+      run: npm install -g npm@11
       shell: bash
 =======
 
