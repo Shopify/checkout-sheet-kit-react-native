@@ -189,6 +189,13 @@ export enum ApplePayContactField {
   phone = 'phone',
 }
 
+export enum ApplePayStyle {
+  automatic = 'automatic',
+  black = 'black',
+  white = 'white',
+  whiteOutline = 'whiteOutline',
+}
+
 /**
  * Configuration for AcceleratedCheckouts
  */

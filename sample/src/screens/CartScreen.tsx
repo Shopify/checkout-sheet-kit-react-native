@@ -39,6 +39,7 @@ import {
   useShopifyCheckoutSheet,
   AcceleratedCheckoutButtons,
   ApplePayLabel,
+  ApplePayStyle,
   AcceleratedCheckoutWallet,
 } from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
@@ -167,6 +168,7 @@ function CartScreen(): React.JSX.Element {
               <AcceleratedCheckoutButtons
                 {...eventHandlers}
                 applePayLabel={ApplePayLabel.checkout}
+                applePayStyle={ApplePayStyle.black}
                 cartId={cartId}
                 wallets={[
                   AcceleratedCheckoutWallet.applePay,

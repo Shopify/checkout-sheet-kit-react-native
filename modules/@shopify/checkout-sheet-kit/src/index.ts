@@ -58,7 +58,10 @@ import {
 import {CheckoutErrorCode} from './errors.d';
 import type {CheckoutCompletedEvent} from './events.d';
 import type {CustomEvent, PixelEvent, StandardEvent} from './pixels.d';
-import {ApplePayLabel} from './components/AcceleratedCheckoutButtons';
+import {
+  ApplePayLabel,
+  ApplePayStyle,
+} from './components/AcceleratedCheckoutButtons';
 import type {
   AcceleratedCheckoutButtonsProps,
   RenderStateChangeEvent,
@@ -515,6 +518,7 @@ export {
   AcceleratedCheckoutWallet,
   ApplePayContactField,
   ApplePayLabel,
+  ApplePayStyle,
   ColorScheme,
   ShopifyCheckoutSheet,
   ShopifyCheckoutSheetProvider,

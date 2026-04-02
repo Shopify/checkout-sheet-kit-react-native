@@ -120,6 +120,12 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         }
     }
 
+    @objc var applePayStyle: String? {
+        didSet {
+            updateView()
+        }
+    }
+
     @objc var onFail: RCTBubblingEventBlock?
     @objc var onComplete: RCTBubblingEventBlock?
     @objc var onCancel: RCTBubblingEventBlock?
@@ -289,6 +295,10 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         } else {
             view = AnyView(buttons.environmentObject(config))
         }
+
+        /// Apply Apple Pay button style (defaults to .automatic)
+        let applePayButtonStyle = PayWithApplePayButtonStyle.from(applePayStyle) ?? .automatic
+        view = AnyView(view.payWithApplePayButtonStyle(applePayButtonStyle))
 
         if let hostingController {
             hostingController.rootView = view

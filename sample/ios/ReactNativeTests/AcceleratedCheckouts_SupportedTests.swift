@@ -395,6 +395,15 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         XCTAssertTrue(PayWithApplePayButtonLabel.from("unknown", fallback: .buy) == .buy)
     }
 
+    func testApplePayStyleMapping_knownAndUnknownKeys() throws {
+        XCTAssertEqual(PayWithApplePayButtonStyle.from("automatic"), .automatic)
+        XCTAssertEqual(PayWithApplePayButtonStyle.from("black"), .black)
+        XCTAssertEqual(PayWithApplePayButtonStyle.from("white"), .white)
+        XCTAssertEqual(PayWithApplePayButtonStyle.from("whiteOutline"), .whiteOutline)
+        XCTAssertNil(PayWithApplePayButtonStyle.from("unknown"))
+        XCTAssertNil(PayWithApplePayButtonStyle.from(nil))
+    }
+
     func testConfigureAcceleratedCheckoutsResolvesFalseForInvalidApplePayContactField() throws {
         let expectation = self.expectation(description: "configureAcceleratedCheckouts invalid contact field resolves false")
         var resolved: Bool = true

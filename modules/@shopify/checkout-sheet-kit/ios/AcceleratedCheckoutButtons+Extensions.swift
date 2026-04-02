@@ -26,7 +26,7 @@ import Foundation
 import PassKit
 import SwiftUI
 
-// MARK: - Apple Pay Button
+// MARK: - Apple Pay Button Label
 
 @available(iOS 16.0, *)
 extension PayWithApplePayButtonLabel {
@@ -56,5 +56,25 @@ extension PayWithApplePayButtonLabel {
         "support": .support,
         "tip": .tip,
         "topUp": .topUp
+    ]
+}
+
+// MARK: - Apple Pay Button Style
+
+@available(iOS 16.0, *)
+extension PayWithApplePayButtonStyle {
+    static func from(_ string: String?) -> PayWithApplePayButtonStyle? {
+        guard let string, let value = map[string] else {
+            return nil
+        }
+
+        return value
+    }
+
+    private static let map: [String: PayWithApplePayButtonStyle] = [
+        "automatic": .automatic,
+        "black": .black,
+        "white": .white,
+        "whiteOutline": .whiteOutline
     ]
 }
