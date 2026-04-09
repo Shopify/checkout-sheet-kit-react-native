@@ -24,7 +24,7 @@
 import Foundation
 import PassKit
 import React
-import ShopifyCheckoutSheetKit
+@_spi(ReactNative) import ShopifyCheckoutSheetKit
 import SwiftUI
 import UIKit
 
@@ -51,6 +51,13 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         }
 
         super.init()
+    }
+
+    /// Applies the React Native version from the JS bridge config to the native SDK configuration.
+    private func applyPlatformVersion(from configuration: [AnyHashable: Any]) {
+        if let reactNativeVersion = configuration["reactNativeVersion"] as? String {
+            ShopifyCheckoutSheetKit.configuration.platformVersion = reactNativeVersion
+        }
     }
 
     override func supportedEvents() -> [String]! {
@@ -173,6 +180,8 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     }
 
     @objc func setConfig(_ configuration: [AnyHashable: Any]) {
+        applyPlatformVersion(from: configuration)
+
         let colorConfig = configuration["colors"] as? [AnyHashable: Any]
         let iosConfig = colorConfig?["ios"] as? [String: String]
 

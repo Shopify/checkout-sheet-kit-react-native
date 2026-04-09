@@ -66,6 +66,20 @@ import type {
 
 const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
 
+/**
+ * Resolve the React Native version from Platform.constants at module load time.
+ * This is sent over the bridge so the native SDKs can include it in analytics.
+ */
+let reactNativeVersion: string | undefined;
+try {
+  const rnVersion = Platform.constants?.reactNativeVersion;
+  if (rnVersion) {
+    reactNativeVersion = `${rnVersion.major}.${rnVersion.minor}.${rnVersion.patch}`;
+  }
+} catch {
+  // Platform.constants may not be available in all environments
+}
+
 if (!('ShopifyCheckoutSheetKit' in NativeModules)) {
   throw new Error(`
   "@shopify/checkout-sheet-kit" is not correctly linked.
@@ -104,6 +118,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
     if (configuration != null) {
       this.setConfig(configuration);
+    } else if (reactNativeVersion != null) {
+      // Even without user-provided config, send the RN version to native
+      RNShopifyCheckoutSheetKit.setConfig({reactNativeVersion});
     }
 
     if (
@@ -165,7 +182,13 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
           configuration.acceleratedCheckouts,
         );
     }
-    RNShopifyCheckoutSheetKit.setConfig(configuration);
+
+    // Attach the resolved React Native version so native SDKs can use it
+    const configWithVersion = reactNativeVersion
+      ? {...configuration, reactNativeVersion}
+      : configuration;
+
+    RNShopifyCheckoutSheetKit.setConfig(configWithVersion);
   }
 
   /**

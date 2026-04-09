@@ -134,6 +134,13 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   public void setConfig(ReadableMap config) {
     Context context = getReactApplicationContext();
 
+    if (config.hasKey("reactNativeVersion")) {
+      String reactNativeVersion = config.getString("reactNativeVersion");
+      if (reactNativeVersion != null) {
+        checkoutConfig.setPlatformVersion(reactNativeVersion);
+      }
+    }
+
     ShopifyCheckoutSheetKit.configure(configuration -> {
       if (config.hasKey("preloading")) {
         configuration.setPreloading(new Preloading(config.getBoolean("preloading")));

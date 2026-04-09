@@ -75,34 +75,32 @@ describe('ShopifyCheckoutSheetKit', () => {
   });
 
   describe('instantiation', () => {
-    it('calls `setConfig` with the specified config on instantiation', () => {
+    it('calls `setConfig` with the specified config and reactNativeVersion on instantiation', () => {
       new ShopifyCheckoutSheet(config);
       expect(
         NativeModules.ShopifyCheckoutSheetKit.setConfig,
-      ).toHaveBeenCalledWith(config);
+      ).toHaveBeenCalledWith({...config, reactNativeVersion: '0.76.0'});
     });
 
-    it('does not call `setConfig` if no config was specified on instantiation', () => {
+    it('sends reactNativeVersion even if no config was specified on instantiation', () => {
       new ShopifyCheckoutSheet();
       expect(
         NativeModules.ShopifyCheckoutSheetKit.setConfig,
-      ).not.toHaveBeenCalled();
+      ).toHaveBeenCalledWith({reactNativeVersion: '0.76.0'});
     });
   });
 
   describe('setConfig', () => {
-    it('calls the `setConfig` on the Native Module', () => {
+    it('calls the `setConfig` on the Native Module with reactNativeVersion', () => {
       const instance = new ShopifyCheckoutSheet();
       instance.setConfig(config);
+      // Called once during constructor (no user config → version-only) and once explicitly
       expect(
         NativeModules.ShopifyCheckoutSheetKit.setConfig,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        NativeModules.ShopifyCheckoutSheetKit.setConfig,
-      ).toHaveBeenCalledWith(config);
+      ).toHaveBeenLastCalledWith({...config, reactNativeVersion: '0.76.0'});
     });
 
-    it('calls `setConfig` with logLevel configuration', () => {
+    it('calls `setConfig` with logLevel configuration and reactNativeVersion', () => {
       const instance = new ShopifyCheckoutSheet();
       const configWithLogLevel: Configuration = {
         colorScheme: ColorScheme.automatic,
@@ -111,7 +109,10 @@ describe('ShopifyCheckoutSheetKit', () => {
       instance.setConfig(configWithLogLevel);
       expect(
         NativeModules.ShopifyCheckoutSheetKit.setConfig,
-      ).toHaveBeenCalledWith(configWithLogLevel);
+      ).toHaveBeenLastCalledWith({
+        ...configWithLogLevel,
+        reactNativeVersion: '0.76.0',
+      });
     });
   });
 

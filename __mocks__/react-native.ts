@@ -62,7 +62,12 @@ const ShopifyCheckoutSheetKit = {
 
 // CommonJS export for Jest manual mock resolution
 module.exports = {
-  Platform: {OS: 'ios'},
+  Platform: {
+    OS: 'ios',
+    constants: {
+      reactNativeVersion: {major: 0, minor: 76, patch: 0},
+    },
+  },
   PermissionsAndroid: {
     requestMultiple: jest.fn(async () => ({})),
   },
