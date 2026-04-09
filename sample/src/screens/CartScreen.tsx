@@ -41,6 +41,7 @@ import {
   ApplePayLabel,
   AcceleratedCheckoutWallet,
 } from '@shopify/checkout-sheet-kit';
+import {useConfig} from '../context/Config';
 import useShopify from '../hooks/useShopify';
 import type {CartLineItem} from '../../@types';
 import type {Colors} from '../context/Theme';
@@ -55,6 +56,7 @@ function CartScreen(): React.JSX.Element {
   const {cartId, checkoutURL, totalQuantity, removeFromCart, addingToCart} =
     useCart();
   const {queries} = useShopify();
+  const {appConfig} = useConfig();
   const eventHandlers = useShopifyEventHandlers(
     'Cart - AcceleratedCheckoutButtons',
   );
@@ -167,6 +169,7 @@ function CartScreen(): React.JSX.Element {
               <AcceleratedCheckoutButtons
                 {...eventHandlers}
                 applePayLabel={ApplePayLabel.checkout}
+                applePayStyle={appConfig.applePayStyle}
                 cartId={cartId}
                 wallets={[
                   AcceleratedCheckoutWallet.applePay,

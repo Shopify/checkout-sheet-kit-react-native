@@ -841,6 +841,178 @@ shopify.addEventListener('geolocationRequest', async (event: GeolocationRequestE
 
 ---
 
+## Accelerated Checkouts
+
+Accelerated checkout buttons surface Apple Pay and Shop Pay options earlier in the buyer journey so more orders complete without leaving your app.
+
+### Prerequisites
+
+- iOS 16 or later
+- The `write_cart_wallet_payments` access scope ([request access](https://www.appsheet.com/start/1ff317b6-2da1-4f39-b041-c01cfada6098))
+- Apple Pay payment processing certificates ([setup guide](https://shopify.dev/docs/storefronts/mobile/create-apple-payment-processing-certificates))
+- A device configured for Apple Pay ([Apple setup instructions](https://developer.apple.com/documentation/passkit/setting-up-apple-pay))
+
+### Configure the integration
+
+Pass an `acceleratedCheckouts` configuration when setting up the provider or `ShopifyCheckoutSheet` instance. This connects the accelerated checkout buttons to your storefront.
+
+```tsx
+import {ShopifyCheckoutSheetProvider} from '@shopify/checkout-sheet-kit';
+
+const config = {
+  acceleratedCheckouts: {
+    storefrontDomain: 'your-shop.myshopify.com',
+    storefrontAccessToken: 'your-storefront-access-token',
+    customer: {
+      // For authenticated customers
+      accessToken: 'customer-access-token',
+      // OR for guest customers
+      // email: 'customer@example.com',
+      // phoneNumber: '0123456789',
+    },
+    wallets: {
+      applePay: {
+        merchantIdentifier: 'merchant.com.yourcompany',
+        contactFields: ['email', 'phone'],
+        // Optionally restrict shipping countries (ISO 3166-1 alpha-2)
+        // supportedShippingCountries: ['US', 'CA'],
+      },
+    },
+  },
+};
+
+function App() {
+  return (
+    <ShopifyCheckoutSheetProvider configuration={config}>
+      <YourApp />
+    </ShopifyCheckoutSheetProvider>
+  );
+}
+```
+
+> [!WARNING]
+> Do not provide both `accessToken` and `email`/`phoneNumber` together. For authenticated customers, email and phone are fetched automatically from the Shopify account.
+
+### Render accelerated checkout buttons
+
+Use `AcceleratedCheckoutButtons` to attach accelerated checkout calls-to-action to product or cart surfaces once you have a valid cart ID or product variant ID from the Storefront API.
+
+```tsx
+import {
+  AcceleratedCheckoutButtons,
+  AcceleratedCheckoutWallet,
+} from '@shopify/checkout-sheet-kit';
+
+function CartFooter({cartId}: {cartId: string}) {
+  return (
+    <AcceleratedCheckoutButtons
+      cartId={cartId}
+      wallets={[AcceleratedCheckoutWallet.shopPay, AcceleratedCheckoutWallet.applePay]}
+    />
+  );
+}
+```
+
+You can also render buttons for a single product variant:
+
+```tsx
+<AcceleratedCheckoutButtons
+  variantId={variantId}
+  quantity={1}
+  wallets={[AcceleratedCheckoutWallet.applePay]}
+/>
+```
+
+#### Customize wallet options
+
+Accelerated checkout buttons display every available wallet by default. Use `wallets` to show a subset or adjust the order.
+
+```tsx
+// Display only Shop Pay
+<AcceleratedCheckoutButtons
+  cartId={cartId}
+  wallets={[AcceleratedCheckoutWallet.shopPay]}
+/>
+
+// Display Shop Pay first, then Apple Pay
+<AcceleratedCheckoutButtons
+  cartId={cartId}
+  wallets={[AcceleratedCheckoutWallet.shopPay, AcceleratedCheckoutWallet.applePay]}
+/>
+```
+
+#### Modify the Apple Pay button label
+
+Use `applePayLabel` to map to the native `PayWithApplePayButtonLabel` values. The default is `plain`.
+
+```tsx
+import {ApplePayLabel} from '@shopify/checkout-sheet-kit';
+
+<AcceleratedCheckoutButtons
+  cartId={cartId}
+  applePayLabel={ApplePayLabel.buy}
+/>
+```
+
+#### Customize the Apple Pay button style
+
+Use `applePayStyle` to set the color style of the Apple Pay button. The default is `automatic`, which adapts to the current appearance (light/dark mode).
+
+```tsx
+import {ApplePayStyle} from '@shopify/checkout-sheet-kit';
+
+<AcceleratedCheckoutButtons
+  cartId={cartId}
+  applePayStyle={ApplePayStyle.whiteOutline}
+/>
+```
+
+Available styles: `automatic`, `black`, `white`, `whiteOutline`.
+
+#### Customize button corners
+
+The `cornerRadius` prop lets you match the buttons to other calls-to-action in your app. Buttons default to an 8pt radius.
+
+```tsx
+// Pill-shaped buttons
+<AcceleratedCheckoutButtons cartId={cartId} cornerRadius={16} />
+
+// Square buttons
+<AcceleratedCheckoutButtons cartId={cartId} cornerRadius={0} />
+```
+
+### Handle loading, errors, and lifecycle events
+
+Attach lifecycle handlers to respond when buyers finish, cancel, or encounter an error.
+
+```tsx
+<AcceleratedCheckoutButtons
+  cartId={cartId}
+  onComplete={(event) => {
+    // Clear cart after successful checkout
+    clearCart();
+  }}
+  onFail={(error) => {
+    console.error('Accelerated checkout failed:', error);
+  }}
+  onCancel={() => {
+    analytics.track('accelerated_checkout_cancelled');
+  }}
+  onRenderStateChange={(event) => {
+    // event.state: 'loading' | 'rendered' | 'error'
+    setRenderState(event.state);
+  }}
+  onWebPixelEvent={(event) => {
+    analytics.track(event);
+  }}
+  onClickLink={(url) => {
+    Linking.openURL(url);
+  }}
+/>
+```
+
+---
+
 ## Contributing
 
 See the [contributing documentation](CONTRIBUTING.md) for details on how to get started.

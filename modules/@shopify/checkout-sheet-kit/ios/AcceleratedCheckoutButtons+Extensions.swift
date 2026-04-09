@@ -58,3 +58,23 @@ extension PayWithApplePayButtonLabel {
         "topUp": .topUp
     ]
 }
+
+// MARK: - Apple Pay Button Style
+
+@available(iOS 16.0, *)
+extension PayWithApplePayButtonStyle {
+    static func from(_ string: String?, fallback: PayWithApplePayButtonStyle = .automatic) -> PayWithApplePayButtonStyle {
+        guard let string, let value = map[string] else {
+            return fallback
+        }
+
+        return value
+    }
+
+    private static let map: [String: PayWithApplePayButtonStyle] = [
+        "automatic": .automatic,
+        "black": .black,
+        "white": .white,
+        "whiteOutline": .whiteOutline
+    ]
+}

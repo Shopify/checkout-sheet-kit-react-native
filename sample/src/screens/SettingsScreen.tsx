@@ -35,6 +35,7 @@ import pkg from '../../../package.json';
 import Config from 'react-native-config';
 import {useConfig} from '../context/Config';
 import {
+  ApplePayStyle,
   ColorScheme,
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
@@ -64,7 +65,7 @@ interface SwitchItem {
 interface SingleSelectItem {
   type: SectionType.SingleSelect;
   title: string;
-  value: ColorScheme | BuyerIdentityMode;
+  value: ColorScheme | BuyerIdentityMode | ApplePayStyle;
   selected: boolean;
 }
 
@@ -129,6 +130,16 @@ function SettingsScreen() {
   }, [shopify]);
 
   const {isAuthenticated, customerEmail, tokenExpiresAt, logout} = useAuth();
+
+  const handleApplePayStyleChange = useCallback(
+    (item: SingleSelectItem) => {
+      setAppConfig({
+        ...appConfig,
+        applePayStyle: item.value as ApplePayStyle,
+      });
+    },
+    [appConfig, setAppConfig],
+  );
 
   const handleBuyerIdentityModeChange = useCallback(
     (item: SingleSelectItem) => {
@@ -200,6 +211,27 @@ function SettingsScreen() {
     [appConfig.colorScheme],
   );
 
+  const applePayStyleDisplayNames: Record<ApplePayStyle, string> = useMemo(
+    () => ({
+      [ApplePayStyle.automatic]: 'Automatic',
+      [ApplePayStyle.black]: 'Black',
+      [ApplePayStyle.white]: 'White',
+      [ApplePayStyle.whiteOutline]: 'White Outline',
+    }),
+    [],
+  );
+
+  const applePayStyleOptions: readonly SingleSelectItem[] = useMemo(
+    () =>
+      Object.values(ApplePayStyle).map(style => ({
+        title: applePayStyleDisplayNames[style],
+        type: SectionType.SingleSelect as const,
+        value: style,
+        selected: appConfig.applePayStyle === style,
+      })),
+    [appConfig.applePayStyle, applePayStyleDisplayNames],
+  );
+
   const informationalItems: readonly TextItem[] = useMemo(
     () => [
       {
@@ -238,6 +270,12 @@ function SettingsScreen() {
         data: themeOptions,
       },
       {
+        title: 'Apple Pay Style',
+        footer:
+          'Configures the visual style of the Apple Pay button.',
+        data: applePayStyleOptions,
+      },
+      {
         title: 'Versions',
         data: informationalItems,
       },
@@ -246,6 +284,7 @@ function SettingsScreen() {
       themeOptions,
       configurationOptions,
       buyerIdentityOptions,
+      applePayStyleOptions,
       informationalItems,
     ],
   );
@@ -263,16 +302,16 @@ function SettingsScreen() {
           }
 
           if (isSingleSelectItem(item)) {
-            const isAuthSection = section.title === 'Authentication';
+            const sectionHandlers: Record<string, (item: SingleSelectItem) => void> = {
+              Authentication: handleBuyerIdentityModeChange,
+              'Apple Pay Style': handleApplePayStyleChange,
+            };
+            const handler = sectionHandlers[section.title] ?? handleColorSchemeChange;
             return (
               <SelectItem
                 item={item}
                 styles={styles}
-                onPress={() =>
-                  isAuthSection
-                    ? handleBuyerIdentityModeChange(item)
-                    : handleColorSchemeChange(item)
-                }
+                onPress={() => handler(item)}
               />
             );
           }
