@@ -7,7 +7,7 @@ type: node
 up:
   - packages:
       - swiftlint
-      - ccache
+      - sccache
   - ruby
   - xcode:
       version: "26.2"
@@ -63,8 +63,8 @@ commands:
       yarn module clean
       yarn sample clean
       yarn clean
-      if command -v ccache >/dev/null 2>&1; then
-        ccache -C
+      if command -v sccache >/dev/null 2>&1; then
+        sccache --stop-server 2>/dev/null || true
       fi
       echo "✅ Cleaned root, module and sample workspaces"
 

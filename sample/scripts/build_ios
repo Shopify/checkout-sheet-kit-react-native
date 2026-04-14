@@ -3,16 +3,18 @@
 set -ex
 set -eo pipefail
 
-# Add ccache to PATH if available for faster compilation outside of CI environments
-# Can be disabled with CCACHE=false for debugging or matching CI behavior locally
-if [ "$CI" = "true" ] || [ "$CCACHE" = "false" ]; then
-    # CI detected or ccache explicitly disabled - skipping ccache for clean builds
-    if command -v ccache >/dev/null 2>&1; then
-        ccache -C
+# Add sccache for faster compilation outside of CI environments
+# Can be disabled with SCCACHE=false for debugging or matching CI behavior locally
+if [ "$CI" = "true" ] || [ "$SCCACHE" = "false" ]; then
+    # CI detected or sccache explicitly disabled - skipping sccache for clean builds
+    if command -v sccache >/dev/null 2>&1; then
+        sccache --stop-server 2>/dev/null || true
     fi
 else
-    if [ -d "/opt/homebrew/opt/ccache/libexec" ]; then
-        export PATH="/opt/homebrew/opt/ccache/libexec:$PATH"
+    if command -v sccache >/dev/null 2>&1; then
+        export RUSTC_WRAPPER=sccache
+        export CC="sccache clang"
+        export CXX="sccache clang++"
     fi
 fi
 
