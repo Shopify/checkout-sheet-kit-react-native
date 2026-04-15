@@ -23,7 +23,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 
 package com.shopify.reactnative.checkoutsheetkit;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.webkit.GeolocationPermissions;
 
@@ -130,6 +133,53 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   @Override
   public void onCheckoutCanceled() {
     sendEvent("close", null);
+  }
+
+  /**
+   * Handles external links clicked during checkout (offsite payments, mailto, tel, etc.).
+   *
+   * For intent:// URIs (used by offsite payment providers like Klarna, iDEAL),
+   * parses the intent and launches it safely with ACTION_VIEW only.
+   * For standard schemes (http, https, mailto, tel), delegates to the default handler.
+   */
+  @Override
+  public void onCheckoutLinkClicked(@NonNull Uri uri) {
+    String scheme = uri.getScheme();
+    if ("intent".equals(scheme)) {
+      try {
+        Intent intent = Intent.parseUri(uri.toString(), Intent.URI_INTENT_SCHEME);
+        // Security: restrict to ACTION_VIEW only to prevent intent scheme hijacking
+        intent.setAction(Intent.ACTION_VIEW);
+        // Security: clear potentially dangerous flags
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        Context context = reactContext.getCurrentActivity();
+        if (context == null) {
+          context = reactContext;
+        }
+
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+          context.startActivity(intent);
+        } else {
+          // Fallback: try the fallback URL from the intent if available
+          String fallbackUrl = intent.getStringExtra("browser_fallback_url");
+          if (fallbackUrl != null) {
+            Intent fallbackIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fallbackUrl));
+            fallbackIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(fallbackIntent);
+          } else {
+            Log.w("ShopifyCheckoutSheetKit", "No app found to handle intent URI: " + uri);
+            super.onCheckoutLinkClicked(uri);
+          }
+        }
+      } catch (Exception e) {
+        Log.e("ShopifyCheckoutSheetKit", "Error handling intent:// URI", e);
+        super.onCheckoutLinkClicked(uri);
+      }
+    } else {
+      super.onCheckoutLinkClicked(uri);
+    }
   }
 
   @Override
