@@ -20,7 +20,11 @@ import {
   type AcceleratedCheckoutConfiguration,
 } from '../src';
 import type {ApplePayContactField} from '../src/index.d';
-import {NativeModules, PermissionsAndroid, Platform} from 'react-native';
+import {TurboModuleRegistry, PermissionsAndroid, Platform} from 'react-native';
+
+const NativeModule = TurboModuleRegistry.getEnforcing(
+  'ShopifyCheckoutSheetKit',
+) as any;
 
 const checkoutUrl = 'https://shopify.com/checkout';
 const config: Configuration = {
@@ -64,13 +68,7 @@ describe('ShopifyCheckoutSheetKit', () => {
   const eventEmitter = ShopifyCheckoutSheet.eventEmitter;
 
   afterEach(() => {
-    NativeModules.ShopifyCheckoutSheetKit.setConfig.mockReset();
-    NativeModules.ShopifyCheckoutSheetKit.eventEmitter.addListener.mockClear();
-    NativeModules.ShopifyCheckoutSheetKit.eventEmitter.removeAllListeners.mockClear();
-
-    // Clear mock listeners
-    NativeModules._listeners = [];
-
+    NativeModule.setConfig.mockReset();
     jest.clearAllMocks();
   });
 
@@ -78,14 +76,14 @@ describe('ShopifyCheckoutSheetKit', () => {
     it('calls `setConfig` with the specified config on instantiation', () => {
       new ShopifyCheckoutSheet(config);
       expect(
-        NativeModules.ShopifyCheckoutSheetKit.setConfig,
+        NativeModule.setConfig,
       ).toHaveBeenCalledWith(config);
     });
 
     it('does not call `setConfig` if no config was specified on instantiation', () => {
       new ShopifyCheckoutSheet();
       expect(
-        NativeModules.ShopifyCheckoutSheetKit.setConfig,
+        NativeModule.setConfig,
       ).not.toHaveBeenCalled();
     });
   });
@@ -95,10 +93,10 @@ describe('ShopifyCheckoutSheetKit', () => {
       const instance = new ShopifyCheckoutSheet();
       instance.setConfig(config);
       expect(
-        NativeModules.ShopifyCheckoutSheetKit.setConfig,
+        NativeModule.setConfig,
       ).toHaveBeenCalledTimes(1);
       expect(
-        NativeModules.ShopifyCheckoutSheetKit.setConfig,
+        NativeModule.setConfig,
       ).toHaveBeenCalledWith(config);
     });
 
@@ -110,7 +108,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       };
       instance.setConfig(configWithLogLevel);
       expect(
-        NativeModules.ShopifyCheckoutSheetKit.setConfig,
+        NativeModule.setConfig,
       ).toHaveBeenCalledWith(configWithLogLevel);
     });
   });
@@ -120,10 +118,10 @@ describe('ShopifyCheckoutSheetKit', () => {
       const instance = new ShopifyCheckoutSheet();
       instance.preload(checkoutUrl);
       expect(
-        NativeModules.ShopifyCheckoutSheetKit.preload,
+        NativeModule.preload,
       ).toHaveBeenCalledTimes(1);
       expect(
-        NativeModules.ShopifyCheckoutSheetKit.preload,
+        NativeModule.preload,
       ).toHaveBeenCalledWith(checkoutUrl);
     });
   });
@@ -133,7 +131,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       const instance = new ShopifyCheckoutSheet();
       instance.invalidate();
       expect(
-        NativeModules.ShopifyCheckoutSheetKit.invalidateCache,
+        NativeModule.invalidateCache,
       ).toHaveBeenCalledTimes(1);
     });
   });
@@ -143,10 +141,10 @@ describe('ShopifyCheckoutSheetKit', () => {
       const instance = new ShopifyCheckoutSheet();
       instance.present(checkoutUrl);
       expect(
-        NativeModules.ShopifyCheckoutSheetKit.present,
+        NativeModule.present,
       ).toHaveBeenCalledTimes(1);
       expect(
-        NativeModules.ShopifyCheckoutSheetKit.present,
+        NativeModule.present,
       ).toHaveBeenCalledWith(checkoutUrl);
     });
   });
@@ -156,7 +154,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       const instance = new ShopifyCheckoutSheet();
       instance.dismiss();
       expect(
-        NativeModules.ShopifyCheckoutSheetKit.dismiss,
+        NativeModule.dismiss,
       ).toHaveBeenCalledTimes(1);
     });
   });
@@ -168,7 +166,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         preloading: true,
       });
       expect(
-        NativeModules.ShopifyCheckoutSheetKit.getConfig,
+        NativeModule.getConfig,
       ).toHaveBeenCalledTimes(1);
     });
   });
@@ -191,7 +189,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         const eventName = 'pixel';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
-        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        NativeModule.addEventListener(
           eventName,
           callback,
         );
@@ -214,7 +212,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         const eventName = 'pixel';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
-        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        NativeModule.addEventListener(
           eventName,
           callback,
         );
@@ -242,7 +240,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         const eventName = 'pixel';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
-        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        NativeModule.addEventListener(
           eventName,
           callback,
         );
@@ -271,7 +269,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         const eventName = 'pixel';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
-        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        NativeModule.addEventListener(
           eventName,
           callback,
         );
@@ -295,7 +293,7 @@ describe('ShopifyCheckoutSheetKit', () => {
           throw new Error('Callback error');
         });
         instance.addEventListener(eventName, callback);
-        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        NativeModule.addEventListener(
           eventName,
           callback,
         );
@@ -325,7 +323,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         const eventName = 'completed';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
-        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        NativeModule.addEventListener(
           eventName,
           callback,
         );
@@ -345,7 +343,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         const eventName = 'completed';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
-        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        NativeModule.addEventListener(
           eventName,
           callback,
         );
@@ -363,7 +361,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         const eventName = 'completed';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
-        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        NativeModule.addEventListener(
           eventName,
           callback,
         );
@@ -436,7 +434,7 @@ describe('ShopifyCheckoutSheetKit', () => {
           const eventName = 'error';
           const callback = jest.fn();
           instance.addEventListener(eventName, callback);
-          NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+          NativeModule.addEventListener(
             eventName,
             callback,
           );
@@ -459,7 +457,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         const eventName = 'error';
         const callback = jest.fn();
         instance.addEventListener(eventName, callback);
-        NativeModules.ShopifyCheckoutSheetKit.addEventListener(
+        NativeModule.addEventListener(
           eventName,
           callback,
         );
@@ -553,7 +551,7 @@ describe('ShopifyCheckoutSheetKit', () => {
           'android.permission.ACCESS_FINE_LOCATION',
         ]);
         expect(
-          NativeModules.ShopifyCheckoutSheetKit.initiateGeolocationRequest,
+          NativeModule.initiateGeolocationRequest,
         ).toHaveBeenCalledWith(true);
       });
 
@@ -578,7 +576,7 @@ describe('ShopifyCheckoutSheetKit', () => {
           'android.permission.ACCESS_FINE_LOCATION',
         ]);
         expect(
-          NativeModules.ShopifyCheckoutSheetKit.initiateGeolocationRequest,
+          NativeModule.initiateGeolocationRequest,
         ).toHaveBeenCalledWith(false);
       });
 
@@ -623,7 +621,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         await emitGeolocationRequest();
 
         expect(
-          NativeModules.ShopifyCheckoutSheetKit.initiateGeolocationRequest,
+          NativeModule.initiateGeolocationRequest,
         ).not.toHaveBeenCalled();
       });
 
@@ -722,14 +720,14 @@ describe('ShopifyCheckoutSheetKit', () => {
     beforeEach(() => {
       Platform.OS = 'ios';
       Platform.Version = '17.0';
-      NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts.mockReset();
-      NativeModules.ShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable.mockReset();
+      NativeModule.configureAcceleratedCheckouts.mockReset();
+      NativeModule.isAcceleratedCheckoutAvailable.mockReset();
     });
 
     describe('configureAcceleratedCheckouts', () => {
       it('calls native configureAcceleratedCheckouts with correct parameters on iOS', async () => {
         const instance = new ShopifyCheckoutSheet();
-        NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts.mockResolvedValue(
+        NativeModule.configureAcceleratedCheckouts.mockResolvedValue(
           true,
         );
 
@@ -738,7 +736,7 @@ describe('ShopifyCheckoutSheetKit', () => {
 
         expect(result).toBe(true);
         expect(
-          NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts,
+          NativeModule.configureAcceleratedCheckouts,
         ).toHaveBeenCalledWith(
           'test-shop.myshopify.com',
           'shpat_test_token',
@@ -757,14 +755,14 @@ describe('ShopifyCheckoutSheetKit', () => {
           storefrontDomain: 'test-shop.myshopify.com',
           storefrontAccessToken: 'shpat_test_token',
         };
-        NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts.mockResolvedValue(
+        NativeModule.configureAcceleratedCheckouts.mockResolvedValue(
           true,
         );
 
         await instance.configureAcceleratedCheckouts(minimalConfig);
 
         expect(
-          NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts,
+          NativeModule.configureAcceleratedCheckouts,
         ).toHaveBeenCalledWith(
           'test-shop.myshopify.com',
           'shpat_test_token',
@@ -786,7 +784,7 @@ describe('ShopifyCheckoutSheetKit', () => {
 
         expect(result).toBe(false);
         expect(
-          NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts,
+          NativeModule.configureAcceleratedCheckouts,
         ).not.toHaveBeenCalled();
       });
 
@@ -881,7 +879,7 @@ describe('ShopifyCheckoutSheetKit', () => {
           storefrontDomain: 'test-shop.myshopify.com',
           storefrontAccessToken: 'shpat_test_token',
         };
-        NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts.mockResolvedValue(
+        NativeModule.configureAcceleratedCheckouts.mockResolvedValue(
           true,
         );
 
@@ -930,7 +928,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         });
 
         expect(
-          NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts,
+          NativeModule.configureAcceleratedCheckouts,
         ).toHaveBeenCalledWith(
           'test-shop.myshopify.com',
           'shpat_test_token',
@@ -958,7 +956,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         });
 
         expect(
-          NativeModules.ShopifyCheckoutSheetKit.configureAcceleratedCheckouts,
+          NativeModule.configureAcceleratedCheckouts,
         ).toHaveBeenCalledWith(
           'test-shop.myshopify.com',
           'shpat_test_token',
@@ -975,7 +973,7 @@ describe('ShopifyCheckoutSheetKit', () => {
     describe('isAcceleratedCheckoutAvailable', () => {
       it('calls native isAcceleratedCheckoutAvailable on iOS', async () => {
         const instance = new ShopifyCheckoutSheet();
-        NativeModules.ShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable.mockResolvedValue(
+        NativeModule.isAcceleratedCheckoutAvailable.mockResolvedValue(
           true,
         );
 
@@ -983,7 +981,7 @@ describe('ShopifyCheckoutSheetKit', () => {
 
         expect(result).toBe(true);
         expect(
-          NativeModules.ShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable,
+          NativeModule.isAcceleratedCheckoutAvailable,
         ).toHaveBeenCalledTimes(1);
       });
 
@@ -995,7 +993,7 @@ describe('ShopifyCheckoutSheetKit', () => {
 
         expect(result).toBe(false);
         expect(
-          NativeModules.ShopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable,
+          NativeModule.isAcceleratedCheckoutAvailable,
         ).not.toHaveBeenCalled();
       });
     });
