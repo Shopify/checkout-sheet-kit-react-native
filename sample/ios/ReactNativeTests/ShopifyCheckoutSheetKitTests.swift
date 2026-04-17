@@ -54,8 +54,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     /// getConfig
     func testReturnsDefaultConfig() {
         // Call getConfig and capture the result
-        var result: [String: Any]?
-        shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+        let result = shopifyCheckoutSheetKit.getConfig() as? [String: Any]
 
         // Verify that getConfig returned the expected result
         XCTAssertEqual(result?["preloading"] as? Bool, true)
@@ -165,7 +164,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
 
     // Call getConfig and capture the result
     var result: [String: Any]?
-    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+    result = shopifyCheckoutSheetKit.getConfig() as? [String: Any]
 
     // Verify that getConfig returned the close button color
     XCTAssertNotNil(result?["closeButtonColor"])
@@ -260,14 +259,14 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     shopifyCheckoutSheetKit.setConfig(configuration)
 
     var result: [String: Any]?
-    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+    result = shopifyCheckoutSheetKit.getConfig() as? [String: Any]
 
     XCTAssertEqual(result?["logLevel"] as? String, "debug")
   }
 
   func testGetConfigReturnsDefaultLogLevel() {
     var result: [String: Any]?
-    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+    result = shopifyCheckoutSheetKit.getConfig() as? [String: Any]
 
     XCTAssertEqual(result?["logLevel"] as? String, "error")
   }
@@ -279,7 +278,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     shopifyCheckoutSheetKit.setConfig(configuration)
 
     var result: [String: Any]?
-    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+    result = shopifyCheckoutSheetKit.getConfig() as? [String: Any]
 
     XCTAssertEqual(result?["logLevel"] as? String, "debug")
   }
@@ -291,7 +290,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     shopifyCheckoutSheetKit.setConfig(configuration)
 
     var result: [String: Any]?
-    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+    result = shopifyCheckoutSheetKit.getConfig() as? [String: Any]
 
     XCTAssertEqual(result?["logLevel"] as? String, "error")
   }
@@ -303,7 +302,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     shopifyCheckoutSheetKit.setConfig(configuration)
 
     var result: [String: Any]?
-    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+    result = shopifyCheckoutSheetKit.getConfig() as? [String: Any]
 
     XCTAssertEqual(result?["logLevel"] as? String, "error")
   }
@@ -315,7 +314,7 @@ class ShopifyCheckoutSheetKitTests: XCTestCase {
     shopifyCheckoutSheetKit.setConfig(configuration)
 
     var result: [String: Any]?
-    shopifyCheckoutSheetKit.getConfig({ config in result = config as? [String: Any] }, reject: { _, _, _ in })
+    result = shopifyCheckoutSheetKit.getConfig() as? [String: Any]
 
     XCTAssertEqual(result?["logLevel"] as? String, "error")
   }

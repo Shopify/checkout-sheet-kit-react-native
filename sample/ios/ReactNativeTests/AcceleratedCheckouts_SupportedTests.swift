@@ -62,9 +62,8 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         ShopifyCheckoutSheetKit.configuration.closeButtonTintColor = nil
     }
 
-    private func configureAcceleratedCheckouts(includeApplePay: Bool, customerAccessToken: String? = nil) {
-        let expectation = self.expectation(description: "configureAcceleratedCheckouts")
-
+    @discardableResult
+    private func configureAcceleratedCheckouts(includeApplePay: Bool, customerAccessToken: String? = nil) -> Bool {
         let storefrontDomain = "example.myshopify.com"
         let accessToken = "shpat_test_token"
         let email = "buyer@example.com"
@@ -73,7 +72,7 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         let contactFields: [String]? = includeApplePay ? ["email", "phone"] : nil
         let supportedShippingCountries: [String]? = includeApplePay ? ["IE", "CA"] : nil
 
-        shopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+        return shopifyCheckoutSheetKit.configureAcceleratedCheckouts(
             storefrontDomain,
             storefrontAccessToken: accessToken,
             customerEmail: email,
@@ -81,12 +80,8 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
             customerAccessToken: customerAccessToken,
             applePayMerchantIdentifier: merchantIdentifier,
             applyPayContactFields: contactFields,
-            supportedShippingCountries: supportedShippingCountries,
-            resolve: { _ in expectation.fulfill() },
-            reject: { _, _, _ in }
-        )
-
-        wait(for: [expectation], timeout: 2)
+            supportedShippingCountries: supportedShippingCountries
+        ).boolValue
     }
 
     func testConfigureAcceleratedCheckoutsSetsSharedConfigsOnIOS16() throws {
@@ -98,58 +93,23 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     func testIsAcceleratedCheckoutAvailableBeforeAndAfterConfig() throws {
-        let beforeExpectation = expectation(description: "isAcceleratedCheckoutAvailable before")
-        var beforeValue: Bool = true
-        shopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable({ value in
-            beforeValue = (value as? Bool) ?? true
-            beforeExpectation.fulfill()
-        }, reject: { _, _, _ in })
-        wait(for: [beforeExpectation], timeout: 2)
-        XCTAssertEqual(beforeValue, false)
+        XCTAssertEqual(shopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable().boolValue, false)
 
         configureAcceleratedCheckouts(includeApplePay: false)
 
-        let afterExpectation = expectation(description: "isAcceleratedCheckoutAvailable after")
-        var afterValue: Bool = false
-        shopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable({ value in
-            afterValue = (value as? Bool) ?? false
-            afterExpectation.fulfill()
-        }, reject: { _, _, _ in })
-        wait(for: [afterExpectation], timeout: 2)
-        XCTAssertEqual(afterValue, true)
+        XCTAssertEqual(shopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable().boolValue, true)
     }
 
     func testIsApplePayAvailableRequiresApplePayConfig() throws {
-        let beforeExpectation = expectation(description: "isApplePayAvailable before")
-        var beforeValue: Bool = true
-        shopifyCheckoutSheetKit.isApplePayAvailable({ value in
-            beforeValue = (value as? Bool) ?? true
-            beforeExpectation.fulfill()
-        }, reject: { _, _, _ in })
-        wait(for: [beforeExpectation], timeout: 2)
-        XCTAssertEqual(beforeValue, false)
+        XCTAssertEqual(shopifyCheckoutSheetKit.isApplePayAvailable().boolValue, false)
 
         configureAcceleratedCheckouts(includeApplePay: false)
 
-        let withoutApplePayExpectation = expectation(description: "isApplePayAvailable without Apple Pay")
-        var withoutApplePayValue: Bool = true
-        shopifyCheckoutSheetKit.isApplePayAvailable({ value in
-            withoutApplePayValue = (value as? Bool) ?? true
-            withoutApplePayExpectation.fulfill()
-        }, reject: { _, _, _ in })
-        wait(for: [withoutApplePayExpectation], timeout: 2)
-        XCTAssertEqual(withoutApplePayValue, false)
+        XCTAssertEqual(shopifyCheckoutSheetKit.isApplePayAvailable().boolValue, false)
 
         configureAcceleratedCheckouts(includeApplePay: true)
 
-        let afterExpectation = expectation(description: "isApplePayAvailable after")
-        var afterValue: Bool = false
-        shopifyCheckoutSheetKit.isApplePayAvailable({ value in
-            afterValue = (value as? Bool) ?? false
-            afterExpectation.fulfill()
-        }, reject: { _, _, _ in })
-        wait(for: [afterExpectation], timeout: 2)
-        XCTAssertEqual(afterValue, true)
+        XCTAssertEqual(shopifyCheckoutSheetKit.isApplePayAvailable().boolValue, true)
     }
 
     func testConfigureAcceleratedCheckoutsStoresCustomerAccessToken() throws {
@@ -395,14 +355,11 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         XCTAssertTrue(PayWithApplePayButtonLabel.from("unknown", fallback: .buy) == .buy)
     }
 
-    func testConfigureAcceleratedCheckoutsResolvesFalseForInvalidApplePayContactField() throws {
-        let expectation = self.expectation(description: "configureAcceleratedCheckouts invalid contact field resolves false")
-        var resolved: Bool = true
-
+    func testConfigureAcceleratedCheckoutsReturnsFalseForInvalidApplePayContactField() throws {
         let storefrontDomain = "example.myshopify.com"
         let accessToken = "shpat_test_token"
 
-        shopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+        let resolved = shopifyCheckoutSheetKit.configureAcceleratedCheckouts(
             storefrontDomain,
             storefrontAccessToken: accessToken,
             customerEmail: nil,
@@ -410,15 +367,9 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
             customerAccessToken: nil,
             applePayMerchantIdentifier: "merchant.com.shopify.reactnative.tests",
             applyPayContactFields: ["email", "not_a_field"],
-            supportedShippingCountries: [],
-            resolve: { value in
-                resolved = (value as? Bool) ?? true
-                expectation.fulfill()
-            },
-            reject: { _, _, _ in }
-        )
+            supportedShippingCountries: []
+        ).boolValue
 
-        wait(for: [expectation], timeout: 2)
         XCTAssertEqual(resolved, false)
     }
 }
