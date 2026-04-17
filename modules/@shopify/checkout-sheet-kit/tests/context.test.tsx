@@ -349,7 +349,11 @@ describe('useShopifyCheckoutSheet', () => {
     );
 
     const config = hookValue.getConfig();
-    expect(config).toEqual({preloading: true});
+    expect(config).toEqual({
+      preloading: true,
+      colorScheme: 'automatic',
+      logLevel: 'error',
+    });
 
     expect(NativeModules.ShopifyCheckoutSheetKit.getConfig).toHaveBeenCalled();
   });

@@ -160,10 +160,12 @@ describe('ShopifyCheckoutSheetKit', () => {
   });
 
   describe('getConfig', () => {
-    it('returns the config from the Native Module', () => {
+    it('returns the parsed config from the Native Module', () => {
       const instance = new ShopifyCheckoutSheet();
       expect(instance.getConfig()).toStrictEqual({
         preloading: true,
+        colorScheme: ColorScheme.automatic,
+        logLevel: LogLevel.error,
       });
       expect(
         NativeModule.getConfig,
