@@ -50,26 +50,26 @@ If you've cloned the repo and want to run the sample app, you will first need to
    yarn sample android
    ```
 
-## Optional: Speed up builds with ccache
+## Optional: Speed up builds with sccache
 
-For faster native compilation (especially on incremental builds), you can install [ccache](https://ccache.dev/), a compiler cache:
+For faster native compilation (especially on incremental builds), you can install [sccache](https://github.com/mozilla/sccache), a shared compilation cache:
 
 ```sh
 # macOS (using Homebrew)
-brew install ccache
+brew install sccache
 
 # Ubuntu/Debian
-sudo apt-get install ccache
+cargo install sccache
 
-# Other systems: see https://ccache.dev/download.html
+# Other systems: see https://github.com/mozilla/sccache#installation
 ```
 
-The build scripts will automatically detect and use ccache if available. If you encounter any build issues, you can temporarily disable it:
+The build scripts will automatically detect and use sccache if available. If you encounter any build issues, you can temporarily disable it:
 
 ```sh
-# Disable ccache for a single build
-CCACHE=false yarn sample ios
-CCACHE=false yarn sample android
+# Disable sccache for a single build
+SCCACHE=false yarn sample ios
+SCCACHE=false yarn sample android
 ```
 
 ## Making changes to the Native Module
