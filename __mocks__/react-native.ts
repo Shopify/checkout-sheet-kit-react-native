@@ -39,6 +39,8 @@ const requireNativeComponent = (..._args: any[]) => {
     });
 };
 
+const codegenNativeComponent = requireNativeComponent;
+
 const StyleSheet = {
   flatten: jest.fn(style => style),
 };
@@ -71,6 +73,7 @@ module.exports = {
   },
   NativeEventEmitter: jest.fn(() => createMockEmitter()),
   requireNativeComponent,
+  codegenNativeComponent,
   TurboModuleRegistry: {
     getEnforcing: jest.fn((name: string) => {
       if (name === 'ShopifyCheckoutSheetKit') {

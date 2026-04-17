@@ -16,21 +16,7 @@ runs:
       with:
         node-version-file: package.json
         registry-url: 'https://registry.npmjs.org'
-<<<<<<< HEAD
         cache: pnpm
-||||||| parent of 99f0480 (Update action.yml)
-
-    # TODO: Can be removed once node-version is 24 as this will be the minimum
-    - name: Install npm 11
-      run: npm install -g npm@11
-      shell: bash
-=======
-
-    # TODO: Can be removed once node-version is 24 as this will be the minimum
-    - name: Install npm 11
-      run: npm install -g npm@11 || echo "::warning::npm upgrade failed — not required for yarn-based CI"
-      shell: bash
->>>>>>> 99f0480 (Update action.yml)
 
     - name: Cache turbo build setup
       uses: actions/cache@v4

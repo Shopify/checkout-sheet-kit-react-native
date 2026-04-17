@@ -22,9 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import React, {useCallback, useMemo, useState} from 'react';
-import {Platform} from 'react-native';
+import {codegenNativeComponent, Platform} from 'react-native';
 import type {ViewStyle} from 'react-native';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import type {
   AcceleratedCheckoutWallet,
   CheckoutCompletedEvent,
