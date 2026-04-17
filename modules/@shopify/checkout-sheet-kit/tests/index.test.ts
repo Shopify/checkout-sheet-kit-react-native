@@ -160,9 +160,9 @@ describe('ShopifyCheckoutSheetKit', () => {
   });
 
   describe('getConfig', () => {
-    it('returns the config from the Native Module', async () => {
+    it('returns the config from the Native Module', () => {
       const instance = new ShopifyCheckoutSheet();
-      await expect(instance.getConfig()).resolves.toStrictEqual({
+      expect(instance.getConfig()).toStrictEqual({
         preloading: true,
       });
       expect(
@@ -727,12 +727,10 @@ describe('ShopifyCheckoutSheetKit', () => {
     describe('configureAcceleratedCheckouts', () => {
       it('calls native configureAcceleratedCheckouts with correct parameters on iOS', async () => {
         const instance = new ShopifyCheckoutSheet();
-        NativeModule.configureAcceleratedCheckouts.mockResolvedValue(
-          true,
-        );
+        NativeModule.configureAcceleratedCheckouts.mockReturnValue(true);
 
         const result =
-          await instance.configureAcceleratedCheckouts(acceleratedConfig);
+          instance.configureAcceleratedCheckouts(acceleratedConfig);
 
         expect(result).toBe(true);
         expect(
@@ -755,11 +753,9 @@ describe('ShopifyCheckoutSheetKit', () => {
           storefrontDomain: 'test-shop.myshopify.com',
           storefrontAccessToken: 'shpat_test_token',
         };
-        NativeModule.configureAcceleratedCheckouts.mockResolvedValue(
-          true,
-        );
+        NativeModule.configureAcceleratedCheckouts.mockReturnValue(true);
 
-        await instance.configureAcceleratedCheckouts(minimalConfig);
+        instance.configureAcceleratedCheckouts(minimalConfig);
 
         expect(
           NativeModule.configureAcceleratedCheckouts,
@@ -780,7 +776,7 @@ describe('ShopifyCheckoutSheetKit', () => {
         const instance = new ShopifyCheckoutSheet();
 
         const result =
-          await instance.configureAcceleratedCheckouts(acceleratedConfig);
+          instance.configureAcceleratedCheckouts(acceleratedConfig);
 
         expect(result).toBe(false);
         expect(
@@ -796,9 +792,9 @@ describe('ShopifyCheckoutSheetKit', () => {
         };
         const expectedError = new Error('`storefrontDomain` is required');
 
-        await expect(
+        expect(
           instance.configureAcceleratedCheckouts(invalidConfig),
-        ).resolves.toBe(false);
+        ).toBe(false);
         expect(console.error).toHaveBeenCalledWith(
           '[ShopifyCheckoutSheetKit] Failed to configure accelerated checkouts with',
           expectedError,
@@ -814,9 +810,9 @@ describe('ShopifyCheckoutSheetKit', () => {
 
         const expectedError = new Error('`storefrontAccessToken` is required');
 
-        await expect(
+        expect(
           instance.configureAcceleratedCheckouts(invalidConfig),
-        ).resolves.toBe(false);
+        ).toBe(false);
         expect(console.error).toHaveBeenCalledWith(
           '[ShopifyCheckoutSheetKit] Failed to configure accelerated checkouts with',
           expectedError,
@@ -839,9 +835,9 @@ describe('ShopifyCheckoutSheetKit', () => {
           '`wallets.applePay.merchantIdentifier` is required',
         );
 
-        await expect(
+        expect(
           instance.configureAcceleratedCheckouts(invalidConfig),
-        ).resolves.toBe(false);
+        ).toBe(false);
         expect(console.error).toHaveBeenCalledWith(
           '[ShopifyCheckoutSheetKit] Failed to configure accelerated checkouts with',
           expectedError,
@@ -864,31 +860,29 @@ describe('ShopifyCheckoutSheetKit', () => {
           `'wallets.applePay.contactFields' contains unexpected values. Expected "email, phone", received "invalid"`,
         );
 
-        await expect(
+        expect(
           instance.configureAcceleratedCheckouts(invalidConfig as any),
-        ).resolves.toBe(false);
+        ).toBe(false);
         expect(console.error).toHaveBeenCalledWith(
           '[ShopifyCheckoutSheetKit] Failed to configure accelerated checkouts with',
           expectedError,
         );
       });
 
-      it('does not throw when Apple Pay wallet is not configured', async () => {
+      it('does not throw when Apple Pay wallet is not configured', () => {
         const instance = new ShopifyCheckoutSheet();
         const configWithoutApplePay = {
           storefrontDomain: 'test-shop.myshopify.com',
           storefrontAccessToken: 'shpat_test_token',
         };
-        NativeModule.configureAcceleratedCheckouts.mockResolvedValue(
-          true,
-        );
+        NativeModule.configureAcceleratedCheckouts.mockReturnValue(true);
 
-        await expect(
+        expect(
           instance.configureAcceleratedCheckouts(configWithoutApplePay),
-        ).resolves.toBe(true);
+        ).toBe(true);
       });
 
-      it('throws when a non-string value is given for supportedShippingCountries', async () => {
+      it('throws when a non-string value is given for supportedShippingCountries', () => {
         const instance = new ShopifyCheckoutSheet();
         const invalidConfig = {
           ...acceleratedConfig,
@@ -905,9 +899,9 @@ describe('ShopifyCheckoutSheetKit', () => {
           `'wallets.applePay.supportedShippingCountries' contains unexpected values. Expects ISO 3166-1 alpha-2 country codes (e.g., "US", "CA", "GB").`,
         );
 
-        await expect(
+        expect(
           instance.configureAcceleratedCheckouts(invalidConfig as any),
-        ).resolves.toBe(false);
+        ).toBe(false);
         expect(console.error).toHaveBeenCalledWith(
           '[ShopifyCheckoutSheetKit] Failed to configure accelerated checkouts with',
           expectedError,
@@ -917,7 +911,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       it('calls configureAcceleratedCheckouts with an empty array for supportShippingCountries when omitted', async () => {
         const instance = new ShopifyCheckoutSheet();
 
-        await instance.configureAcceleratedCheckouts({
+        instance.configureAcceleratedCheckouts({
           ...acceleratedConfig,
           wallets: {
             applePay: {
@@ -944,7 +938,7 @@ describe('ShopifyCheckoutSheetKit', () => {
       it('calls configureAcceleratedCheckouts with supportShippingCountries when given', async () => {
         const instance = new ShopifyCheckoutSheet();
 
-        await instance.configureAcceleratedCheckouts({
+        instance.configureAcceleratedCheckouts({
           ...acceleratedConfig,
           wallets: {
             applePay: {
@@ -971,13 +965,11 @@ describe('ShopifyCheckoutSheetKit', () => {
     });
 
     describe('isAcceleratedCheckoutAvailable', () => {
-      it('calls native isAcceleratedCheckoutAvailable on iOS', async () => {
+      it('calls native isAcceleratedCheckoutAvailable on iOS', () => {
         const instance = new ShopifyCheckoutSheet();
-        NativeModule.isAcceleratedCheckoutAvailable.mockResolvedValue(
-          true,
-        );
+        NativeModule.isAcceleratedCheckoutAvailable.mockReturnValue(true);
 
-        const result = await instance.isAcceleratedCheckoutAvailable();
+        const result = instance.isAcceleratedCheckoutAvailable();
 
         expect(result).toBe(true);
         expect(
@@ -985,11 +977,11 @@ describe('ShopifyCheckoutSheetKit', () => {
         ).toHaveBeenCalledTimes(1);
       });
 
-      it('returns false on Android', async () => {
+      it('returns false on Android', () => {
         Platform.OS = 'android';
         const instance = new ShopifyCheckoutSheet();
 
-        const result = await instance.isAcceleratedCheckoutAvailable();
+        const result = instance.isAcceleratedCheckoutAvailable();
 
         expect(result).toBe(false);
         expect(

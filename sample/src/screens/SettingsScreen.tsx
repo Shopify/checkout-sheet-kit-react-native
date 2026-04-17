@@ -101,11 +101,8 @@ function SettingsScreen() {
   const [preloadingEnabled, setPreloadingEnabled] = useState(false);
 
   useEffect(() => {
-    async function loadConfig() {
-      const config = await shopify.getConfig();
-      setPreloadingEnabled(config?.preloading ?? false);
-    }
-    loadConfig();
+    const config = shopify.getConfig();
+    setPreloadingEnabled(config?.preloading ?? false);
   }, [shopify]);
 
   const handleColorSchemeChange = useCallback(
@@ -119,8 +116,8 @@ function SettingsScreen() {
     [appConfig, setAppConfig, setColorScheme],
   );
 
-  const handleTogglePreloading = useCallback(async () => {
-    const currentConfig = await shopify.getConfig();
+  const handleTogglePreloading = useCallback(() => {
+    const currentConfig = shopify.getConfig();
     const newPreloadingValue = !currentConfig?.preloading;
     shopify.setConfig({
       ...currentConfig,

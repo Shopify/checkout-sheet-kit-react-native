@@ -119,9 +119,9 @@ export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
   }, [cartId, fetchCart, setTotalQuantity]);
 
   const preloadCheckout = useCallback(
-    async (checkoutURL: string) => {
+    (checkoutURL: string) => {
       if (checkoutURL) {
-        const config = await shopify.getConfig();
+        const config = shopify.getConfig();
         if (config?.preloading) {
           shopify.preload(checkoutURL);
         }

@@ -38,8 +38,8 @@ type Maybe<T> = T | undefined;
 interface Context {
   acceleratedCheckoutsAvailable: boolean;
   addEventListener: AddEventListener;
-  getConfig: () => Promise<Configuration | undefined>;
-  setConfig: (config: Configuration) => Promise<void>;
+  getConfig: () => Configuration | undefined;
+  setConfig: (config: Configuration) => void;
   removeEventListeners: RemoveEventListeners;
   preload: (checkoutUrl: string) => void;
   present: (checkoutUrl: string) => void;
@@ -71,28 +71,24 @@ export function ShopifyCheckoutSheetProvider({
   }
 
   useEffect(() => {
-    async function configureCheckoutKit() {
-      if (!instance.current || !configuration) {
-        return;
-      }
+    if (!instance.current || !configuration) {
+      return;
+    }
 
-      const customer = configuration.acceleratedCheckouts?.customer;
-      if (customer?.accessToken && (customer?.email || customer?.phoneNumber)) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          '[ShopifyCheckoutSheetKit] Providing accessToken with contactFields (email / phoneNumber) is deprecated and will become an error in v4.' +
-          'When the user is authenticated with Customer Accounts, provide accessToken' +
-          'When the user is otherwise authenticated, provide email/phoneNumber.',
-        );
-      }
-
-      await instance.current?.setConfig(configuration);
-      setAcceleratedCheckoutsAvailable(
-        instance.current.acceleratedCheckoutsReady,
+    const customer = configuration.acceleratedCheckouts?.customer;
+    if (customer?.accessToken && (customer?.email || customer?.phoneNumber)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[ShopifyCheckoutSheetKit] Providing accessToken with contactFields (email / phoneNumber) is deprecated and will become an error in v4.' +
+        'When the user is authenticated with Customer Accounts, provide accessToken' +
+        'When the user is otherwise authenticated, provide email/phoneNumber.',
       );
     }
 
-    configureCheckoutKit();
+    instance.current.setConfig(configuration);
+    setAcceleratedCheckoutsAvailable(
+      instance.current.acceleratedCheckoutsReady,
+    );
   }, [configuration]);
 
   const addEventListener: AddEventListener = useCallback(
@@ -126,11 +122,11 @@ export function ShopifyCheckoutSheetProvider({
     instance.current?.dismiss();
   }, []);
 
-  const setConfig = useCallback(async (config: Configuration) => {
-    await instance.current?.setConfig(config);
+  const setConfig = useCallback((config: Configuration) => {
+    instance.current?.setConfig(config);
   }, []);
 
-  const getConfig = useCallback(async () => {
+  const getConfig = useCallback(() => {
     return instance.current?.getConfig();
   }, []);
 

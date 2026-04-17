@@ -113,15 +113,15 @@ public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKit
     ShopifyCheckoutSheetKit.invalidate();
   }
 
-  @ReactMethod
-  public void getConfig(Promise promise) {
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public WritableMap getConfig() {
     WritableMap resultConfig = Arguments.createMap();
 
     resultConfig.putBoolean("preloading", checkoutConfig.getPreloading().getEnabled());
     resultConfig.putString("colorScheme", colorSchemeToString(checkoutConfig.getColorScheme()));
     resultConfig.putString("logLevel", logLevelToString(checkoutConfig.getLogLevel()));
 
-    promise.resolve(resultConfig);
+    return resultConfig;
   }
 
   @ReactMethod
@@ -165,8 +165,8 @@ public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKit
     });
   }
 
-  @ReactMethod
-  public void configureAcceleratedCheckouts(
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public boolean configureAcceleratedCheckouts(
       String storefrontDomain,
       String storefrontAccessToken,
       String customerEmail,
@@ -174,22 +174,21 @@ public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKit
       String customerAccessToken,
       String applePayMerchantIdentifier,
       ReadableArray applyPayContactFields,
-      ReadableArray supportedShippingCountries,
-      Promise promise) {
+      ReadableArray supportedShippingCountries) {
     // Accelerated checkouts not supported on Android
-    promise.resolve(false);
+    return false;
   }
 
-  @ReactMethod
-  public void isAcceleratedCheckoutAvailable(Promise promise) {
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public boolean isAcceleratedCheckoutAvailable() {
     // Accelerated checkouts not supported on Android
-    promise.resolve(false);
+    return false;
   }
 
-  @ReactMethod
-  public void isApplePayAvailable(Promise promise) {
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public boolean isApplePayAvailable() {
     // Apple Pay not available on Android
-    promise.resolve(false);
+    return false;
   }
 
   @ReactMethod

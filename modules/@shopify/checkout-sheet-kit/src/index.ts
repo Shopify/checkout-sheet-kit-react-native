@@ -74,8 +74,17 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   private _acceleratedCheckoutsReady = false;
 
-  get acceleratedCheckoutsReady(): boolean {
+  // TurboModule constants are immutable for the lifetime of the process —
+  // capture once so `version` (and any future constants) can be read without
+  // re-crossing the JSI boundary on every access.
+  private readonly constants = RNShopifyCheckoutSheetKit.getConstants();
+
+  public get acceleratedCheckoutsReady(): boolean {
     return this._acceleratedCheckoutsReady;
+  }
+
+  public get version(): string {
+    return this.constants.version;
   }
 
   /**
@@ -100,9 +109,6 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
       this.subscribeToGeolocationRequestPrompts();
     }
   }
-
-  public readonly version: string =
-    RNShopifyCheckoutSheetKit.getConstants().version;
 
   /**
    * Dismisses the currently displayed checkout sheet
@@ -136,22 +142,21 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   /**
    * Retrieves the current checkout configuration
-   * @returns Promise containing the current Configuration
+   * @returns The current Configuration
    */
-  public async getConfig(): Promise<Configuration> {
-    return RNShopifyCheckoutSheetKit.getConfig() as Promise<Configuration>;
+  public getConfig(): Configuration {
+    return RNShopifyCheckoutSheetKit.getConfig() as Configuration;
   }
 
   /**
    * Updates the checkout configuration
    * @param configuration New configuration settings to apply
    */
-  public async setConfig(configuration: Configuration): Promise<void> {
+  public setConfig(configuration: Configuration): void {
     if (configuration.acceleratedCheckouts) {
-      this._acceleratedCheckoutsReady =
-        await this.configureAcceleratedCheckouts(
-          configuration.acceleratedCheckouts,
-        );
+      this._acceleratedCheckoutsReady = this.configureAcceleratedCheckouts(
+        configuration.acceleratedCheckouts,
+      );
     }
     RNShopifyCheckoutSheetKit.setConfig(configuration);
   }
@@ -219,9 +224,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * Configure AcceleratedCheckouts for Shop Pay and Apple Pay buttons
    * @param config Configuration for AcceleratedCheckouts
    */
-  public async configureAcceleratedCheckouts(
+  public configureAcceleratedCheckouts(
     config: AcceleratedCheckoutConfiguration,
-  ): Promise<boolean> {
+  ): boolean {
     if (!this.acceleratedCheckoutsSupported) {
       return false;
     }
@@ -229,18 +234,16 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     try {
       this.validateAcceleratedCheckoutsConfiguration(config);
 
-      const configured =
-        await RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
-          config.storefrontDomain,
-          config.storefrontAccessToken,
-          config.customer?.email || null,
-          config.customer?.phoneNumber || null,
-          config.customer?.accessToken || null,
-          config.wallets?.applePay?.merchantIdentifier || null,
-          config.wallets?.applePay?.contactFields || [],
-          config.wallets?.applePay?.supportedShippingCountries || [],
-        );
-      return configured;
+      return RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+        config.storefrontDomain,
+        config.storefrontAccessToken,
+        config.customer?.email || null,
+        config.customer?.phoneNumber || null,
+        config.customer?.accessToken || null,
+        config.wallets?.applePay?.merchantIdentifier || null,
+        config.wallets?.applePay?.contactFields || [],
+        config.wallets?.applePay?.supportedShippingCountries || [],
+      );
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(
@@ -253,10 +256,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   /**
    * Check if accelerated checkout is available for the given cart or product
-   * @param options Options containing either cartId or variantId/quantity
-   * @returns Promise<boolean> indicating availability
+   * @returns boolean indicating availability
    */
-  public async isAcceleratedCheckoutAvailable(): Promise<boolean> {
+  public isAcceleratedCheckoutAvailable(): boolean {
     if (!this.acceleratedCheckoutsSupported) {
       return false;
     }

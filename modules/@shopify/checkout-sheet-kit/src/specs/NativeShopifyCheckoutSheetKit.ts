@@ -77,7 +77,7 @@ export interface Spec extends TurboModule {
   dismiss(): void;
   invalidateCache(): void;
   setConfig(configuration: ConfigurationSpec): void;
-  getConfig(): Promise<ConfigurationResultSpec>;
+  getConfig(): ConfigurationResultSpec;
   configureAcceleratedCheckouts(
     storefrontDomain: string,
     storefrontAccessToken: string,
@@ -87,9 +87,9 @@ export interface Spec extends TurboModule {
     applePayMerchantIdentifier: string | null,
     applyPayContactFields: string[],
     supportedShippingCountries: string[],
-  ): Promise<boolean>;
-  isAcceleratedCheckoutAvailable(): Promise<boolean>;
-  isApplePayAvailable(): Promise<boolean>;
+  ): boolean;
+  isAcceleratedCheckoutAvailable(): boolean;
+  isApplePayAvailable(): boolean;
   initiateGeolocationRequest(allow: boolean): void;
   addListener(eventName: string): void;
   removeListeners(count: number): void;
