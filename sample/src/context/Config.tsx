@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {ColorScheme} from '@shopify/checkout-sheet-kit';
+import {ColorScheme, ApplePayStyle} from '@shopify/checkout-sheet-kit';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useTheme} from './Theme';
 import {BuyerIdentityMode} from '../auth/types';
@@ -14,6 +14,7 @@ import {BuyerIdentityMode} from '../auth/types';
 export interface AppConfig {
   colorScheme: ColorScheme;
   buyerIdentityMode: BuyerIdentityMode;
+  applePayStyle?: ApplePayStyle;
 }
 
 interface Context {
@@ -26,6 +27,7 @@ const CONFIG_STORAGE_KEY = 'app_config';
 const defaultAppConfig: AppConfig = {
   colorScheme: ColorScheme.automatic,
   buyerIdentityMode: BuyerIdentityMode.Guest,
+  applePayStyle: ApplePayStyle.automatic,
 };
 
 const ConfigContext = createContext<Context>({

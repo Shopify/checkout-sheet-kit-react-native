@@ -107,6 +107,11 @@ RCT_EXPORT_VIEW_PROPERTY(wallets, NSArray*)
 RCT_EXPORT_VIEW_PROPERTY(applePayLabel, NSString*)
 
 /**
+ * Style variant for the Apple Pay button (e.g., "automatic", "black", "white", "whiteOutline").
+ */
+RCT_EXPORT_VIEW_PROPERTY(applePayStyle, NSString*)
+
+/**
  * Emitted when checkout fails. Payload contains a CheckoutException-like shape.
  */
 RCT_EXPORT_VIEW_PROPERTY(onFail, RCTBubblingEventBlock)

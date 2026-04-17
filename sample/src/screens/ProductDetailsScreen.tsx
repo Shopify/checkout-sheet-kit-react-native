@@ -45,6 +45,7 @@ import {
   ApplePayLabel,
   useShopifyCheckoutSheet,
 } from '@shopify/checkout-sheet-kit';
+import {useConfig} from '../context/Config';
 import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetails'>;
@@ -90,6 +91,7 @@ function ProductDetails({
   loading?: boolean;
   onAddToCart: (variantId: string) => void;
 }) {
+  const {appConfig} = useConfig();
   const {colors, cornerRadius} = useTheme();
   const styles = createStyles(colors, cornerRadius);
   const image = product.images?.edges[0]?.node;
@@ -126,6 +128,7 @@ function ProductDetails({
             <AcceleratedCheckoutButtons
               {...eventHandlers}
               applePayLabel={ApplePayLabel.order}
+              applePayStyle={appConfig.applePayStyle}
               wallets={[AcceleratedCheckoutWallet.applePay]}
               variantId={variant.id}
               quantity={1}

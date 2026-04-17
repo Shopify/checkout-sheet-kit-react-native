@@ -120,6 +120,12 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         }
     }
 
+    @objc var applePayStyle: String? {
+        didSet {
+            updateView()
+        }
+    }
+
     @objc var onFail: RCTBubblingEventBlock?
     @objc var onComplete: RCTBubblingEventBlock?
     @objc var onCancel: RCTBubblingEventBlock?
@@ -156,6 +162,17 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         hostingController?.view.frame = bounds
     }
 
+    // Deprecated in iOS 17 — superseded by registerForTraitChanges in setupView().
+    // Remove this override when dropping iOS 16 support.
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if #unavailable(iOS 17.0) {
+            if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+                updateView()
+            }
+        }
+    }
+
     override var intrinsicContentSize: CGSize {
         let height = calculateRequiredHeight()
         return CGSize(width: UIView.noIntrinsicMetric, height: height)
@@ -171,6 +188,14 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         }
 
         updateView()
+
+        // Replaces traitCollectionDidChange for iOS 17+.
+        // When dropping iOS 16 support, remove the traitCollectionDidChange override above.
+        if #available(iOS 17.0, *) {
+            registerForTraitChanges([UITraitUserInterfaceStyle.self]) { [weak self] (_: RCTAcceleratedCheckoutButtonsView, _: UITraitCollection) in
+                self?.updateView()
+            }
+        }
 
         // Listen for configuration updates
         NotificationCenter.default.addObserver(
@@ -207,7 +232,7 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         updateView()
     }
 
-    private func attachModifiers(to buttons: AcceleratedCheckoutButtons, wallets: [Wallet]?, applePayLabel: PayWithApplePayButtonLabel?) -> AcceleratedCheckoutButtons {
+    private func attachModifiers(to buttons: AcceleratedCheckoutButtons, wallets: [Wallet]?, applePayLabel: PayWithApplePayButtonLabel?, applePayStyle: PayWithApplePayButtonStyle) -> AcceleratedCheckoutButtons {
         var modifiedButtons = buttons
 
         if let wallets {
@@ -217,6 +242,8 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         if let applePayLabel {
             modifiedButtons = modifiedButtons.applePayLabel(applePayLabel)
         }
+
+        modifiedButtons = modifiedButtons.applePayStyle(applePayStyle)
 
         if let cornerRadius {
             modifiedButtons = modifiedButtons.cornerRadius(CGFloat(cornerRadius.doubleValue))
@@ -276,18 +303,20 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
             return
         }
 
-        // Attach modifiers (wallets, applePayLabel, cornerRadius)
-        buttons = attachModifiers(to: buttons, wallets: shopifyWallets, applePayLabel: PayWithApplePayButtonLabel.from(applePayLabel))
+        // Attach modifiers (wallets, applePayLabel, applePayStyle, cornerRadius)
+        buttons = attachModifiers(to: buttons, wallets: shopifyWallets, applePayLabel: PayWithApplePayButtonLabel.from(applePayLabel), applePayStyle: PayWithApplePayButtonStyle.from(applePayStyle))
         // Attach event handlers
         buttons = attachEventListeners(to: buttons)
 
         var view: AnyView
 
+        let colorScheme: SwiftUI.ColorScheme = traitCollection.userInterfaceStyle == .dark ? .dark : .light
+
         // Attach config (and Apple Pay config if available)
         if let applePayConfig = AcceleratedCheckoutConfiguration.shared.applePayConfiguration {
-            view = AnyView(buttons.environmentObject(config).environmentObject(applePayConfig))
+            view = AnyView(buttons.environmentObject(config).environmentObject(applePayConfig).environment(\.colorScheme, colorScheme))
         } else {
-            view = AnyView(buttons.environmentObject(config))
+            view = AnyView(buttons.environmentObject(config).environment(\.colorScheme, colorScheme))
         }
 
         if let hostingController {
