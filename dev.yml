@@ -10,7 +10,7 @@ up:
       - sccache
   - ruby
   - xcode:
-      version: "26.2"
+      version: '26.2'
       runtimes:
         ios:
           - version: 23C54 # 26.2
