@@ -1,88 +1,123 @@
 #!/bin/bash
 
+# Lint Swift files with SwiftLint and SwiftFormat, pinned via Mintfile.
+# Same pins are used locally and in CI so behaviour stays consistent.
+
 DIR=modules/@shopify/checkout-sheet-kit
-MODE="${1:-check}"
+
+# Check for verbose flag
+VERBOSE=false
+if [[ "$*" == *"--verbose"* ]]; then
+    VERBOSE=true
+fi
+
+# Accept --verbose before check/fix
+if [[ "$1" == "--verbose" ]]; then
+    MODE="${2:-check}"
+else
+    MODE="${1:-check}"
+fi
 
 # Validate the mode
 if [[ "$MODE" != "check" && "$MODE" != "fix" ]]; then
     echo "❌ Invalid mode: $MODE"
-    echo "Usage: $0 [check|fix]"
+    echo "Usage: $0 [check|fix] [--verbose]"
     echo "  check: Run linters in check mode (default)"
     echo "  fix:   Run linters in fix mode to auto-fix issues"
+    echo "  --verbose: Show detailed output from linters"
     exit 1
 fi
 
-# Function to provide installation instructions
 print_install_instructions() {
     echo "🔧 FIX:"
     echo "   Shopify employee? Run 'dev up'"
-    echo "   Not a Shopify employee? Install via homebrew:"
-    echo "     - SwiftLint: 'brew install swiftlint' / https://github.com/realm/SwiftLint"
-    echo "     - SwiftFormat: 'brew install swiftformat' / https://github.com/nicklockwood/SwiftFormat"
+    echo "   Not a Shopify employee? Install Mint and run 'mint bootstrap':"
+    echo "     brew install mint"
+    echo "     mint bootstrap"
+    echo "   See: https://github.com/yonaskolb/Mint"
 }
 
-# Check for SwiftLint
-if ! which swiftlint >/dev/null; then
-    echo "⚠️ WARN: SwiftLint not installed"
+if ! command -v mint >/dev/null; then
+    echo "❌ Mint is not installed"
     print_install_instructions
     exit 1
 fi
 
-# Check for SwiftFormat
-if ! which swiftformat >/dev/null; then
-    echo "⚠️ WARN: SwiftFormat not installed"
-    print_install_instructions
+if [ ! -f "Mintfile" ]; then
+    echo "❌ Mintfile not found in the current directory"
     exit 1
+fi
+
+SWIFTLINT="mint run swiftlint"
+SWIFTFORMAT="mint run swiftformat"
+
+QUIET_FLAG=""
+if [[ "$VERBOSE" == "false" ]]; then
+    QUIET_FLAG="--quiet"
 fi
 
 # Run SwiftLint
-if [[ "$MODE" == "check" ]]; then
-    echo "🔄 Running SwiftLint in check mode..."
-    swiftlint lint --strict $DIR --config .swiftlint.yml
-    LINT_STATUS=$?
-else
+if [[ "$MODE" == "fix" ]]; then
     echo "🔄 Running SwiftLint in fix mode..."
-    swiftlint lint --fix $DIR --config .swiftlint.yml
-    LINT_STATUS=$?
+    $SWIFTLINT lint --fix $DIR --config .swiftlint.yml $QUIET_FLAG
 fi
-echo "SwiftLint exit status: $LINT_STATUS"
+
+# SwiftLint doesn't report errors when running in fix mode, so always
+# follow up with a strict check.
+echo "🔄 Running SwiftLint in check mode..."
+$SWIFTLINT lint --strict $DIR --config .swiftlint.yml $QUIET_FLAG
+LINT_STATUS=$?
+
+if [ $LINT_STATUS -eq 0 ]; then
+    echo "✅ SwiftLint exit status: $LINT_STATUS"
+else
+    echo "❌ SwiftLint exit status: $LINT_STATUS"
+fi
+
+echo ""
 
 # Run SwiftFormat
-if [[ "$MODE" == "check" ]]; then
-    echo "🔄 Running SwiftFormat in check mode..."
-    swiftformat $DIR --lint --config .swiftformat
+if [[ "$MODE" == "fix" ]]; then
+    echo "🔄 Running SwiftFormat in fix mode..."
+    $SWIFTFORMAT $DIR --config .swiftformat $QUIET_FLAG
     FORMAT_STATUS=$?
 else
-    echo "🔄 Running SwiftFormat in fix mode..."
-    swiftformat $DIR --config .swiftformat
+    echo "🔄 Running SwiftFormat in check mode..."
+    $SWIFTFORMAT $DIR --lint --config .swiftformat $QUIET_FLAG
     FORMAT_STATUS=$?
 fi
-echo "SwiftFormat exit status: $FORMAT_STATUS"
 
-# Function to print error messages for linting issues
+if [ $FORMAT_STATUS -eq 0 ]; then
+    echo "✅ SwiftFormat exit status: $FORMAT_STATUS"
+else
+    echo "❌ SwiftFormat exit status: $FORMAT_STATUS"
+fi
+
 print_linting_error() {
     local tool_name=$1
     echo "❌ $tool_name detected issues that need to be fixed."
-    echo "🔧 How to fix:"
-    echo "   Shopify employee? Run 'dev fix' or 'dev check' to see detailed output"
-    echo "   Not a Shopify employee? Run './scripts/lint_swift fix' to auto-fix issues"
-    if [[ "$tool_name" == "SwiftLint" ]]; then
-        echo "   Then fix any remaining non-autofixable issues manually"
+    if [[ "$MODE" == "check" ]]; then
+        echo "🔧 How to fix:"
+        echo "   Shopify employee? Run 'dev fix' and resolve remaining issues"
+        echo "   Not a Shopify employee? Run './scripts/lint_swift fix' and resolve remaining issues"
+    else
+        echo "🔧 These files will need to be fixed manually"
     fi
 }
 
-# Handle exit codes for check mode
+echo ""
+
+if [ $LINT_STATUS -ne 0 ]; then
+    print_linting_error "SwiftLint"
+    exit 1
+fi
+
+if [ $FORMAT_STATUS -ne 0 ]; then
+    print_linting_error "SwiftFormat"
+    exit 1
+fi
+
 if [[ "$MODE" == "check" ]]; then
-    if [ $LINT_STATUS -ne 0 ]; then
-        print_linting_error "SwiftLint"
-        exit 1
-    fi
-
-    if [ $FORMAT_STATUS -ne 0 ]; then
-        print_linting_error "SwiftFormat"
-        exit 1
-    fi
-
     echo "✅ All linting checks passed!"
 else
     echo "✅ Linting fixes applied!"

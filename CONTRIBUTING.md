@@ -99,7 +99,7 @@ pnpm sample clean
 pnpm module clean
 ```
 
-## Linting the code
+## Linting the code
 
 Linting the codespaces will (1) compile the code with TypeScript and (2) run
 eslint over the source code.
@@ -111,6 +111,29 @@ pnpm module lint
 # Lint the Sample App TS code
 pnpm sample lint
 ```
+
+Swift files in the Native Module are linted with SwiftLint and SwiftFormat,
+pinned via the [Mintfile](./Mintfile). Run `dev up` (or `brew install mint &&
+mint bootstrap`) to install the pinned versions.
+
+```sh
+# Check Swift lint + format
+./scripts/lint_swift check
+
+# Or via dev
+dev check
+
+# Auto-fix issues
+./scripts/lint_swift fix
+
+# Or via dev
+dev fix
+```
+
+Linter versions are bumped automatically by the
+[`update-linters`](./.github/workflows/update-linters.yml) workflow every
+Monday, which opens a PR if SwiftLint or SwiftFormat have newer releases on
+GitHub.
 
 ## Testing
 

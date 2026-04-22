@@ -6,8 +6,13 @@ type: node
 
 up:
   - packages:
-      - swiftlint
+      - mint
       - sccache
+      - xcbeautify
+  - custom:
+      name: Bootstrap Mint packages
+      met?: mint which swiftlint >/dev/null 2>&1 && mint which swiftformat >/dev/null 2>&1
+      meet: mint bootstrap
   - ruby
   - xcode:
       version: "26.2"

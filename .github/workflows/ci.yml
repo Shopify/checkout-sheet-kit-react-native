@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Run SwiftLint
+      - name: Run SwiftLint (annotations)
         uses: norio-nomura/action-swiftlint@9f4dcd7fd46b4e75d7935cf2f4df406d5cae3684 # 3.2.1
         with:
           args: --strict
@@ -55,6 +55,37 @@ jobs:
           pnpm module build
           pnpm module lint
           pnpm sample lint
+
+  swift-lint:
+    name: SwiftFormat & SwiftLint
+    runs-on: ${{ vars.MACOS_RUNNER }}
+    timeout-minutes: 15
+    env:
+      MINT_PATH: ${{ github.workspace }}/.mint/lib
+      MINT_LINK_PATH: ${{ github.workspace }}/.mint/bin
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Cache Mint packages
+        id: mint-cache
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: .mint
+          key: ${{ runner.os }}-mint-${{ hashFiles('Mintfile') }}
+          restore-keys: |
+            ${{ runner.os }}-mint-
+
+      - name: Install Mint
+        run: brew install mint
+
+      - name: Bootstrap Mint packages
+        if: steps.mint-cache.outputs.cache-hit != 'true'
+        run: mint bootstrap --link
+
+      - name: Add Mint to PATH
+        run: echo "${{ github.workspace }}/.mint/bin" >> "$GITHUB_PATH"
+
+      - run: ./scripts/lint_swift check --verbose
 
   test:
     name: Run jest tests
@@ -116,7 +147,7 @@ jobs:
 
   test-ios:
     name: Run Swift Tests
-    runs-on: macos-26-xlarge
+    runs-on: ${{ vars.MACOS_RUNNER }}
     timeout-minutes: 20
     needs: [lint, test]
     steps:

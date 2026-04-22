@@ -98,6 +98,9 @@ modules/@shopify/checkout-sheet-kit/android/gradlew.bat
 # Local gems
 sample/vendor
 
+# Mint (pinned Swift CLI tools — SwiftLint / SwiftFormat)
+.mint/
+
 # Sample app
 sample/**/AndroidManifest.xml
 

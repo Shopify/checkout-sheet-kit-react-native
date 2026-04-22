@@ -1,0 +1,124 @@
+name: Update Linter Versions
+
+on:
+  schedule:
+    - cron: '0 10 * * 1' # Monday 10:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-updates:
+    runs-on: ${{ vars.MACOS_RUNNER }}
+    env:
+      MINT_PATH: ${{ github.workspace }}/.mint/lib
+      MINT_LINK_PATH: ${{ github.workspace }}/.mint/bin
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Read current versions from Mintfile
+        id: current
+        run: |
+          SWIFTLINT=$(grep 'realm/SwiftLint@' Mintfile | sed 's/.*@//')
+          SWIFTFORMAT=$(grep 'nicklockwood/SwiftFormat@' Mintfile | sed 's/.*@//')
+          echo "swiftlint=$SWIFTLINT" >> "$GITHUB_OUTPUT"
+          echo "swiftformat=$SWIFTFORMAT" >> "$GITHUB_OUTPUT"
+
+      - name: Check latest versions
+        id: latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SWIFTLINT=$(gh api repos/realm/SwiftLint/releases/latest --jq '.tag_name')
+          SWIFTFORMAT=$(gh api repos/nicklockwood/SwiftFormat/releases/latest --jq '.tag_name')
+          echo "swiftlint=$SWIFTLINT" >> "$GITHUB_OUTPUT"
+          echo "swiftformat=$SWIFTFORMAT" >> "$GITHUB_OUTPUT"
+
+      - name: Determine updates needed
+        id: check
+        run: |
+          HAS_UPDATES=false
+          if [ "${{ steps.current.outputs.swiftlint }}" != "${{ steps.latest.outputs.swiftlint }}" ]; then
+            echo "swiftlint_updated=true" >> "$GITHUB_OUTPUT"
+            HAS_UPDATES=true
+          fi
+          if [ "${{ steps.current.outputs.swiftformat }}" != "${{ steps.latest.outputs.swiftformat }}" ]; then
+            echo "swiftformat_updated=true" >> "$GITHUB_OUTPUT"
+            HAS_UPDATES=true
+          fi
+          echo "has_updates=$HAS_UPDATES" >> "$GITHUB_OUTPUT"
+
+      - name: Check for existing PR
+        if: steps.check.outputs.has_updates == 'true'
+        id: existing_pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          EXISTING=$(gh pr list --head "auto/update-linters" --state open --json number --jq '.[0].number // empty')
+          echo "exists=$( [ -n "$EXISTING" ] && echo true || echo false )" >> "$GITHUB_OUTPUT"
+
+      - name: Create branch and update Mintfile
+        if: steps.check.outputs.has_updates == 'true' && steps.existing_pr.outputs.exists != 'true'
+        run: |
+          git checkout -b auto/update-linters
+          printf '%s\n' \
+            "realm/SwiftLint@${{ steps.latest.outputs.swiftlint }}" \
+            "nicklockwood/SwiftFormat@${{ steps.latest.outputs.swiftformat }}" \
+            > Mintfile
+
+      - name: Install Mint and bootstrap new versions
+        if: steps.check.outputs.has_updates == 'true' && steps.existing_pr.outputs.exists != 'true'
+        run: |
+          brew install mint
+          echo "${{ github.workspace }}/.mint/bin" >> "$GITHUB_PATH"
+          mint bootstrap --link
+
+      - name: Run lint fix
+        if: steps.check.outputs.has_updates == 'true' && steps.existing_pr.outputs.exists != 'true'
+        run: ./scripts/lint_swift fix --verbose
+
+      - name: Commit and push
+        if: steps.check.outputs.has_updates == 'true' && steps.existing_pr.outputs.exists != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: update linter versions" \
+            -m "SwiftLint: ${{ steps.current.outputs.swiftlint }} -> ${{ steps.latest.outputs.swiftlint }}" \
+            -m "SwiftFormat: ${{ steps.current.outputs.swiftformat }} -> ${{ steps.latest.outputs.swiftformat }}"
+          git push origin auto/update-linters
+
+      - name: Create Pull Request
+        if: steps.check.outputs.has_updates == 'true' && steps.existing_pr.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BODY="## Linter Version Updates\n\n"
+          if [ "${{ steps.check.outputs.swiftlint_updated }}" == "true" ]; then
+            BODY+="- **SwiftLint**: \`${{ steps.current.outputs.swiftlint }}\` → \`${{ steps.latest.outputs.swiftlint }}\`\n"
+            BODY+="  [Release notes](https://github.com/realm/SwiftLint/releases/tag/${{ steps.latest.outputs.swiftlint }})\n"
+          fi
+          if [ "${{ steps.check.outputs.swiftformat_updated }}" == "true" ]; then
+            BODY+="- **SwiftFormat**: \`${{ steps.current.outputs.swiftformat }}\` → \`${{ steps.latest.outputs.swiftformat }}\`\n"
+            BODY+="  [Release notes](https://github.com/nicklockwood/SwiftFormat/releases/tag/${{ steps.latest.outputs.swiftformat }})\n"
+          fi
+          BODY+="\n---\n\n"
+          BODY+="\`./scripts/lint_swift fix\` has been run to apply formatting changes.\n\n"
+          BODY+="### ⚠️ CI checks need to be triggered manually\n\n"
+          BODY+="This PR was created by GitHub Actions using \`GITHUB_TOKEN\`, which "
+          BODY+="[does not trigger other workflows](https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication#using-the-github_token-in-a-workflow). "
+          BODY+="To run CI checks, either:\n\n"
+          BODY+="1. **Close and reopen this PR** — this fires a new \`pull_request\` event from your user, which triggers all checks.\n"
+          BODY+="2. **Trigger workflows via CLI:**\n"
+          BODY+="\`\`\`bash\n"
+          BODY+="gh workflow run ci.yml --ref auto/update-linters\n"
+          BODY+="\`\`\`\n"
+
+          gh pr create \
+            --title "chore: bump linter versions" \
+            --body "$(echo -e "$BODY")" \
+            --label "dependencies" \
+            --head "auto/update-linters" \
+            --base "main"

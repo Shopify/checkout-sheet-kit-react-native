@@ -162,8 +162,8 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         hostingController?.view.frame = bounds
     }
 
-    // Deprecated in iOS 17 — superseded by registerForTraitChanges in setupView().
-    // Remove this override when dropping iOS 16 support.
+    /// Deprecated in iOS 17 — superseded by registerForTraitChanges in setupView().
+    /// Remove this override when dropping iOS 16 support.
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if #unavailable(iOS 17.0) {
