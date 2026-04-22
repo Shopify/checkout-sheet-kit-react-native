@@ -42,6 +42,7 @@ upload-keystore.jks
 # node.js
 #
 node_modules/
+.yarn/
 npm-debug.log
 yarn-error.log
 pnpm-debug.log

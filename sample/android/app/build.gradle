@@ -2,7 +2,27 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
-project.ext["REACT_NATIVE_NODE_MODULES_DIR"] = file("../../../node_modules/react-native")
+def resolveNodeModuleDir(String packageName) {
+    def output = new ByteArrayOutputStream()
+    def workspaceRoot = new File(rootProject.projectDir, "../..").canonicalFile
+    exec {
+        commandLine(
+            "node",
+            "--print",
+            "require.resolve('${packageName}/package.json', { paths: [process.argv[1], process.argv[2]] })",
+            workspaceRoot.getAbsolutePath(),
+            rootProject.projectDir.getAbsolutePath()
+        )
+        standardOutput = output
+    }
+    return file(output.toString().trim()).parentFile
+}
+
+def reactNativeDirPath = resolveNodeModuleDir("react-native")
+def reactNativeCodegenDirPath = resolveNodeModuleDir("@react-native/codegen")
+def vectorIconsDirPath = resolveNodeModuleDir("react-native-vector-icons")
+
+project.ext["REACT_NATIVE_NODE_MODULES_DIR"] = reactNativeDirPath
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -13,11 +33,11 @@ react {
     //   The root of your project, i.e. where "package.json" lives. Default is '..'
     root = file("../../")
     //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
-    reactNativeDir = file("../../../node_modules/react-native")
+    reactNativeDir = reactNativeDirPath
     //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
-    codegenDir = file("../../../node_modules/@react-native/codegen")
+    codegenDir = reactNativeCodegenDirPath
     //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
-    cliFile = file("../../node_modules/react-native/cli.js")
+    cliFile = new File(reactNativeDirPath, "cli.js")
 
     /* Variants */
     //   The list of variants to that are debuggable. For those we're going to
@@ -47,7 +67,7 @@ react {
 
     /* Hermes Commands */
     //   The hermes compiler command to run. By default it is 'hermesc'
-    hermesCommand = "../node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc"
+    hermesCommand = new File(reactNativeDirPath, "sdks/hermesc/%OS-BIN%/hermesc").getAbsolutePath()
     //
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     hermesFlags = ["-O", "-output-source-map"]
@@ -158,7 +178,7 @@ project.ext.vectoricons = [
     iconFontNames: [ 'Entypo.ttf' ]
 ]
 
-apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+apply from: new File(vectorIconsDirPath, "fonts.gradle")
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
