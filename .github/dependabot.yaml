@@ -5,12 +5,16 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
 
   # Root package.json (monorepo dependencies)
   - package-ecosystem: npm
     directory: "/"
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: "*"
         update-types:
@@ -22,6 +26,8 @@ updates:
     directory: "/modules/@shopify/checkout-sheet-kit"
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: "*"
         update-types:
@@ -33,6 +39,8 @@ updates:
     directory: "/sample"
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: "*"
         update-types:
@@ -43,6 +51,8 @@ updates:
     directory: "/sample"
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: "*"
         update-types:
@@ -54,6 +64,8 @@ updates:
     directory: "/sample/android"
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: "*"
         update-types:
@@ -64,6 +76,8 @@ updates:
     directory: "/modules/@shopify/checkout-sheet-kit/android"
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: "*"
         update-types:
