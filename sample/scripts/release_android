@@ -1,6 +1,6 @@
  #!/usr/bin/env bash
 
-# Working directory is "sample" when running "yarn sample release:android" from root.
+# Working directory is "sample" when running "pnpm sample release:android" from root.
 
 # Exit immediately if a command exits with a non-zero status
 set -e

@@ -25,7 +25,7 @@ else
 
     ${red}ERROR${reset}: The package files have changed.
 
-    If this is intentional, run \"yarn snapshot\" at the root of this repo to update the \"$FILENAME\" file.
+    If this is intentional, run \"pnpm snapshot\" at the root of this repo to update the \"$FILENAME\" file.
 
     If it NOT intentional, please manually check the diff below to discern if the file(s) should be included in the public package or not:
 

@@ -18,7 +18,7 @@ fi
 TASK_ID="$1#$2"
 
 # Fetch the turbo cache for the specified command
-CACHE=$(yarn turbo run $2 --cache-dir=".turbo" --dry=json)
+CACHE=$(pnpm turbo run $2 --cache-dir=".turbo" --dry=json)
 
 # Check the status of the cache
 RESULT=$(echo $CACHE | jq ".tasks[] | select(.taskId==\"$TASK_ID\") | .cache.status")

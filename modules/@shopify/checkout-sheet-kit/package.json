@@ -19,7 +19,7 @@
   "scripts": {
     "clean": "rm -rf lib",
     "build": "bob build",
-    "lint": "yarn typecheck && eslint src",
+    "lint": "pnpm run typecheck && eslint src",
     "typecheck": "tsc --noEmit"
   },
   "files": [
