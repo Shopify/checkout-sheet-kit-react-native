@@ -11375,9 +11375,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:3.18.0":
-  version: 3.18.0
-  resolution: "react-native-reanimated@npm:3.18.0"
+"react-native-reanimated@npm:3.18.2":
+  version: 3.18.2
+  resolution: "react-native-reanimated@npm:3.18.2"
   dependencies:
     "@babel/plugin-transform-arrow-functions": "npm:^7.0.0-0"
     "@babel/plugin-transform-class-properties": "npm:^7.0.0-0"
@@ -11395,7 +11395,7 @@ __metadata:
     "@babel/core": ^7.0.0-0
     react: "*"
     react-native: "*"
-  checksum: 10c0/7420f410a76b2a46f1a0a7df41f8b2508aade8de26fd00eb7305bf25b3ab27e7c06f52ec76d221d8c7317ca3e2bdf842c51216f2adba7fbb60ce321c171d1437
+  checksum: 10c0/45c235be4fae8f4f7c09db54104f42d9532c93da7297ffeedcd78b00fd69e6fd4b66a342ba482c2d6b45f0395ed836144351b13a5864c5fa7b3142619baf97ad
   languageName: node
   linkType: hard
 
@@ -11983,7 +11983,7 @@ __metadata:
     react-native-nitro-modules: "npm:^0.33.7"
     react-native-quick-base64: "npm:^2.2.2"
     react-native-quick-crypto: "npm:^1.0.9"
-    react-native-reanimated: "npm:3.18.0"
+    react-native-reanimated: "npm:3.18.2"
     react-native-safe-area-context: "npm:^5.6.1"
     react-native-screens: "npm:^4.16.0"
     react-native-vector-icons: "npm:^10.3.0"
