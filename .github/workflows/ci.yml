@@ -76,7 +76,7 @@ jobs:
 
       - name: Coverage comment
         if: github.event_name == 'pull_request'
-        uses: MishaKav/jest-coverage-comment@main
+        uses: MishaKav/jest-coverage-comment@fb83bcbaeb5ca467936175796f862a2992938833 # main
         with:
           coverage-summary-path: ./coverage/coverage-summary.json
           title: 'Coverage Report'
