@@ -4,16 +4,19 @@ description: Setup Node.js and install dependencies
 runs:
   using: composite
   steps:
+    # Versions are sourced from package.json:
+    #   - pnpm: `packageManager` field (read by pnpm/action-setup)
+    #   - node: `engines.node` field (read by setup-node via node-version-file)
+    # Keep package.json as the single source of truth.
+    - name: Install pnpm
+      uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+
     - name: Setup Node.js
       uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3.8.2
       with:
-        node-version: 22.22.1
+        node-version-file: package.json
         registry-url: 'https://registry.npmjs.org'
-
-    # TODO: Can be removed once node-version is 24 as this will be the minimum
-    - name: Install npm 11
-      run: npm install -g npm@11
-      shell: bash
+        cache: pnpm
 
     - name: Cache turbo build setup
       uses: actions/cache@v4
@@ -23,20 +26,6 @@ runs:
         restore-keys: |
           ${{ runner.os }}-turbo-
 
-    - name: Cache dependencies
-      id: yarn-cache
-      uses: actions/cache@v4
-      with:
-        path: |
-          **/node_modules
-          .yarn/install-state.gz
-        key:
-          ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/package.json') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          ${{ runner.os }}-yarn-
-
     - name: Install dependencies
-      if: steps.yarn-cache.outputs.cache-hit != 'true'
-      run: yarn install --immutable
+      run: pnpm install --frozen-lockfile
       shell: bash

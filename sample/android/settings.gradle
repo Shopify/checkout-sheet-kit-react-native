@@ -1,6 +1,12 @@
 pluginManagement { includeBuild("../../node_modules/@react-native/gradle-plugin") }
 plugins { id("com.facebook.react.settings") }
-extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
+    ex.autolinkLibrariesFromCommand(
+        ["pnpm", "exec", "react-native", "config"],
+        file(".."),
+        files("../package.json", "../react-native.config.js", "../../package.json", "../../pnpm-lock.yaml")
+    )
+}
 
 rootProject.name = 'ReactNative'
 
@@ -9,4 +15,22 @@ include ':react-native-config'
 
 includeBuild('../../node_modules/@react-native/gradle-plugin')
 
-project(':react-native-config').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-config/android')
+def resolveNodeModuleDir(String packageName) {
+    def workspaceRoot = new File(rootProject.projectDir, "../..").canonicalFile
+    def process = [
+        "node",
+        "--print",
+        "require.resolve('${packageName}/package.json', { paths: [process.argv[1], process.argv[2]] })",
+        workspaceRoot.getAbsolutePath(),
+        rootProject.projectDir.getAbsolutePath()
+    ].execute(null, rootProject.projectDir)
+    def output = new StringBuffer()
+    def error = new StringBuffer()
+    process.consumeProcessOutput(output, error)
+    if (process.waitFor() != 0) {
+        throw new GradleException("Failed to resolve ${packageName}: ${error}")
+    }
+    return new File(output.toString().trim()).parentFile
+}
+
+project(':react-native-config').projectDir = new File(resolveNodeModuleDir('react-native-config'), 'android')

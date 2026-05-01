@@ -80,6 +80,9 @@ application:
 Install the Shopify Checkout Kit package dependency:
 
 ```sh
+pnpm add @shopify/checkout-sheet-kit
+
+# or using yarn
 yarn add @shopify/checkout-sheet-kit
 
 # or using npm

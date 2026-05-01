@@ -5,7 +5,7 @@ see [guidelines and instructions](.github/CONTRIBUTING.md).
 
 ---
 
-This repo is subdivided into 3 parts using yarn workspaces:
+This repo is subdivided into 3 parts using pnpm workspaces:
 
 - The base repo (workspace name = `checkout-sheet-kit-react-native`)
 - The `@shopify/checkout-sheet-kit` Native Module (workspace name = `module`)
@@ -21,33 +21,33 @@ If you've cloned the repo and want to run the sample app, you will first need to
 1. Install the NPM dependencies
 
    ```sh
-   yarn
+   pnpm install
    ```
 
 2. Install iOS dependencies. (N.b. Android dependencies are automatically installed by Gradle)
 
    ```sh
-   yarn pod-install sample/ios
+   pnpm pod-install sample/ios
    ```
 
 3. Build the Native Module
 
    ```sh
-   yarn module build
+   pnpm module build
    ```
 
 4. Start the Metro server
 
    ```sh
-   yarn sample start
+   pnpm sample start
    ```
 
 5. Run the sample application (in a new terminal / tab)
 
    ```sh
-   yarn sample ios
+   pnpm sample ios
    # or
-   yarn sample android
+   pnpm sample android
    ```
 
 ## Optional: Speed up builds with sccache
@@ -68,8 +68,8 @@ The build scripts will automatically detect and use sccache if available. If you
 
 ```sh
 # Disable sccache for a single build
-SCCACHE=false yarn sample ios
-SCCACHE=false yarn sample android
+SCCACHE=false pnpm sample ios
+SCCACHE=false pnpm sample android
 ```
 
 ## Making changes to the Native Module
@@ -80,7 +80,7 @@ observe your changes in the sample app. This is because the sample app is
 importing the TS files directly from the module directory (through symlinking).
 
 However, if you're running the iOS/Android tests against the module, you will
-first need to run `yarn module build` each time you change the TS code.
+first need to run `pnpm module build` each time you change the TS code.
 
 ## Cleaning the workspaces
 
@@ -88,15 +88,15 @@ There are a handful of commands to clean the individual workspaces.
 
 ```sh
 # Clear the current directory from watchman
-yarn clean
+pnpm clean
 
 # Removes the "sample/node_modules" directory
 # Removes "ios/pods" directory
 # Removes "ios/build" directory
-yarn sample clean
+pnpm sample clean
 
 # Removes the "lib" directory for the Native Module
-yarn module clean
+pnpm module clean
 ```
 
 ## Linting the code
@@ -106,10 +106,10 @@ eslint over the source code.
 
 ```sh
 # Lint the Native Module TS code
-yarn module lint
+pnpm module lint
 
 # Lint the Sample App TS code
-yarn sample lint
+pnpm sample lint
 ```
 
 ## Testing
@@ -119,13 +119,13 @@ testing the Native Module.
 
 ```sh
 # Run Jest tests for "modules/@shopify/checkout-sheet-kit/src/**/*.tsx"
-yarn test
+pnpm test
 
 # Run swift tests for the Native Module
-yarn sample test:ios
+pnpm sample test:ios
 
 # Run Java tests for the Native Module
-yarn sample test:android
+pnpm sample test:android
 ```
 
 ## Running the sample app
@@ -136,19 +136,19 @@ commands at the root of the project directory.
 ### Install NPM dependencies
 
 ```sh
-yarn
+pnpm install
 ```
 
 ### Install Cocoapods
 
 ```sh
-yarn pod-install sample/ios
+pnpm pod-install sample/ios
 ```
 
 ### Build the local module
 
 ```sh
-yarn module build
+pnpm module build
 ```
 
 ### Update the dotenv file
@@ -166,5 +166,5 @@ STOREFRONT_VERSION="2025-07"
 ### Start the sample app
 
 ```sh
-yarn sample start
+pnpm sample start
 ```

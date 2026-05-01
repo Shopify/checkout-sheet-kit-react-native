@@ -42,9 +42,10 @@ upload-keystore.jks
 # node.js
 #
 node_modules/
+.yarn/
 npm-debug.log
 yarn-error.log
-.yarn/install-state.gz
+pnpm-debug.log
 
 # fastlane
 #
@@ -96,14 +97,6 @@ modules/@shopify/checkout-sheet-kit/android/gradlew.bat
 
 # Local gems
 sample/vendor
-
-# Yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
 
 # Sample app
 sample/**/AndroidManifest.xml

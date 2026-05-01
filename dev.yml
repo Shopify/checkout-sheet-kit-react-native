@@ -15,14 +15,23 @@ up:
         ios:
           - version: 23C54 # 26.2
             architecture_variant: arm64
+  # Node / pnpm versions are mirrored from package.json (engines.node,
+  # packageManager). dev validates engines.node matches the version below on
+  # every `dev up`, so drift is caught automatically. If you bump one, bump
+  # both.
   - node:
       version: v22.14.0
-      yarn: 1.22.22
+      package_manager: pnpm@10.33.1
+  - custom:
+      name: Remove stale Yarn artifacts
+      met?: test ! -d .yarn
+      meet: |
+        rm -rf .yarn
   - custom:
       name: Install NPM dependencies
       met?: ls -l | grep node_modules
       meet: |
-        yarn
+        pnpm install
   - custom:
       name: Install gems
       met?: (cd sample/ios && bundle check)
@@ -32,37 +41,37 @@ up:
       name: Install pods
       met?: (cd sample/ios && bundle exec pod check --ignore-dev-pods)
       meet: |
-        yarn pod-install
+        pnpm run pod-install
   - custom:
       name: Build node module
       met?: (cd modules/@shopify/checkout-sheet-kit && ls -l | grep lib)
       meet: |
-        yarn module build
+        pnpm module build
 
 check:
   lint_swift: ./scripts/lint_swift
-  lint_module: yarn module lint
-  lint_sample: yarn sample lint
+  lint_module: pnpm module lint
+  lint_sample: pnpm sample lint
 
 commands:
   server:
     desc: 'Start development server'
-    run: yarn sample start --reset-cache
+    run: pnpm sample start --reset-cache
 
   ios:
     desc: 'Run iOS simulator'
-    run: yarn sample ios
+    run: pnpm sample ios
 
   android:
     desc: 'Run Android emulator'
-    run: yarn sample android
+    run: pnpm sample android
 
   clean:
     desc: 'rm -rf all generated directories'
     run: |
-      yarn module clean
-      yarn sample clean
-      yarn clean
+      pnpm module clean
+      pnpm sample clean
+      pnpm clean
       if command -v sccache >/dev/null 2>&1; then
         sccache --stop-server 2>/dev/null || true
       fi

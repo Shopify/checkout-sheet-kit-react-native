@@ -32,9 +32,9 @@ jobs:
         uses: ./.github/actions/setup
 
       - run: |
-          yarn module clean
-          yarn module build
-          yarn compare-snapshot
+          pnpm module clean
+          pnpm module build
+          pnpm compare-snapshot
 
   lint:
     name: Lint module + sample
@@ -52,9 +52,9 @@ jobs:
         uses: ./.github/actions/setup
 
       - run: |
-          yarn module build
-          yarn module lint
-          yarn sample lint
+          pnpm module build
+          pnpm module lint
+          pnpm sample lint
 
   test:
     name: Run jest tests
@@ -70,7 +70,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - run:
-          yarn test --coverage
+          pnpm test --coverage
           --testPathPatterns="modules/@shopify/checkout-sheet-kit/tests"
           --coverageReporters=json-summary
 
@@ -111,8 +111,8 @@ jobs:
           java -version
           javac -version
           echo "STOREFRONT_DOMAIN=myshopify.com" > sample/.env
-          yarn module build
-          yarn sample test:android --no-daemon
+          pnpm module build
+          pnpm sample test:android --no-daemon
 
   test-ios:
     name: Run Swift Tests
@@ -138,4 +138,4 @@ jobs:
 
       - name: Run Swift tests
         run: |
-          yarn sample test:ios
+          pnpm sample test:ios

@@ -17,7 +17,7 @@ runs:
       with:
         path: |
           sample/ios/Pods
-        key: ${{ runner.os }}-cocoapods-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock', 'sample/Gemfile', 'package.json', 'sample/package.json', 'modules/@shopify/checkout-sheet-kit/package.json', 'yarn.lock') }}
+        key: ${{ runner.os }}-cocoapods-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock', 'sample/Gemfile', 'package.json', 'sample/package.json', 'modules/@shopify/checkout-sheet-kit/package.json', 'pnpm-lock.yaml') }}
 
     - name: Install cocoapods
       shell: bash
