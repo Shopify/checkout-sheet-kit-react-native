@@ -38,7 +38,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - QuickCrypto (1.0.19):
+  - QuickCrypto (1.0.9):
     - boost
     - DoubleConversion
     - fast_float
@@ -2922,7 +2922,7 @@ SPEC CHECKSUMS:
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: bbc1152da7d2d40f9e59c28acc6576fcf5d28e2a
   NitroModules: 30c376f96874896e2ebf2ef16c5d84019c06d93b
-  QuickCrypto: b16c61795b9025ecb154671d5a08e386ed119a69
+  QuickCrypto: be031b34e1004b427bdaca1be5283a3288bf6ce4
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
   RCTDeprecation: 300c5eb91114d4339b0bb39505d0f4824d7299b7
   RCTRequired: e0446b01093475b7082fbeee5d1ef4ad1fe20ac4
