@@ -1,6 +1,9 @@
- #!/usr/bin/env bash
+#!/usr/bin/env bash
 
 set -ex
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+. "$SCRIPT_DIR/android_sccache"
 
 cd android
 

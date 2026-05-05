@@ -1,9 +1,12 @@
- #!/usr/bin/env bash
+#!/usr/bin/env bash
 
 # Working directory is "sample" when running "pnpm sample release:android" from root.
 
 # Exit immediately if a command exits with a non-zero status
 set -e
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+. "$SCRIPT_DIR/android_sccache"
 
 # Print each command as it is executed
 set -x

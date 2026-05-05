@@ -64,7 +64,7 @@ cargo install sccache
 # Other systems: see https://github.com/mozilla/sccache#installation
 ```
 
-The build scripts will automatically detect and use sccache if available. If you encounter any build issues, you can temporarily disable it:
+The build scripts will automatically detect and use sccache if available. On Android, React Native's CMake files look for a command named `ccache`, so the sample Android scripts put an sccache-backed compatibility command first on `PATH`. If you encounter any build issues, you can temporarily disable it:
 
 ```sh
 # Disable sccache for a single build

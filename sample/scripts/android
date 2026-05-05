@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+. "$SCRIPT_DIR/android_sccache"
+
+exec react-native run-android "$@"

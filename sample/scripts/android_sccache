@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+# React Native's Android CMake files discover and invoke a command named
+# `ccache`. Put an sccache-backed compatibility command first on PATH.
+if [ "${SCCACHE:-}" = "false" ]; then
+  if command -v sccache >/dev/null 2>&1; then
+    sccache --stop-server 2>/dev/null || true
+  fi
+  return 0 2>/dev/null || exit 0
+fi
+
+if command -v sccache >/dev/null 2>&1; then
+  ANDROID_SCCACHE_SHIM_DIR="${TMPDIR:-/tmp}/checkout-sheet-kit-react-native-sccache"
+  mkdir -p "$ANDROID_SCCACHE_SHIM_DIR"
+  cat > "$ANDROID_SCCACHE_SHIM_DIR/ccache" <<'EOF'
+#!/usr/bin/env sh
+exec sccache "$@"
+EOF
+  chmod +x "$ANDROID_SCCACHE_SHIM_DIR/ccache"
+  export PATH="$ANDROID_SCCACHE_SHIM_DIR:$PATH"
+  export RUSTC_WRAPPER="${RUSTC_WRAPPER:-sccache}"
+fi
