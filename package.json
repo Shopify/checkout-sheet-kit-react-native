@@ -24,7 +24,8 @@
     "snapshot": "./scripts/create_snapshot",
     "compare-snapshot": "./scripts/compare_snapshot",
     "turbo": "turbo",
-    "test": "jest"
+    "test": "jest",
+    "e2e:ios": "maestro --platform ios test --config e2e/config.yaml e2e/ios"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

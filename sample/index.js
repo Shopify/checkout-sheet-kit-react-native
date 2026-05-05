@@ -39,4 +39,8 @@ LogBox.ignoreLogs([
   "Component 'RCTImageView' re-registered bubbling event 'topError' as a direct event",
 ]);
 
+if (__DEV__) {
+  LogBox.ignoreAllLogs();
+}
+
 AppRegistry.registerComponent(name, () => SampleApp);

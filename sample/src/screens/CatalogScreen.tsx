@@ -157,6 +157,7 @@ function Product({
             </View>
           ) : (
             <Pressable
+              testID={`${testID}-add-to-cart-button`}
               style={styles.addToCartButton}
               onPress={() => variant?.id && onAddToCart(variant.id)}>
               <Text style={styles.addToCartButtonText}>Add to cart</Text>

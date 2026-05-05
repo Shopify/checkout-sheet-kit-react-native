@@ -30,6 +30,13 @@ const defaultAppConfig: AppConfig = {
   applePayStyle: ApplePayStyle.automatic,
 };
 
+function getInitialAppConfig(config?: AppConfig): AppConfig {
+  return {
+    ...defaultAppConfig,
+    ...config,
+  };
+}
+
 const ConfigContext = createContext<Context>({
   appConfig: defaultAppConfig,
   setAppConfig: () => undefined,
@@ -38,8 +45,12 @@ const ConfigContext = createContext<Context>({
 export const ConfigProvider: React.FC<
   PropsWithChildren<{config?: AppConfig}>
 > = ({children, config}) => {
+  const initialAppConfig = useMemo(
+    () => getInitialAppConfig(config),
+    [config?.applePayStyle, config?.buyerIdentityMode, config?.colorScheme],
+  );
   const [appConfig, setInternalAppConfig] =
-    useState<AppConfig>(defaultAppConfig);
+    useState<AppConfig>(initialAppConfig);
   const {setColorScheme} = useTheme();
 
   useEffect(() => {
@@ -49,8 +60,7 @@ export const ConfigProvider: React.FC<
         if (raw) {
           const saved = JSON.parse(raw) as Partial<AppConfig>;
           const restored: AppConfig = {
-            ...defaultAppConfig,
-            ...config,
+            ...initialAppConfig,
             ...saved,
           };
           setInternalAppConfig(restored);
@@ -58,10 +68,11 @@ export const ConfigProvider: React.FC<
           return;
         }
       } catch {}
-      setColorScheme(config?.colorScheme ?? ColorScheme.automatic);
+      setInternalAppConfig(initialAppConfig);
+      setColorScheme(initialAppConfig.colorScheme);
     }
     restoreConfig();
-  }, [config, setColorScheme]);
+  }, [initialAppConfig, setColorScheme]);
 
   const setAppConfig = useCallback((newConfig: AppConfig) => {
     console.groupCollapsed('APP CONFIG UPDATE');

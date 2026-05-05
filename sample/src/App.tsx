@@ -196,8 +196,8 @@ const checkoutKitConfigDefaults: Configuration = {
   preloading: true,
   colors: {
     ios: {
-      backgroundColor: '#f0f0e8',
-      tintColor: '#2d2a38',
+      backgroundColor: '#c20e0e',
+      tintColor: '#0087ff',
     },
     android: {
       backgroundColor: '#f0f0e8',
@@ -403,9 +403,14 @@ function AppWithCheckoutKit({children}: PropsWithChildren) {
   }, [appConfig.colorScheme, updatedColors]);
 
   const checkoutKitConfig: Configuration = useMemo(() => {
+    const checkoutKitAppearanceConfig =
+      appConfig.colorScheme === checkoutKitConfigDefaults.colorScheme
+        ? {}
+        : checkoutKitThemeConfig;
+
     return {
       ...checkoutKitConfigDefaults,
-      ...checkoutKitThemeConfig,
+      ...checkoutKitAppearanceConfig,
       acceleratedCheckouts: {
         storefrontDomain: env.STOREFRONT_DOMAIN!,
         storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN!,
@@ -437,7 +442,13 @@ function AppWithCheckoutKit({children}: PropsWithChildren) {
         },
       },
     } as Configuration;
-  }, [appConfig, checkoutKitThemeConfig, isAuthenticated, customerEmail, accessToken]);
+  }, [
+    appConfig,
+    checkoutKitThemeConfig,
+    isAuthenticated,
+    customerEmail,
+    accessToken,
+  ]);
 
   return (
     <ShopifyCheckoutSheetProvider

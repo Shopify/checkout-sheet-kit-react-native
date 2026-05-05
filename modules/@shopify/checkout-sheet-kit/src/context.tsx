@@ -81,11 +81,12 @@ export function ShopifyCheckoutSheetProvider({
         // eslint-disable-next-line no-console
         console.warn(
           '[ShopifyCheckoutSheetKit] Providing accessToken with contactFields (email / phoneNumber) is deprecated and will become an error in v4.' +
-          'When the user is authenticated with Customer Accounts, provide accessToken' +
-          'When the user is otherwise authenticated, provide email/phoneNumber.',
+            'When the user is authenticated with Customer Accounts, provide accessToken' +
+            'When the user is otherwise authenticated, provide email/phoneNumber.',
         );
       }
 
+      console.log('Setting config', {configuration});
       await instance.current?.setConfig(configuration);
       setAcceleratedCheckoutsAvailable(
         instance.current.acceleratedCheckoutsReady,

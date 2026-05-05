@@ -137,15 +137,14 @@ function ProductDetails({
           )}
 
           <Pressable
+            testID="add-to-cart-button"
             disabled={loading}
             style={styles.addToCartButton}
             onPress={() => variant?.id && onAddToCart(variant.id)}>
             {loading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
-              <Text
-                testID="add-to-cart-button"
-                style={styles.addToCartButtonText}>
+              <Text style={styles.addToCartButtonText}>
                 Add to cart
               </Text>
             )}

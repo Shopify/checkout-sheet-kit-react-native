@@ -1,0 +1,101 @@
+appId: com.shopify.example.CheckoutKitReactNative
+name: Checkout completion
+tags:
+  - ios
+  - checkout
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: product-0
+    timeout: 60000
+- tapOn:
+    id: product-0
+- extendedWaitUntil:
+    visible:
+      id: add-to-cart-button
+    timeout: 30000
+- tapOn:
+    id: add-to-cart-button
+- waitForAnimationToEnd:
+    timeout: 10000
+- tapOn:
+    id: cart-tab
+- extendedWaitUntil:
+    visible:
+      id: checkout-button
+    timeout: 60000
+- tapOn:
+    id: checkout-button
+- extendedWaitUntil:
+    visible: "Email or mobile phone number"
+    timeout: 120000
+- tapOn: "Email or mobile phone number"
+- inputText: "maestro.e2e@shopify.com"
+- hideKeyboard
+- tapOn:
+    text: "^First name \\(optional\\)$"
+- inputText: "Maestro"
+- hideKeyboard
+- tapOn:
+    text: "^Last name$"
+- inputText: "Shopify"
+- tapOn: "go down"
+- scrollUntilVisible:
+    element:
+      text: "^ZIP code$"
+    direction: DOWN
+    timeout: 10000
+    centerElement: true
+- inputText: "350 5th Ave New York"
+- extendedWaitUntil:
+    visible: ".*United States.*"
+    timeout: 30000
+- tapOn:
+    text: ".*United States.*"
+    index: 1
+- extendedWaitUntil:
+    visible: "^Economy$"
+    timeout: 30000
+- tapOn: "selected"
+- scrollUntilVisible:
+    element:
+      text: "^Field container for: Card number$"
+    direction: DOWN
+    timeout: 30000
+    centerElement: true
+- tapOn:
+    text: "^Field container for: Card number$"
+- inputText: "4242424242424242"
+- hideKeyboard
+- tapOn:
+    text: "^Expiration date \\(MM / YY\\)$"
+    index: 1
+- inputText: "1230"
+- hideKeyboard
+- tapOn:
+    text: "^Security code$"
+    index: 1
+- inputText: "123"
+- hideKeyboard
+- tapOn:
+    text: "^Name on card$"
+    index: 1
+- inputText: "Maestro Shopify"
+- tapOn: "selected"
+- scrollUntilVisible:
+    element:
+      text: "^Pay now$"
+    direction: DOWN
+    timeout: 30000
+- tapOn:
+    text: "^Pay now$"
+    enabled: true
+- extendedWaitUntil:
+    visible: "Thank you"
+    timeout: 120000
+- tapOn: "Close"
+- extendedWaitUntil:
+    visible: "Your cart is empty."
+    timeout: 30000
