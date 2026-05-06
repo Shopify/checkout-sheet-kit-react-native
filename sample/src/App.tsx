@@ -406,6 +406,20 @@ function AppWithCheckoutKit({children}: PropsWithChildren) {
     return {
       ...checkoutKitConfigDefaults,
       ...checkoutKitThemeConfig,
+      colors: {
+        ...checkoutKitThemeConfig.colors,
+        ios: {
+          ...checkoutKitThemeConfig.colors?.ios,
+          ...checkoutKitConfigDefaults.colors?.ios,
+        },
+        android:
+          appConfig.colorScheme === ColorScheme.automatic
+            ? checkoutKitThemeConfig.colors?.android
+            : {
+                ...checkoutKitThemeConfig.colors?.android,
+                ...checkoutKitConfigDefaults.colors?.android,
+              },
+      },
       acceleratedCheckouts: {
         storefrontDomain: env.STOREFRONT_DOMAIN!,
         storefrontAccessToken: env.STOREFRONT_ACCESS_TOKEN!,

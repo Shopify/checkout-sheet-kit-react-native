@@ -16,6 +16,23 @@ const config = mergeConfig(getDefaultConfig(__dirname), {
   watchFolders: [root],
 
   resolver: {
+    resolveRequest: (context, moduleName, platform) => {
+      if (
+        moduleName === '@shopify/checkout-sheet-kit' ||
+        moduleName.startsWith('@shopify/checkout-sheet-kit/')
+      ) {
+        const sub = moduleName.replace('@shopify/checkout-sheet-kit', '');
+        const target = path.resolve(
+          root,
+          'modules',
+          '@shopify/checkout-sheet-kit',
+          'src',
+          sub ? sub.replace(/^\//, '') : 'index.ts',
+        );
+        return {type: 'sourceFile', filePath: target};
+      }
+      return context.resolveRequest(context, moduleName, platform);
+    },
     extraNodeModules: {
       react: path.resolve(sample, 'node_modules', 'react'),
       'react-native': path.resolve(sample, 'node_modules', 'react-native'),
