@@ -78,8 +78,8 @@ describe('ShopifyCheckoutSheetProvider', () => {
     (Platform as any).Version = '17.0';
     (
       NativeModules.ShopifyCheckoutSheetKit
-        .configureAcceleratedCheckouts as unknown as {mockResolvedValue: any}
-    ).mockResolvedValue(true);
+        .configureAcceleratedCheckouts as unknown as {mockReturnValue: any}
+    ).mockReturnValue(true);
 
     const configWithAccelerated: Configuration = {
       ...config,
@@ -348,9 +348,11 @@ describe('useShopifyCheckoutSheet', () => {
       </Wrapper>,
     );
 
-    await act(async () => {
-      const config = await hookValue.getConfig();
-      expect(config).toEqual({preloading: true});
+    const config = hookValue.getConfig();
+    expect(config).toEqual({
+      preloading: true,
+      colorScheme: 'automatic',
+      logLevel: 'error',
     });
 
     expect(NativeModules.ShopifyCheckoutSheetKit.getConfig).toHaveBeenCalled();

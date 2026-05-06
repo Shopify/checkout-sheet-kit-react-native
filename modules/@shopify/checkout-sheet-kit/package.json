@@ -60,6 +60,14 @@
     "jsSrcsDir": "src/specs",
     "android": {
       "javaPackageName": "com.shopify.checkoutsheetkit"
+    },
+    "ios": {
+      "modulesProvider": {
+        "ShopifyCheckoutSheetKit": "RCTShopifyCheckoutSheetKit"
+      },
+      "componentProvider": {
+        "RCTAcceleratedCheckoutButtons": "RCTAcceleratedCheckoutButtonsManager"
+      }
     }
   },
   "react-native-builder-bob": {

@@ -421,11 +421,9 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     shopifyCheckoutSheetKitModule.setConfig(config);
 
-    PromiseMock promise = new PromiseMock();
-    shopifyCheckoutSheetKitModule.getConfig(promise);
+    WritableMap result = shopifyCheckoutSheetKitModule.getConfig();
 
-    assertThat(promise.resolvedValue).isNotNull();
-    JavaOnlyMap result = (JavaOnlyMap) promise.resolvedValue;
+    assertThat(result).isNotNull();
     assertThat(result.getString("logLevel")).isEqualTo("debug");
   }
 
@@ -436,11 +434,9 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     shopifyCheckoutSheetKitModule.setConfig(config);
 
-    PromiseMock promise = new PromiseMock();
-    shopifyCheckoutSheetKitModule.getConfig(promise);
+    WritableMap result = shopifyCheckoutSheetKitModule.getConfig();
 
-    assertThat(promise.resolvedValue).isNotNull();
-    JavaOnlyMap result = (JavaOnlyMap) promise.resolvedValue;
+    assertThat(result).isNotNull();
     assertThat(result.getString("logLevel")).isEqualTo("error");
   }
 
@@ -451,11 +447,9 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     shopifyCheckoutSheetKitModule.setConfig(config);
 
-    PromiseMock promise = new PromiseMock();
-    shopifyCheckoutSheetKitModule.getConfig(promise);
+    WritableMap result = shopifyCheckoutSheetKitModule.getConfig();
 
-    assertThat(promise.resolvedValue).isNotNull();
-    JavaOnlyMap result = (JavaOnlyMap) promise.resolvedValue;
+    assertThat(result).isNotNull();
     assertThat(result.getString("logLevel")).isEqualTo("error");
   }
 
@@ -466,21 +460,17 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     shopifyCheckoutSheetKitModule.setConfig(config);
 
-    PromiseMock promise = new PromiseMock();
-    shopifyCheckoutSheetKitModule.getConfig(promise);
+    WritableMap result = shopifyCheckoutSheetKitModule.getConfig();
 
-    assertThat(promise.resolvedValue).isNotNull();
-    JavaOnlyMap result = (JavaOnlyMap) promise.resolvedValue;
+    assertThat(result).isNotNull();
     assertThat(result.getString("logLevel")).isEqualTo("error");
   }
 
   @Test
   public void testGetConfigReturnsDefaultLogLevel() {
-    PromiseMock promise = new PromiseMock();
-    shopifyCheckoutSheetKitModule.getConfig(promise);
+    WritableMap result = shopifyCheckoutSheetKitModule.getConfig();
 
-    assertThat(promise.resolvedValue).isNotNull();
-    JavaOnlyMap result = (JavaOnlyMap) promise.resolvedValue;
+    assertThat(result).isNotNull();
     assertThat(result.getString("logLevel")).isEqualTo("error");
   }
 

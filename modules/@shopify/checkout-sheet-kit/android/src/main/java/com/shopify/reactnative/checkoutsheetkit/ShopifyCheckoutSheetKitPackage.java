@@ -24,17 +24,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 package com.shopify.reactnative.checkoutsheetkit;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import com.facebook.react.ReactPackage;
+import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.ViewManager;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class ShopifyCheckoutSheetKitPackage implements ReactPackage {
+public class ShopifyCheckoutSheetKitPackage extends TurboReactPackage {
 
   @NonNull
   @Override
@@ -42,15 +46,30 @@ public class ShopifyCheckoutSheetKitPackage implements ReactPackage {
     return Collections.emptyList();
   }
 
-  @NonNull
+  @Nullable
   @Override
-  public List<NativeModule> createNativeModules(
-    @NonNull ReactApplicationContext reactContext) {
-    List<NativeModule> modules = new ArrayList<>();
-
-    modules.add(new ShopifyCheckoutSheetKitModule(reactContext));
-
-    return modules;
+  public NativeModule getModule(@NonNull String name, @NonNull ReactApplicationContext reactContext) {
+    if (name.equals(ShopifyCheckoutSheetKitModule.NAME)) {
+      return new ShopifyCheckoutSheetKitModule(reactContext);
+    }
+    return null;
   }
 
+  @Override
+  public ReactModuleInfoProvider getReactModuleInfoProvider() {
+    return () -> {
+      final Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
+      moduleInfos.put(
+          ShopifyCheckoutSheetKitModule.NAME,
+          new ReactModuleInfo(
+              ShopifyCheckoutSheetKitModule.NAME,
+              ShopifyCheckoutSheetKitModule.NAME,
+              false, // canOverrideExistingModule
+              false, // needsEagerInit
+              false, // isCxxModule
+              true   // isTurboModule
+          ));
+      return moduleInfos;
+    };
+  }
 }

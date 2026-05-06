@@ -22,14 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import React, {useCallback, useMemo, useState} from 'react';
-import {codegenNativeComponent, Platform} from 'react-native';
-import type {ViewStyle} from 'react-native';
+import {Platform} from 'react-native';
 import type {
   AcceleratedCheckoutWallet,
   CheckoutCompletedEvent,
   CheckoutException,
   PixelEvent,
 } from '..';
+import RCTAcceleratedCheckoutButtons from '../specs/RCTAcceleratedCheckoutButtonsNativeComponent';
 
 export enum RenderState {
   Loading = 'loading',
@@ -159,29 +159,6 @@ interface VariantProps {
 export type AcceleratedCheckoutButtonsProps = (CartProps | VariantProps) &
   CommonAcceleratedCheckoutButtonsProps;
 
-interface NativeAcceleratedCheckoutButtonsProps {
-  applePayLabel?: string;
-  applePayStyle?: string;
-  style?: ViewStyle;
-  checkoutIdentifier: CheckoutIdentifier;
-  cornerRadius?: number;
-  wallets?: AcceleratedCheckoutWallet[];
-  onFail?: (event: {nativeEvent: CheckoutException}) => void;
-  onComplete?: (event: {nativeEvent: CheckoutCompletedEvent}) => void;
-  onCancel?: () => void;
-  onRenderStateChange?: (event: {
-    nativeEvent: {state: string; reason?: string | undefined};
-  }) => void;
-  onWebPixelEvent?: (event: {nativeEvent: PixelEvent}) => void;
-  onClickLink?: (event: {nativeEvent: {url: string}}) => void;
-  onSizeChange?: (event: {nativeEvent: {height: number}}) => void;
-}
-
-const RCTAcceleratedCheckoutButtons =
-  codegenNativeComponent<NativeAcceleratedCheckoutButtonsProps>(
-    'RCTAcceleratedCheckoutButtons',
-  );
-
 /**
  * AcceleratedCheckoutButton provides pre-built payment UI components for Shop Pay and Apple Pay.
  * It enables faster checkout with fewer steps and supports both cart and product page checkout.
@@ -225,15 +202,15 @@ export const AcceleratedCheckoutButtons: React.FC<
   );
 
   const handleFail = useCallback(
-    (event: {nativeEvent: CheckoutException}) => {
-      onFail?.(event.nativeEvent);
+    (event: {nativeEvent: unknown}) => {
+      onFail?.(event.nativeEvent as CheckoutException);
     },
     [onFail],
   );
 
   const handleComplete = useCallback(
-    (event: {nativeEvent: CheckoutCompletedEvent}) => {
-      onComplete?.(event.nativeEvent);
+    (event: {nativeEvent: unknown}) => {
+      onComplete?.(event.nativeEvent as CheckoutCompletedEvent);
     },
     [onComplete],
   );
@@ -243,9 +220,13 @@ export const AcceleratedCheckoutButtons: React.FC<
   }, [onCancel]);
 
   const handleRenderStateChange = useCallback(
-    (event: {nativeEvent: {state: string; reason?: string | undefined}}) => {
-      const state = validRenderState(event.nativeEvent.state);
-      const reason = event.nativeEvent.reason;
+    (event: {nativeEvent: unknown}) => {
+      const nativeEvent = event.nativeEvent as {
+        state: string;
+        reason?: string | undefined;
+      };
+      const state = validRenderState(nativeEvent.state);
+      const reason = nativeEvent.reason;
 
       if (state === RenderState.Error) {
         onRenderStateChange?.({state, reason});
@@ -257,16 +238,17 @@ export const AcceleratedCheckoutButtons: React.FC<
   );
 
   const handleWebPixelEvent = useCallback(
-    (event: {nativeEvent: PixelEvent}) => {
-      onWebPixelEvent?.(event.nativeEvent);
+    (event: {nativeEvent: unknown}) => {
+      onWebPixelEvent?.(event.nativeEvent as PixelEvent);
     },
     [onWebPixelEvent],
   );
 
   const handleClickLink = useCallback(
-    (event: {nativeEvent: {url: string}}) => {
-      if (event.nativeEvent?.url) {
-        onClickLink?.(event.nativeEvent.url);
+    (event: {nativeEvent: unknown}) => {
+      const nativeEvent = event.nativeEvent as {url?: string};
+      if (nativeEvent?.url) {
+        onClickLink?.(nativeEvent.url);
       }
     },
     [onClickLink],
@@ -321,6 +303,7 @@ export const AcceleratedCheckoutButtons: React.FC<
 
   return (
     <RCTAcceleratedCheckoutButtons
+      testID="accelerated-checkout-buttons"
       applePayLabel={applePayLabel}
       applePayStyle={applePayStyle}
       style={{...defaultStyles, height: dynamicHeight}}

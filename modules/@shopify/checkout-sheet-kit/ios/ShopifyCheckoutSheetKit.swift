@@ -103,6 +103,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         ]
     }
 
+    @objc func getConstants() -> [AnyHashable: Any]! {
+        return constantsToExport()
+    }
+
     static func getRootViewController() -> UIViewController? {
         return (
             UIApplication.shared.connectedScenes
@@ -209,8 +213,8 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         NotificationCenter.default.post(name: Notification.Name("CheckoutKitConfigurationUpdated"), object: nil)
     }
 
-    @objc func getConfig(_ resolve: @escaping RCTPromiseResolveBlock, reject _: @escaping RCTPromiseRejectBlock) {
-        let config: [String: Any] = [
+    @objc func getConfig() -> NSDictionary {
+        return [
             "title": ShopifyCheckoutSheetKit.configuration.title,
             "preloading": ShopifyCheckoutSheetKit.configuration.preloading.enabled,
             "colorScheme": ShopifyCheckoutSheetKit.configuration.colorScheme.rawValue,
@@ -219,8 +223,6 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
             "closeButtonColor": ShopifyCheckoutSheetKit.configuration.closeButtonTintColor,
             "logLevel": logLevelToString(ShopifyCheckoutSheetKit.configuration.logLevel)
         ]
-
-        resolve(config)
     }
 
     @objc func configureAcceleratedCheckouts(
@@ -231,13 +233,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         customerAccessToken: String?,
         applePayMerchantIdentifier: String?,
         applyPayContactFields: [String]?,
-        supportedShippingCountries: [String]?,
-        resolve: @escaping RCTPromiseResolveBlock,
-        reject _: @escaping RCTPromiseRejectBlock
-    ) {
+        supportedShippingCountries: [String]?
+    ) -> NSNumber {
         guard #available(iOS 16.0, *) else {
-            resolve(false)
-            return
+            return NSNumber(value: false)
         }
 
         let customer = ShopifyAcceleratedCheckouts.Customer(
@@ -264,8 +263,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
                 AcceleratedCheckoutConfiguration.shared.applePayConfiguration = acceleratedCheckoutsApplePayConfiguration as? ShopifyAcceleratedCheckouts.ApplePayConfiguration
             } catch {
-                resolve(false)
-                return
+                return NSNumber(value: false)
             }
         }
 
@@ -273,33 +271,29 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
         NotificationCenter.default.post(name: Notification.Name("AcceleratedCheckoutConfigurationUpdated"), object: nil)
 
-        resolve(true)
+        return NSNumber(value: true)
     }
 
-    @objc func isAcceleratedCheckoutAvailable(
-        _ resolve: @escaping RCTPromiseResolveBlock,
-        reject _: @escaping RCTPromiseRejectBlock
-    ) {
+    @objc func isAcceleratedCheckoutAvailable() -> NSNumber {
         guard #available(iOS 16.0, *) else {
-            resolve(false)
-            return
+            return NSNumber(value: false)
         }
 
-        resolve(AcceleratedCheckoutConfiguration.shared.available)
+        return NSNumber(value: AcceleratedCheckoutConfiguration.shared.available)
     }
 
-    @objc func isApplePayAvailable(
-        _ resolve: @escaping RCTPromiseResolveBlock,
-        reject _: @escaping RCTPromiseRejectBlock
-    ) {
+    @objc func isApplePayAvailable() -> NSNumber {
         guard #available(iOS 16.0, *) else {
-            resolve(false)
-            return
+            return NSNumber(value: false)
         }
 
         let available = AcceleratedCheckoutConfiguration.shared.available && AcceleratedCheckoutConfiguration.shared.applePayAvailable
 
-        resolve(available)
+        return NSNumber(value: available)
+    }
+
+    @objc func initiateGeolocationRequest(_ allow: Bool) {
+        // No-op on iOS — geolocation permission is handled natively
     }
 
     // MARK: - Private

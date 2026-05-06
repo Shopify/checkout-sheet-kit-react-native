@@ -64,6 +64,15 @@ const defaultFeatures: Features = {
   handleGeolocationRequests: true,
 };
 
+// TurboModule codegen doesn't support TypeScript string literal unions or
+// enums — spec types collapse to plain `string`. These sets are used by the
+// coercion helpers below to narrow the string back to the consumer-facing
+// enum, falling back to a safe default if native returns an unknown value.
+const colorSchemeValues: ReadonlySet<string> = new Set(
+  Object.values(ColorScheme),
+);
+const logLevelValues: ReadonlySet<string> = new Set(Object.values(LogLevel));
+
 class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   private static eventEmitter: NativeEventEmitter = new NativeEventEmitter(
     RNShopifyCheckoutSheetKit,
@@ -74,8 +83,17 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   private _acceleratedCheckoutsReady = false;
 
-  get acceleratedCheckoutsReady(): boolean {
+  // TurboModule constants are immutable for the lifetime of the process —
+  // capture once so `version` (and any future constants) can be read without
+  // re-crossing the JSI boundary on every access.
+  private readonly constants = RNShopifyCheckoutSheetKit.getConstants();
+
+  public get acceleratedCheckoutsReady(): boolean {
     return this._acceleratedCheckoutsReady;
+  }
+
+  public get version(): string {
+    return this.constants.version;
   }
 
   /**
@@ -100,9 +118,6 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
       this.subscribeToGeolocationRequestPrompts();
     }
   }
-
-  public readonly version: string =
-    RNShopifyCheckoutSheetKit.getConstants().version;
 
   /**
    * Dismisses the currently displayed checkout sheet
@@ -136,22 +151,21 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   /**
    * Retrieves the current checkout configuration
-   * @returns Promise containing the current Configuration
+   * @returns The current Configuration
    */
-  public async getConfig(): Promise<Configuration> {
-    return RNShopifyCheckoutSheetKit.getConfig() as Promise<Configuration>;
+  public getConfig(): Configuration {
+    return this.coerceConfigurationResult(RNShopifyCheckoutSheetKit.getConfig());
   }
 
   /**
    * Updates the checkout configuration
    * @param configuration New configuration settings to apply
    */
-  public async setConfig(configuration: Configuration): Promise<void> {
+  public setConfig(configuration: Configuration): void {
     if (configuration.acceleratedCheckouts) {
-      this._acceleratedCheckoutsReady =
-        await this.configureAcceleratedCheckouts(
-          configuration.acceleratedCheckouts,
-        );
+      this._acceleratedCheckoutsReady = this.configureAcceleratedCheckouts(
+        configuration.acceleratedCheckouts,
+      );
     }
     RNShopifyCheckoutSheetKit.setConfig(configuration);
   }
@@ -219,9 +233,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * Configure AcceleratedCheckouts for Shop Pay and Apple Pay buttons
    * @param config Configuration for AcceleratedCheckouts
    */
-  public async configureAcceleratedCheckouts(
+  public configureAcceleratedCheckouts(
     config: AcceleratedCheckoutConfiguration,
-  ): Promise<boolean> {
+  ): boolean {
     if (!this.acceleratedCheckoutsSupported) {
       return false;
     }
@@ -229,18 +243,16 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     try {
       this.validateAcceleratedCheckoutsConfiguration(config);
 
-      const configured =
-        await RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
-          config.storefrontDomain,
-          config.storefrontAccessToken,
-          config.customer?.email || null,
-          config.customer?.phoneNumber || null,
-          config.customer?.accessToken || null,
-          config.wallets?.applePay?.merchantIdentifier || null,
-          config.wallets?.applePay?.contactFields || [],
-          config.wallets?.applePay?.supportedShippingCountries || [],
-        );
-      return configured;
+      return RNShopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+        config.storefrontDomain,
+        config.storefrontAccessToken,
+        config.customer?.email || null,
+        config.customer?.phoneNumber || null,
+        config.customer?.accessToken || null,
+        config.wallets?.applePay?.merchantIdentifier || null,
+        config.wallets?.applePay?.contactFields || [],
+        config.wallets?.applePay?.supportedShippingCountries || [],
+      );
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(
@@ -253,10 +265,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   /**
    * Check if accelerated checkout is available for the given cart or product
-   * @param options Options containing either cartId or variantId/quantity
-   * @returns Promise<boolean> indicating availability
+   * @returns boolean indicating availability
    */
-  public async isAcceleratedCheckoutAvailable(): Promise<boolean> {
+  public isAcceleratedCheckoutAvailable(): boolean {
     if (!this.acceleratedCheckoutsSupported) {
       return false;
     }
@@ -387,6 +398,45 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    */
   private permissionGranted(status: PermissionStatus): boolean {
     return status === 'granted';
+  }
+
+  /**
+   * Coerces a native Configuration result into the consumer-facing
+   * Configuration type.
+   *
+   * The TurboModule codegen spec can only express primitive types — string
+   * literal unions and TypeScript enums collapse to plain `string` at the
+   * bridge boundary. On the JS side consumers expect the typed `ColorScheme`
+   * and `LogLevel` enums, so we coerce those two fields here. The rest of
+   * the payload (preloading, title, nested colors) passes through unchanged.
+   */
+  private coerceConfigurationResult(
+    raw: ReturnType<typeof RNShopifyCheckoutSheetKit.getConfig>,
+  ): Configuration {
+    return {
+      ...raw,
+      logLevel: this.coerceLogLevel(raw.logLevel),
+      colorScheme: this.coerceColorScheme(raw.colorScheme),
+    } as Configuration;
+  }
+
+  /**
+   * Narrows a raw string from the native bridge to the ColorScheme enum.
+   * Falls back to `automatic` if the native side returns an unrecognised
+   * value (e.g. future SDK version adds a new scheme).
+   */
+  private coerceColorScheme(value: string): ColorScheme {
+    return colorSchemeValues.has(value)
+      ? (value as ColorScheme)
+      : ColorScheme.automatic;
+  }
+
+  /**
+   * Narrows a raw string from the native bridge to the LogLevel enum.
+   * Falls back to `error` (the safest default) on unrecognised values.
+   */
+  private coerceLogLevel(value: string): LogLevel {
+    return logLevelValues.has(value) ? (value as LogLevel) : LogLevel.error;
   }
 
   /**

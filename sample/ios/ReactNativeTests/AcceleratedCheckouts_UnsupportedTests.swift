@@ -48,18 +48,7 @@ class AcceleratedCheckouts_UnsupportedTests: XCTestCase {
     }
 
     func testAvailabilityAPIsReturnFalseOnPreIOS16() throws {
-        let accelExpectation = expectation(description: "isAcceleratedCheckoutAvailable false on <16")
-        module.isAcceleratedCheckoutAvailable({ value in
-            XCTAssertEqual(value as? Bool, false)
-            accelExpectation.fulfill()
-        }, reject: { _, _, _ in })
-
-        let applePayExpectation = expectation(description: "isApplePayAvailable false on <16")
-        module.isApplePayAvailable({ value in
-            XCTAssertEqual(value as? Bool, false)
-            applePayExpectation.fulfill()
-        }, reject: { _, _, _ in })
-
-        wait(for: [accelExpectation, applePayExpectation], timeout: 2)
+        XCTAssertEqual(module.isAcceleratedCheckoutAvailable().boolValue, false)
+        XCTAssertEqual(module.isApplePayAvailable().boolValue, false)
     }
 }

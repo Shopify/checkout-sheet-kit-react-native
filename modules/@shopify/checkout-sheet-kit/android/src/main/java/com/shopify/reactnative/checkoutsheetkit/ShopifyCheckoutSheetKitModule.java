@@ -29,19 +29,19 @@ import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.shopify.checkoutsheetkit.NativeShopifyCheckoutSheetKitSpec;
 import com.shopify.checkoutsheetkit.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
-  private static final String MODULE_NAME = "ShopifyCheckoutSheetKit";
+public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKitSpec {
 
   public static Configuration checkoutConfig = new Configuration();
 
@@ -62,14 +62,8 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     });
   }
 
-  @NonNull
   @Override
-  public String getName() {
-    return MODULE_NAME;
-  }
-
-  @Override
-  public Map<String, Object> getConstants() {
+  protected Map<String, Object> getTypedExportedConstants() {
     final Map<String, Object> constants = new HashMap<>();
     constants.put("version", ShopifyCheckoutSheetKit.version);
     return constants;
@@ -81,7 +75,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void removeListeners(Integer count) {
+  public void removeListeners(double count) {
     // No-op but required for RN to register module
   }
 
@@ -119,15 +113,15 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     ShopifyCheckoutSheetKit.invalidate();
   }
 
-  @ReactMethod
-  public void getConfig(Promise promise) {
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public WritableMap getConfig() {
     WritableMap resultConfig = Arguments.createMap();
 
     resultConfig.putBoolean("preloading", checkoutConfig.getPreloading().getEnabled());
     resultConfig.putString("colorScheme", colorSchemeToString(checkoutConfig.getColorScheme()));
     resultConfig.putString("logLevel", logLevelToString(checkoutConfig.getLogLevel()));
 
-    promise.resolve(resultConfig);
+    return resultConfig;
   }
 
   @ReactMethod
@@ -171,8 +165,34 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule {
     });
   }
 
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public boolean configureAcceleratedCheckouts(
+      String storefrontDomain,
+      String storefrontAccessToken,
+      String customerEmail,
+      String customerPhoneNumber,
+      String customerAccessToken,
+      String applePayMerchantIdentifier,
+      ReadableArray applyPayContactFields,
+      ReadableArray supportedShippingCountries) {
+    // Accelerated checkouts not supported on Android
+    return false;
+  }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public boolean isAcceleratedCheckoutAvailable() {
+    // Accelerated checkouts not supported on Android
+    return false;
+  }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public boolean isApplePayAvailable() {
+    // Apple Pay not available on Android
+    return false;
+  }
+
   @ReactMethod
-  public void initiateGeolocationRequest(Boolean allow) {
+  public void initiateGeolocationRequest(boolean allow) {
     if (checkoutEventProcessor != null) {
       checkoutEventProcessor.invokeGeolocationCallback(allow);
     }
