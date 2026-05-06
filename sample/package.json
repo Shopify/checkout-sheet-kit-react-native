@@ -10,8 +10,8 @@
     "release:android": "sh ./scripts/release_android",
     "build:ios": "sh ./scripts/build_ios",
     "lint": "pnpm run typecheck && eslint .",
-    "ios": "react-native run-ios --simulator 'iPhone 15 Pro'",
-    "start": "react-native start -- --simulator 'iPhone 15 Pro' --reset-cache",
+    "ios": "react-native run-ios",
+    "start": "react-native start -- --reset-cache",
     "typecheck": "tsc --noEmit",
     "test:ios": "sh ./scripts/test_ios",
     "test:android": "sh ./scripts/test_android"

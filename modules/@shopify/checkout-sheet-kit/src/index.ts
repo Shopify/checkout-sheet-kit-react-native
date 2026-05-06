@@ -21,17 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import {
-  NativeModules,
-  NativeEventEmitter,
-  PermissionsAndroid,
-  Platform,
-} from 'react-native';
+import {NativeEventEmitter, PermissionsAndroid, Platform} from 'react-native';
 import type {
   EmitterSubscription,
   EventSubscription,
   PermissionStatus,
 } from 'react-native';
+import RNShopifyCheckoutSheetKit from './specs/NativeShopifyCheckoutSheetKit';
 import {ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet} from './context';
 import {ApplePayContactField, ColorScheme, LogLevel} from './index.d';
 import type {
@@ -63,15 +59,6 @@ import type {
   AcceleratedCheckoutButtonsProps,
   RenderStateChangeEvent,
 } from './components/AcceleratedCheckoutButtons';
-
-const RNShopifyCheckoutSheetKit = NativeModules.ShopifyCheckoutSheetKit;
-
-if (!('ShopifyCheckoutSheetKit' in NativeModules)) {
-  throw new Error(`
-  "@shopify/checkout-sheet-kit" is not correctly linked.
-
-  If you are building for iOS, make sure to run "pod install" first and restart the metro server.`);
-}
 
 const defaultFeatures: Features = {
   handleGeolocationRequests: true,
@@ -114,7 +101,8 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
     }
   }
 
-  public readonly version: string = RNShopifyCheckoutSheetKit.version;
+  public readonly version: string =
+    RNShopifyCheckoutSheetKit.getConstants().version;
 
   /**
    * Dismisses the currently displayed checkout sheet
@@ -151,7 +139,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * @returns Promise containing the current Configuration
    */
   public async getConfig(): Promise<Configuration> {
-    return RNShopifyCheckoutSheetKit.getConfig();
+    return RNShopifyCheckoutSheetKit.getConfig() as Promise<Configuration>;
   }
 
   /**

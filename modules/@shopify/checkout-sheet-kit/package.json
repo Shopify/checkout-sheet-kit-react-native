@@ -54,6 +54,14 @@
     "react-native-builder-bob": "^0.23.2",
     "typescript": "^5.9.2"
   },
+  "codegenConfig": {
+    "name": "RNShopifyCheckoutSheetKitSpec",
+    "type": "all",
+    "jsSrcsDir": "src/specs",
+    "android": {
+      "javaPackageName": "com.shopify.checkoutsheetkit"
+    }
+  },
   "react-native-builder-bob": {
     "source": "src",
     "output": "lib",

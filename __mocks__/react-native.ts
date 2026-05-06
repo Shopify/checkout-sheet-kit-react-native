@@ -39,6 +39,8 @@ const requireNativeComponent = (..._args: any[]) => {
     });
 };
 
+const codegenNativeComponent = requireNativeComponent;
+
 const StyleSheet = {
   flatten: jest.fn(style => style),
 };
@@ -47,6 +49,7 @@ const exampleConfig = {preloading: true};
 
 const ShopifyCheckoutSheetKit = {
   version: '0.7.0',
+  getConstants: jest.fn(() => ({version: '0.7.0'})),
   preload: jest.fn(),
   present: jest.fn(),
   dismiss: jest.fn(),
@@ -58,6 +61,8 @@ const ShopifyCheckoutSheetKit = {
   initiateGeolocationRequest: jest.fn(),
   configureAcceleratedCheckouts: jest.fn(),
   isAcceleratedCheckoutAvailable: jest.fn(),
+  addListener: jest.fn(),
+  removeListeners: jest.fn(),
 };
 
 // CommonJS export for Jest manual mock resolution
@@ -68,6 +73,15 @@ module.exports = {
   },
   NativeEventEmitter: jest.fn(() => createMockEmitter()),
   requireNativeComponent,
+  codegenNativeComponent,
+  TurboModuleRegistry: {
+    getEnforcing: jest.fn((name: string) => {
+      if (name === 'ShopifyCheckoutSheetKit') {
+        return ShopifyCheckoutSheetKit;
+      }
+      return null;
+    }),
+  },
   NativeModules: {
     ShopifyCheckoutSheetKit: {
       ...ShopifyCheckoutSheetKit,
