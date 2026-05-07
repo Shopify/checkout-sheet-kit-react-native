@@ -10,7 +10,7 @@ if [ "${SCCACHE:-}" = "false" ]; then
 fi
 
 if command -v sccache >/dev/null 2>&1; then
-  ANDROID_SCCACHE_SHIM_DIR="${TMPDIR:-/tmp}/checkout-sheet-kit-react-native-sccache"
+  ANDROID_SCCACHE_SHIM_DIR="${TMPDIR:-/tmp}/checkout-kit-react-native-sccache"
   mkdir -p "$ANDROID_SCCACHE_SHIM_DIR"
   cat > "$ANDROID_SCCACHE_SHIM_DIR/ccache" <<'EOF'
 #!/usr/bin/env sh

@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {ColorScheme, ApplePayStyle} from '@shopify/checkout-sheet-kit';
+import {ColorScheme, ApplePayStyle} from '@shopify/checkout-kit';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useTheme} from './Theme';
 import {BuyerIdentityMode} from '../auth/types';

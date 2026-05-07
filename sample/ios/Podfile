@@ -21,7 +21,7 @@ end
 target 'ReactNative' do
   config = use_native_modules!
 
-  pod "RNShopifyCheckoutSheetKit", :path => "../../modules/@shopify/checkout-sheet-kit"
+  pod "RNShopifyCheckoutKit", :path => "../../modules/@shopify/checkout-kit"
 
   use_react_native!(
     :path => config[:reactNativePath],

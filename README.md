@@ -1,7 +1,7 @@
 # Shopify Checkout Kit - React Native
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/LICENSE)
-[![GitHub Release](https://img.shields.io/github/release/shopify/checkout-sheet-kit-react-native.svg?style=flat)]()
+[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/Shopify/checkout-kit/blob/main/LICENSE)
+[![GitHub Release](https://img.shields.io/github/release/shopify/checkout-kit.svg?style=flat)]()
 
 <img width="3200" height="800" alt="gradients" src="https://github.com/user-attachments/assets/156492b7-5a64-43d2-b574-2e8f29ed8780" />
 
@@ -12,8 +12,6 @@ preserves all of the store customizations: Checkout UI extensions, Functions,
 branding, and more. It also provides platform idiomatic defaults such as support
 for light and dark mode, and convenient developer APIs to embed, customize, and
 follow the lifecycle of the checkout experience.
-
-Note: We're in the process of renaming "Checkout Sheet Kit" to "Checkout Kit." The dev docs and README already use the new name, while the package itself will be updated in an upcoming version.
 
 Check out our blog to
 [learn how and why we built the Shopify Checkout Kit](https://www.shopify.com/partners/blog/mobile-checkout-sdks-for-ios-and-android).
@@ -71,7 +69,7 @@ experiences.
 
 ## Version Compatibility
 
-Starting with **v4.0.0**, `@shopify/checkout-sheet-kit` requires the React Native
+Starting with **v4.0.0**, `@shopify/checkout-kit` requires the React Native
 **New Architecture** (TurboModules + Fabric). Apps on the old architecture must
 stay on the `v3.x` line until they migrate.
 
@@ -95,13 +93,13 @@ application:
 Install the Shopify Checkout Kit package dependency:
 
 ```sh
-pnpm add @shopify/checkout-sheet-kit
+pnpm add @shopify/checkout-kit
 
 # or using yarn
-yarn add @shopify/checkout-sheet-kit
+yarn add @shopify/checkout-kit
 
 # or using npm
-npm install @shopify/checkout-sheet-kit
+npm install @shopify/checkout-kit
 ```
 
 ### 2. Minimum Android requirements
@@ -141,13 +139,13 @@ requirements have been checked, you can begin by importing the library in your
 application code:
 
 ```tsx
-import {ShopifyCheckoutSheetProvider} from '@shopify/checkout-sheet-kit';
+import {ShopifyCheckoutProvider} from '@shopify/checkout-kit';
 
 function AppWithContext() {
   return (
-    <ShopifyCheckoutSheetProvider>
+    <ShopifyCheckoutProvider>
       <App />
-    </ShopifyCheckoutSheetProvider>
+    </ShopifyCheckoutProvider>
   );
 }
 ```
@@ -156,10 +154,10 @@ Doing so will now allow you to access the Native Module anywhere in your
 application using React hooks:
 
 ```tsx
-import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
+import {useShopifyCheckout} from '@shopify/checkout-kit';
 
 function App() {
-  const shopifyCheckout = useShopifyCheckoutSheet();
+  const shopifyCheckout = useShopifyCheckout();
 
   // Present the checkout
   shopifyCheckout.present(checkoutUrl);
@@ -171,22 +169,22 @@ to obtain a checkout URL to pass to the kit.
 
 > [!NOTE]
 > The recommended usage of the library is through a
-> `ShopifyCheckoutSheetProvider` Context provider, but see
+> `ShopifyCheckoutProvider` Context provider, but see
 > [Programmatic usage](#programamatic-usage) below for details on how to use the
 > library without React context.
 
 ## Programmatic Usage
 
-To use the library without React context, import the `ShopifyCheckoutSheet`
+To use the library without React context, import the `ShopifyCheckout`
 class from the package and instantiate it. We recommend to instantiating the
 class at a relatively high level in your application, and exporting it for use
 throughout your app.
 
 ```tsx
 // shopify.ts
-import {ShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
+import {ShopifyCheckout} from '@shopify/checkout-kit';
 
-export const shopifyCheckout = new ShopifyCheckoutSheet({
+export const shopifyCheckout = new ShopifyCheckout({
   // optional configuration
 });
 ```
@@ -281,7 +279,7 @@ browser. To present a native checkout sheet in your application, provide the
 
 ```tsx
 function App() {
-  const shopifyCheckout = useShopifyCheckoutSheet()
+  const shopifyCheckout = useShopifyCheckout()
   const checkoutUrl = useRef<string>(null)
   const [createCart] = useMutation(createCartMutation)
   const [addToCart] = useMutation(addToCartMutation)
@@ -330,7 +328,7 @@ function App() {
 
 The SDK provides a way to customize the presented checkout experience through a
 `configuration` object in the Context Provider or a `setConfig` method on an
-instance of the `ShopifyCheckoutSheet` class.
+instance of the `ShopifyCheckout` class.
 
 | Name          | Required | Default     | Description                                                                                                                                                    |
 | ------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -346,8 +344,8 @@ import {
   ColorScheme,
   Configuration,
   LogLevel,
-  ShopifyCheckoutSheetProvider,
-} from '@shopify/checkout-sheet-kit';
+  ShopifyCheckoutProvider,
+} from '@shopify/checkout-kit';
 
 const config: Configuration = {
   colorScheme: ColorScheme.web,
@@ -370,14 +368,14 @@ const config: Configuration = {
 // If using React Context
 function AppWithContext() {
   return (
-    <ShopifyCheckoutSheetProvider configuration={config}>
+    <ShopifyCheckoutProvider configuration={config}>
       <App />
-    </ShopifyCheckoutSheetProvider>
+    </ShopifyCheckoutProvider>
   );
 }
 
-// If using ShopifyCheckoutSheet directly
-const shopifyCheckout = new ShopifyCheckoutSheet(config);
+// If using ShopifyCheckout directly
+const shopifyCheckout = new ShopifyCheckout(config);
 ```
 
 ### Colors
@@ -424,8 +422,8 @@ slightly different, as you can specify different overrides for `light` and
 import {
   ColorScheme,
   Configuration,
-  ShopifyCheckoutSheetProvider,
-} from '@shopify/checkout-sheet-kit';
+  ShopifyCheckoutProvider,
+} from '@shopify/checkout-kit';
 
 const config: Configuration = {
   colorScheme: ColorScheme.automatic,
@@ -452,9 +450,9 @@ const config: Configuration = {
 
 function AppWithContext() {
   return (
-    <ShopifyCheckoutSheetProvider configuration={config}>
+    <ShopifyCheckoutProvider configuration={config}>
       <App />
-    </ShopifyCheckoutSheetProvider>
+    </ShopifyCheckoutProvider>
   );
 }
 ```
@@ -552,11 +550,11 @@ Once enabled, preloading a checkout is as simple as calling
 
 ```tsx
 // using hooks
-const shopifyCheckout = useShopifyCheckoutSheet();
+const shopifyCheckout = useShopifyCheckout();
 ShopifyCheckout.preload(checkoutUrl);
 
 // using a class instance
-const shopifyCheckout = new ShopifyCheckoutSheet();
+const shopifyCheckout = new ShopifyCheckout();
 shopifyCheckout.preload(checkoutUrl);
 ```
 
@@ -590,7 +588,7 @@ Instead, a better approach is to call `preload()` when you have a strong enough 
 
 ### Cache invalidation
 
-Should you wish to manually clear the preload cache, there is a `ShopifyCheckoutSheetKit.invalidate()` helper function to do so.
+Should you wish to manually clear the preload cache, there is a `ShopifyCheckoutKit.invalidate()` helper function to do so.
 
 ## Checkout lifecycle
 
@@ -613,7 +611,7 @@ an event listener in a React `useEffect`, ensuring to remove it on unmount.
 
 ```tsx
 // Using hooks
-const shopifyCheckout = useShopifyCheckoutSheet();
+const shopifyCheckout = useShopifyCheckout();
 
 useEffect(() => {
   const close = shopifyCheckout.addEventListener('close', () => {
@@ -751,7 +749,7 @@ is completed.
 ### Universal Links - iOS
 
 See the
-[Universal Links guide](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/documentation/universal_links_ios.md)
+[Universal Links guide](https://github.com/Shopify/checkout-kit/blob/main/documentation/universal_links_ios.md)
 for information on how to get started with adding support for Offsite Payments
 in your app.
 
@@ -812,20 +810,20 @@ The geolocation request flow follows this sequence:
 > This section is only applicable for Android.
 
 In order to opt-out of the default permission handling, you can set `features.handleGeolocationRequests` to `false`
-when you instantiate the `ShopifyCheckoutSheet` class.
+when you instantiate the `ShopifyCheckout` class.
 
 If you're using the sheet programmatically, you can do so by specifying a `features` object as the second argument:
 
 ```tsx
-const checkoutSheetKit = new ShopifyCheckoutSheet(config, {handleGeolocationRequests: false});
+const shopifyCheckout = new ShopifyCheckout(config, {handleGeolocationRequests: false});
 ```
 
-If you're using the context provider, you can pass the same `features` object as a prop to the `ShopifyCheckoutSheetProvider` component:
+If you're using the context provider, you can pass the same `features` object as a prop to the `ShopifyCheckoutProvider` component:
 
 ```tsx
-<ShopifyCheckoutSheetProvider configuration={config} features={{handleGeolocationRequests: false}}>
+<ShopifyCheckoutProvider configuration={config} features={{handleGeolocationRequests: false}}>
   {children}
-</ShopifyCheckoutSheetProvider>
+</ShopifyCheckoutProvider>
 ```
 
 When opting out, you'll need to implement your own permission handling logic and communicate the result back to the checkout sheet. This can be useful if you want to:
@@ -872,10 +870,10 @@ Accelerated checkout buttons surface Apple Pay and Shop Pay options earlier in t
 
 ### Configure the integration
 
-Pass an `acceleratedCheckouts` configuration when setting up the provider or `ShopifyCheckoutSheet` instance. This connects the accelerated checkout buttons to your storefront.
+Pass an `acceleratedCheckouts` configuration when setting up the provider or `ShopifyCheckout` instance. This connects the accelerated checkout buttons to your storefront.
 
 ```tsx
-import {ShopifyCheckoutSheetProvider} from '@shopify/checkout-sheet-kit';
+import {ShopifyCheckoutProvider} from '@shopify/checkout-kit';
 
 const config = {
   acceleratedCheckouts: {
@@ -901,9 +899,9 @@ const config = {
 
 function App() {
   return (
-    <ShopifyCheckoutSheetProvider configuration={config}>
+    <ShopifyCheckoutProvider configuration={config}>
       <YourApp />
-    </ShopifyCheckoutSheetProvider>
+    </ShopifyCheckoutProvider>
   );
 }
 ```
@@ -919,7 +917,7 @@ Use `AcceleratedCheckoutButtons` to attach accelerated checkout calls-to-action 
 import {
   AcceleratedCheckoutButtons,
   AcceleratedCheckoutWallet,
-} from '@shopify/checkout-sheet-kit';
+} from '@shopify/checkout-kit';
 
 function CartFooter({cartId}: {cartId: string}) {
   return (
@@ -964,7 +962,7 @@ Accelerated checkout buttons display every available wallet by default. Use `wal
 Use `applePayLabel` to map to the native `PayWithApplePayButtonLabel` values. The default is `plain`.
 
 ```tsx
-import {ApplePayLabel} from '@shopify/checkout-sheet-kit';
+import {ApplePayLabel} from '@shopify/checkout-kit';
 
 <AcceleratedCheckoutButtons
   cartId={cartId}
@@ -977,7 +975,7 @@ import {ApplePayLabel} from '@shopify/checkout-sheet-kit';
 Use `applePayStyle` to set the color style of the Apple Pay button. The default is `automatic`, which adapts to the current appearance (light/dark mode).
 
 ```tsx
-import {ApplePayStyle} from '@shopify/checkout-sheet-kit';
+import {ApplePayStyle} from '@shopify/checkout-kit';
 
 <AcceleratedCheckoutButtons
   cartId={cartId}

@@ -1,6 +1,6 @@
 module.exports = {
   preset: 'react-native',
-  modulePathIgnorePatterns: ['modules/@shopify/checkout-sheet-kit/lib'],
+  modulePathIgnorePatterns: ['modules/@shopify/checkout-kit/lib'],
   modulePaths: ['<rootDir>/sample/node_modules'],
   setupFiles: ['<rootDir>/jest.setup.ts'],
   transform: {

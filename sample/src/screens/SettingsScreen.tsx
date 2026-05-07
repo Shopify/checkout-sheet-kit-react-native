@@ -37,8 +37,8 @@ import {useConfig} from '../context/Config';
 import {
   ApplePayStyle,
   ColorScheme,
-  useShopifyCheckoutSheet,
-} from '@shopify/checkout-sheet-kit';
+  useShopifyCheckout,
+} from '@shopify/checkout-kit';
 import type {Colors} from '../context/Theme';
 import {useTheme} from '../context/Theme';
 import {useNavigation} from '@react-navigation/native';
@@ -94,7 +94,7 @@ interface SectionData {
 }
 
 function SettingsScreen() {
-  const shopify = useShopifyCheckoutSheet();
+  const shopify = useShopifyCheckout();
   const {appConfig, setAppConfig} = useConfig();
   const {colors, setColorScheme} = useTheme();
   const styles = createStyles(colors);

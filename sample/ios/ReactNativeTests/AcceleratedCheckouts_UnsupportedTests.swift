@@ -22,16 +22,16 @@
  */
 
 import Foundation
-@testable import RNShopifyCheckoutSheetKit
+@testable import RNShopifyCheckoutKit
 import XCTest
 
 class AcceleratedCheckouts_UnsupportedTests: XCTestCase {
-    private var module: RCTShopifyCheckoutSheetKit!
+    private var module: RCTShopifyCheckoutKit!
     private var manager: RCTAcceleratedCheckoutButtonsManager!
 
     override func setUp() {
         super.setUp()
-        module = RCTShopifyCheckoutSheetKit()
+        module = RCTShopifyCheckoutKit()
         manager = RCTAcceleratedCheckoutButtonsManager()
         manager.supported = false
     }

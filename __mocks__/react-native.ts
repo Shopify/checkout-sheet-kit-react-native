@@ -47,7 +47,7 @@ const StyleSheet = {
 
 const exampleConfig = {preloading: true};
 
-const ShopifyCheckoutSheetKit = {
+const ShopifyCheckoutKit = {
   version: '0.7.0',
   getConstants: jest.fn(() => ({version: '0.7.0'})),
   preload: jest.fn(),
@@ -77,15 +77,15 @@ module.exports = {
   codegenNativeComponent,
   TurboModuleRegistry: {
     getEnforcing: jest.fn((name: string) => {
-      if (name === 'ShopifyCheckoutSheetKit') {
-        return ShopifyCheckoutSheetKit;
+      if (name === 'ShopifyCheckoutKit') {
+        return ShopifyCheckoutKit;
       }
       return null;
     }),
   },
   NativeModules: {
-    ShopifyCheckoutSheetKit: {
-      ...ShopifyCheckoutSheetKit,
+    ShopifyCheckoutKit: {
+      ...ShopifyCheckoutKit,
       eventEmitter: createMockEmitter(),
     },
   },

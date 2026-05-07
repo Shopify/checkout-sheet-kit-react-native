@@ -36,11 +36,11 @@ import {
 import Icon from 'react-native-vector-icons/Entypo';
 
 import {
-  useShopifyCheckoutSheet,
+  useShopifyCheckout,
   AcceleratedCheckoutButtons,
   ApplePayLabel,
   AcceleratedCheckoutWallet,
-} from '@shopify/checkout-sheet-kit';
+} from '@shopify/checkout-kit';
 import {useConfig} from '../context/Config';
 import useShopify from '../hooks/useShopify';
 import type {CartLineItem} from '../../@types';
@@ -51,7 +51,7 @@ import {currency} from '../utils';
 import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
 
 function CartScreen(): React.JSX.Element {
-  const ShopifyCheckout = useShopifyCheckoutSheet();
+  const ShopifyCheckout = useShopifyCheckout();
   const [refreshing, setRefreshing] = React.useState(false);
   const {cartId, checkoutURL, totalQuantity, removeFromCart, addingToCart} =
     useCart();

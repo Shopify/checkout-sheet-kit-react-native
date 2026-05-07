@@ -2578,7 +2578,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNShopifyCheckoutSheetKit (4.0.0):
+  - RNShopifyCheckoutKit (4.0.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2730,7 +2730,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../../node_modules/react-native-reanimated`)
   - RNScreens (from `../../node_modules/react-native-screens`)
-  - "RNShopifyCheckoutSheetKit (from `../../modules/@shopify/checkout-sheet-kit`)"
+  - "RNShopifyCheckoutKit (from `../../modules/@shopify/checkout-kit`)"
   - RNVectorIcons (from `../../node_modules/react-native-vector-icons`)
   - SocketRocket (~> 0.7.1)
   - Yoga (from `../../node_modules/react-native/ReactCommon/yoga`)
@@ -2906,8 +2906,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../../node_modules/react-native-screens"
-  RNShopifyCheckoutSheetKit:
-    :path: "../../modules/@shopify/checkout-sheet-kit"
+  RNShopifyCheckoutKit:
+    :path: "../../modules/@shopify/checkout-kit"
   RNVectorIcons:
     :path: "../../node_modules/react-native-vector-icons"
   Yoga:
@@ -2996,12 +2996,12 @@ SPEC CHECKSUMS:
   RNGestureHandler: eeb622199ef1fb3a076243131095df1c797072f0
   RNReanimated: 237d420b7bb4378ef1dacc7d7a5c674fddb4b5d2
   RNScreens: 3fc29af06302e1f1c18a7829fe57cbc2c0259912
-  RNShopifyCheckoutSheetKit: 2a8c97d7780466538843d4cb1368c7ed76a33689
+  RNShopifyCheckoutKit: 68b0b757093fdc6fc26282d4482cf7806c126359
   RNVectorIcons: be4d047a76ad307ffe54732208fb0498fcb8477f
   ShopifyCheckoutSheetKit: 5253ca4da4c4f31069286509693930d02b4150d8
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: a742cc68e8366fcfc681808162492bc0aa7a9498
 
-PODFILE CHECKSUM: 3606e2ca8922c8312d4d68801864023c36cbc5d4
+PODFILE CHECKSUM: 849bbad0d694841db0d0cddc61c69bcdd6ee98fa
 
 COCOAPODS: 1.15.2

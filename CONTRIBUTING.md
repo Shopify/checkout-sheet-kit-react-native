@@ -7,8 +7,8 @@ see [guidelines and instructions](.github/CONTRIBUTING.md).
 
 This repo is subdivided into 3 parts using pnpm workspaces:
 
-- The base repo (workspace name = `checkout-sheet-kit-react-native`)
-- The `@shopify/checkout-sheet-kit` Native Module (workspace name = `module`)
+- The base repo (workspace name = `checkout-kit-react-native`)
+- The `@shopify/checkout-kit` Native Module (workspace name = `module`)
 - The sample application (workspace name = `sample`)
 
 Each of the workspaces contains a separate `package.json` to manage tasks
@@ -75,7 +75,7 @@ SCCACHE=false pnpm sample android
 ## Making changes to the Native Module
 
 If your intentions are to modify the TS code for the Native Module under
-`modules/@shopify/checkout-sheet-kit`, note that you will not need to rebuild to
+`modules/@shopify/checkout-kit`, note that you will not need to rebuild to
 observe your changes in the sample app. This is because the sample app is
 importing the TS files directly from the module directory (through symlinking).
 
@@ -118,7 +118,7 @@ There are 3 types of tests in this repo: Typescript, Swift and Java - each for
 testing the Native Module.
 
 ```sh
-# Run Jest tests for "modules/@shopify/checkout-sheet-kit/src/**/*.tsx"
+# Run Jest tests for "modules/@shopify/checkout-kit/src/**/*.tsx"
 pnpm test
 
 # Run swift tests for the Native Module

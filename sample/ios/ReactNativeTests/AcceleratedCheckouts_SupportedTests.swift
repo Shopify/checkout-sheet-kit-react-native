@@ -24,7 +24,7 @@
 import Foundation
 import PassKit
 import SwiftUI
-@testable import RNShopifyCheckoutSheetKit
+@testable import RNShopifyCheckoutKit
 @testable import ShopifyCheckoutSheetKit
 import XCTest
 
@@ -36,18 +36,18 @@ struct WalletButtons {
 
 @available(iOS 16.0, *)
 class AcceleratedCheckouts_SupportedTests: XCTestCase {
-    private var shopifyCheckoutSheetKit: RCTShopifyCheckoutSheetKit!
+    private var shopifyCheckoutKit: RCTShopifyCheckoutKit!
 
     override func setUp() {
         super.setUp()
-        shopifyCheckoutSheetKit = RCTShopifyCheckoutSheetKit()
+        shopifyCheckoutKit = RCTShopifyCheckoutKit()
         resetSharedConfigurations()
         resetCheckoutKitDefaults()
     }
 
     override func tearDown() {
         resetSharedConfigurations()
-        shopifyCheckoutSheetKit = nil
+        shopifyCheckoutKit = nil
         super.tearDown()
     }
 
@@ -72,7 +72,7 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         let contactFields: [String]? = includeApplePay ? ["email", "phone"] : nil
         let supportedShippingCountries: [String]? = includeApplePay ? ["IE", "CA"] : nil
 
-        return shopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+        return shopifyCheckoutKit.configureAcceleratedCheckouts(
             storefrontDomain,
             storefrontAccessToken: accessToken,
             customerEmail: email,
@@ -93,23 +93,23 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
     }
 
     func testIsAcceleratedCheckoutAvailableBeforeAndAfterConfig() throws {
-        XCTAssertEqual(shopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable().boolValue, false)
+        XCTAssertEqual(shopifyCheckoutKit.isAcceleratedCheckoutAvailable().boolValue, false)
 
         configureAcceleratedCheckouts(includeApplePay: false)
 
-        XCTAssertEqual(shopifyCheckoutSheetKit.isAcceleratedCheckoutAvailable().boolValue, true)
+        XCTAssertEqual(shopifyCheckoutKit.isAcceleratedCheckoutAvailable().boolValue, true)
     }
 
     func testIsApplePayAvailableRequiresApplePayConfig() throws {
-        XCTAssertEqual(shopifyCheckoutSheetKit.isApplePayAvailable().boolValue, false)
+        XCTAssertEqual(shopifyCheckoutKit.isApplePayAvailable().boolValue, false)
 
         configureAcceleratedCheckouts(includeApplePay: false)
 
-        XCTAssertEqual(shopifyCheckoutSheetKit.isApplePayAvailable().boolValue, false)
+        XCTAssertEqual(shopifyCheckoutKit.isApplePayAvailable().boolValue, false)
 
         configureAcceleratedCheckouts(includeApplePay: true)
 
-        XCTAssertEqual(shopifyCheckoutSheetKit.isApplePayAvailable().boolValue, true)
+        XCTAssertEqual(shopifyCheckoutKit.isApplePayAvailable().boolValue, true)
     }
 
     func testConfigureAcceleratedCheckoutsStoresCustomerAccessToken() throws {
@@ -359,7 +359,7 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         let storefrontDomain = "example.myshopify.com"
         let accessToken = "shpat_test_token"
 
-        let resolved = shopifyCheckoutSheetKit.configureAcceleratedCheckouts(
+        let resolved = shopifyCheckoutKit.configureAcceleratedCheckouts(
             storefrontDomain,
             storefrontAccessToken: accessToken,
             customerEmail: nil,

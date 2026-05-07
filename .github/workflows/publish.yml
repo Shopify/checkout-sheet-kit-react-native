@@ -24,7 +24,7 @@ jobs:
         id: npm-tag
         run: |
           # Read the version from package.json
-          VERSION=$(node -p "require('./modules/@shopify/checkout-sheet-kit/package.json').version")
+          VERSION=$(node -p "require('./modules/@shopify/checkout-kit/package.json').version")
 
           # Check if it's a "beta" or "rc" version
           if [[ "$VERSION" == *"-beta"* ]] || [[ "$VERSION" == *"-rc"* ]]; then
@@ -37,10 +37,10 @@ jobs:
 
       - name: Prepare release
         run: |
-          cp README.md modules/@shopify/checkout-sheet-kit
+          cp README.md modules/@shopify/checkout-kit
           pnpm module clean
           pnpm module build
-          cd modules/@shopify/checkout-sheet-kit
+          cd modules/@shopify/checkout-kit
           npm publish --access public --tag ${{ steps.npm-tag.outputs.tag }}
         env:
           NPM_TOKEN: '' # Empty string forces OIDC

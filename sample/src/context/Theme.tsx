@@ -4,7 +4,7 @@ import type {ColorSchemeName} from 'react-native';
 import {Appearance, useColorScheme} from 'react-native';
 import type {Theme} from '@react-navigation/native';
 import {DarkTheme, DefaultTheme} from '@react-navigation/native';
-import {ColorScheme} from '@shopify/checkout-sheet-kit';
+import {ColorScheme} from '@shopify/checkout-kit';
 
 interface Context {
   cornerRadius: number;

@@ -110,9 +110,9 @@ normalized_license = normalize_whitespace(File.read('LICENSE'))
 check_only = ARGV.include?('--check')
 
 modified = []
-modified += copy_license('modules/@shopify/checkout-sheet-kit/ios', license_block, normalized_license, check_only: check_only)
-modified += copy_license('modules/@shopify/checkout-sheet-kit/android', license_block, normalized_license, check_only: check_only)
-modified += copy_license('modules/@shopify/checkout-sheet-kit/src', license_block, normalized_license, check_only: check_only)
+modified += copy_license('modules/@shopify/checkout-kit/ios', license_block, normalized_license, check_only: check_only)
+modified += copy_license('modules/@shopify/checkout-kit/android', license_block, normalized_license, check_only: check_only)
+modified += copy_license('modules/@shopify/checkout-kit/src', license_block, normalized_license, check_only: check_only)
 
 if check_only
   if modified.empty?

@@ -22,7 +22,7 @@
  */
 
 import Foundation
-@testable import RNShopifyCheckoutSheetKit
+@testable import RNShopifyCheckoutKit
 import ShopifyCheckoutSheetKit
 import XCTest
 

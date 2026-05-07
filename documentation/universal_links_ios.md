@@ -143,7 +143,7 @@ by "NOT" rules.
 
 ## Handling Universal Links in your app
 
-See https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/sample/src/App.tsx for sample code to implement Universal Links in your app.
+See https://github.com/Shopify/checkout-kit/blob/main/sample/src/App.tsx for sample code to implement Universal Links in your app.
 
 ## Security Considerations
 

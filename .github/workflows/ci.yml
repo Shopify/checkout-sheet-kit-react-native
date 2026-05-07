@@ -71,7 +71,7 @@ jobs:
 
       - run:
           pnpm test --coverage
-          --testPathPatterns="modules/@shopify/checkout-sheet-kit/tests"
+          --testPathPatterns="modules/@shopify/checkout-kit/tests"
           --coverageReporters=json-summary
 
       - name: Coverage comment

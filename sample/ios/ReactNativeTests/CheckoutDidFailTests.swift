@@ -22,31 +22,31 @@
  */
 
 import Foundation
-@testable import RNShopifyCheckoutSheetKit
+@testable import RNShopifyCheckoutKit
 @testable import ShopifyCheckoutSheetKit
 import XCTest
 
 class CheckoutDidFailTests: XCTestCase {
-    private var shopifyCheckoutSheetKit: RCTShopifyCheckoutSheetKit!
+    private var shopifyCheckoutKit: RCTShopifyCheckoutKit!
 
     override func setUp() {
         super.setUp()
-        shopifyCheckoutSheetKit = getShopifyCheckoutSheetKit()
-        resetShopifyCheckoutSheetKitDefaults()
+        shopifyCheckoutKit = getShopifyCheckoutKit()
+        resetShopifyCheckoutKitDefaults()
     }
 
-    private func resetShopifyCheckoutSheetKitDefaults() {
+    private func resetShopifyCheckoutKitDefaults() {
         ShopifyCheckoutSheetKit.configuration.preloading = Configuration.Preloading(enabled: true)
         ShopifyCheckoutSheetKit.configuration.colorScheme = .automatic
     }
 
     override func tearDown() {
-        shopifyCheckoutSheetKit = nil
+        shopifyCheckoutKit = nil
         super.tearDown()
     }
 
-    private func getShopifyCheckoutSheetKit() -> RCTShopifyCheckoutSheetKit {
-        return RCTShopifyCheckoutSheetKit()
+    private func getShopifyCheckoutKit() -> RCTShopifyCheckoutKit {
+        return RCTShopifyCheckoutKit()
     }
 
     func testCheckoutDidFailEmitsCheckoutExpiredError() {
@@ -187,14 +187,14 @@ class CheckoutDidFailTests: XCTestCase {
         }
     }
 
-    private func mockSendEvent(eventName: String) -> RCTShopifyCheckoutSheetKitMock {
-        let mock = RCTShopifyCheckoutSheetKitMock()
+    private func mockSendEvent(eventName: String) -> RCTShopifyCheckoutKitMock {
+        let mock = RCTShopifyCheckoutKitMock()
         mock.eventName = eventName
         return mock
     }
 
-    private func mockAsyncSendEvent(eventName: String) -> AsyncRCTShopifyCheckoutSheetKitMock {
-        let mock = AsyncRCTShopifyCheckoutSheetKitMock()
+    private func mockAsyncSendEvent(eventName: String) -> AsyncRCTShopifyCheckoutKitMock {
+        let mock = AsyncRCTShopifyCheckoutKitMock()
         mock.eventName = eventName
         return mock
     }

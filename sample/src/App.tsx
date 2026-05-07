@@ -39,19 +39,19 @@ import SettingsScreen from './screens/SettingsScreen';
 import AccountScreen from './screens/AccountScreen';
 import LoginScreen from './screens/LoginScreen';
 
-import type {Configuration, Features} from '@shopify/checkout-sheet-kit';
+import type {Configuration, Features} from '@shopify/checkout-kit';
 import {
   ApplePayContactField,
   ColorScheme,
   LogLevel,
-  ShopifyCheckoutSheetProvider,
-  useShopifyCheckoutSheet,
-} from '@shopify/checkout-sheet-kit';
+  ShopifyCheckoutProvider,
+  useShopifyCheckout,
+} from '@shopify/checkout-kit';
 import type {
   CheckoutCompletedEvent,
   CheckoutException,
   PixelEvent,
-} from '@shopify/checkout-sheet-kit';
+} from '@shopify/checkout-kit';
 import {ConfigProvider, useConfig} from './context/Config';
 import {BuyerIdentityMode} from './auth/types';
 import {
@@ -209,7 +209,7 @@ const checkoutKitConfigDefaults: Configuration = {
 };
 
 function AppWithContext({children}: PropsWithChildren) {
-  const shopify = useShopifyCheckoutSheet();
+  const shopify = useShopifyCheckout();
   const eventHandlers = useShopifyEventHandlers();
 
   useEffect(() => {
@@ -454,11 +454,11 @@ function AppWithCheckoutKit({children}: PropsWithChildren) {
   }, [appConfig, checkoutKitThemeConfig, isAuthenticated, customerEmail, accessToken]);
 
   return (
-    <ShopifyCheckoutSheetProvider
+    <ShopifyCheckoutProvider
       configuration={checkoutKitConfig}
       features={checkoutKitFeatures}>
       {children}
-    </ShopifyCheckoutSheetProvider>
+    </ShopifyCheckoutProvider>
   );
 }
 
@@ -475,7 +475,7 @@ function Routes() {
   const {totalQuantity} = useCart();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const {url: initialUrl} = useInitialURL();
-  const shopify = useShopifyCheckoutSheet();
+  const shopify = useShopifyCheckout();
 
   useEffect(() => {
     async function handleUniversalLink(url: string) {

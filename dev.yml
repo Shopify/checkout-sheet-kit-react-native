@@ -1,4 +1,4 @@
-name: checkout-sheet-kit-react-native
+name: checkout-kit-react-native
 
 dev.edition: 2024
 
@@ -44,7 +44,7 @@ up:
         pnpm run pod-install
   - custom:
       name: Build node module
-      met?: (cd modules/@shopify/checkout-sheet-kit && ls -l | grep lib)
+      met?: (cd modules/@shopify/checkout-kit && ls -l | grep lib)
       meet: |
         pnpm module build
 

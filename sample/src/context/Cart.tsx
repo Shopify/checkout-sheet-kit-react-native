@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import {Alert} from 'react-native';
 import {atom, useAtom} from 'jotai';
-import {useShopifyCheckoutSheet} from '@shopify/checkout-sheet-kit';
+import {useShopifyCheckout} from '@shopify/checkout-kit';
 import useShopify from '../hooks/useShopify';
 import {useConfig} from './Config';
 import {useAuth} from './Auth';
@@ -48,7 +48,7 @@ const cartIdState = atom<Context['cartId']>(defaultCartId);
 const totalQuantityState = atom<Context['totalQuantity']>(defaultTotalQuantity);
 
 export const CartProvider: React.FC<PropsWithChildren> = ({children}) => {
-  const shopify = useShopifyCheckoutSheet();
+  const shopify = useShopifyCheckout();
   // Reuse the same cart ID for the lifetime of the app
   const [checkoutURL, setCheckoutURL] = useAtom(checkoutURLState);
   // Reuse the same cart ID for the lifetime of the app

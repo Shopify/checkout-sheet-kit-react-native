@@ -34,7 +34,7 @@ body:
 
   - type: input
     attributes:
-      label: What version of `@shopify/checkout-sheet-kit` are you using?
+      label: What version of `@shopify/checkout-kit` are you using?
       description:
         Please list the package version and device you are testing with.
     validations:

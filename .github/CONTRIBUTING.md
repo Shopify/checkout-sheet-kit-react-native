@@ -49,15 +49,15 @@ and subsequently closed after a further 7 days of inactivity.
 Open a pull request with the following changes:
 
 1. Bump the
-   [package version](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/modules/%40shopify/checkout-sheet-kit/package.json#L4)
-   of the `@shopify/checkout-sheet-kit` module.
+   [package version](https://github.com/Shopify/checkout-kit/blob/main/modules/%40shopify/checkout-kit/package.json#L4)
+   of the `@shopify/checkout-kit` module.
 2. Add an entry to the top of the [CHANGELOG](../CHANGELOG.md)
 
 Once you have merged a pull request with these changes, you will be ready to
 publish a new version.
 
 To do so, navigate to
-<https://github.com/Shopify/checkout-sheet-kit-react-native/releases> and click
+<https://github.com/Shopify/checkout-kit/releases> and click
 "Draft a new release" then complete the following steps:
 
 1. Create a tag for the new version
@@ -66,5 +66,5 @@ To do so, navigate to
    pull requests where applicable, in the description box.
 4. Check "Set as the latest release".
 5. When ready, click "Publish release". This will kickstart the
-   [CI process](https://github.com/Shopify/checkout-sheet-kit-react-native/actions/workflows/publish.yml)
+   [CI process](https://github.com/Shopify/checkout-kit/actions/workflows/publish.yml)
    to publish a new version of the NPM package.

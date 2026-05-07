@@ -1,0 +1,88 @@
+{
+  "name": "@shopify/checkout-kit",
+  "license": "MIT",
+  "version": "4.0.0",
+  "main": "lib/commonjs/index.js",
+  "types": "src/index.ts",
+  "source": "src/index.ts",
+  "module": "lib/module/index.js",
+  "description": "A React Native library for Shopify's Checkout Kit.",
+  "author": "Shopify",
+  "homepage": "https://github.com/Shopify/checkout-kit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Shopify/checkout-kit.git",
+    "directory": "react-native/modules/@shopify/checkout-kit"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "clean": "rm -rf lib",
+    "build": "bob build",
+    "lint": "pnpm run typecheck && eslint src",
+    "typecheck": "tsc --noEmit"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "package.json",
+    "src",
+    "ios",
+    "android",
+    "lib",
+    "*.podspec",
+    "!ios/build",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/*.spec.*",
+    "!**/*.test.*",
+    "!**/.*"
+  ],
+  "keywords": [
+    "react-native",
+    "shopify",
+    "checkout"
+  ],
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "react-native-builder-bob": "^0.23.2",
+    "typescript": "^5.9.2"
+  },
+  "codegenConfig": {
+    "name": "RNShopifyCheckoutKitSpec",
+    "type": "all",
+    "jsSrcsDir": "src/specs",
+    "android": {
+      "javaPackageName": "com.shopify.checkoutkit"
+    },
+    "ios": {
+      "modulesProvider": {
+        "ShopifyCheckoutKit": "RCTShopifyCheckoutKit"
+      },
+      "componentProvider": {
+        "RCTAcceleratedCheckoutButtons": "RCTAcceleratedCheckoutButtonsManager"
+      }
+    }
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  }
+}

@@ -21,9 +21,9 @@ updates:
           - "version-update:semver-major"
           - "version-update:semver-minor"
 
-  # Checkout Sheet Kit module dependencies
+  # Checkout Kit module dependencies
   - package-ecosystem: npm
-    directory: "/modules/@shopify/checkout-sheet-kit"
+    directory: "/modules/@shopify/checkout-kit"
     schedule:
       interval: daily
     cooldown:
@@ -73,7 +73,7 @@ updates:
 
   # Android dependencies (Gradle) - Module
   - package-ecosystem: gradle
-    directory: "/modules/@shopify/checkout-sheet-kit/android"
+    directory: "/modules/@shopify/checkout-kit/android"
     schedule:
       interval: daily
     cooldown:

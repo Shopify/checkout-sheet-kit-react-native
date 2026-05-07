@@ -43,8 +43,8 @@ import {
   AcceleratedCheckoutButtons,
   AcceleratedCheckoutWallet,
   ApplePayLabel,
-  useShopifyCheckoutSheet,
-} from '@shopify/checkout-sheet-kit';
+  useShopifyCheckout,
+} from '@shopify/checkout-kit';
 import {useConfig} from '../context/Config';
 import {useShopifyEventHandlers} from '../hooks/useCheckoutEventHandlers';
 
@@ -96,7 +96,7 @@ function ProductDetails({
   const styles = createStyles(colors, cornerRadius);
   const image = product.images?.edges[0]?.node;
   const variant = getVariant(product);
-  const {acceleratedCheckoutsAvailable} = useShopifyCheckoutSheet();
+  const {acceleratedCheckoutsAvailable} = useShopifyCheckout();
 
   const eventHandlers = useShopifyEventHandlers(
     'PDP - AcceleratedCheckoutButtons',
