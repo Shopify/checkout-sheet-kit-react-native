@@ -4,20 +4,22 @@ tags:
   - ios
   - checkout
 ---
+# Timeout tiers:
+#   10000  - in-app interactions (taps, animations)
+#   30000  - checkout step transitions (network)
+#   60000  - cold starts (first launch, first paint of checkout)
 - launchApp:
     clearState: true
+    arguments:
+      AppleLocale: en_US
+      AppleLanguages: "(en)"
 - extendedWaitUntil:
     visible:
-      id: product-0
+      id: product-0-add-to-cart-button
     timeout: 60000
 - tapOn:
-    id: product-0
-- extendedWaitUntil:
-    visible:
-      id: add-to-cart-button
-    timeout: 30000
-- tapOn:
-    id: add-to-cart-button
+    id: product-0-add-to-cart-button
+    enabled: true
 - waitForAnimationToEnd:
     timeout: 10000
 - tapOn:
@@ -25,13 +27,16 @@ tags:
 - extendedWaitUntil:
     visible:
       id: checkout-button
-    timeout: 60000
+    timeout: 30000
 - tapOn:
     id: checkout-button
+    enabled: true
 - extendedWaitUntil:
-    visible: "Email or mobile phone number"
-    timeout: 120000
-- tapOn: "Email or mobile phone number"
+    visible:
+      text: "^Email( or mobile phone number)?$"
+    timeout: 60000
+- tapOn:
+    text: "^Email( or mobile phone number)?$"
 - inputText: "maestro.e2e@shopify.com"
 - hideKeyboard
 - tapOn:
@@ -42,22 +47,26 @@ tags:
     text: "^Last name$"
 - inputText: "Shopify"
 - tapOn: "go down"
-- scrollUntilVisible:
-    element:
-      text: "^ZIP code$"
-    direction: DOWN
-    timeout: 10000
-    centerElement: true
-- inputText: "350 5th Ave New York"
-- extendedWaitUntil:
-    visible: ".*United States.*"
-    timeout: 30000
-- tapOn:
-    text: ".*United States.*"
-    index: 1
-- extendedWaitUntil:
-    visible: "^Economy$"
-    timeout: 30000
+- retry:
+    maxRetries: 3
+    commands:
+      - eraseText: 40
+      - scrollUntilVisible:
+          element:
+            text: "^ZIP code$"
+          direction: DOWN
+          timeout: 10000
+          centerElement: true
+      - inputText: "350 5th Ave New York"
+      - extendedWaitUntil:
+          visible: ".*United States.*"
+          timeout: 30000
+      - tapOn:
+          text: ".*United States.*"
+          index: 1
+      - extendedWaitUntil:
+          visible: "^Economy$"
+          timeout: 30000
 - tapOn: "selected"
 - scrollUntilVisible:
     element:
@@ -68,22 +77,33 @@ tags:
 - tapOn:
     text: "^Field container for: Card number$"
 - inputText: "4242424242424242"
-- hideKeyboard
+- scrollUntilVisible:
+    element:
+      text: "^Field container for: Expiration date \\(MM / YY\\)$"
+    direction: DOWN
+    timeout: 30000
+    centerElement: true
 - tapOn:
-    text: "^Expiration date \\(MM / YY\\)$"
-    index: 1
+    text: "^Field container for: Expiration date \\(MM / YY\\)$"
 - inputText: "1230"
-- hideKeyboard
+- scrollUntilVisible:
+    element:
+      text: "^Field container for: Security code$"
+    direction: DOWN
+    timeout: 30000
+    centerElement: true
 - tapOn:
-    text: "^Security code$"
-    index: 1
+    text: "^Field container for: Security code$"
 - inputText: "123"
-- hideKeyboard
+- scrollUntilVisible:
+    element:
+      text: "^Field container for: Name on card$"
+    direction: DOWN
+    timeout: 30000
+    centerElement: true
 - tapOn:
-    text: "^Name on card$"
-    index: 1
+    text: "^Field container for: Name on card$"
 - inputText: "Maestro Shopify"
-- tapOn: "selected"
 - scrollUntilVisible:
     element:
       text: "^Pay now$"
@@ -94,7 +114,7 @@ tags:
     enabled: true
 - extendedWaitUntil:
     visible: "Thank you"
-    timeout: 120000
+    timeout: 60000
 - tapOn: "Close"
 - extendedWaitUntil:
     visible: "Your cart is empty."
