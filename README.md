@@ -65,20 +65,20 @@ experiences.
 
 ## Platform Requirements
 
-- **React Native** - Minimum version `0.76` (v4+) / `0.70` (v3 and earlier)
+- **React Native** - Minimum version `0.76` (`3.9.0+`) / `0.70` (`<=3.8.x`)
 - **iOS** - Minimum version iOS 13
 - **Android** - Minimum Java 11 & Android SDK version `23`
 
 ## Version Compatibility
 
-Starting with **v4.0.0**, `@shopify/checkout-sheet-kit` requires the React Native
+Starting with **v3.9.0**, `@shopify/checkout-sheet-kit` requires the React Native
 **New Architecture** (TurboModules + Fabric). Apps on the old architecture must
-stay on the `v3.x` line until they migrate.
+stay on `v3.8.x` until they migrate.
 
 | Package version | React Native   | Architecture       |
 | --------------- | -------------- | ------------------ |
-| `4.x`           | `>= 0.76`      | New Architecture   |
-| `3.x`           | `>= 0.70`      | Old Architecture   |
+| `3.9.x`         | `>= 0.76`      | New Architecture   |
+| `<=3.8.x`       | `>= 0.70`      | Old Architecture   |
 
 See the [React Native upgrade guide](https://reactnative.dev/docs/the-new-architecture/use-the-new-architecture)
 for help enabling the New Architecture in your app.
