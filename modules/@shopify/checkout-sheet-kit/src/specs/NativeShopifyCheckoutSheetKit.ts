@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 */
 
 import type {TurboModule} from 'react-native';
-import {TurboModuleRegistry} from 'react-native';
+import {NativeModules, TurboModuleRegistry} from 'react-native';
 
 type IosColorsSpec = {
   tintColor?: string;
@@ -96,6 +96,40 @@ export interface Spec extends TurboModule {
   getConstants(): {version: string};
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>(
-  'ShopifyCheckoutSheetKit',
-);
+type LegacyNativeModule = Omit<Spec, 'getConstants'> & {
+  getConstants?: () => {version: string};
+  version?: string;
+};
+
+const LINKING_ERROR =
+  "The native module 'ShopifyCheckoutSheetKit' from '@shopify/checkout-sheet-kit' doesn't seem to be linked. Make sure the native module is installed and rebuilt.";
+
+function withLegacyConstants(nativeModule: LegacyNativeModule): Spec {
+  if (typeof nativeModule.getConstants === 'function') {
+    return nativeModule as Spec;
+  }
+
+  return Object.assign(Object.create(nativeModule), {
+    getConstants: () => ({version: nativeModule.version ?? ''}),
+  }) as Spec;
+}
+
+function getNativeModule(): Spec {
+  const turboModule = TurboModuleRegistry.get<Spec>('ShopifyCheckoutSheetKit');
+
+  if (turboModule != null) {
+    return turboModule;
+  }
+
+  const nativeModule = NativeModules.ShopifyCheckoutSheetKit as
+    | LegacyNativeModule
+    | undefined;
+
+  if (nativeModule == null) {
+    throw new Error(LINKING_ERROR);
+  }
+
+  return withLegacyConstants(nativeModule);
+}
+
+export default getNativeModule();

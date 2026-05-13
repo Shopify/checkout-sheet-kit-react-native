@@ -24,6 +24,8 @@ SOFTWARE.
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTViewManager.h>
+
+#if RCT_NEW_ARCH_ENABLED
 #import <RNShopifyCheckoutSheetKitSpec/RNShopifyCheckoutSheetKitSpec.h>
 
 // Registers the Swift module class (ShopifyCheckoutSheetKit.swift) with the RN
@@ -61,6 +63,61 @@ RCT_EXTERN_METHOD(setConfig:(NSDictionary *)configuration)
       params);
 }
 @end
+#else
+@interface RCT_EXTERN_MODULE (RCTShopifyCheckoutSheetKit, NSObject)
+
+/**
+ * Present checkout
+ */
+RCT_EXTERN_METHOD(present : (NSString*)checkoutURLString);
+
+/**
+ * Preload checkout
+ */
+RCT_EXTERN_METHOD(preload : (NSString*)checkoutURLString);
+
+/**
+ * Dismiss checkout
+ */
+RCT_EXTERN_METHOD(dismiss);
+
+/**
+ * Invalidate preload cache
+ */
+RCT_EXTERN_METHOD(invalidateCache);
+
+/**
+ * Set configuration for checkout
+ */
+RCT_EXTERN_METHOD(setConfig : (NSDictionary*)configuration);
+
+/**
+ * Return configuration for checkout
+ */
+RCT_EXTERN_METHOD(getConfig : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject);
+
+/**
+ * Configure AcceleratedCheckouts
+ */
+RCT_EXTERN_METHOD(configureAcceleratedCheckouts : (NSString*)storefrontDomain storefrontAccessToken : (
+  NSString*)storefrontAccessToken customerEmail : (NSString*)customerEmail customerPhoneNumber : (NSString*)
+    customerPhoneNumber customerAccessToken : (NSString*)customerAccessToken applePayMerchantIdentifier : (NSString*)
+      applePayMerchantIdentifier applyPayContactFields : (NSArray*)applyPayContactFields supportedShippingCountries : (NSArray*)supportedShippingCountries resolve : (
+        RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject);
+
+/**
+ * Check if accelerated checkout is available
+ */
+RCT_EXTERN_METHOD(
+  isAcceleratedCheckoutAvailable : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject);
+
+/**
+ * Check if Apple Pay is available
+ */
+RCT_EXTERN_METHOD(isApplePayAvailable : (RCTPromiseResolveBlock)resolve reject : (RCTPromiseRejectBlock)reject);
+
+@end
+#endif
 
 /**
  * AcceleratedCheckoutButtons View Manager
