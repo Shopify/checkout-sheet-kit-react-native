@@ -151,21 +151,23 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   /**
    * Retrieves the current checkout configuration
-   * @returns The current Configuration
+   * @returns Promise containing the current Configuration
    */
-  public getConfig(): Configuration {
-    return this.coerceConfigurationResult(RNShopifyCheckoutSheetKit.getConfig());
+  public async getConfig(): Promise<Configuration> {
+    const config = await RNShopifyCheckoutSheetKit.getConfig();
+    return this.coerceConfigurationResult(config);
   }
 
   /**
    * Updates the checkout configuration
    * @param configuration New configuration settings to apply
    */
-  public setConfig(configuration: Configuration): void {
+  public async setConfig(configuration: Configuration): Promise<void> {
     if (configuration.acceleratedCheckouts) {
-      this._acceleratedCheckoutsReady = this.configureAcceleratedCheckouts(
-        configuration.acceleratedCheckouts,
-      );
+      this._acceleratedCheckoutsReady =
+        await this.configureAcceleratedCheckouts(
+          configuration.acceleratedCheckouts,
+        );
     }
     RNShopifyCheckoutSheetKit.setConfig(configuration);
   }
@@ -233,9 +235,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * Configure AcceleratedCheckouts for Shop Pay and Apple Pay buttons
    * @param config Configuration for AcceleratedCheckouts
    */
-  public configureAcceleratedCheckouts(
+  public async configureAcceleratedCheckouts(
     config: AcceleratedCheckoutConfiguration,
-  ): boolean {
+  ): Promise<boolean> {
     if (!this.acceleratedCheckoutsSupported) {
       return false;
     }
@@ -265,9 +267,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   /**
    * Check if accelerated checkout is available for the given cart or product
-   * @returns boolean indicating availability
+   * @returns Promise<boolean> indicating availability
    */
-  public isAcceleratedCheckoutAvailable(): boolean {
+  public async isAcceleratedCheckoutAvailable(): Promise<boolean> {
     if (!this.acceleratedCheckoutsSupported) {
       return false;
     }

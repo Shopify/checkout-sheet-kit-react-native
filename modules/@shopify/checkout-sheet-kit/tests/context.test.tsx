@@ -348,7 +348,7 @@ describe('useShopifyCheckoutSheet', () => {
       </Wrapper>,
     );
 
-    const config = hookValue.getConfig();
+    const config = await hookValue.getConfig();
     expect(config).toEqual({
       preloading: true,
       colorScheme: 'automatic',
