@@ -31,6 +31,7 @@ import UIKit
 @objc(RCTShopifyCheckoutSheetKit)
 class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     private var hasListeners = false
+    private var clickLinkInterceptionEnabled = false
 
     internal var checkoutSheet: UIViewController?
     private var acceleratedCheckoutsConfiguration: Any?
@@ -54,7 +55,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     }
 
     override func supportedEvents() -> [String]! {
-        return ["close", "completed", "error", "pixel"]
+        return ["clickLink", "close", "completed", "error", "pixel"]
     }
 
     override func startObserving() {
@@ -84,6 +85,16 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     func checkoutDidEmitWebPixelEvent(event: ShopifyCheckoutSheetKit.PixelEvent) {
         if hasListeners {
             sendEvent(withName: "pixel", body: ShopifyEventSerialization.serialize(pixelEvent: event))
+        }
+    }
+
+    func checkoutDidClickLink(url: URL) {
+        if hasListeners, clickLinkInterceptionEnabled {
+            sendEvent(withName: "clickLink", body: ["url": url.absoluteString])
+        } else if UIApplication.shared.canOpenURL(url) {
+            // No JS listener owns links right now — preserve the kit's default
+            // CheckoutDelegate behavior of opening the URL externally.
+            UIApplication.shared.open(url)
         }
     }
 
@@ -294,6 +305,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
 
     @objc func initiateGeolocationRequest(_ allow: Bool) {
         // No-op on iOS — geolocation permission is handled natively
+    }
+
+    @objc func setClickLinkInterceptionEnabled(_ enabled: Bool) {
+        clickLinkInterceptionEnabled = enabled
     }
 
     // MARK: - Private

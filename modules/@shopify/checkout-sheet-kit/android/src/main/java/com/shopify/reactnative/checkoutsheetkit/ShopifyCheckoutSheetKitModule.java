@@ -51,6 +51,10 @@ public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKit
 
   private CustomCheckoutEventProcessor checkoutEventProcessor;
 
+  // Written from the JS thread, read from the main thread when a checkout link
+  // is clicked, hence volatile.
+  private volatile boolean clickLinkInterceptionEnabled = false;
+
   public ShopifyCheckoutSheetKitModule(ReactApplicationContext reactContext) {
     super(reactContext);
 
@@ -83,7 +87,8 @@ public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKit
   public void present(String checkoutURL) {
     Activity currentActivity = getCurrentActivity();
     if (currentActivity instanceof ComponentActivity) {
-      checkoutEventProcessor = new CustomCheckoutEventProcessor(currentActivity, this.reactContext);
+      checkoutEventProcessor = new CustomCheckoutEventProcessor(currentActivity, this.reactContext,
+          () -> clickLinkInterceptionEnabled);
       currentActivity.runOnUiThread(() -> {
         checkoutSheet = ShopifyCheckoutSheetKit.present(checkoutURL, (ComponentActivity) currentActivity,
             checkoutEventProcessor);
@@ -196,6 +201,11 @@ public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKit
     if (checkoutEventProcessor != null) {
       checkoutEventProcessor.invokeGeolocationCallback(allow);
     }
+  }
+
+  @ReactMethod
+  public void setClickLinkInterceptionEnabled(boolean enabled) {
+    clickLinkInterceptionEnabled = enabled;
   }
 
   // Private

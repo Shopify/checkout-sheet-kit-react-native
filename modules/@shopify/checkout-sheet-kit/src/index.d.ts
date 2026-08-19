@@ -172,6 +172,7 @@ export type Configuration = CommonConfiguration & {
   );
 
 export type CheckoutEvent =
+  | 'clickLink'
   | 'close'
   | 'completed'
   | 'error'
@@ -182,7 +183,20 @@ export interface GeolocationRequestEvent {
   origin: string;
 }
 
+/**
+ * Emitted when a link is clicked within the checkout sheet that would
+ * otherwise be opened outside of it (e.g. in the system browser).
+ *
+ * Note: while at least one 'clickLink' listener is attached, the SDK's
+ * default link handling (opening the URL externally) is disabled — the
+ * host app owns every clicked link.
+ */
+export interface ClickLinkEvent {
+  url: string;
+}
+
 export type CloseEventCallback = () => void;
+export type ClickLinkEventCallback = (event: ClickLinkEvent) => void;
 export type GeolocationRequestEventCallback = (
   event: GeolocationRequestEvent,
 ) => void;
@@ -194,6 +208,7 @@ export type CheckoutCompletedEventCallback = (
 
 export type CheckoutEventCallback =
   | CloseEventCallback
+  | ClickLinkEventCallback
   | CheckoutExceptionCallback
   | CheckoutCompletedEventCallback
   | GeolocationRequestEventCallback
@@ -293,6 +308,11 @@ function addEventListener(
 function addEventListener(
   event: 'geolocationRequest',
   callback: GeolocationRequestEventCallback,
+): Maybe<EmitterSubscription>;
+
+function addEventListener(
+  event: 'clickLink',
+  callback: ClickLinkEventCallback,
 ): Maybe<EmitterSubscription>;
 
 function removeEventListeners(event: CheckoutEvent): void;

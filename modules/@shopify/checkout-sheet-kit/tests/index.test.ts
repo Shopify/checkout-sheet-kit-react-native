@@ -489,6 +489,96 @@ describe('ShopifyCheckoutSheetKit', () => {
     });
   });
 
+  describe('clickLink', () => {
+    it('delivers clicked link URLs to the listener', () => {
+      const instance = new ShopifyCheckoutSheet();
+      const callback = jest.fn();
+      instance.addEventListener('clickLink', callback);
+      expect(eventEmitter.addListener).toHaveBeenCalledWith(
+        'clickLink',
+        expect.any(Function),
+      );
+      eventEmitter.emit('clickLink', {url: 'https://shopify.com/account'});
+      expect(callback).toHaveBeenCalledWith({
+        url: 'https://shopify.com/account',
+      });
+    });
+
+    it('parses stringified clickLink event data', () => {
+      const instance = new ShopifyCheckoutSheet();
+      const callback = jest.fn();
+      instance.addEventListener('clickLink', callback);
+      eventEmitter.emit(
+        'clickLink',
+        JSON.stringify({url: 'https://shopify.com/account'}),
+      );
+      expect(callback).toHaveBeenCalledWith({
+        url: 'https://shopify.com/account',
+      });
+    });
+
+    it('enables native interception when the first listener is added', () => {
+      const instance = new ShopifyCheckoutSheet();
+      instance.addEventListener('clickLink', jest.fn());
+      expect(
+        NativeModule.setClickLinkInterceptionEnabled,
+      ).toHaveBeenCalledTimes(1);
+      expect(NativeModule.setClickLinkInterceptionEnabled).toHaveBeenCalledWith(
+        true,
+      );
+
+      // A second listener must not re-enable
+      instance.addEventListener('clickLink', jest.fn());
+      expect(
+        NativeModule.setClickLinkInterceptionEnabled,
+      ).toHaveBeenCalledTimes(1);
+    });
+
+    it('disables native interception when the last listener is removed', () => {
+      const instance = new ShopifyCheckoutSheet();
+      const first = instance.addEventListener('clickLink', jest.fn());
+      const second = instance.addEventListener('clickLink', jest.fn());
+
+      first?.remove();
+      expect(
+        NativeModule.setClickLinkInterceptionEnabled,
+      ).not.toHaveBeenCalledWith(false);
+
+      second?.remove();
+      expect(
+        NativeModule.setClickLinkInterceptionEnabled,
+      ).toHaveBeenLastCalledWith(false);
+
+      // Removing twice must not decrement below zero
+      second?.remove();
+      expect(
+        NativeModule.setClickLinkInterceptionEnabled,
+      ).toHaveBeenCalledTimes(2);
+    });
+
+    it('disables native interception via removeEventListeners', () => {
+      const instance = new ShopifyCheckoutSheet();
+      instance.addEventListener('clickLink', jest.fn());
+      instance.removeEventListeners('clickLink');
+      expect(eventEmitter.removeAllListeners).toHaveBeenCalledWith(
+        'clickLink',
+      );
+      expect(
+        NativeModule.setClickLinkInterceptionEnabled,
+      ).toHaveBeenLastCalledWith(false);
+    });
+
+    it('does not toggle native interception for other events', () => {
+      const instance = new ShopifyCheckoutSheet();
+      const subscription = instance.addEventListener('close', jest.fn());
+      subscription?.remove();
+      instance.removeEventListeners('close');
+      expect(
+        NativeModule.setClickLinkInterceptionEnabled,
+      ).not.toHaveBeenCalled();
+    });
+  });
+
   describe('Geolocation', () => {
     const defaultConfig = {};
 

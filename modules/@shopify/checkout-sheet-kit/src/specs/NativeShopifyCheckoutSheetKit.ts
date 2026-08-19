@@ -91,6 +91,7 @@ export interface Spec extends TurboModule {
   isAcceleratedCheckoutAvailable(): boolean;
   isApplePayAvailable(): boolean;
   initiateGeolocationRequest(allow: boolean): void;
+  setClickLinkInterceptionEnabled(enabled: boolean): void;
   addListener(eventName: string): void;
   removeListeners(count: number): void;
   getConstants(): {version: string};

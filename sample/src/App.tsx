@@ -50,6 +50,7 @@ import {
 import type {
   CheckoutCompletedEvent,
   CheckoutException,
+  ClickLinkEvent,
   PixelEvent,
 } from '@shopify/checkout-sheet-kit';
 import {ConfigProvider, useConfig} from './context/Config';
@@ -235,11 +236,21 @@ function AppWithContext({children}: PropsWithChildren) {
       },
     );
 
+    // Note: while a 'clickLink' listener is attached, the SDK no longer opens
+    // clicked links itself — the app owns every link tapped in the sheet.
+    const clickLink = shopify.addEventListener(
+      'clickLink',
+      (event: ClickLinkEvent) => {
+        eventHandlers.onClickLink?.(event.url);
+      },
+    );
+
     return () => {
       pixel?.remove();
       completed?.remove();
       close?.remove();
       error?.remove();
+      clickLink?.remove();
     };
   }, [shopify, eventHandlers]);
 

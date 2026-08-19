@@ -24,6 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SO
 package com.shopify.reactnative.checkoutsheetkit;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.webkit.GeolocationPermissions;
 
@@ -42,7 +43,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor {
+
+  /**
+   * java.util.function.Supplier requires API 24; this module's minSdk is 23.
+   */
+  interface BooleanSupplier {
+    boolean get();
+  }
+
   private final ReactApplicationContext reactContext;
+  private final BooleanSupplier clickLinkInterceptionEnabled;
   private final ObjectMapper mapper = new ObjectMapper();
 
   // Geolocation-specific variables
@@ -51,8 +61,16 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   private GeolocationPermissions.Callback geolocationCallback;
 
   public CustomCheckoutEventProcessor(Context context, ReactApplicationContext reactContext) {
+    this(context, reactContext, () -> false);
+  }
+
+  public CustomCheckoutEventProcessor(
+      Context context,
+      ReactApplicationContext reactContext,
+      BooleanSupplier clickLinkInterceptionEnabled) {
     super(context);
     this.reactContext = reactContext;
+    this.clickLinkInterceptionEnabled = clickLinkInterceptionEnabled;
   }
 
   // Public methods
@@ -130,6 +148,19 @@ public class CustomCheckoutEventProcessor extends DefaultCheckoutEventProcessor 
   @Override
   public void onCheckoutCanceled() {
     sendEvent("close", null);
+  }
+
+  @Override
+  public void onCheckoutLinkClicked(@NonNull Uri uri) {
+    if (clickLinkInterceptionEnabled.get()) {
+      WritableNativeMap params = new WritableNativeMap();
+      params.putString("url", uri.toString());
+      sendEvent("clickLink", params);
+    } else {
+      // No JS listener owns links right now — preserve the kit's default
+      // behavior (ACTION_VIEW / mailto / tel handling).
+      super.onCheckoutLinkClicked(uri);
+    }
   }
 
   @Override

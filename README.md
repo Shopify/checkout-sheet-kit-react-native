@@ -48,6 +48,7 @@ experiences.
 - [Checkout lifecycle](#checkout-lifecycle)
   - [`addEventListener(eventName, callback)`](#addeventlistenereventname-callback)
   - [`removeEventListeners(eventName)`](#removeeventlistenerseventname)
+  - [Intercepting clicked links](#intercepting-clicked-links)
 - [Behavioral data - Web pixels](#behavioral-data---web-pixels)
 - [Identity \& customer accounts](#identity--customer-accounts)
   - [Cart: buyer bag, identity, and preferences](#cart-buyer-bag-identity-and-preferences)
@@ -594,9 +595,9 @@ Should you wish to manually clear the preload cache, there is a `ShopifyCheckout
 
 ## Checkout lifecycle
 
-There are currently 3 checkout events exposed through the Native Module. You can
-subscribe to these events using `addEventListener` and `removeEventListeners`
-methods - available on both the context provider as well as the class instance.
+You can subscribe to checkout events using the `addEventListener` and
+`removeEventListeners` methods - available on both the context provider as well
+as the class instance.
 
 | Name        | Callback                                  | Description                                                  |
 | ----------- | ----------------------------------------- | ------------------------------------------------------------ |
@@ -604,6 +605,7 @@ methods - available on both the context provider as well as the class instance.
 | `completed` | `(event: CheckoutCompletedEvent) => void` | Fired when the checkout has been successfully completed.     |
 | `error`     | `(error: {message: string}) => void`      | Fired when a checkout exception has been raised.             |
 | `pixel`     | `(event: PixelEvent) => void`             | Fired when a Web Pixel event has been relayed from checkout. |
+| `clickLink` | `(event: ClickLinkEvent) => void`         | Fired when a link is clicked that would be opened outside of checkout. See [Intercepting clicked links](#intercepting-clicked-links). |
 
 ### `addEventListener(eventName, callback)`
 
@@ -660,6 +662,36 @@ useEffect(() => {
 
 On the rare occasion that you want to remove all event listeners for a given
 `eventName`, you can use the `removeEventListeners(eventName)` method.
+
+### Intercepting clicked links
+
+By default, links clicked within checkout that would be opened outside of it
+are handed to the operating system. Subscribe to the `clickLink` event to
+handle these links yourself instead:
+
+```tsx
+const shopifyCheckout = useShopifyCheckoutSheet();
+
+useEffect(() => {
+  const clickLink = shopifyCheckout.addEventListener(
+    'clickLink',
+    (event: ClickLinkEvent) => {
+      // Handle event.url
+    },
+  );
+
+  return () => {
+    clickLink?.remove();
+  };
+}, [shopifyCheckout]);
+```
+
+> [!IMPORTANT]
+> While at least one `clickLink` listener is attached, the SDK's default link
+> handling is disabled - your app is responsible for every clicked link. Fall
+> back to `Linking.openURL(event.url)` for any URL you don't handle
+> explicitly. Once the last listener is removed, the default behavior is
+> restored.
 
 ## Behavioral data - Web pixels
 

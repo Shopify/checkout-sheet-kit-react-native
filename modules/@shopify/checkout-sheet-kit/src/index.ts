@@ -34,6 +34,7 @@ import type {
   AcceleratedCheckoutConfiguration,
   CheckoutEvent,
   CheckoutEventCallback,
+  ClickLinkEvent,
   Configuration,
   Features,
   GeolocationRequestEvent,
@@ -80,6 +81,11 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   private features: Features;
   private geolocationCallback: Maybe<EventSubscription>;
+
+  // Tracks live 'clickLink' subscriptions so native link interception is only
+  // enabled while at least one listener exists. While enabled, the SDK's
+  // default link handling (opening externally) is suppressed.
+  private clickLinkListenerCount = 0;
 
   private _acceleratedCheckoutsReady = false;
 
@@ -206,12 +212,23 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
           callback,
         );
         break;
+      case 'clickLink':
+        eventCallback = this.interceptEventEmission('clickLink', callback);
+        break;
       default:
         eventCallback = callback;
     }
 
-    // Default handler for all non-pixel events
-    return ShopifyCheckoutSheet.eventEmitter.addListener(event, eventCallback);
+    const subscription = ShopifyCheckoutSheet.eventEmitter.addListener(
+      event,
+      eventCallback,
+    );
+
+    if (event === 'clickLink') {
+      return this.trackClickLinkSubscription(subscription);
+    }
+
+    return subscription;
   }
 
   /**
@@ -220,6 +237,11 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    */
   public removeEventListeners(event: CheckoutEvent) {
     ShopifyCheckoutSheet.eventEmitter.removeAllListeners(event);
+
+    if (event === 'clickLink' && this.clickLinkListenerCount > 0) {
+      this.clickLinkListenerCount = 0;
+      RNShopifyCheckoutSheetKit.setClickLinkInterceptionEnabled(false);
+    }
   }
 
   /**
@@ -286,6 +308,39 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
   }
 
   // --- private
+
+  /**
+   * Enables native 'clickLink' interception while at least one listener is
+   * attached, and restores the SDK's default link handling once the last
+   * listener is removed.
+   */
+  private trackClickLinkSubscription(
+    subscription: EmitterSubscription,
+  ): EmitterSubscription {
+    this.clickLinkListenerCount += 1;
+    if (this.clickLinkListenerCount === 1) {
+      RNShopifyCheckoutSheetKit.setClickLinkInterceptionEnabled(true);
+    }
+
+    const originalRemove = subscription.remove.bind(subscription);
+    let removed = false;
+    subscription.remove = () => {
+      originalRemove();
+      if (removed) {
+        return;
+      }
+      removed = true;
+      this.clickLinkListenerCount = Math.max(
+        0,
+        this.clickLinkListenerCount - 1,
+      );
+      if (this.clickLinkListenerCount === 0) {
+        RNShopifyCheckoutSheetKit.setClickLinkInterceptionEnabled(false);
+      }
+    };
+
+    return subscription;
+  }
 
   /**
    * Accelerated Checkouts is only supported from iOS 16.0 onwards
@@ -581,6 +636,7 @@ export type {
   CheckoutEvent,
   CheckoutEventCallback,
   CheckoutException,
+  ClickLinkEvent,
   Configuration,
   CustomEvent,
   Features,

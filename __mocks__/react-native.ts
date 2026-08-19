@@ -59,6 +59,7 @@ const ShopifyCheckoutSheetKit = {
   addEventListener: jest.fn(),
   removeEventListeners: jest.fn(),
   initiateGeolocationRequest: jest.fn(),
+  setClickLinkInterceptionEnabled: jest.fn(),
   configureAcceleratedCheckouts: jest.fn(() => true),
   isAcceleratedCheckoutAvailable: jest.fn(() => true),
   isApplePayAvailable: jest.fn(() => true),
