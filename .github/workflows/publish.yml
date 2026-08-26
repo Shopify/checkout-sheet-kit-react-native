@@ -41,6 +41,9 @@ jobs:
           pnpm module clean
           pnpm module build
           cd modules/@shopify/checkout-sheet-kit
-          npm publish --access public --tag ${{ steps.npm-tag.outputs.tag }}
+          pnpm dlx npm@11.5.1 publish --no-git-checks --ignore-scripts --access public --tag "$NPM_TAG" --provenance
         env:
-          NPM_TOKEN: '' # Empty string forces OIDC
+          NPM_TAG: ${{ steps.npm-tag.outputs.tag }}
+          NPM_CONFIG_PROVENANCE: "true"
+          NPM_TOKEN: ""
+          NODE_AUTH_TOKEN: ""
