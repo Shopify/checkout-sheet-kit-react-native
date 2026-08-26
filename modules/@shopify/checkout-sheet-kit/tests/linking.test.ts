@@ -6,7 +6,7 @@ function createNativeModule(version: string) {
     present: jest.fn(),
     dismiss: jest.fn(),
     invalidateCache: jest.fn(),
-    getConfig: jest.fn(() => ({
+    getConfig: jest.fn(async () => ({
       preloading: true,
       colorScheme: 'automatic',
       logLevel: 'error',
@@ -15,9 +15,9 @@ function createNativeModule(version: string) {
     addEventListener: jest.fn(),
     removeEventListeners: jest.fn(),
     initiateGeolocationRequest: jest.fn(),
-    configureAcceleratedCheckouts: jest.fn(() => true),
-    isAcceleratedCheckoutAvailable: jest.fn(() => true),
-    isApplePayAvailable: jest.fn(() => true),
+    configureAcceleratedCheckouts: jest.fn(async () => true),
+    isAcceleratedCheckoutAvailable: jest.fn(async () => true),
+    isApplePayAvailable: jest.fn(async () => true),
     addListener: jest.fn(),
     removeListeners: jest.fn(),
   };

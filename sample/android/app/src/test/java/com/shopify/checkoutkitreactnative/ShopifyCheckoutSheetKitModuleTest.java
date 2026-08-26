@@ -3,6 +3,7 @@ package com.shopify.checkoutkitreactnative;
 import androidx.activity.ComponentActivity;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -421,7 +422,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     shopifyCheckoutSheetKitModule.setConfig(config);
 
-    WritableMap result = shopifyCheckoutSheetKitModule.getConfig();
+    WritableMap result = getResolvedConfig();
 
     assertThat(result).isNotNull();
     assertThat(result.getString("logLevel")).isEqualTo("debug");
@@ -434,7 +435,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     shopifyCheckoutSheetKitModule.setConfig(config);
 
-    WritableMap result = shopifyCheckoutSheetKitModule.getConfig();
+    WritableMap result = getResolvedConfig();
 
     assertThat(result).isNotNull();
     assertThat(result.getString("logLevel")).isEqualTo("error");
@@ -447,7 +448,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     shopifyCheckoutSheetKitModule.setConfig(config);
 
-    WritableMap result = shopifyCheckoutSheetKitModule.getConfig();
+    WritableMap result = getResolvedConfig();
 
     assertThat(result).isNotNull();
     assertThat(result.getString("logLevel")).isEqualTo("error");
@@ -460,7 +461,7 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
     shopifyCheckoutSheetKitModule.setConfig(config);
 
-    WritableMap result = shopifyCheckoutSheetKitModule.getConfig();
+    WritableMap result = getResolvedConfig();
 
     assertThat(result).isNotNull();
     assertThat(result.getString("logLevel")).isEqualTo("error");
@@ -468,10 +469,46 @@ public class ShopifyCheckoutSheetKitModuleTest {
 
   @Test
   public void testGetConfigReturnsDefaultLogLevel() {
-    WritableMap result = shopifyCheckoutSheetKitModule.getConfig();
+    WritableMap result = getResolvedConfig();
 
     assertThat(result).isNotNull();
     assertThat(result.getString("logLevel")).isEqualTo("error");
+  }
+
+  @Test
+  public void testConfigureAcceleratedCheckoutsResolvesFalse() {
+    PromiseMock promise = new PromiseMock();
+
+    shopifyCheckoutSheetKitModule.configureAcceleratedCheckouts(
+        "shop.example.com",
+        "token",
+        null,
+        null,
+        null,
+        null,
+        new JavaOnlyArray(),
+        new JavaOnlyArray(),
+        promise);
+
+    assertThat(promise.resolvedValue).isEqualTo(false);
+  }
+
+  @Test
+  public void testAcceleratedCheckoutAvailabilityResolvesFalse() {
+    PromiseMock promise = new PromiseMock();
+
+    shopifyCheckoutSheetKitModule.isAcceleratedCheckoutAvailable(promise);
+
+    assertThat(promise.resolvedValue).isEqualTo(false);
+  }
+
+  @Test
+  public void testApplePayAvailabilityResolvesFalse() {
+    PromiseMock promise = new PromiseMock();
+
+    shopifyCheckoutSheetKitModule.isApplePayAvailable(promise);
+
+    assertThat(promise.resolvedValue).isEqualTo(false);
   }
 
   /**
@@ -632,6 +669,14 @@ public class ShopifyCheckoutSheetKitModuleTest {
   /**
    * Helpers
    */
+
+  private WritableMap getResolvedConfig() {
+    PromiseMock promise = new PromiseMock();
+
+    shopifyCheckoutSheetKitModule.getConfig(promise);
+
+    return (WritableMap) promise.resolvedValue;
+  }
 
   private JavaOnlyMap createValidLightColors() {
     JavaOnlyMap colors = new JavaOnlyMap();

@@ -213,7 +213,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         NotificationCenter.default.post(name: Notification.Name("CheckoutKitConfigurationUpdated"), object: nil)
     }
 
-    @objc func getConfig() -> NSDictionary {
+    private func configurationDictionary() -> NSDictionary {
         return [
             "title": ShopifyCheckoutSheetKit.configuration.title,
             "preloading": ShopifyCheckoutSheetKit.configuration.preloading.enabled,
@@ -229,10 +229,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         _ resolve: @escaping RCTPromiseResolveBlock,
         reject _: @escaping RCTPromiseRejectBlock
     ) {
-        resolve(getConfig())
+        resolve(configurationDictionary())
     }
 
-    @objc func configureAcceleratedCheckouts(
+    private func configureAcceleratedCheckoutsResult(
         _ storefrontDomain: String,
         storefrontAccessToken: String,
         customerEmail: String?,
@@ -293,7 +293,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         resolve: @escaping RCTPromiseResolveBlock,
         reject _: @escaping RCTPromiseRejectBlock
     ) {
-        resolve(configureAcceleratedCheckouts(
+        resolve(configureAcceleratedCheckoutsResult(
             storefrontDomain,
             storefrontAccessToken: storefrontAccessToken,
             customerEmail: customerEmail,
@@ -305,7 +305,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         ))
     }
 
-    @objc func isAcceleratedCheckoutAvailable() -> NSNumber {
+    private func acceleratedCheckoutAvailable() -> NSNumber {
         guard #available(iOS 16.0, *) else {
             return NSNumber(value: false)
         }
@@ -317,10 +317,10 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         _ resolve: @escaping RCTPromiseResolveBlock,
         reject _: @escaping RCTPromiseRejectBlock
     ) {
-        resolve(isAcceleratedCheckoutAvailable())
+        resolve(acceleratedCheckoutAvailable())
     }
 
-    @objc func isApplePayAvailable() -> NSNumber {
+    private func applePayAvailable() -> NSNumber {
         guard #available(iOS 16.0, *) else {
             return NSNumber(value: false)
         }
@@ -334,7 +334,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         _ resolve: @escaping RCTPromiseResolveBlock,
         reject _: @escaping RCTPromiseRejectBlock
     ) {
-        resolve(isApplePayAvailable())
+        resolve(applePayAvailable())
     }
 
     @objc func initiateGeolocationRequest(_ allow: Bool) {

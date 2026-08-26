@@ -3,7 +3,7 @@
   "license": "MIT",
   "version": "3.9.0",
   "main": "lib/commonjs/index.js",
-  "types": "lib/typescript/src/index.d.ts",
+  "types": "src/index.ts",
   "source": "src/index.ts",
   "react-native": "src/index.ts",
   "module": "lib/module/index.js",

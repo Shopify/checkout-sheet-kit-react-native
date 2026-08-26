@@ -413,7 +413,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * the payload (preloading, title, nested colors) passes through unchanged.
    */
   private coerceConfigurationResult(
-    raw: ReturnType<typeof RNShopifyCheckoutSheetKit.getConfig>,
+    raw: Awaited<ReturnType<typeof RNShopifyCheckoutSheetKit.getConfig>>,
   ): Configuration {
     return {
       ...raw,
