@@ -54,7 +54,10 @@ import {
 import {CheckoutErrorCode} from './errors.d';
 import type {CheckoutCompletedEvent} from './events.d';
 import type {CustomEvent, PixelEvent, StandardEvent} from './pixels.d';
-import {ApplePayLabel, ApplePayStyle} from './components/AcceleratedCheckoutButtons';
+import {
+  ApplePayLabel,
+  ApplePayStyle,
+} from './components/AcceleratedCheckoutButtons';
 import type {
   AcceleratedCheckoutButtonsProps,
   RenderStateChangeEvent,
@@ -83,17 +86,10 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   private _acceleratedCheckoutsReady = false;
 
-  // TurboModule constants are immutable for the lifetime of the process —
-  // capture once so `version` (and any future constants) can be read without
-  // re-crossing the JSI boundary on every access.
-  private readonly constants = RNShopifyCheckoutSheetKit.getConstants();
+  public readonly version = RNShopifyCheckoutSheetKit.getConstants().version;
 
   public get acceleratedCheckoutsReady(): boolean {
     return this._acceleratedCheckoutsReady;
-  }
-
-  public get version(): string {
-    return this.constants.version;
   }
 
   /**

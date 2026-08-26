@@ -21,7 +21,9 @@
     "clean": "rm -rf lib",
     "build": "bob build",
     "lint": "pnpm run typecheck && eslint src",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "api:check": "pnpm build && node ./scripts/extract-api.mjs",
+    "api:dump": "pnpm build && node ./scripts/extract-api.mjs --local"
   },
   "files": [
     "LICENSE",
@@ -52,6 +54,7 @@
     "react-native": "*"
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.58.7",
     "react-native-builder-bob": "^0.23.2",
     "typescript": "^5.9.2"
   },
