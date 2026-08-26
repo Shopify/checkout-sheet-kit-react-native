@@ -325,7 +325,7 @@ export interface ShopifyCheckoutSheetKit {
   /**
    * Return the current config for the checkout. See README.md for more details.
    */
-  getConfig(): Configuration;
+  getConfig(): Promise<Configuration>;
   /**
    * Listen for checkout events
    */
@@ -344,10 +344,10 @@ export interface ShopifyCheckoutSheetKit {
    */
   configureAcceleratedCheckouts(
     config: AcceleratedCheckoutConfiguration,
-  ): boolean;
+  ): Promise<boolean>;
 
   /**
    * Check if accelerated checkout is available for the given cart or product
    */
-  isAcceleratedCheckoutAvailable(): boolean;
+  isAcceleratedCheckoutAvailable(): Promise<boolean>;
 }

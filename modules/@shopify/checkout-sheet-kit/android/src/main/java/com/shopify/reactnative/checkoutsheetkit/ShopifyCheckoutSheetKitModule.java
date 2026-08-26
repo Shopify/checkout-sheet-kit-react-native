@@ -27,21 +27,26 @@ import android.app.Activity;
 import android.content.Context;
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import com.shopify.checkoutsheetkit.NativeShopifyCheckoutSheetKitSpec;
+import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.shopify.checkoutsheetkit.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKitSpec {
+@ReactModule(name = ShopifyCheckoutSheetKitModule.NAME)
+public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule implements TurboModule {
+
+  public static final String NAME = "ShopifyCheckoutSheetKit";
 
   public static Configuration checkoutConfig = new Configuration();
 
@@ -62,8 +67,14 @@ public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKit
     });
   }
 
+  @NonNull
   @Override
-  protected Map<String, Object> getTypedExportedConstants() {
+  public String getName() {
+    return NAME;
+  }
+
+  @Override
+  public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
     constants.put("version", ShopifyCheckoutSheetKit.version);
     return constants;
@@ -81,7 +92,7 @@ public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKit
 
   @ReactMethod
   public void present(String checkoutURL) {
-    Activity currentActivity = getCurrentActivity();
+    Activity currentActivity = getReactApplicationContext().getCurrentActivity();
     if (currentActivity instanceof ComponentActivity) {
       checkoutEventProcessor = new CustomCheckoutEventProcessor(currentActivity, this.reactContext);
       currentActivity.runOnUiThread(() -> {
@@ -101,7 +112,7 @@ public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKit
 
   @ReactMethod
   public void preload(String checkoutURL) {
-    Activity currentActivity = getCurrentActivity();
+    Activity currentActivity = getReactApplicationContext().getCurrentActivity();
 
     if (currentActivity instanceof ComponentActivity) {
       ShopifyCheckoutSheetKit.preload(checkoutURL, (ComponentActivity) currentActivity);
@@ -113,15 +124,15 @@ public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKit
     ShopifyCheckoutSheetKit.invalidate();
   }
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public WritableMap getConfig() {
+  @ReactMethod
+  public void getConfig(Promise promise) {
     WritableMap resultConfig = Arguments.createMap();
 
     resultConfig.putBoolean("preloading", checkoutConfig.getPreloading().getEnabled());
     resultConfig.putString("colorScheme", colorSchemeToString(checkoutConfig.getColorScheme()));
     resultConfig.putString("logLevel", logLevelToString(checkoutConfig.getLogLevel()));
 
-    return resultConfig;
+    promise.resolve(resultConfig);
   }
 
   @ReactMethod
@@ -165,8 +176,8 @@ public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKit
     });
   }
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public boolean configureAcceleratedCheckouts(
+  @ReactMethod
+  public void configureAcceleratedCheckouts(
       String storefrontDomain,
       String storefrontAccessToken,
       String customerEmail,
@@ -174,21 +185,22 @@ public class ShopifyCheckoutSheetKitModule extends NativeShopifyCheckoutSheetKit
       String customerAccessToken,
       String applePayMerchantIdentifier,
       ReadableArray applyPayContactFields,
-      ReadableArray supportedShippingCountries) {
+      ReadableArray supportedShippingCountries,
+      Promise promise) {
     // Accelerated checkouts not supported on Android
-    return false;
+    promise.resolve(false);
   }
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public boolean isAcceleratedCheckoutAvailable() {
+  @ReactMethod
+  public void isAcceleratedCheckoutAvailable(Promise promise) {
     // Accelerated checkouts not supported on Android
-    return false;
+    promise.resolve(false);
   }
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  public boolean isApplePayAvailable() {
+  @ReactMethod
+  public void isApplePayAvailable(Promise promise) {
     // Apple Pay not available on Android
-    return false;
+    promise.resolve(false);
   }
 
   @ReactMethod

@@ -1,10 +1,11 @@
 {
   "name": "@shopify/checkout-sheet-kit",
   "license": "MIT",
-  "version": "4.0.0",
+  "version": "3.9.0",
   "main": "lib/commonjs/index.js",
   "types": "src/index.ts",
   "source": "src/index.ts",
+  "react-native": "src/index.ts",
   "module": "lib/module/index.js",
   "description": "A React Native library for Shopify's Checkout Kit.",
   "author": "Shopify",
@@ -20,7 +21,9 @@
     "clean": "rm -rf lib",
     "build": "bob build",
     "lint": "pnpm run typecheck && eslint src",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "api:check": "pnpm build && node ./scripts/extract-api.mjs",
+    "api:dump": "pnpm build && node ./scripts/extract-api.mjs --local"
   },
   "files": [
     "LICENSE",
@@ -51,6 +54,7 @@
     "react-native": "*"
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.58.7",
     "react-native-builder-bob": "^0.23.2",
     "typescript": "^5.9.2"
   },

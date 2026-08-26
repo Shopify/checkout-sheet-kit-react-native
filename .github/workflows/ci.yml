@@ -33,7 +33,7 @@ jobs:
 
       - run: |
           pnpm module clean
-          pnpm module build
+          pnpm module api:check
           pnpm compare-snapshot
 
   lint:

@@ -108,7 +108,7 @@ android {
     applicationId "com.shopify.checkoutkitreactnative"
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
-    versionCode 11
+    versionCode 13
     versionName "1.1"
   }
   signingConfigs {

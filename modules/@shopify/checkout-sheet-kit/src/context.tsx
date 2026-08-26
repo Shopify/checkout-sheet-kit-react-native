@@ -38,8 +38,8 @@ type Maybe<T> = T | undefined;
 interface Context {
   acceleratedCheckoutsAvailable: boolean;
   addEventListener: AddEventListener;
-  getConfig: () => Configuration | undefined;
-  setConfig: (config: Configuration) => void;
+  getConfig: () => Promise<Configuration | undefined>;
+  setConfig: (config: Configuration) => Promise<void>;
   removeEventListeners: RemoveEventListeners;
   preload: (checkoutUrl: string) => void;
   present: (checkoutUrl: string) => void;
@@ -70,65 +70,81 @@ export function ShopifyCheckoutSheetProvider({
     instance.current = new ShopifyCheckoutSheet(configuration, features);
   }
 
+  const checkout = instance.current;
+
   useEffect(() => {
-    if (!instance.current || !configuration) {
-      return;
+    async function configureCheckoutKit() {
+      if (!configuration) {
+        return;
+      }
+
+      const customer = configuration.acceleratedCheckouts?.customer;
+      if (customer?.accessToken && (customer?.email || customer?.phoneNumber)) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          '[ShopifyCheckoutSheetKit] Providing accessToken with contactFields (email / phoneNumber) is deprecated and will become an error in v4.' +
+            'When the user is authenticated with Customer Accounts, provide accessToken' +
+            'When the user is otherwise authenticated, provide email/phoneNumber.',
+        );
+      }
+
+      await checkout.setConfig(configuration);
+      setAcceleratedCheckoutsAvailable(checkout.acceleratedCheckoutsReady);
     }
 
-    const customer = configuration.acceleratedCheckouts?.customer;
-    if (customer?.accessToken && (customer?.email || customer?.phoneNumber)) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        '[ShopifyCheckoutSheetKit] Providing accessToken with contactFields (email / phoneNumber) is deprecated and will become an error in v4.' +
-        'When the user is authenticated with Customer Accounts, provide accessToken' +
-        'When the user is otherwise authenticated, provide email/phoneNumber.',
-      );
-    }
-
-    instance.current.setConfig(configuration);
-    setAcceleratedCheckoutsAvailable(
-      instance.current.acceleratedCheckoutsReady,
-    );
-  }, [configuration]);
+    configureCheckoutKit();
+  }, [checkout, configuration]);
 
   const addEventListener: AddEventListener = useCallback(
     (eventName, callback): EmitterSubscription | undefined => {
-      return instance.current?.addEventListener(eventName, callback);
+      return checkout.addEventListener(eventName, callback);
     },
-    [],
+    [checkout],
   );
 
-  const removeEventListeners = useCallback((eventName: CheckoutEvent) => {
-    instance.current?.removeEventListeners(eventName);
-  }, []);
+  const removeEventListeners = useCallback(
+    (eventName: CheckoutEvent) => {
+      checkout.removeEventListeners(eventName);
+    },
+    [checkout],
+  );
 
-  const present = useCallback((checkoutUrl: string) => {
-    if (checkoutUrl) {
-      instance.current?.present(checkoutUrl);
-    }
-  }, []);
+  const present = useCallback(
+    (checkoutUrl: string) => {
+      if (checkoutUrl) {
+        checkout.present(checkoutUrl);
+      }
+    },
+    [checkout],
+  );
 
-  const preload = useCallback((checkoutUrl: string) => {
-    if (checkoutUrl) {
-      instance.current?.preload(checkoutUrl);
-    }
-  }, []);
+  const preload = useCallback(
+    (checkoutUrl: string) => {
+      if (checkoutUrl) {
+        checkout.preload(checkoutUrl);
+      }
+    },
+    [checkout],
+  );
 
   const invalidate = useCallback(() => {
-    instance.current?.invalidate();
-  }, []);
+    checkout.invalidate();
+  }, [checkout]);
 
   const dismiss = useCallback(() => {
-    instance.current?.dismiss();
-  }, []);
+    checkout.dismiss();
+  }, [checkout]);
 
-  const setConfig = useCallback((config: Configuration) => {
-    instance.current?.setConfig(config);
-  }, []);
+  const setConfig = useCallback(
+    async (config: Configuration) => {
+      await checkout.setConfig(config);
+    },
+    [checkout],
+  );
 
-  const getConfig = useCallback(() => {
-    return instance.current?.getConfig();
-  }, []);
+  const getConfig = useCallback(async () => {
+    return checkout.getConfig();
+  }, [checkout]);
 
   const context = useMemo((): Context => {
     return {
@@ -141,11 +157,12 @@ export function ShopifyCheckoutSheetProvider({
       present,
       invalidate,
       removeEventListeners,
-      version: instance.current?.version,
+      version: checkout.version,
     };
   }, [
     acceleratedCheckoutsAvailable,
     addEventListener,
+    checkout,
     dismiss,
     removeEventListeners,
     getConfig,

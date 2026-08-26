@@ -503,6 +503,68 @@ class RCTShopifyCheckoutSheetKitMock: RCTShopifyCheckoutSheetKit {
     }
 }
 
+extension RCTShopifyCheckoutSheetKit {
+    func getConfig() -> NSDictionary {
+        var configuration: NSDictionary?
+
+        getConfig({ result in
+            configuration = result as? NSDictionary
+        }, reject: { _, _, _ in })
+
+        return configuration ?? [:]
+    }
+
+    func configureAcceleratedCheckouts(
+        _ storefrontDomain: String,
+        storefrontAccessToken: String,
+        customerEmail: String?,
+        customerPhoneNumber: String?,
+        customerAccessToken: String?,
+        applePayMerchantIdentifier: String?,
+        applyPayContactFields: [String]?,
+        supportedShippingCountries: [String]?
+    ) -> NSNumber {
+        var configured = NSNumber(value: false)
+
+        configureAcceleratedCheckouts(
+            storefrontDomain,
+            storefrontAccessToken: storefrontAccessToken,
+            customerEmail: customerEmail,
+            customerPhoneNumber: customerPhoneNumber,
+            customerAccessToken: customerAccessToken,
+            applePayMerchantIdentifier: applePayMerchantIdentifier,
+            applyPayContactFields: applyPayContactFields,
+            supportedShippingCountries: supportedShippingCountries,
+            resolve: { result in
+                configured = result as? NSNumber ?? NSNumber(value: false)
+            },
+            reject: { _, _, _ in }
+        )
+
+        return configured
+    }
+
+    func isAcceleratedCheckoutAvailable() -> NSNumber {
+        var available = NSNumber(value: false)
+
+        isAcceleratedCheckoutAvailable({ result in
+            available = result as? NSNumber ?? NSNumber(value: false)
+        }, reject: { _, _, _ in })
+
+        return available
+    }
+
+    func isApplePayAvailable() -> NSNumber {
+        var available = NSNumber(value: false)
+
+        isApplePayAvailable({ result in
+            available = result as? NSNumber ?? NSNumber(value: false)
+        }, reject: { _, _, _ in })
+
+        return available
+    }
+}
+
 class AsyncRCTShopifyCheckoutSheetKitMock: RCTShopifyCheckoutSheetKit {
     var didSendEvent = false
     var eventName: String?

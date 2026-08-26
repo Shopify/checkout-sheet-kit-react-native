@@ -54,7 +54,10 @@ import {
 import {CheckoutErrorCode} from './errors.d';
 import type {CheckoutCompletedEvent} from './events.d';
 import type {CustomEvent, PixelEvent, StandardEvent} from './pixels.d';
-import {ApplePayLabel, ApplePayStyle} from './components/AcceleratedCheckoutButtons';
+import {
+  ApplePayLabel,
+  ApplePayStyle,
+} from './components/AcceleratedCheckoutButtons';
 import type {
   AcceleratedCheckoutButtonsProps,
   RenderStateChangeEvent,
@@ -83,17 +86,10 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   private _acceleratedCheckoutsReady = false;
 
-  // TurboModule constants are immutable for the lifetime of the process —
-  // capture once so `version` (and any future constants) can be read without
-  // re-crossing the JSI boundary on every access.
-  private readonly constants = RNShopifyCheckoutSheetKit.getConstants();
+  public readonly version = RNShopifyCheckoutSheetKit.getConstants().version;
 
   public get acceleratedCheckoutsReady(): boolean {
     return this._acceleratedCheckoutsReady;
-  }
-
-  public get version(): string {
-    return this.constants.version;
   }
 
   /**
@@ -151,21 +147,23 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   /**
    * Retrieves the current checkout configuration
-   * @returns The current Configuration
+   * @returns Promise containing the current Configuration
    */
-  public getConfig(): Configuration {
-    return this.coerceConfigurationResult(RNShopifyCheckoutSheetKit.getConfig());
+  public async getConfig(): Promise<Configuration> {
+    const config = await RNShopifyCheckoutSheetKit.getConfig();
+    return this.coerceConfigurationResult(config);
   }
 
   /**
    * Updates the checkout configuration
    * @param configuration New configuration settings to apply
    */
-  public setConfig(configuration: Configuration): void {
+  public async setConfig(configuration: Configuration): Promise<void> {
     if (configuration.acceleratedCheckouts) {
-      this._acceleratedCheckoutsReady = this.configureAcceleratedCheckouts(
-        configuration.acceleratedCheckouts,
-      );
+      this._acceleratedCheckoutsReady =
+        await this.configureAcceleratedCheckouts(
+          configuration.acceleratedCheckouts,
+        );
     }
     RNShopifyCheckoutSheetKit.setConfig(configuration);
   }
@@ -233,9 +231,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * Configure AcceleratedCheckouts for Shop Pay and Apple Pay buttons
    * @param config Configuration for AcceleratedCheckouts
    */
-  public configureAcceleratedCheckouts(
+  public async configureAcceleratedCheckouts(
     config: AcceleratedCheckoutConfiguration,
-  ): boolean {
+  ): Promise<boolean> {
     if (!this.acceleratedCheckoutsSupported) {
       return false;
     }
@@ -265,9 +263,9 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
 
   /**
    * Check if accelerated checkout is available for the given cart or product
-   * @returns boolean indicating availability
+   * @returns Promise<boolean> indicating availability
    */
-  public isAcceleratedCheckoutAvailable(): boolean {
+  public async isAcceleratedCheckoutAvailable(): Promise<boolean> {
     if (!this.acceleratedCheckoutsSupported) {
       return false;
     }
@@ -411,7 +409,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
    * the payload (preloading, title, nested colors) passes through unchanged.
    */
   private coerceConfigurationResult(
-    raw: ReturnType<typeof RNShopifyCheckoutSheetKit.getConfig>,
+    raw: Awaited<ReturnType<typeof RNShopifyCheckoutSheetKit.getConfig>>,
   ): Configuration {
     return {
       ...raw,
