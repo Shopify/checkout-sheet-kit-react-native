@@ -92,7 +92,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule im
 
   @ReactMethod
   public void present(String checkoutURL) {
-    Activity currentActivity = getCurrentActivity();
+    Activity currentActivity = getReactApplicationContext().getCurrentActivity();
     if (currentActivity instanceof ComponentActivity) {
       checkoutEventProcessor = new CustomCheckoutEventProcessor(currentActivity, this.reactContext);
       currentActivity.runOnUiThread(() -> {
@@ -112,7 +112,7 @@ public class ShopifyCheckoutSheetKitModule extends ReactContextBaseJavaModule im
 
   @ReactMethod
   public void preload(String checkoutURL) {
-    Activity currentActivity = getCurrentActivity();
+    Activity currentActivity = getReactApplicationContext().getCurrentActivity();
 
     if (currentActivity instanceof ComponentActivity) {
       ShopifyCheckoutSheetKit.preload(checkoutURL, (ComponentActivity) currentActivity);
