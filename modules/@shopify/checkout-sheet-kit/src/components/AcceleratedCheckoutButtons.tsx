@@ -178,8 +178,6 @@ export type AcceleratedCheckoutButtonsProps = (CartProps | VariantProps) &
  * />
  */
 
-const defaultStyles = {flex: 1};
-
 export const AcceleratedCheckoutButtons: React.FC<
   AcceleratedCheckoutButtonsProps
 > = ({
@@ -306,7 +304,7 @@ export const AcceleratedCheckoutButtons: React.FC<
       testID="accelerated-checkout-buttons"
       applePayLabel={applePayLabel}
       applePayStyle={applePayStyle}
-      style={{...defaultStyles, height: dynamicHeight}}
+      style={dynamicHeight ? {height: dynamicHeight} : undefined}
       checkoutIdentifier={checkoutIdentifier}
       cornerRadius={cornerRadius}
       wallets={wallets}
