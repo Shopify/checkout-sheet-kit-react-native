@@ -4,6 +4,7 @@ import {Platform} from 'react-native';
 import {
   AcceleratedCheckoutButtons,
   AcceleratedCheckoutWallet,
+  ApplePayLabel,
   ApplePayStyle,
   RenderState,
 } from '../src';
@@ -98,6 +99,7 @@ describe('AcceleratedCheckoutButtons', () => {
           cartId={'gid://shopify/Cart/123'}
           cornerRadius={12}
           wallets={[AcceleratedCheckoutWallet.shopPay]}
+          applePayLabel={ApplePayLabel.buy}
           applePayStyle={ApplePayStyle.black}
         />,
       );
@@ -111,6 +113,7 @@ describe('AcceleratedCheckoutButtons', () => {
       expect(nativeComponent.props.wallets).toEqual([
         AcceleratedCheckoutWallet.shopPay,
       ]);
+      expect(nativeComponent.props.applePayLabel).toBe(ApplePayLabel.buy);
       expect(nativeComponent.props.applePayStyle).toBe(ApplePayStyle.black);
     });
 
