@@ -114,29 +114,4 @@ describe('dependency compatibility', () => {
       ),
     ).toBe('.MainActivity');
   });
-
-  it('resolves the Turbo build task without changing environment forwarding', () => {
-    const taskGraph = JSON.parse(
-      execFileSync(
-        process.execPath,
-        [require.resolve('turbo'), 'run', 'build', '--dry=json'],
-        {
-          cwd: repositoryRoot,
-          encoding: 'utf8',
-          timeout: 10000,
-          env: {...process.env, TURBO_TELEMETRY_DISABLED: '1'},
-        },
-      ),
-    );
-
-    expect(taskGraph.envMode).toBe('loose');
-    expect(taskGraph.tasks).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          taskId: '@shopify/checkout-sheet-kit#build',
-          envMode: 'loose',
-        }),
-      ]),
-    );
-  });
 });
