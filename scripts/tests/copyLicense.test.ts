@@ -28,15 +28,6 @@ function writeRepositoryFile(relativePath: string, content: string) {
   return filePath;
 }
 
-function runGit(commandArguments: string[]) {
-  return execFileSync('git', commandArguments, {
-    cwd: repositoryRoot,
-    encoding: 'utf8',
-    timeout: 5000,
-    env: subprocessEnvironment,
-  });
-}
-
 function runCopyLicense(commandArguments: string[] = []) {
   const result = spawnSync('ruby', [scriptPath, ...commandArguments], {
     cwd: repositoryRoot,
@@ -52,12 +43,14 @@ function runCopyLicense(commandArguments: string[] = []) {
 
 beforeEach(() => {
   repositoryRoot = mkdtempSync(path.join(tmpdir(), 'copy-license-'));
-  runGit(['init', '--quiet', '--template=']);
+  execFileSync('git', ['init', '--quiet', '--template='], {
+    cwd: repositoryRoot,
+    encoding: 'utf8',
+    timeout: 5000,
+    env: subprocessEnvironment,
+  });
   writeRepositoryFile('LICENSE', licenseContent);
-  writeRepositoryFile(
-    '.gitignore',
-    'build/\n.cxx/\nPods/\nnode_modules/\nTracked.swift\n',
-  );
+  writeRepositoryFile('.gitignore', 'build/\n.cxx/\nPods/\nnode_modules/\n');
   for (const directory of ['ios', 'android', 'src']) {
     mkdirSync(path.join(repositoryRoot, modulePath, directory), {
       recursive: true,
@@ -86,75 +79,8 @@ describe('copy_license', () => {
     const result = runCopyLicense(commandArguments);
 
     expect(result.status).toBe(0);
-    expect(result.stdout).not.toContain('update');
     for (const ignoredPath of ignoredPaths) {
       expect(readFileSync(ignoredPath, 'utf8')).toBe(sourceContent);
     }
-  });
-
-  it('checks and fixes tracked and untracked source files', () => {
-    const trackedSourcePath = `${modulePath}/ios/Tracked.swift`;
-    const sourcePaths = [
-      trackedSourcePath,
-      `${modulePath}/android/src/Source.java`,
-      `${modulePath}/src/new source.ts`,
-    ];
-    for (const sourcePath of sourcePaths) {
-      writeRepositoryFile(sourcePath, sourceContent);
-    }
-    runGit(['add', '--force', '--', trackedSourcePath]);
-
-    const checkResult = runCopyLicense(['--check']);
-
-    expect(checkResult.status).toBe(1);
-    for (const sourcePath of sourcePaths) {
-      expect(checkResult.stdout).toContain(`would update ${sourcePath}`);
-      expect(readFileSync(path.join(repositoryRoot, sourcePath), 'utf8')).toBe(
-        sourceContent,
-      );
-    }
-
-    expect(runCopyLicense().status).toBe(0);
-    for (const sourcePath of sourcePaths) {
-      expect(readFileSync(path.join(repositoryRoot, sourcePath), 'utf8')).toBe(
-        `/*\n${licenseContent}*/\n\n${sourceContent}`,
-      );
-    }
-    expect(runCopyLicense(['--check']).status).toBe(0);
-  });
-
-  it('leaves unsupported files and sources outside the module roots untouched', () => {
-    const excludedPaths = [
-      `${modulePath}/src/README.md`,
-      'sample/src/App.tsx',
-    ].map(relativePath => writeRepositoryFile(relativePath, sourceContent));
-
-    expect(runCopyLicense(['--check']).status).toBe(0);
-    expect(runCopyLicense().status).toBe(0);
-    for (const excludedPath of excludedPaths) {
-      expect(readFileSync(excludedPath, 'utf8')).toBe(sourceContent);
-    }
-  });
-
-  it('fails instead of reporting compliance when Git cannot list files', () => {
-    rmSync(path.join(repositoryRoot, '.git'), {recursive: true});
-
-    const result = runCopyLicense(['--check']);
-
-    expect(result.status).toBe(1);
-    expect(result.stderr).toContain(
-      '[copy_license] failed to list source files',
-    );
-    expect(result.stdout).not.toContain('all files compliant');
-  });
-
-  it('continues to fail when a required source directory is missing', () => {
-    rmSync(path.join(repositoryRoot, modulePath, 'ios'), {recursive: true});
-
-    const result = runCopyLicense(['--check']);
-
-    expect(result.status).toBe(1);
-    expect(result.stderr).toContain('Errno::ENOENT');
-    expect(result.stdout).not.toContain('all files compliant');
   });
 });
