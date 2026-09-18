@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'find'
+require 'open3'
 
 ##
 # Builds the canonical license block that will be inserted at the top of files
@@ -91,7 +91,14 @@ def copy_license(dir, license_block, normalized_license, check_only: false)
   modified = []
   supported_exts = %w[.swift .h .mm .java .js .ts .tsx]
 
-  Find.find(dir) do |path|
+  raise Errno::ENOENT, dir unless File.exist?(dir)
+
+  output, status = Open3.capture2(
+    'git', 'ls-files', '--cached', '--others', '--exclude-standard', '-z', '--', dir
+  )
+  abort("[copy_license] failed to list source files in #{dir}") unless status.success?
+
+  output.split("\0").each do |path|
     next unless File.file?(path) && supported_exts.any? { |ext| path.end_with?(ext) }
 
     changed = process_file(path, license_block, normalized_license, write: !check_only)
