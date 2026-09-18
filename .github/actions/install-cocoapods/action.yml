@@ -13,11 +13,16 @@ runs:
 
     - name: Cache cocoapods
       id: cache-cocoapods
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
       with:
         path: |
           sample/ios/Pods
-        key: ${{ runner.os }}-cocoapods-${{ hashFiles('sample/ios/Podfile.lock', 'sample/Gemfile.lock', 'sample/Gemfile', 'package.json', 'sample/package.json', 'modules/@shopify/checkout-sheet-kit/package.json', 'pnpm-lock.yaml') }}
+        key:
+          ${{ runner.os }}-cocoapods-${{ hashFiles('sample/ios/Podfile.lock',
+          'sample/Gemfile.lock', 'sample/Gemfile', 'package.json',
+          'sample/package.json',
+          'modules/@shopify/checkout-sheet-kit/package.json', 'pnpm-lock.yaml')
+          }}
 
     - name: Install cocoapods
       shell: bash
