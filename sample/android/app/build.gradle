@@ -56,7 +56,7 @@ react {
     // bundleConfig = file(../rn-cli.config.js)
     //
     //   The name of the generated asset file containing your JS bundle
-    bundleAssetName = "ReactNative.android.bundle"
+    bundleAssetName = "index.android.bundle"
     //
     //   The entry file for bundle generation. Default is 'index.android.js' or 'index.js'
     entryFile = file("../../index.js")
