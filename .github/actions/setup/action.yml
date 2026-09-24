@@ -19,7 +19,7 @@ runs:
         cache: pnpm
 
     - name: Cache turbo build setup
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
       with:
         path: .turbo
         key: ${{ runner.os }}-turbo-${{ github.sha }}
@@ -27,5 +27,5 @@ runs:
           ${{ runner.os }}-turbo-
 
     - name: Install dependencies
-      run: pnpm install --frozen-lockfile
+      run: pnpm install --frozen-lockfile --strict-peer-dependencies
       shell: bash

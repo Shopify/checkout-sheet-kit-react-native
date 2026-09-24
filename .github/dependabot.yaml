@@ -2,84 +2,204 @@ version: 2
 updates:
   # GitHub Actions
   - package-ecosystem: github-actions
-    directory: "/"
+    directory: '/'
     schedule:
       interval: weekly
     cooldown:
       default-days: 7
+    groups:
+      ci-toolchain:
+        applies-to: version-updates
+        patterns:
+          - 'actions/checkout'
+          - 'actions/setup-node'
+          - 'actions/setup-java'
+          - 'actions/cache'
+          - 'pnpm/action-setup'
+          - 'ruby/setup-ruby'
+        update-types: [minor, patch]
+      ci-quality:
+        applies-to: version-updates
+        patterns:
+          - 'norio-nomura/action-swiftlint'
+          - 'MishaKav/jest-coverage-comment'
+        update-types: [minor, patch]
+      repository-automation:
+        applies-to: version-updates
+        patterns:
+          - 'actions/stale'
+          - 'Shopify/shopify-cla-action'
+        update-types: [minor, patch]
 
   # Root package.json (monorepo dependencies)
   - package-ecosystem: npm
-    directory: "/"
+    directory: '/'
     schedule:
       interval: daily
     cooldown:
       default-days: 7
+    groups:
+      react-runtime:
+        applies-to: version-updates
+        patterns:
+          - 'react'
+          - 'react-native'
+          - 'react-test-renderer'
+          - '@types/react'
+          - '@types/react-test-renderer'
+          - '@react-native/*'
+          - '@react-native-community/cli*'
+      navigation-runtime:
+        applies-to: version-updates
+        patterns:
+          - '@react-navigation/*'
+      babel-toolchain:
+        applies-to: version-updates
+        patterns:
+          - '@babel/*'
+          - 'babel-*'
+      jest-toolchain:
+        applies-to: version-updates
+        patterns:
+          - 'jest'
+          - 'jest-*'
+          - '@jest/*'
+          - 'ts-jest'
+          - '@types/jest'
+          - '@testing-library/*'
+      lint-toolchain:
+        applies-to: version-updates
+        patterns:
+          - 'eslint'
+          - 'eslint-*'
+          - '@eslint/*'
+          - '@typescript-eslint/*'
+          - 'prettier'
     ignore:
-      - dependency-name: "*"
+      - dependency-name: '*'
         update-types:
-          - "version-update:semver-major"
-          - "version-update:semver-minor"
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
 
   # Checkout Sheet Kit module dependencies
   - package-ecosystem: npm
-    directory: "/modules/@shopify/checkout-sheet-kit"
+    directory: '/modules/@shopify/checkout-sheet-kit'
     schedule:
       interval: daily
     cooldown:
       default-days: 7
+    groups:
+      module-build-toolchain:
+        applies-to: version-updates
+        patterns:
+          - 'react-native-builder-bob'
+          - '@microsoft/api-extractor'
+          - 'typescript'
     ignore:
-      - dependency-name: "*"
+      - dependency-name: '*'
         update-types:
-          - "version-update:semver-major"
-          - "version-update:semver-minor"
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
 
   # Sample app dependencies
   - package-ecosystem: npm
-    directory: "/sample"
+    directory: '/sample'
     schedule:
       interval: daily
     cooldown:
       default-days: 7
+    groups:
+      babel-toolchain:
+        applies-to: version-updates
+        patterns:
+          - '@babel/*'
+          - 'babel-*'
+      navigation-runtime:
+        applies-to: version-updates
+        patterns:
+          - '@react-navigation/*'
+      graphql-runtime:
+        applies-to: version-updates
+        patterns:
+          - '@apollo/client'
+          - 'graphql'
+      native-crypto-runtime:
+        applies-to: version-updates
+        patterns:
+          - 'react-native-nitro-modules'
+          - 'react-native-quick-crypto'
+          - 'react-native-quick-base64'
     ignore:
-      - dependency-name: "*"
+      - dependency-name: '*'
         update-types:
-          - "version-update:semver-major"
+          - 'version-update:semver-major'
 
   # iOS dependencies (Bundler/CocoaPods via Gemfile)
   - package-ecosystem: bundler
-    directory: "/sample"
+    directory: '/sample'
     schedule:
       interval: daily
     cooldown:
       default-days: 7
+    groups:
+      ios-build-toolchain:
+        applies-to: version-updates
+        patterns:
+          - 'cocoapods*'
+          - 'activesupport'
+          - 'addressable'
+          - 'concurrent-ruby'
+          - 'json'
+          - 'xcodeproj'
+          - 'logger'
+          - 'bigdecimal'
+          - 'benchmark'
+          - 'mutex_m'
     ignore:
-      - dependency-name: "*"
+      - dependency-name: '*'
         update-types:
-          - "version-update:semver-major"
-          - "version-update:semver-minor"
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
 
   # Android dependencies (Gradle) - Sample app
   - package-ecosystem: gradle
-    directory: "/sample/android"
+    directory: '/sample/android'
     schedule:
       interval: daily
     cooldown:
       default-days: 7
+    groups:
+      android-build-toolchain:
+        applies-to: version-updates
+        patterns:
+          - 'com.android.tools.build:gradle'
+          - 'org.jetbrains.kotlin:*'
+          - 'gradle-wrapper'
+      android-test-toolchain:
+        applies-to: version-updates
+        patterns:
+          - 'junit:junit'
+          - 'org.mockito:*'
+          - 'org.assertj:*'
     ignore:
-      - dependency-name: "*"
+      - dependency-name: '*'
         update-types:
-          - "version-update:semver-major"
+          - 'version-update:semver-major'
 
   # Android dependencies (Gradle) - Module
   - package-ecosystem: gradle
-    directory: "/modules/@shopify/checkout-sheet-kit/android"
+    directory: '/modules/@shopify/checkout-sheet-kit/android'
     schedule:
       interval: daily
     cooldown:
       default-days: 7
+    groups:
+      android-build-toolchain:
+        applies-to: version-updates
+        patterns:
+          - 'com.android.tools.build:gradle'
     ignore:
-      - dependency-name: "*"
+      - dependency-name: '*'
         update-types:
-          - "version-update:semver-major"
-          - "version-update:semver-minor"
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
