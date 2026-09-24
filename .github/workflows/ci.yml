@@ -55,6 +55,7 @@ jobs:
           pnpm module build
           pnpm module lint
           pnpm sample lint
+          pnpm exec eslint scripts/tests
 
   test:
     name: Run jest tests
@@ -69,10 +70,7 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - run:
-          pnpm test --coverage
-          --testPathPatterns="modules/@shopify/checkout-sheet-kit/tests"
-          --coverageReporters=json-summary
+      - run: pnpm test --coverage --coverageReporters=json-summary
 
       - name: Coverage comment
         if: github.event_name == 'pull_request'
