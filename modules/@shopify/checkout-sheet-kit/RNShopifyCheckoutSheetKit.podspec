@@ -18,8 +18,8 @@ Pod::Spec.new do |s|
   s.source_files = "ios/*.{h,m,mm,swift}"
 
   s.dependency "React-Core"
-  s.dependency "ShopifyCheckoutSheetKit", "= 3.8.2"
-  s.dependency "ShopifyCheckoutSheetKit/AcceleratedCheckouts", "= 3.8.2"
+  s.dependency "ShopifyCheckoutSheetKit", "= 3.9.1"
+  s.dependency "ShopifyCheckoutSheetKit/AcceleratedCheckouts", "= 3.9.1"
 
   install_modules_dependencies(s) if new_arch_enabled
 end
