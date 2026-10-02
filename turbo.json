@@ -1,8 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "envMode": "loose",
+  "tasks": {
     "build": {
-      "outputs": ["./modules/@shopify/checkout-sheet-kit/lib/**"]
+      "outputs": ["lib/**"]
     },
     "lint": {},
     "build:android": {
