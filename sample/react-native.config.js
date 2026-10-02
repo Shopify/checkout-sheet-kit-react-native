@@ -38,9 +38,6 @@ module.exports = {
     'react-native-quick-crypto': {
       root: resolvePackageRoot('react-native-quick-crypto'),
     },
-    'react-native-reanimated': {
-      root: resolvePackageRoot('react-native-reanimated'),
-    },
     'react-native-safe-area-context': {
       root: resolvePackageRoot('react-native-safe-area-context'),
     },
