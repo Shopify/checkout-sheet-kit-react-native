@@ -23,7 +23,7 @@
     "@react-navigation/native-stack": "7.14.12",
     "@react-navigation/stack": "^7.4.8",
     "@shopify/checkout-sheet-kit": "workspace:*",
-    "graphql": "^16.8.2",
+    "graphql": "^16.14.2",
     "jotai": "^2.13.1",
     "react-native-config": "1.6.1",
     "react-native-dotenv": "^3.4.11",
