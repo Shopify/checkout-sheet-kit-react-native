@@ -304,12 +304,16 @@ export const AcceleratedCheckoutButtons: React.FC<
   return (
     <RCTAcceleratedCheckoutButtons
       testID="accelerated-checkout-buttons"
-      applePayLabel={applePayLabel}
-      applePayStyle={applePayStyle}
-      style={{...defaultStyles, height: dynamicHeight}}
+      {...(applePayLabel === undefined ? {} : {applePayLabel})}
+      {...(applePayStyle === undefined ? {} : {applePayStyle})}
+      style={
+        dynamicHeight === undefined
+          ? defaultStyles
+          : {...defaultStyles, height: dynamicHeight}
+      }
       checkoutIdentifier={checkoutIdentifier}
-      cornerRadius={cornerRadius}
-      wallets={wallets}
+      {...(cornerRadius === undefined ? {} : {cornerRadius})}
+      {...(wallets === undefined ? {} : {wallets})}
       onFail={handleFail}
       onComplete={handleComplete}
       onCancel={handleCancel}
