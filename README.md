@@ -782,7 +782,12 @@ a deep link when Android reports an installed app that can handle it. Since Andr
 unless your app declares them, so deep links for schemes you have not declared **do nothing**. The
 buyer taps the payment button, no app opens, and the payment eventually times out.
 
-Declare each scheme that checkout may open in a `<queries>` element in
+The same happens when you declare a scheme but no installed app handles it, for example a buyer
+without BankID installed. Android reports no matching app, so the deep link is dropped with the same
+Logcat warning described below. Checkout Kit does not show the buyer an error.
+
+Declare each scheme that checkout may open in a
+[`<queries>`](https://developer.android.com/guide/topics/manifest/queries-element) element in
 `android/app/src/main/AndroidManifest.xml`. `<queries>` must be a direct child of `<manifest>`, not
 `<application>`:
 
@@ -854,8 +859,9 @@ If a payment app does not open from checkout, look for this warning in Logcat un
 Unrecognized scheme for link clicked in checkout '<uri>'
 ```
 
-The warning means Android did not report an app for the link's scheme. Add that scheme to
-`<queries>`.
+The warning means Android did not report an app for the link's scheme. Either the scheme is missing
+from `<queries>`, or no installed app handles it. Add the scheme to `<queries>`, and check that the
+payment app is installed on the device.
 
 ## Pickup points / Pickup in store
 
