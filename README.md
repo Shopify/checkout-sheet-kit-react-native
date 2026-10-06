@@ -56,6 +56,7 @@ experiences.
     - [Customer Account API](#customer-account-api)
 - [Offsite Payments](#offsite-payments)
   - [Universal Links - iOS](#universal-links---ios)
+  - [Deep links to payment apps - Android](#deep-links-to-payment-apps---android)
 - [Pickup points / Pickup in store](#pickup-points--pickup-in-store)
   - [Geolocation - iOS](#geolocation---ios)
   - [Geolocation - Android](#geolocation---android)
@@ -768,6 +769,101 @@ public func checkoutDidClickLink(url: URL) {
   }
 }
 ```
+
+### Deep links to payment apps - Android
+
+Some payment providers, such as BankID for Klarna in Sweden or UPI apps in India, finish payment by
+opening an installed banking or wallet app through a custom-scheme deep link (for example
+`bankid:///?autostarttoken=...` or `upi://pay?...`).
+
+Checkout Kit leaves it to you to decide which payment apps checkout can open. To support an app,
+declare its scheme as shown below. If you don't want checkout to open it, leave the scheme out of
+your manifest. On Android, the kit only opens
+a deep link when Android reports an installed app that can handle it. Since Android 11 (API 30),
+[package visibility](https://developer.android.com/training/package-visibility) hides other apps
+unless your app declares them, so deep links for schemes you have not declared **do nothing**. The
+buyer taps the payment button, no app opens, and the payment eventually times out.
+
+The same happens when you declare a scheme but no installed app handles it, for example a buyer
+without BankID installed. Android reports no matching app, so the deep link is dropped with the same
+Logcat warning described below. Checkout Kit does not show the buyer an error.
+
+Declare each scheme that checkout may open in a
+[`<queries>`](https://developer.android.com/guide/topics/manifest/queries-element) element in
+`android/app/src/main/AndroidManifest.xml`. `<queries>` must be a direct child of `<manifest>`, not
+`<application>`:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <queries>
+        <!-- BankID, used by Klarna and other Swedish payment methods -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="bankid" />
+        </intent>
+
+        <!-- UPI apps, such as Google Pay, PhonePe, and Paytm -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="upi" />
+        </intent>
+    </queries>
+
+    <application>
+        ...
+    </application>
+</manifest>
+```
+
+`<queries>` has no wildcard, so add one `<intent>` per scheme. Check each payment provider's
+documentation for the schemes it uses.
+
+For Expo apps, which generate the Android manifest, add the same entries with a config plugin:
+
+```js
+// plugins/withCheckoutDeepLinkQueries.js
+const {withAndroidManifest} = require('expo/config-plugins');
+
+module.exports = function withCheckoutDeepLinkQueries(config, schemes) {
+  return withAndroidManifest(config, config => {
+    const manifest = config.modResults.manifest;
+    manifest.queries = [
+      ...(manifest.queries ?? []),
+      {
+        intent: schemes.map(scheme => ({
+          action: [{$: {'android:name': 'android.intent.action.VIEW'}}],
+          data: [{$: {'android:scheme': scheme}}],
+        })),
+      },
+    ];
+    return config;
+  });
+};
+```
+
+```json
+{
+  "expo": {
+    "plugins": [["./plugins/withCheckoutDeepLinkQueries", ["bankid", "upi"]]]
+  }
+}
+```
+
+> [!NOTE]
+> On Android 10 (API 29) and below, package visibility does not apply, and deep links open without
+> a `<queries>` declaration.
+
+If a payment app does not open from checkout, look for this warning in Logcat under the
+`DefaultCheckoutEventProcessor` tag:
+
+```
+Unrecognized scheme for link clicked in checkout '<uri>'
+```
+
+The warning means Android did not report an app for the link's scheme. Either the scheme is missing
+from `<queries>`, or no installed app handles it. Add the scheme to `<queries>`, and check that the
+payment app is installed on the device.
 
 ## Pickup points / Pickup in store
 
