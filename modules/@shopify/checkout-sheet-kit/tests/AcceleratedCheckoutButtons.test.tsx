@@ -290,19 +290,18 @@ describe('AcceleratedCheckoutButtons', () => {
       expect(onClickLink).not.toHaveBeenCalled();
     });
 
-    it('applies dynamic height when onSizeChange is emitted', async () => {
+    it('applies only the dynamic height when onSizeChange is emitted', async () => {
       const {getByTestId} = render(
         <AcceleratedCheckoutButtons cartId="gid://shopify/Cart/123" />,
       );
       let nativeComponent = getByTestId('accelerated-checkout-buttons');
+      expect(nativeComponent.props.style).toBeUndefined();
+
       await act(async () => {
         nativeComponent.props.onSizeChange({nativeEvent: {height: 42}});
       });
       nativeComponent = getByTestId('accelerated-checkout-buttons');
-      expect(nativeComponent.props.style).toEqual({
-        flex: 1,
-        height: 42,
-      });
+      expect(nativeComponent.props.style).toEqual({height: 42});
     });
 
     it('warns and returns null when missing identifiers in production', () => {
