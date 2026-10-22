@@ -178,7 +178,7 @@ export type AcceleratedCheckoutButtonsProps = (CartProps | VariantProps) &
  * />
  */
 
-const defaultStyles = {flex: 1};
+const defaultStyles = {flexGrow: 1};
 
 export const AcceleratedCheckoutButtons: React.FC<
   AcceleratedCheckoutButtonsProps
