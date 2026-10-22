@@ -277,6 +277,29 @@ class AcceleratedCheckouts_SupportedTests: XCTestCase {
         XCTAssertNotNil(view.instance)
     }
 
+    func testButtonsViewReportsClampedButtonHeight() {
+        configureAcceleratedCheckouts(includeApplePay: false)
+
+        for (requested, expected) in [(10.0, 30.0), (56.0, 56.0), (90.0, 64.0)] {
+            let viewExpectation = expectation(description: "buttonHeight \(requested) renders \(expected)")
+            var fulfilled = false
+
+            let view = RCTAcceleratedCheckoutButtonsView()
+            view.wallets = ["shopPay"]
+            view.buttonHeight = NSNumber(value: requested)
+            view.onSizeChange = { payload in
+                if fulfilled { return }
+                if (payload?["height"] as? NSNumber)?.doubleValue == expected {
+                    fulfilled = true
+                    viewExpectation.fulfill()
+                }
+            }
+            view.checkoutIdentifier = ["cartId": "gid://shopify/Cart/123"]
+
+            wait(for: [viewExpectation], timeout: 2)
+        }
+    }
+
     func testButtonsViewAcceptsVariantAndQuantity_withExplicitWallets() throws {
         configureAcceleratedCheckouts(includeApplePay: false)
 

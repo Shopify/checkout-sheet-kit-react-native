@@ -1096,6 +1096,14 @@ The `cornerRadius` prop lets you match the buttons to other calls-to-action in y
 <AcceleratedCheckoutButtons cartId={cartId} cornerRadius={0} />
 ```
 
+#### Customize button height
+
+The `buttonHeight` prop sets the height of each button. Buttons default to 48pt and accept heights from 30pt to 64pt; values outside that range are clamped.
+
+```tsx
+<AcceleratedCheckoutButtons cartId={cartId} buttonHeight={56} />
+```
+
 ### Handle loading, errors, and lifecycle events
 
 Attach lifecycle handlers to respond when buyers finish, cancel, or encounter an error.

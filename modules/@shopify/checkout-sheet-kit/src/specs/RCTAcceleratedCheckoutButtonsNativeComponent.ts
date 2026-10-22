@@ -75,6 +75,7 @@ type CheckoutIdentifierSpec = Readonly<{
 interface NativeProps extends ViewProps {
   checkoutIdentifier: CheckoutIdentifierSpec;
   cornerRadius?: Float;
+  buttonHeight?: Float;
   wallets?: ReadonlyArray<string>;
   applePayLabel?: string;
   applePayStyle?: string;
