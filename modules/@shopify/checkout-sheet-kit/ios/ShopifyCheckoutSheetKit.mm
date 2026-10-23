@@ -136,6 +136,11 @@ RCT_EXPORT_VIEW_PROPERTY(checkoutIdentifier, NSDictionary*)
 RCT_EXPORT_VIEW_PROPERTY(cornerRadius, NSNumber*)
 
 /**
+ * Height of each rendered button, in points. Defaults to 48; values are clamped to 30–64, and zero or negative values use the default.
+ */
+RCT_EXPORT_VIEW_PROPERTY(buttonHeight, NSNumber*)
+
+/**
  * Wallets to render. Accepts an array of identifiers such as "shopPay" and "applePay".
  * If omitted, native defaults are used.
  */

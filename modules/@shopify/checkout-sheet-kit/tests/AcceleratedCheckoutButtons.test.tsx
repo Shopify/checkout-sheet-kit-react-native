@@ -97,6 +97,7 @@ describe('AcceleratedCheckoutButtons', () => {
         <AcceleratedCheckoutButtons
           cartId={'gid://shopify/Cart/123'}
           cornerRadius={12}
+          buttonHeight={56}
           wallets={[AcceleratedCheckoutWallet.shopPay]}
           applePayStyle={ApplePayStyle.black}
         />,
@@ -108,6 +109,7 @@ describe('AcceleratedCheckoutButtons', () => {
         cartId: 'gid://shopify/Cart/123',
       });
       expect(nativeComponent.props.cornerRadius).toBe(12);
+      expect(nativeComponent.props.buttonHeight).toBe(56);
       expect(nativeComponent.props.wallets).toEqual([
         AcceleratedCheckoutWallet.shopPay,
       ]);
@@ -141,6 +143,7 @@ describe('AcceleratedCheckoutButtons', () => {
       const nativeComponent = getByTestId('accelerated-checkout-buttons');
       expect(nativeComponent).toBeTruthy();
       expect(nativeComponent.props.cornerRadius).toBeUndefined();
+      expect(nativeComponent.props.buttonHeight).toBeUndefined();
     });
 
     it('passes through custom quantity and cornerRadius', () => {

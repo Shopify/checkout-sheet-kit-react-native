@@ -84,6 +84,11 @@ interface CommonAcceleratedCheckoutButtonsProps {
   cornerRadius?: number;
 
   /**
+   * Height of each button (defaults to 48). Values are clamped to 30–64; zero or negative values use the default.
+   */
+  buttonHeight?: number;
+
+  /**
    * Wallets to display in the button
    * Defaults to both shopPay and applePay if not specified
    */
@@ -186,6 +191,7 @@ export const AcceleratedCheckoutButtons: React.FC<
   applePayLabel,
   applePayStyle,
   cornerRadius,
+  buttonHeight,
   wallets,
   onFail,
   onComplete,
@@ -309,6 +315,7 @@ export const AcceleratedCheckoutButtons: React.FC<
       style={{...defaultStyles, height: dynamicHeight}}
       checkoutIdentifier={checkoutIdentifier}
       cornerRadius={cornerRadius}
+      buttonHeight={buttonHeight}
       wallets={wallets}
       onFail={handleFail}
       onComplete={handleComplete}

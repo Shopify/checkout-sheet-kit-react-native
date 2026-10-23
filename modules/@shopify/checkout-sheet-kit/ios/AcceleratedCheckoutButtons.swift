@@ -106,6 +106,12 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         }
     }
 
+    @objc var buttonHeight: NSNumber? {
+        didSet {
+            updateView()
+        }
+    }
+
     @objc var wallets: [String]? {
         didSet {
             invalidateIntrinsicContentSize()
@@ -247,6 +253,10 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
 
         if let cornerRadius {
             modifiedButtons = modifiedButtons.cornerRadius(CGFloat(cornerRadius.doubleValue))
+        }
+
+        if let buttonHeight {
+            modifiedButtons = modifiedButtons.buttonHeight(CGFloat(buttonHeight.doubleValue))
         }
 
         return modifiedButtons
@@ -419,9 +429,17 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
             ? instance.wallets.count
             : max(shopifyWallets.count, 1)
 
-        let buttonHeight: CGFloat = 48
+        let buttonHeight = resolvedButtonHeight
         let gapHeight: CGFloat = 8
         return (CGFloat(numberOfWallets) * buttonHeight) + (CGFloat(numberOfWallets - 1) * gapHeight)
+    }
+
+    /// Matches the 30–64pt clamp in AcceleratedCheckoutButtons.buttonHeight(_:).
+    private var resolvedButtonHeight: CGFloat {
+        guard let height = buttonHeight?.doubleValue, height.isFinite, height > 0 else {
+            return 48
+        }
+        return CGFloat(min(max(height, 30), 64))
     }
 
     private func resizeWallets() {
