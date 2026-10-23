@@ -84,7 +84,7 @@ interface CommonAcceleratedCheckoutButtonsProps {
   cornerRadius?: number;
 
   /**
-   * Height of each button, clamped to 30–64 (defaults to 48)
+   * Height of each button (defaults to 48). Values are clamped to 30–64; zero or negative values use the default.
    */
   buttonHeight?: number;
 

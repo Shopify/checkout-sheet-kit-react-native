@@ -1098,7 +1098,7 @@ The `cornerRadius` prop lets you match the buttons to other calls-to-action in y
 
 #### Customize button height
 
-The `buttonHeight` prop sets the height of each button. Buttons default to 48pt and accept heights from 30pt to 64pt; values outside that range are clamped.
+The `buttonHeight` prop sets the height of each button. Buttons default to 48pt and accept heights from 30pt to 64pt. Values outside that range are clamped; zero or negative values use the default.
 
 ```tsx
 <AcceleratedCheckoutButtons cartId={cartId} buttonHeight={56} />

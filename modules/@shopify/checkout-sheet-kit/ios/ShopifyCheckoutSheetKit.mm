@@ -136,7 +136,7 @@ RCT_EXPORT_VIEW_PROPERTY(checkoutIdentifier, NSDictionary*)
 RCT_EXPORT_VIEW_PROPERTY(cornerRadius, NSNumber*)
 
 /**
- * Height of each rendered button, in points. Defaults to 48; clamped to 30–64.
+ * Height of each rendered button, in points. Defaults to 48; values are clamped to 30–64, and zero or negative values use the default.
  */
 RCT_EXPORT_VIEW_PROPERTY(buttonHeight, NSNumber*)
 
