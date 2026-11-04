@@ -1,9 +1,29 @@
 # Shopify Checkout Kit - React Native
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/LICENSE)
-[![GitHub Release](https://img.shields.io/github/release/shopify/checkout-sheet-kit-react-native.svg?style=flat)]()
+
+> [!IMPORTANT]
+> ## Maintenance notice
+>
+> Shopify has published V4 of Checkout Kit hosted in our new monorepo: [Shopify/checkout-kit](https://github.com/Shopify/checkout-kit), this will be the home for all future feature development.
+>
+> The Checkout Sheet Kit SDKs will begin a maintenance period beginning from now until the 1st May 2027.
+> During this period we will continue to publish fixes for security and bugs that prevent checkout completion.
+>
+> As of 1st May, Shopify will no longer update the Checkout Sheet Kit V3 SDKs.
+>
+> Checkout Sheet Kit V3 will continue to be available in package managers beyond this date, and we will not intentionally disable existing installations, however future compatibility will no longer be guaranteed.
+>
+> This policy covers:
+> - [Shopify/checkout-sheet-kit-swift](https://github.com/Shopify/checkout-sheet-kit-swift)
+> - [Shopify/checkout-sheet-kit-android](https://github.com/Shopify/checkout-sheet-kit-android)
+> - [Shopify/checkout-sheet-kit-react-native](https://github.com/Shopify/checkout-sheet-kit-react-native)
+>
+> To get started migrating see our migration guide: https://shopify.dev/docs/storefronts/mobile-next/checkout-kit/upgrade-to-v4 and if you run into any problems open an issue in Shopify/checkout-kit
 
 <img width="3200" height="800" alt="gradients" src="https://github.com/user-attachments/assets/156492b7-5a64-43d2-b574-2e8f29ed8780" />
+
+[![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat)](https://github.com/Shopify/checkout-sheet-kit-react-native/blob/main/LICENSE)
+[![GitHub Release](https://img.shields.io/github/release/shopify/checkout-sheet-kit-react-native.svg?style=flat)]()
 
 **Shopify Checkout Kit** is a Native Module that enables React Native apps
 to provide the world’s highest converting, customizable, one-page checkout
@@ -12,24 +32,6 @@ preserves all of the store customizations: Checkout UI extensions, Functions,
 branding, and more. It also provides platform idiomatic defaults such as support
 for light and dark mode, and convenient developer APIs to embed, customize, and
 follow the lifecycle of the checkout experience.
-
-## Maintenance notice
-
-Shopify has published V4 of Checkout Kit hosted in our new monorepo: [Shopify/checkout-kit](https://github.com/Shopify/checkout-kit), this will be the home for all future feature development.
-
-The Checkout Sheet Kit SDKs will begin a maintenance period beginning from now until the 1st May 2027.
-During this period we will continue to publish fixes for security and bugs that prevent checkout completion.
-
-As of 1st May, Shopify will no longer update the Checkout Sheet Kit V3 SDKs.
-
-Checkout Sheet Kit V3 will continue to be available in package managers beyond this date, and we will not intentionally disable existing installations, however future compatibility will no longer be guaranteed.
-
-This policy covers:
-- [Shopify/checkout-sheet-kit-swift](https://github.com/Shopify/checkout-sheet-kit-swift)
-- [Shopify/checkout-sheet-kit-android](https://github.com/Shopify/checkout-sheet-kit-android)
-- [Shopify/checkout-sheet-kit-react-native](https://github.com/Shopify/checkout-sheet-kit-react-native)
-
-To get started migrating see our migration guide: https://shopify.dev/docs/storefronts/mobile-next/checkout-kit/upgrade-to-v4 and if you run into any problems open an issue in Shopify/checkout-kit
 
 Check out our blog to
 [learn how and why we built the Shopify Checkout Kit](https://www.shopify.com/partners/blog/mobile-checkout-sdks-for-ios-and-android).
