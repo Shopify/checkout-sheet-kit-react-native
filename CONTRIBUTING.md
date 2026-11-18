@@ -24,10 +24,10 @@ If you've cloned the repo and want to run the sample app, you will first need to
    pnpm install
    ```
 
-2. Install iOS dependencies. (N.b. Android dependencies are automatically installed by Gradle)
+2. Install XcodeGen (`brew install xcodegen`), then generate the iOS project and install its CocoaPods dependencies. Android dependencies are automatically installed by Gradle.
 
    ```sh
-   pnpm pod-install sample/ios
+   pnpm pod-install
    ```
 
 3. Build the Native Module
@@ -71,6 +71,8 @@ The build scripts will automatically detect and use sccache if available. On And
 SCCACHE=false pnpm sample ios
 SCCACHE=false pnpm sample android
 ```
+
+The iOS project is generated from `sample/ios/project.yml`. Edit that specification and rerun `pnpm pod-install` when changing app or test targets. Generated Xcode projects and workspaces are not committed.
 
 ## Making changes to the Native Module
 
@@ -142,7 +144,7 @@ pnpm install
 ### Install Cocoapods
 
 ```sh
-pnpm pod-install sample/ios
+pnpm pod-install
 ```
 
 ### Build the local module
