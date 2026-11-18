@@ -35,6 +35,7 @@ jobs:
           pnpm module clean
           pnpm module api:check
           pnpm compare-snapshot
+          node --test scripts/verify-packed-package.mjs scripts/verify-license.mjs
 
   lint:
     name: Lint module + sample
@@ -159,14 +160,11 @@ jobs:
     steps:
       - run: test "${{ needs.test-ios.result }}" = success
 
-  build-sample-ios:
-    name: Build CocoaPods sample (${{ matrix.configuration }})
+  test-swiftpm:
+    name: Test packed SwiftPM consumer
     runs-on: xcode-27-xlarge
-    timeout-minutes: 25
+    timeout-minutes: 30
     needs: [lint, test]
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -177,24 +175,21 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - uses: ruby/setup-ruby@829114fc20da43a41d27359103ec7a63020954d4 # v1.255.0
+      - name: Setup iOS Simulator
+        uses: ./.github/actions/setup-simulator
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Build the SwiftPM sample in Debug and Release
+        run: pnpm sample build:ios
+
+      - name: Test Debug and Release without CocoaPods
+        run: pnpm test:swiftpm
+
+      - name: Upload consumer test results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          ruby-version: 3.3.6
-          bundler-cache: true
-          working-directory: sample
-
-      - name: Generate project and install locked pods
-        run: |
-          brew install xcodegen
-          pnpm module build
-          pnpm sample project:ios
-          cd sample/ios
-          bundle exec pod install --deployment
-
-      - name: Build sample
-        working-directory: sample/ios
-        run: >-
-          xcodebuild build -workspace ReactNative.xcworkspace -scheme
-          ReactNative -configuration '${{ matrix.configuration }}' -destination
-          'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO
-          COMPILER_INDEX_STORE_ENABLE=NO
+          name: swiftpm-consumer-results
+          path: build/swiftpm-consumer/*.xcresult

@@ -4,18 +4,19 @@
   "private": true,
   "scripts": {
     "android": "sh ./scripts/android",
-    "clean": "rm -rf node_modules ios/build ios/pods vendor",
+    "clean": "rm -rf node_modules ios/build ios/ReactNative.xcodeproj ios/ReactNative.xcworkspace vendor",
     "clean:android": "(cd android && ./gradlew clean)",
     "build:android": "sh ./scripts/build_android",
     "release:android": "sh ./scripts/release_android",
-    "build:ios": "sh ./scripts/build_ios",
+    "build:ios": "bash ./scripts/build_ios",
     "lint": "pnpm run typecheck && eslint .",
-    "ios": "react-native run-ios",
+    "ios": "bash ./scripts/ios",
     "start": "react-native start -- --reset-cache",
     "typecheck": "tsc --noEmit",
     "test:ios": "bash ./scripts/test_ios",
     "test:android": "sh ./scripts/test_android",
-    "project:ios": "xcodegen generate --spec ios/project.yml"
+    "spm": "bash ./scripts/spm",
+    "format": "eslint . --fix"
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",

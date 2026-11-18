@@ -11,6 +11,7 @@
   "android/src/main/java/com/shopify/reactnative/checkoutsheetkit/ShopifyCheckoutSheetKitPackage.java",
   "ios/AcceleratedCheckoutButtons.swift",
   "ios/AcceleratedCheckoutButtons+Extensions.swift",
+  "ios/Package.swift",
   "ios/ShopifyCheckoutSheetKit-Bridging-Header.h",
   "ios/ShopifyCheckoutSheetKit.mm",
   "ios/ShopifyCheckoutSheetKit.swift",

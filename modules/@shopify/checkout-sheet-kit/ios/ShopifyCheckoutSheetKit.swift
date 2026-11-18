@@ -25,11 +25,14 @@ import Foundation
 import PassKit
 import React
 import ShopifyCheckoutSheetKit
+#if canImport(ShopifyAcceleratedCheckouts)
+    import ShopifyAcceleratedCheckouts
+#endif
 import SwiftUI
 import UIKit
 
 @objc(RCTShopifyCheckoutSheetKit)
-class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
+public class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     private var hasListeners = false
 
     internal var checkoutSheet: UIViewController?
@@ -37,15 +40,15 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
     private var acceleratedCheckoutsApplePayConfiguration: Any?
     private var defaultLogLevel: LogLevel = .error
 
-    override var methodQueue: DispatchQueue! {
+    override public var methodQueue: DispatchQueue! {
         return DispatchQueue.main
     }
 
-    @objc override static func requiresMainQueueSetup() -> Bool {
+    @objc override public static func requiresMainQueueSetup() -> Bool {
         return true
     }
 
-    override init() {
+    override public init() {
         ShopifyCheckoutSheetKit.configure {
             $0.platform = ShopifyCheckoutSheetKit.Platform.reactNative
         }
@@ -53,41 +56,41 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         super.init()
     }
 
-    override func supportedEvents() -> [String]! {
+    override public func supportedEvents() -> [String]! {
         return ["close", "completed", "error", "pixel"]
     }
 
-    override func startObserving() {
+    override public func startObserving() {
         hasListeners = true
     }
 
-    override func stopObserving() {
+    override public func stopObserving() {
         hasListeners = false
     }
 
-    func checkoutDidComplete(event: CheckoutCompletedEvent) {
+    public func checkoutDidComplete(event: CheckoutCompletedEvent) {
         if hasListeners {
             sendEvent(withName: "completed", body: ShopifyEventSerialization.serialize(checkoutCompletedEvent: event))
         }
     }
 
-    func shouldRecoverFromError(error: CheckoutError) -> Bool {
+    public func shouldRecoverFromError(error: CheckoutError) -> Bool {
         return error.isRecoverable
     }
 
-    func checkoutDidFail(error: ShopifyCheckoutSheetKit.CheckoutError) {
+    public func checkoutDidFail(error: ShopifyCheckoutSheetKit.CheckoutError) {
         guard hasListeners else { return }
 
         sendEvent(withName: "error", body: ShopifyEventSerialization.serialize(checkoutError: error))
     }
 
-    func checkoutDidEmitWebPixelEvent(event: ShopifyCheckoutSheetKit.PixelEvent) {
+    public func checkoutDidEmitWebPixelEvent(event: ShopifyCheckoutSheetKit.PixelEvent) {
         if hasListeners {
             sendEvent(withName: "pixel", body: ShopifyEventSerialization.serialize(pixelEvent: event))
         }
     }
 
-    func checkoutDidCancel() {
+    public func checkoutDidCancel() {
         DispatchQueue.main.async {
             if self.hasListeners {
                 self.sendEvent(withName: "close", body: nil)
@@ -97,7 +100,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         }
     }
 
-    @objc override func constantsToExport() -> [AnyHashable: Any]! {
+    @objc override public func constantsToExport() -> [AnyHashable: Any]! {
         return [
             "version": ShopifyCheckoutSheetKit.version
         ]
@@ -337,7 +340,7 @@ class RCTShopifyCheckoutSheetKit: RCTEventEmitter, CheckoutDelegate {
         resolve(applePayAvailable())
     }
 
-    @objc func initiateGeolocationRequest(_ allow: Bool) {
+    @objc func initiateGeolocationRequest(_: Bool) {
         // No-op on iOS — geolocation permission is handled natively
     }
 
