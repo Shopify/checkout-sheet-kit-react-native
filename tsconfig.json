@@ -8,7 +8,7 @@
     "jsx": "react",
     "lib": ["esnext"],
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noImplicitUseStrict": false,
@@ -20,6 +20,9 @@
     "skipLibCheck": true,
     "strict": true,
     "verbatimModuleSyntax": true,
-    "target": "esnext"
-  }
+    "target": "esnext",
+    "types": ["jest", "node"],
+    "customConditions": ["react-native-legacy-deep-imports"]
+  },
+  "exclude": ["**/node_modules", "**/Pods", "**/build", "**/lib"]
 }
