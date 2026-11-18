@@ -25,6 +25,9 @@ import Foundation
 import PassKit
 import React
 import ShopifyCheckoutSheetKit
+#if canImport(ShopifyAcceleratedCheckouts)
+    import ShopifyAcceleratedCheckouts
+#endif
 import SwiftUI
 import UIKit
 
@@ -54,11 +57,11 @@ class AcceleratedCheckoutConfiguration {
 }
 
 @objc(RCTAcceleratedCheckoutButtonsManager)
-class RCTAcceleratedCheckoutButtonsManager: RCTViewManager {
+public class RCTAcceleratedCheckoutButtonsManager: RCTViewManager {
     /// Internal property used in tests to simulate legacy devices
     internal var supported: Bool = true
 
-    override func view() -> UIView! {
+    override public func view() -> UIView! {
         if supported {
             if #available(iOS 16.0, *) {
                 return RCTAcceleratedCheckoutButtonsView()
@@ -69,11 +72,11 @@ class RCTAcceleratedCheckoutButtonsManager: RCTViewManager {
         return UIView()
     }
 
-    override static func requiresMainQueueSetup() -> Bool {
+    override public static func requiresMainQueueSetup() -> Bool {
         return true
     }
 
-    override func constantsToExport() -> [AnyHashable: Any]! {
+    override public func constantsToExport() -> [AnyHashable: Any]! {
         return [:]
     }
 }
@@ -162,8 +165,8 @@ class RCTAcceleratedCheckoutButtonsView: UIView {
         hostingController?.view.frame = bounds
     }
 
-    // Deprecated in iOS 17 — superseded by registerForTraitChanges in setupView().
-    // Remove this override when dropping iOS 16 support.
+    /// Deprecated in iOS 17 — superseded by registerForTraitChanges in setupView().
+    /// Remove this override when dropping iOS 16 support.
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if #unavailable(iOS 17.0) {

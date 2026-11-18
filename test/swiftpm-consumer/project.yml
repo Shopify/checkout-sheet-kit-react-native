@@ -1,0 +1,62 @@
+name: CheckoutSheetKitSwiftPMConsumer
+options:
+  minimumXcodeGenVersion: 2.43.0
+  deploymentTarget:
+    iOS: '16.6'
+configs:
+  Debug: debug
+  Release: release
+schemes:
+  CheckoutSheetKitSwiftPMConsumer:
+    build:
+      targets:
+        CheckoutSheetKitSwiftPMConsumer: all
+        ConsumerUITests: [test]
+    test:
+      targets:
+        - ConsumerUITests
+targets:
+  CheckoutSheetKitSwiftPMConsumer:
+    type: application
+    platform: iOS
+    sources:
+      - AppDelegate.swift
+      - main.jsbundle
+    dependencies:
+      - sdk: UIKit.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.checkoutsheetkit.swiftpmconsumer
+        SWIFT_VERSION: '5.0'
+        TARGETED_DEVICE_FAMILY: '1'
+        MARKETING_VERSION: '1.0'
+        CURRENT_PROJECT_VERSION: '1'
+        LD_RUNPATH_SEARCH_PATHS:
+          - $(inherited)
+          - '@executable_path/Frameworks'
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: Checkout Sheet Kit SwiftPM Consumer
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+              - UISceneConfigurationName: Default Configuration
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).SceneDelegate
+        UIApplicationSupportsIndirectInputEvents: true
+  ConsumerUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - ConsumerUITests.swift
+    dependencies:
+      - target: CheckoutSheetKitSwiftPMConsumer
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.checkoutsheetkit.swiftpmconsumer.tests
+        SWIFT_VERSION: '5.0'
+    info:
+      path: Tests-Info.plist
+      properties: {}

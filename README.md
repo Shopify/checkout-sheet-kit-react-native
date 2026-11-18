@@ -154,6 +154,32 @@ minimum version number is at least `13`.
 + platform :ios, 13
 ```
 
+### Swift Package Manager (experimental)
+
+React Native apps using the New Architecture can use its experimental SwiftPM
+integration, validated here with React Native 0.88. Follow the
+[React Native SwiftPM setup instructions](https://reactnative.dev/blog/2026/08/11/react-native-0.87#experimental-swift-package-manager-support-for-ios)
+after installing `@shopify/checkout-sheet-kit`. Autolinking uses the package's
+`ios/Package.swift` and resolves the same v3 native SDK version as CocoaPods.
+Your app's other native libraries must also support SwiftPM.
+
+The v3 JavaScript API, including its Promise methods and checkout events, stays
+the same. CocoaPods remains supported for existing apps, including apps using
+the old React Native bridge.
+
+The sample app uses React Native 0.88 and SwiftPM exclusively. Install Xcode and
+[XcodeGen](https://github.com/yonaskolb/XcodeGen), run
+`pnpm install --frozen-lockfile`, then `pnpm sample ios`. To build both Debug
+and Release without launching the sample, run `pnpm sample build:ios`.
+
+Run `pnpm test:swiftpm` to test a small consumer installed from the packed npm
+archive in Debug and Release. The generated project and results are in
+`build/swiftpm-consumer/`. Native unit tests run separately with React Native
+0.80 and CocoaPods: `RCT_NEW_ARCH_ENABLED=0 pnpm sample test:ios` exercises the
+old bridge; `RCT_NEW_ARCH_ENABLED=1 pnpm sample test:ios` exercises the New
+Architecture. These tests use `test/rct-integration-app/`, so sample dependency
+upgrades do not remove compatibility coverage.
+
 ## Basic Usage
 
 Once the SDK has been added as a package dependency and the minimum platform

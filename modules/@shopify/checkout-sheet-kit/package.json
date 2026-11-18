@@ -17,6 +17,14 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
+  "checkoutKit": {
+    "nativeSdkVersions": {
+      "ios": "3.9.2"
+    }
+  },
+  "swiftpmConfig": {
+    "name": "CheckoutSheetKitReactNative"
+  },
   "scripts": {
     "clean": "rm -rf lib",
     "build": "bob build",

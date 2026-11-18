@@ -10,6 +10,9 @@ const resolvePackageRoot = packageName =>
   );
 
 module.exports = {
+  project: {
+    ios: {automaticPodsInstallation: false},
+  },
   dependencies: {
     '@react-native-masked-view/masked-view': {
       root: resolvePackageRoot('@react-native-masked-view/masked-view'),
