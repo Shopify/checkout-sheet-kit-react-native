@@ -1,6 +1,7 @@
 name: ReactNative
 options:
   minimumXcodeGenVersion: 2.43.0
+  projectFormat: xcode14_0
   deploymentTarget:
     iOS: '16.6'
 configs:
