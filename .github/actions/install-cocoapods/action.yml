@@ -11,6 +11,12 @@ runs:
         bundler-cache: true
         working-directory: sample
 
+    - name: Generate Xcode project
+      shell: bash
+      run: |
+        brew install xcodegen
+        pnpm sample project:ios
+
     - name: Cache cocoapods
       id: cache-cocoapods
       uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0

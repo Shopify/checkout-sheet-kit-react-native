@@ -1,0 +1,92 @@
+name: ReactNative
+options:
+  minimumXcodeGenVersion: 2.43.0
+  deploymentTarget:
+    iOS: '16.6'
+configs:
+  Debug: debug
+  Release: release
+settings:
+  base:
+    CLANG_CXX_LANGUAGE_STANDARD: c++20
+    REACT_NATIVE_PATH: $(SRCROOT)/../../node_modules/react-native
+schemes:
+  ReactNative:
+    build:
+      targets:
+        ReactNative: all
+        ReactNativeTests: [test]
+    test:
+      config: Debug
+      targets:
+        - ReactNativeTests
+    run:
+      config: Debug
+      environmentVariables:
+        OS_ACTIVITY_MODE: disable
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+targets:
+  ReactNative:
+    type: application
+    platform: iOS
+    sources:
+      - AppDelegate.swift
+      - path: ReactNative
+        excludes:
+          - Info.plist
+          - '*.entitlements'
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.shopify.example.CheckoutKitReactNative
+        INFOPLIST_FILE: ReactNative/Info.plist
+        INFOPLIST_KEY_CFBundleDisplayName: Checkout Kit React Native Demo
+        CODE_SIGN_ENTITLEMENTS: ReactNative/ReactNative.entitlements
+        DEVELOPMENT_TEAM: A7XGC83MZE
+        SWIFT_OBJC_BRIDGING_HEADER: ReactNative-Bridging-Header.h
+        SWIFT_VERSION: '5.0'
+        TARGETED_DEVICE_FAMILY: '1'
+        SUPPORTS_MACCATALYST: NO
+        MARKETING_VERSION: '1.0'
+        CURRENT_PROJECT_VERSION: '1'
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        LD_RUNPATH_SEARCH_PATHS:
+          - $(inherited)
+          - '@executable_path/Frameworks'
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - -ObjC
+          - -lc++
+    postBuildScripts:
+      - name: Bundle React Native code and images
+        basedOnDependencyAnalysis: false
+        script: |
+          set -e
+          WITH_ENVIRONMENT="$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
+          REACT_NATIVE_XCODE="$REACT_NATIVE_PATH/scripts/react-native-xcode.sh"
+          /bin/sh "$WITH_ENVIRONMENT" "$REACT_NATIVE_XCODE"
+  ReactNativeTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: ReactNativeTests
+        excludes:
+          - Info.plist
+    dependencies:
+      - target: ReactNative
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.shopify.example.CheckoutKitReactNative
+        INFOPLIST_FILE: ReactNativeTests/Info.plist
+        SWIFT_OBJC_BRIDGING_HEADER: ReactNativeTests-Bridging-Header.h
+        SWIFT_VERSION: '5.0'
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/ReactNative.app/ReactNative
+        BUNDLE_LOADER: $(TEST_HOST)
+        LD_RUNPATH_SEARCH_PATHS:
+          - $(inherited)
+          - '@executable_path/Frameworks'
+          - '@loader_path/Frameworks'
