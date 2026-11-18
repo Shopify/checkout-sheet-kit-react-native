@@ -1,19 +1,45 @@
 #!/usr/bin/env bash
 
-set -e -o pipefail
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+TEST_APP_DIR="$REPO_ROOT/test/rct-integration-app"
+export BUNDLE_GEMFILE="$REPO_ROOT/sample/Gemfile"
+export RCT_NEW_ARCH_ENABLED="${RCT_NEW_ARCH_ENABLED:-1}"
+
+CURRENT_SIMULATOR_UUID="${CURRENT_SIMULATOR_UUID:-}"
 source "$SCRIPT_DIR/simulator"
 dest="$(get_sim_destination)"
 
-cd ios
+bundle check || bundle install
 
-xcodebuild test \
-    -workspace ReactNative.xcworkspace \
-    -scheme ReactNative \
+cd "$TEST_APP_DIR"
+pnpm install --ignore-workspace --frozen-lockfile --ignore-scripts --config.node-linker=hoisted
+xcodegen generate --spec project.yml
+if [ "${CI:-false}" = true ] && [ "$RCT_NEW_ARCH_ENABLED" = 1 ]; then
+  bundle exec pod install --deployment
+else
+  bundle exec pod install
+fi
+
+if [ "${1:-}" = --prepare-only ]; then
+  exit 0
+fi
+
+run_xcodebuild() {
+  xcodebuild test \
+    -workspace RCTIntegrationApp.xcworkspace \
+    -scheme RCTIntegrationApp \
     -destination "$dest" \
-    -skipPackagePluginValidation \
+    -disableAutomaticPackageResolution \
     -sdk iphonesimulator \
-    ASSETCATALOG_COMPILER_OPTIMIZATION=time \
     COMPILER_INDEX_STORE_ENABLE=NO \
-| xcbeautify --renderer github-actions
+    "$@"
+}
+
+if command -v xcbeautify >/dev/null 2>&1; then
+  run_xcodebuild "$@" | xcbeautify
+else
+  run_xcodebuild "$@"
+fi
