@@ -135,6 +135,8 @@ pnpm sample test:android
 
 The native test host in `test/rct-integration-app/` pins React Native 0.80 separately and uses CocoaPods. Its minimal UIKit app runs the existing native tests without starting Metro or loading the sample dependencies.
 
+The main sample uses React Native 0.88 and the New Architecture. The published library still supports both architectures; native compatibility tests remain on React Native 0.80.
+
 ## Running the sample app
 
 To run the sample app in this repo, first clone the repo and run the following

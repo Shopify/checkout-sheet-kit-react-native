@@ -16,6 +16,14 @@ describe('PKCE', () => {
   });
 
   describe('generateCodeChallenge', () => {
+    it('matches the RFC 7636 S256 challenge', () => {
+      expect(
+        PKCE.generateCodeChallenge(
+          'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk',
+        ),
+      ).toBe('E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM');
+    });
+
     it('returns a base64url-encoded string', () => {
       const challenge = PKCE.generateCodeChallenge('test-verifier');
       expect(challenge).toMatch(BASE64URL_REGEX);
