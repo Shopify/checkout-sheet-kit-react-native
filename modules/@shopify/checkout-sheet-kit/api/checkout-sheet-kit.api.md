@@ -369,7 +369,7 @@ export type Configuration = CommonConfiguration & {
 export class ConfigurationError extends GenericErrorWithCode {}
 
 // @public
-export interface CustomEvent {
+interface CustomEvent_2 {
     /* A snapshot of various read-only properties of the browser at the time of the event */
     // (undocumented)
     context?: Context_2;
@@ -383,6 +383,7 @@ export interface CustomEvent {
     // (undocumented)
     type?: 'CUSTOM';
 }
+export { CustomEvent_2 as CustomEvent }
 
 // @public
 export interface Features {
@@ -443,7 +444,7 @@ export enum LogLevel {
 }
 
 // @public (undocumented)
-export type PixelEvent = CustomEvent | StandardEvent;
+export type PixelEvent = CustomEvent_2 | StandardEvent;
 
 // @public (undocumented)
 export enum RenderState {
