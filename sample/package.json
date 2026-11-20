@@ -13,7 +13,7 @@
     "ios": "react-native run-ios",
     "start": "react-native start -- --reset-cache",
     "typecheck": "tsc --noEmit",
-    "test:ios": "sh ./scripts/test_ios",
+    "test:ios": "bash ./scripts/test_ios",
     "test:android": "sh ./scripts/test_android",
     "project:ios": "xcodegen generate --spec ios/project.yml"
   },

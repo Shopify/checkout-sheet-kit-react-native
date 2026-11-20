@@ -1,0 +1,88 @@
+name: RCTIntegrationApp
+options:
+  minimumXcodeGenVersion: 2.43.0
+  deploymentTarget:
+    iOS: '16.6'
+  xcodeVersion: '27.2'
+  projectFormat: xcode14_0
+configs:
+  Debug: debug
+  Release: release
+schemes:
+  RCTIntegrationApp:
+    build:
+      targets:
+        RCTIntegrationApp: all
+        RCTIntegrationAppTests: [test]
+    test:
+      config: Debug
+      targets:
+        - RCTIntegrationAppTests
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+    management:
+      shared: true
+      orderHint: 5
+
+targets:
+  RCTIntegrationApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: RCTIntegrationApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.shopify.checkoutkit.rctintegration
+        SWIFT_VERSION: '5.0'
+        TARGETED_DEVICE_FAMILY: '1'
+        MARKETING_VERSION: '1.0'
+        CURRENT_PROJECT_VERSION: '1'
+        INFOPLIST_KEY_CFBundleDisplayName: RCT Integration App
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UIRequiresFullScreen: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        LD_RUNPATH_SEARCH_PATHS:
+          - $(inherited)
+          - '@executable_path/Frameworks'
+    info:
+      path: RCTIntegrationApp/Info.plist
+      properties:
+        CFBundleDisplayName: RCT Integration App
+        ITSAppUsesNonExemptEncryption: false
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+              - UISceneConfigurationName: Default Configuration
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).SceneDelegate
+        UIApplicationSupportsIndirectInputEvents: true
+        UIRequiresFullScreen: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+
+  RCTIntegrationAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: RCTIntegrationAppTests
+    dependencies:
+      - target: RCTIntegrationApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.shopify.checkoutkit.rctintegration.tests
+        SWIFT_VERSION: '5.0'
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/RCTIntegrationApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RCTIntegrationApp
+        BUNDLE_LOADER: $(TEST_HOST)
+        LD_RUNPATH_SEARCH_PATHS:
+          - $(inherited)
+          - '@executable_path/Frameworks'
+          - '@loader_path/Frameworks'
+    info:
+      path: RCTIntegrationAppTests/Info.plist
+      properties: {}

@@ -1,5 +1,5 @@
 name: Cocoapods
-description: Install cocoapods for sample app
+description: Prepare the legacy architecture test harness
 
 runs:
   using: composite
@@ -11,32 +11,16 @@ runs:
         bundler-cache: true
         working-directory: sample
 
-    - name: Generate Xcode project
+    - name: Install XcodeGen
       shell: bash
-      run: |
-        brew install xcodegen
-        pnpm sample project:ios
+      run: brew install xcodegen
 
     - name: Cache cocoapods
-      id: cache-cocoapods
       uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       with:
-        path: |
-          sample/ios/Pods
-        key:
-          ${{ runner.os }}-cocoapods-${{ hashFiles('sample/ios/Podfile.lock',
-          'sample/Gemfile.lock', 'sample/Gemfile', 'package.json',
-          'sample/package.json',
-          'modules/@shopify/checkout-sheet-kit/package.json', 'pnpm-lock.yaml')
-          }}
-
-    - name: Install cocoapods
-      shell: bash
-      run: |
-        set -euo pipefail
-        ROOT=$(pwd)
-        cd sample
-        bundle install
-        cd ios
-        bundle exec pod install --deployment --repo-update
-        cd $ROOT
+        path: test/rct-integration-app/Pods
+        key: >-
+          ${{ runner.os }}-cocoapods-${{ env.RCT_NEW_ARCH_ENABLED }}-${{
+          hashFiles('test/rct-integration-app/Podfile.lock',
+          'test/rct-integration-app/pnpm-lock.yaml', 'sample/Gemfile.lock',
+          'modules/@shopify/checkout-sheet-kit/package.json') }}
