@@ -1,7 +1,7 @@
-import crypto from 'react-native-quick-crypto';
+import {sha256} from '@noble/hashes/sha2.js';
+import {randomBytes, utf8ToBytes} from '@noble/hashes/utils.js';
 
-function base64URLEncode(buffer: ArrayBufferLike): string {
-  const bytes = new Uint8Array(buffer);
+function base64URLEncode(bytes: Uint8Array): string {
   let binary = '';
   for (let i = 0; i < bytes.length; i++) {
     binary += String.fromCharCode(bytes[i]!);
@@ -14,17 +14,14 @@ function base64URLEncode(buffer: ArrayBufferLike): string {
 
 export class PKCE {
   static generateCodeVerifier(): string {
-    const bytes = crypto.randomBytes(32);
-    return base64URLEncode(bytes.buffer);
+    return base64URLEncode(randomBytes(32));
   }
 
   static generateCodeChallenge(verifier: string): string {
-    const hash = crypto.createHash('sha256').update(verifier).digest();
-    return base64URLEncode(hash.buffer);
+    return base64URLEncode(sha256(utf8ToBytes(verifier)));
   }
 
   static generateState(): string {
-    const bytes = crypto.randomBytes(27);
-    return base64URLEncode(bytes.buffer);
+    return base64URLEncode(randomBytes(27));
   }
 }

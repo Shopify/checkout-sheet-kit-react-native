@@ -10,7 +10,7 @@ interface Context {
   cornerRadius: number;
   colors: Colors;
   colorScheme: ColorScheme;
-  preference: ColorSchemeName;
+  preference: ColorSchemeName | null;
   setColorScheme: (colorScheme: ColorScheme) => void;
 }
 
@@ -95,7 +95,7 @@ export interface Colors {
 
 export function getNavigationTheme(
   colorScheme: ColorScheme,
-  preference: ColorSchemeName,
+  preference: ColorSchemeName | null,
 ): Theme {
   const colors = getColors(colorScheme, preference);
   const primary = '#0087ff';
@@ -156,7 +156,7 @@ export function getNavigationTheme(
 
 export function getColors(
   colorScheme: ColorScheme,
-  preference: ColorSchemeName,
+  preference: ColorSchemeName | null,
 ): Colors {
   switch (colorScheme) {
     case ColorScheme.automatic:
@@ -179,7 +179,7 @@ export const ThemeProvider: React.FC<
 
   const setColorScheme = useCallback((colorScheme: ColorScheme) => {
     if (colorScheme === ColorScheme.automatic) {
-      Appearance.setColorScheme(null);
+      Appearance.setColorScheme('auto');
     } else {
       Appearance.setColorScheme(
         colorScheme === ColorScheme.dark ? 'dark' : 'light',

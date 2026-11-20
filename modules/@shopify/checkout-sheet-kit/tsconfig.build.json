@@ -1,4 +1,3 @@
-
 {
   "compilerOptions": {
     "rootDir": ".",
@@ -9,7 +8,9 @@
     "jsx": "react-native",
     "lib": ["esnext"],
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "types": ["jest", "node"],
+    "customConditions": ["react-native-legacy-deep-imports"],
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noImplicitUseStrict": false,
@@ -22,6 +23,6 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "esnext",
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": true
   }
 }

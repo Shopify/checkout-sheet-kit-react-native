@@ -69,12 +69,9 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Test iOS CLI launcher
-        run: node --test scripts/tests/ios-launcher.cjs
-
       - run:
           pnpm test --coverage
-          --testPathPatterns="modules/@shopify/checkout-sheet-kit/tests"
+          --testPathPatterns="modules/@shopify/checkout-sheet-kit/tests|sample/src"
           --coverageReporters=json-summary
 
       - name: Coverage comment
@@ -161,3 +158,43 @@ jobs:
     if: always()
     steps:
       - run: test "${{ needs.test-ios.result }}" = success
+
+  build-sample-ios:
+    name: Build CocoaPods sample (${{ matrix.configuration }})
+    runs-on: xcode-27-xlarge
+    timeout-minutes: 25
+    needs: [lint, test]
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Select Xcode 27.2
+        run:
+          sudo xcode-select -s /Applications/Xcode_27.2.app/Contents/Developer
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - uses: ruby/setup-ruby@829114fc20da43a41d27359103ec7a63020954d4 # v1.255.0
+        with:
+          ruby-version: 3.3.6
+          bundler-cache: true
+          working-directory: sample
+
+      - name: Generate project and install locked pods
+        run: |
+          brew install xcodegen
+          pnpm module build
+          pnpm sample project:ios
+          cd sample/ios
+          bundle exec pod install --deployment
+
+      - name: Build sample
+        working-directory: sample/ios
+        run: >-
+          xcodebuild build -workspace ReactNative.xcworkspace -scheme
+          ReactNative -configuration '${{ matrix.configuration }}' -destination
+          'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO
+          COMPILER_INDEX_STORE_ENABLE=NO

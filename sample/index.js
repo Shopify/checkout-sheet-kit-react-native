@@ -21,8 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import {install} from 'react-native-quick-crypto';
-install();
+import 'react-native-get-random-values';
 
 import 'setimmediate';
 import 'react-native-gesture-handler';
