@@ -8,6 +8,7 @@ up:
   - packages:
       - swiftlint
       - sccache
+      - xcodegen
   - ruby
   - xcode:
       version: '27.2'
@@ -39,7 +40,7 @@ up:
         (cd sample/ios && bundle install)
   - custom:
       name: Install pods
-      met?: (cd sample/ios && bundle exec pod check --ignore-dev-pods)
+      met?: (cd sample/ios && test -f ReactNative.xcodeproj/project.pbxproj && bundle exec pod check --ignore-dev-pods)
       meet: |
         pnpm run pod-install
   - custom:
