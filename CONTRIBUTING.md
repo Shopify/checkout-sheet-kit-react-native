@@ -16,7 +16,8 @@ specific to each workspace.
 
 ## Getting started
 
-If you've cloned the repo and want to run the sample app, you will first need to:
+If you've cloned the repo and want to run the sample app, you will first need
+to:
 
 1. Install the NPM dependencies
 
@@ -24,10 +25,11 @@ If you've cloned the repo and want to run the sample app, you will first need to
    pnpm install
    ```
 
-2. Install XcodeGen (`brew install xcodegen`), then generate the iOS project and install its CocoaPods dependencies. Android dependencies are automatically installed by Gradle.
+2. Install XcodeGen and generate the SwiftPM iOS project. Android dependencies
+   are installed by Gradle.
 
    ```sh
-   pnpm pod-install
+   pnpm sample spm
    ```
 
 3. Build the Native Module
@@ -52,7 +54,9 @@ If you've cloned the repo and want to run the sample app, you will first need to
 
 ## Optional: Speed up builds with sccache
 
-For faster native compilation (especially on incremental builds), you can install [sccache](https://github.com/mozilla/sccache), a shared compilation cache:
+For faster native compilation (especially on incremental builds), you can
+install [sccache](https://github.com/mozilla/sccache), a shared compilation
+cache:
 
 ```sh
 # macOS (using Homebrew)
@@ -64,15 +68,16 @@ cargo install sccache
 # Other systems: see https://github.com/mozilla/sccache#installation
 ```
 
-The build scripts will automatically detect and use sccache if available. On Android, React Native's CMake files look for a command named `ccache`, so the sample Android scripts put an sccache-backed compatibility command first on `PATH`. If you encounter any build issues, you can temporarily disable it:
+The Android build scripts will automatically detect and use sccache if
+available. On Android, React Native's CMake files look for a command named
+`ccache`, so the sample Android scripts put an sccache-backed compatibility
+command first on `PATH`. If you encounter any build issues, you can temporarily
+disable it:
 
 ```sh
 # Disable sccache for a single build
-SCCACHE=false pnpm sample ios
 SCCACHE=false pnpm sample android
 ```
-
-The iOS project is generated from `sample/ios/project.yml`. Edit that specification and rerun `pnpm pod-install` when changing app or test targets. Generated Xcode projects and workspaces are not committed.
 
 ## Making changes to the Native Module
 
@@ -93,7 +98,7 @@ There are a handful of commands to clean the individual workspaces.
 pnpm clean
 
 # Removes the "sample/node_modules" directory
-# Removes "ios/pods" directory
+# Removes the generated iOS project
 # Removes "ios/build" directory
 pnpm sample clean
 
@@ -123,6 +128,9 @@ testing the Native Module.
 # Run Jest tests for "modules/@shopify/checkout-sheet-kit/src/**/*.tsx"
 pnpm test
 
+# Run the packed npm consumer with SwiftPM in Debug and Release
+pnpm test:swiftpm
+
 # Run Swift tests with the old React Native bridge
 RCT_NEW_ARCH_ENABLED=0 pnpm sample test:ios
 
@@ -133,9 +141,14 @@ RCT_NEW_ARCH_ENABLED=1 pnpm sample test:ios
 pnpm sample test:android
 ```
 
-The native test host in `test/rct-integration-app/` pins React Native 0.80 separately and uses CocoaPods. Its minimal UIKit app runs the existing native tests without starting Metro or loading the sample dependencies.
+The iOS sample uses SwiftPM only. Its generated Xcode project is not committed.
+The comment-only `sample/ios/Podfile` is required by React Native CLI project
+discovery; it is not a CocoaPods build target. The published library retains its
+podspec for existing consumers.
 
-The main sample uses React Native 0.88 and the New Architecture. The published library still supports both architectures; native compatibility tests remain on React Native 0.80.
+The native test host in `test/rct-integration-app/` pins React Native 0.80
+separately and uses CocoaPods. Its minimal UIKit app runs the existing native
+tests without starting Metro or loading the sample's dependencies.
 
 ## Running the sample app
 
@@ -148,10 +161,12 @@ commands at the root of the project directory.
 pnpm install
 ```
 
-### Install Cocoapods
+### Generate the SwiftPM iOS project
+
+Install Xcode and XcodeGen (`brew install xcodegen`) first.
 
 ```sh
-pnpm pod-install
+pnpm sample spm
 ```
 
 ### Build the local module

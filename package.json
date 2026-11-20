@@ -21,17 +21,25 @@
       "react-native": "$react-native",
       "@react-native/babel-preset": "$@react-native/babel-preset",
       "@react-native/metro-config": "$@react-native/metro-config"
+    },
+    "patchedDependencies": {
+      "@react-native-masked-view/masked-view@0.3.2": "patches/@react-native-masked-view__masked-view@0.3.2.patch",
+      "react-native-config@1.7.2": "patches/react-native-config@1.7.2.patch",
+      "react-native-encrypted-storage@4.0.3": "patches/react-native-encrypted-storage@4.0.3.patch",
+      "react-native-vector-icons@10.3.0": "patches/react-native-vector-icons@10.3.0.patch",
+      "react-native-webview@13.16.1": "patches/react-native-webview@13.16.1.patch"
     }
   },
   "scripts": {
     "clean": "rm -rf node_modules; watchman watch-del . || true",
     "sample": "pnpm --filter sample",
     "module": "pnpm --filter @shopify/checkout-sheet-kit",
-    "pod-install": "pnpm sample project:ios && (cd sample/ios && bundle install && bundle exec pod repo update && bundle exec pod cache clean --all && bundle exec pod install --repo-update)",
     "snapshot": "./scripts/create_snapshot",
     "compare-snapshot": "./scripts/compare_snapshot",
     "turbo": "turbo",
-    "test": "jest"
+    "test": "jest",
+    "test:package": "pnpm module build && node --test scripts/verify-packed-package.mjs scripts/verify-license.mjs",
+    "test:swiftpm": "pnpm module build && node scripts/test-swiftpm.mjs"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",

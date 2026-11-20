@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR/.."
+rm -rf ios/Pods ios/ReactNative.xcworkspace ios/build/generated
+
+xcodegen generate --spec ios/project.yml
+
+CONFIG_DIR="$(node -p "require('path').dirname(require.resolve('react-native-config/package.json'))")/ios/ReactNativeConfig"
+mkdir -p ios/build
+BUILD_DIR="$PWD/ios/build" ruby "$CONFIG_DIR/BuildDotenvConfig.rb" "$PWD" "$CONFIG_DIR" >/dev/null
+
+RESOLUTION_DIR="ios/ReactNative.xcodeproj/project.xcworkspace/xcshareddata/swiftpm"
+mkdir -p "$RESOLUTION_DIR"
+cp ios/Package.resolved "$RESOLUTION_DIR/Package.resolved"
+
+react-native spm add \
+  --xcodeproj ReactNative.xcodeproj \
+  --productName ReactNative \
+  --yes \
+  "$@"
