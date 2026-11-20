@@ -69,6 +69,9 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Test iOS CLI launcher
+        run: node --test scripts/tests/ios-launcher.cjs
+
       - run:
           pnpm test --coverage
           --testPathPatterns="modules/@shopify/checkout-sheet-kit/tests"
@@ -116,16 +119,16 @@ jobs:
 
   test-ios:
     name: Run Swift Tests
-    runs-on: macos-26-xlarge
+    runs-on: xcode-27-xlarge
     timeout-minutes: 20
     needs: [lint, test]
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Select Xcode 26.2
+      - name: Select Xcode 27.2
         run: |
-          sudo xcode-select -s /Applications/Xcode_26.2.app/Contents/Developer
+          sudo xcode-select -s /Applications/Xcode_27.2.app/Contents/Developer
           xcrun xcodebuild -version
 
       - name: Display Current Xcode Information
