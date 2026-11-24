@@ -504,7 +504,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
             let parsed = JSON.parse(eventData);
             parsed = transformData?.(parsed) ?? parsed;
             callback(parsed);
-          } catch (error) {
+          } catch {
             const parseError = new LifecycleEventParseError(
               `Failed to parse "${event}" event data: Invalid JSON`,
               {
@@ -517,7 +517,7 @@ class ShopifyCheckoutSheet implements ShopifyCheckoutSheetKit {
         } else if (eventData && typeof eventData === 'object') {
           callback(transformData?.(eventData) ?? eventData);
         }
-      } catch (error) {
+      } catch {
         const parseError = new LifecycleEventParseError(
           `Failed to parse "${event}" event data`,
           {

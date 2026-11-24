@@ -28,7 +28,6 @@ import type {
   Double,
   Float,
   UnsafeMixed,
-  // eslint-disable-next-line @react-native/no-deep-imports -- codegen parser requires these type names to be imported directly (not via aliases) so it can match them statically during AST traversal
 } from 'react-native/Libraries/Types/CodegenTypes';
 
 type FailEvent = Readonly<{

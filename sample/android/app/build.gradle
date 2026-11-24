@@ -3,9 +3,8 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
 def resolveNodeModuleDir(String packageName) {
-    def output = new ByteArrayOutputStream()
     def workspaceRoot = new File(rootProject.projectDir, "../..").canonicalFile
-    exec {
+    def output = providers.exec {
         commandLine(
             "node",
             "--print",
@@ -13,13 +12,13 @@ def resolveNodeModuleDir(String packageName) {
             workspaceRoot.getAbsolutePath(),
             rootProject.projectDir.getAbsolutePath()
         )
-        standardOutput = output
-    }
-    return file(output.toString().trim()).parentFile
+    }.standardOutput.asText.get()
+    return file(output.trim()).parentFile
 }
 
 def reactNativeDirPath = resolveNodeModuleDir("react-native")
 def reactNativeCodegenDirPath = resolveNodeModuleDir("@react-native/codegen")
+def hermesCompilerDirPath = resolveNodeModuleDir("hermes-compiler")
 def vectorIconsDirPath = resolveNodeModuleDir("react-native-vector-icons")
 
 project.ext["REACT_NATIVE_NODE_MODULES_DIR"] = reactNativeDirPath
@@ -67,7 +66,7 @@ react {
 
     /* Hermes Commands */
     //   The hermes compiler command to run. By default it is 'hermesc'
-    hermesCommand = new File(reactNativeDirPath, "sdks/hermesc/%OS-BIN%/hermesc").getAbsolutePath()
+    hermesCommand = new File(hermesCompilerDirPath, "%OS-BIN%/hermesc").getAbsolutePath()
     //
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     hermesFlags = ["-O", "-output-source-map"]
@@ -134,7 +133,7 @@ android {
     release {
       signingConfig signingConfigs.release
       minifyEnabled true
-      proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+      proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
     }
   }
 
