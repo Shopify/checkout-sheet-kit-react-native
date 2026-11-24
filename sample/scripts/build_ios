@@ -1,36 +1,66 @@
- #!/usr/bin/env bash
+#!/usr/bin/env bash
 
-set -ex
-set -eo pipefail
-
-# Add sccache for faster compilation outside of CI environments
-# Can be disabled with SCCACHE=false for debugging or matching CI behavior locally
-if [ "$CI" = "true" ] || [ "$SCCACHE" = "false" ]; then
-    # CI detected or sccache explicitly disabled - skipping sccache for clean builds
-    if command -v sccache >/dev/null 2>&1; then
-        sccache --stop-server 2>/dev/null || true
-    fi
-else
-    if command -v sccache >/dev/null 2>&1; then
-        export RUSTC_WRAPPER=sccache
-        export CC="sccache clang"
-        export CXX="sccache clang++"
-    fi
-fi
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/simulator"
-dest="$(get_sim_destination)"
+CURRENT_SIMULATOR_UUID="${CURRENT_SIMULATOR_UUID:-}"
+destination=""
+configurations=()
 
-cd ios
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --configuration)
+      if [ "$#" -lt 2 ] || { [ "$2" != Debug ] && [ "$2" != Release ]; }; then
+        echo "--configuration needs Debug or Release." >&2
+        exit 1
+      fi
+      configurations+=("$2")
+      shift 2
+      ;;
+    --destination)
+      if [ "$#" -lt 2 ] || [ -z "$2" ]; then
+        echo "--destination needs an Xcode destination." >&2
+        exit 1
+      fi
+      destination="$2"
+      shift 2
+      ;;
+    *)
+      echo "Usage: build_ios [--configuration Debug|Release] [--destination DESTINATION]" >&2
+      exit 1
+      ;;
+  esac
+done
 
-xcodebuild clean build \
-    -workspace ReactNative.xcworkspace \
+if [ "${#configurations[@]}" -eq 0 ]; then
+  configurations=(Debug Release)
+fi
+if [ -z "$destination" ]; then
+  destination="$(get_sim_destination)"
+fi
+
+(cd "$SCRIPT_DIR/.." && pnpm spm)
+cd "$SCRIPT_DIR/../ios"
+
+run_xcodebuild() {
+  xcodebuild build \
+    -project ReactNative.xcodeproj \
     -scheme ReactNative \
+    -configuration "$1" \
     -sdk iphonesimulator \
-    -destination "$dest" \
-    -skipPackagePluginValidation \
-    GCC_PRECOMPILE_PREFIX_HEADER=YES \
-    ASSETCATALOG_COMPILER_OPTIMIZATION=time \
-    COMPILER_INDEX_STORE_ENABLE=NO \
-| xcbeautify
+    -destination "$destination" \
+    -derivedDataPath build/swiftpm \
+    -disableAutomaticPackageResolution \
+    -onlyUsePackageVersionsFromResolvedFile \
+    CODE_SIGNING_ALLOWED=NO \
+    COMPILER_INDEX_STORE_ENABLE=NO
+}
+
+for configuration in "${configurations[@]}"; do
+  if command -v xcbeautify >/dev/null 2>&1; then
+    run_xcodebuild "$configuration" | xcbeautify
+  else
+    run_xcodebuild "$configuration"
+  fi
+done

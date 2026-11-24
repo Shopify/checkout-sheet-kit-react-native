@@ -1,0 +1,88 @@
+diff --git a/package.json b/package.json
+index 47d4563b6eb856fa7d932f6f92716c54292ae019..7012e933f41b066250bcca3aed18ddef3ba66126 100644
+--- a/package.json
++++ b/package.json
+@@ -110,5 +110,8 @@
+       }
+     }
+   },
+-  "packageManager": "yarn@1.22.22"
++  "packageManager": "yarn@1.22.22",
++  "swiftpmConfig": {
++    "name": "react-native-webview"
++  }
+ }
+diff --git a/Package.swift b/Package.swift
+new file mode 100644
+--- /dev/null
++++ b/Package.swift
+@@ -0,0 +1,54 @@
++// swift-tools-version: 6.0
++// AUTO-SCAFFOLDED by react-native spm scaffold — safe to edit & commit via patch-package.
++// AUTO-SCAFFOLDED-VERSION: 20
++// Cache slot: 0.88.0/dual-flavor
++// Edit the contents below if needed and re-run `npx patch-package <dep-name>`
++// to persist across `npm install`. To regenerate from the podspec, remove
++// this file (or just this marker) and re-run `npx react-native spm scaffold`.
++//
++// Package references are plain relative paths, computed when this file was
++// scaffolded. They stay correct because the file is re-scaffolded per app
++// and cache slot, and any node_modules relayout reinstalls this package
++// (dropping the file) anyway.
++
++import PackageDescription
++
++let package = Package(
++    name: "react-native-webview",
++    platforms: [.iOS("15.1")],
++    products: [
++        .library(name: "react-native-webview", targets: ["react-native-webview"]),
++    ],
++    dependencies: [
++        .package(name: "ReactNative", path: "../../../../xcframeworks"),
++        .package(name: "React-GeneratedCode", path: "../../../ios"),
++    ],
++    targets: [
++        .target(
++            name: "react-native-webview",
++            dependencies: [.product(name: "ReactHeaders", package: "ReactNative"), .product(name: "ReactNativeHeaders", package: "ReactNative"), .product(name: "ReactNativeDependenciesHeaders", package: "ReactNative"), .product(name: "ReactAppHeaders", package: "React-GeneratedCode")],
++            path: ".",
++            sources: [
++                "apple/RCTConvert+WKDataDetectorTypes.h",
++                "apple/RCTConvert+WKDataDetectorTypes.m",
++                "apple/RNCWKProcessPoolManager.h",
++                "apple/RNCWKProcessPoolManager.m",
++                "apple/RNCWebView.h",
++                "apple/RNCWebView.mm",
++                "apple/RNCWebViewDecisionManager.h",
++                "apple/RNCWebViewDecisionManager.m",
++                "apple/RNCWebViewImpl.h",
++                "apple/RNCWebViewImpl.m",
++                "apple/RNCWebViewManager.h",
++                "apple/RNCWebViewManager.mm",
++                "apple/RNCWebViewModule.h",
++                "apple/RNCWebViewModule.mm",
++            ],
++            publicHeadersPath: "apple",
++            cSettings: [.define("RCT_NEW_ARCH_ENABLED", to: "1"), .headerSearchPath("apple"), .headerSearchPath("."), .unsafeFlags(["-include", "react-native-spm-prefix.h"])],
++            cxxSettings: [.define("FOLLY_CFG_NO_COROUTINES", to: "1"), .define("RCT_NEW_ARCH_ENABLED", to: "1"), .headerSearchPath("apple"), .headerSearchPath("."), .unsafeFlags(["-include", "react-native-spm-prefix.h"]), .unsafeFlags(["-DFOLLY_NO_CONFIG", "-DFOLLY_MOBILE=1", "-DFOLLY_USE_LIBCPP=1", "-Wno-comma", "-Wno-shorten-64-to-32", "-DRCT_NEW_ARCH_ENABLED=1"]), .define("DEBUG", .when(configuration: .debug)), .define("NDEBUG", .when(configuration: .release))],
++            linkerSettings: [.linkedFramework("UIKit"), .linkedFramework("Foundation"), .linkedFramework("CoreGraphics")]
++        ),
++    ],
++    cxxLanguageStandard: .cxx20
++)
+diff --git a/react-native-spm-prefix.h b/react-native-spm-prefix.h
+new file mode 100644
+--- /dev/null
++++ b/react-native-spm-prefix.h
+@@ -0,0 +1,10 @@
++// AUTO-SCAFFOLDED by react-native spm scaffold — mirrors CocoaPods' default
++// prefix header so ObjC sources that rely on an implicit Foundation/UIKit
++// import compile under SPM (which has no prefix-header mechanism). Safe to
++// delete + regenerate via `npx react-native spm scaffold`.
++#ifdef __OBJC__
++#import <Foundation/Foundation.h>
++#if __has_include(<UIKit/UIKit.h>)
++#import <UIKit/UIKit.h>
++#endif
++#endif

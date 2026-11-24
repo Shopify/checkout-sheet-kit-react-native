@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+(cd "$SCRIPT_DIR/.." && pnpm spm)
+
+exec react-native run-ios \
+  --extra-params "-disableAutomaticPackageResolution -onlyUsePackageVersionsFromResolvedFile" \
+  "$@"

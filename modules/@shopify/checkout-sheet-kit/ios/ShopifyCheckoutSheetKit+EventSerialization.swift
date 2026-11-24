@@ -23,6 +23,9 @@
 
 import Foundation
 import ShopifyCheckoutSheetKit
+#if canImport(ShopifyAcceleratedCheckouts)
+    import ShopifyAcceleratedCheckouts
+#endif
 
 /**
  * Shared event serialization utilities for converting ShopifyCheckoutSheetKit events

@@ -1,2 +1,7 @@
 /ReactNative.xcodeproj/
 /ReactNative.xcworkspace/
+Package.resolved
+!/Package.resolved
+build/generated/
+build/xcframeworks/
+.build/

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+case "$CONFIGURATION" in
+  *Debug*) ;;
+  *) exit 0 ;;
+esac
+
+IP_FILE="$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/ip.txt"
+
+if [[ "$PLATFORM_NAME" == *simulator ]]; then
+  rm -f "$IP_FILE"
+  host="localhost"
+else
+  host="$(cat "$IP_FILE" 2>/dev/null || echo localhost)"
+  host="${host%%:*}"
+fi
+
+[ -n "${RCT_METRO_PORT:-}" ] || exit 0
+
+printf '%s:%s\n' "$host" "$RCT_METRO_PORT" >"$IP_FILE"
+echo "Metro host for this build: $host:$RCT_METRO_PORT"

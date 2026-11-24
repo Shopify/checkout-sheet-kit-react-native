@@ -69,6 +69,8 @@ end
 # existing content.
 def process_file(path, license_block, normalized_license, write: true)
   content = File.read(path)
+  swift_tools_directive = content[/\A\/\/ swift-tools-version: [^\n]*\n/] || ''
+  content = content.delete_prefix(swift_tools_directive).sub(/\A\n+/, '')
 
   # If license already at the very top (ignoring whitespace differences), do nothing.
   return false if license_at_top?(content, normalized_license)
@@ -77,7 +79,7 @@ def process_file(path, license_block, normalized_license, write: true)
   content = content.sub(/^\uFEFF/, '')
   content = content.sub(/^\n+/, '')
 
-  updated = license_block + content
+  updated = swift_tools_directive + (swift_tools_directive.empty? ? '' : "\n") + license_block + content
   if write
     File.write(path, updated)
   end

@@ -1,0 +1,14 @@
+{
+  "pins": [
+    {
+      "identity": "checkout-sheet-kit-swift",
+      "kind": "remoteSourceControl",
+      "location": "https://github.com/Shopify/checkout-sheet-kit-swift",
+      "state": {
+        "revision": "23cc3ed64775cae3bd44cac8d2cf0eb462f6f955",
+        "version": "3.9.3"
+      }
+    }
+  ],
+  "version": 3
+}
