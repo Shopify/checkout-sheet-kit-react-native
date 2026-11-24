@@ -123,12 +123,17 @@ testing the Native Module.
 # Run Jest tests for "modules/@shopify/checkout-sheet-kit/src/**/*.tsx"
 pnpm test
 
-# Run swift tests for the Native Module
-pnpm sample test:ios
+# Run Swift tests with the old React Native bridge
+RCT_NEW_ARCH_ENABLED=0 pnpm sample test:ios
+
+# Run Swift tests with the New Architecture
+RCT_NEW_ARCH_ENABLED=1 pnpm sample test:ios
 
 # Run Java tests for the Native Module
 pnpm sample test:android
 ```
+
+The native test host in `test/rct-integration-app/` pins React Native 0.80 separately and uses CocoaPods. Its minimal UIKit app runs the existing native tests without starting Metro or loading the sample dependencies.
 
 ## Running the sample app
 

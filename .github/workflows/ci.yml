@@ -118,10 +118,15 @@ jobs:
           pnpm sample test:android --no-daemon
 
   test-ios:
-    name: Run Swift Tests
+    name: Run Swift Tests (New Architecture ${{ matrix.new-architecture }})
     runs-on: xcode-27-xlarge
     timeout-minutes: 20
     needs: [lint, test]
+    strategy:
+      matrix:
+        new-architecture: ['0', '1']
+    env:
+      RCT_NEW_ARCH_ENABLED: ${{ matrix.new-architecture }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -147,3 +152,12 @@ jobs:
       - name: Run Swift tests
         run: |
           pnpm sample test:ios
+
+  test-ios-compatibility:
+    name: Run Swift Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [test-ios]
+    if: always()
+    steps:
+      - run: test "${{ needs.test-ios.result }}" = success

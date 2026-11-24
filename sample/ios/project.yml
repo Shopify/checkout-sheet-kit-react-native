@@ -16,11 +16,6 @@ schemes:
     build:
       targets:
         ReactNative: all
-        ReactNativeTests: [test]
-    test:
-      config: Debug
-      targets:
-        - ReactNativeTests
     run:
       config: Debug
       environmentVariables:
@@ -70,24 +65,3 @@ targets:
           WITH_ENVIRONMENT="$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
           REACT_NATIVE_XCODE="$REACT_NATIVE_PATH/scripts/react-native-xcode.sh"
           /bin/sh "$WITH_ENVIRONMENT" "$REACT_NATIVE_XCODE"
-  ReactNativeTests:
-    type: bundle.unit-test
-    platform: iOS
-    sources:
-      - path: ReactNativeTests
-        excludes:
-          - Info.plist
-    dependencies:
-      - target: ReactNative
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.shopify.example.CheckoutKitReactNative
-        INFOPLIST_FILE: ReactNativeTests/Info.plist
-        SWIFT_OBJC_BRIDGING_HEADER: ReactNativeTests-Bridging-Header.h
-        SWIFT_VERSION: '5.0'
-        TEST_HOST: $(BUILT_PRODUCTS_DIR)/ReactNative.app/ReactNative
-        BUNDLE_LOADER: $(TEST_HOST)
-        LD_RUNPATH_SEARCH_PATHS:
-          - $(inherited)
-          - '@executable_path/Frameworks'
-          - '@loader_path/Frameworks'

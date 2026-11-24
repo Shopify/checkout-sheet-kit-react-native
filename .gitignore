@@ -103,3 +103,10 @@ sample/**/AndroidManifest.xml
 
 .claude/
 CLAUDE.md
+
+test/rct-integration-app/*.xcodeproj/
+test/rct-integration-app/*.xcworkspace/
+test/rct-integration-app/RCTIntegrationApp/Info.plist
+test/rct-integration-app/RCTIntegrationAppTests/Info.plist
+test/rct-integration-app/.xcode.env
+test/rct-integration-app/PrivacyInfo.xcprivacy

@@ -1,0 +1,15 @@
+{
+  "name": "rct-integration-app",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.33.1+sha512.05ba3c1d5d1c18f68df06470d74055e62d41fc110a0c660db1b2dfb2785327f04cf0f68345d4609bc52089e7fa0343c31593b2f9594e2c5d5da426230acc9820",
+  "dependencies": {
+    "@shopify/checkout-sheet-kit": "link:../../modules/@shopify/checkout-sheet-kit",
+    "react": "19.1.0",
+    "react-native": "0.80.2"
+  },
+  "devDependencies": {
+    "@react-native-community/cli": "19.1.2",
+    "@react-native-community/cli-platform-ios": "19.1.2"
+  }
+}
