@@ -30,7 +30,7 @@
     "clean": "rm -rf node_modules; watchman watch-del . || true",
     "sample": "pnpm --filter sample",
     "module": "pnpm --filter @shopify/checkout-sheet-kit",
-    "pod-install": "(cd sample/ios && bundle install && bundle exec pod repo update && bundle exec pod cache clean --all && bundle exec pod install --repo-update)",
+    "pod-install": "pnpm sample project:ios && (cd sample/ios && bundle install && bundle exec pod repo update && bundle exec pod cache clean --all && bundle exec pod install --repo-update)",
     "snapshot": "./scripts/create_snapshot",
     "compare-snapshot": "./scripts/compare_snapshot",
     "turbo": "turbo",
