@@ -4,6 +4,7 @@ import {Platform} from 'react-native';
 import {
   AcceleratedCheckoutButtons,
   AcceleratedCheckoutWallet,
+  ApplePayLabel,
   ApplePayStyle,
   RenderState,
 } from '../src';
@@ -98,6 +99,7 @@ describe('AcceleratedCheckoutButtons', () => {
           cartId={'gid://shopify/Cart/123'}
           cornerRadius={12}
           wallets={[AcceleratedCheckoutWallet.shopPay]}
+          applePayLabel={ApplePayLabel.buy}
           applePayStyle={ApplePayStyle.black}
         />,
       );
@@ -111,6 +113,7 @@ describe('AcceleratedCheckoutButtons', () => {
       expect(nativeComponent.props.wallets).toEqual([
         AcceleratedCheckoutWallet.shopPay,
       ]);
+      expect(nativeComponent.props.applePayLabel).toBe(ApplePayLabel.buy);
       expect(nativeComponent.props.applePayStyle).toBe(ApplePayStyle.black);
     });
 
@@ -141,6 +144,28 @@ describe('AcceleratedCheckoutButtons', () => {
       const nativeComponent = getByTestId('accelerated-checkout-buttons');
       expect(nativeComponent).toBeTruthy();
       expect(nativeComponent.props.cornerRadius).toBeUndefined();
+    });
+
+    it('omits optional props when they are not provided', () => {
+      const {getByTestId} = render(
+        <AcceleratedCheckoutButtons cartId="gid://shopify/Cart/123" />,
+      );
+
+      const nativeComponent = getByTestId('accelerated-checkout-buttons');
+      expect(nativeComponent).toBeTruthy();
+      expect(nativeComponent.props).not.toHaveProperty('applePayLabel');
+      expect(nativeComponent.props).not.toHaveProperty('applePayStyle');
+      expect(nativeComponent.props).not.toHaveProperty('cornerRadius');
+      expect(nativeComponent.props).not.toHaveProperty('wallets');
+    });
+
+    it('omits height from style until a size is reported', () => {
+      const {getByTestId} = render(
+        <AcceleratedCheckoutButtons cartId="gid://shopify/Cart/123" />,
+      );
+
+      const nativeComponent = getByTestId('accelerated-checkout-buttons');
+      expect(nativeComponent.props.style).toEqual({flex: 1});
     });
 
     it('passes through custom quantity and cornerRadius', () => {
