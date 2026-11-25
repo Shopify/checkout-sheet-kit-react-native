@@ -8,9 +8,8 @@ following steps:
 
 1. Bump the version in `modules/@shopify/checkout-sheet-kit/package.json` to an
    appropriate value.
-2. Add a [Changelog](./CHANGELOG.md) entry.
-3. Merge your PR to `main`.
-4. Create a [Release](/releases) for your new version.
+2. Merge your PR to `main`.
+3. Document the changes in the release notes and publish the [GitHub release](https://github.com/Shopify/checkout-sheet-kit-react-native/releases) for your new version.
 
 Creating and publishing a Github release with begin the automated process of
 publishing the latest version of the package to NPM. It will clean the module
