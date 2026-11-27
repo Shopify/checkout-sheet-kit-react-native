@@ -28,7 +28,7 @@
     "graphql": "^16.8.2",
     "jotai": "^2.13.1",
     "react-native-config": "1.7.2",
-    "react-native-dotenv": "^3.4.11",
+    "react-native-dotenv": "^3.4.12",
     "react-native-encrypted-storage": "^4.0.3",
     "react-native-safe-area-context": "^5.10.1",
     "react-native-screens": "5.0.0-beta.1",
