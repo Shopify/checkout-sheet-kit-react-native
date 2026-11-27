@@ -35,7 +35,7 @@ updates:
   - package-ecosystem: npm
     directory: '/'
     schedule:
-      interval: daily
+      interval: weekly
     cooldown:
       default-days: 7
     groups:
@@ -75,17 +75,16 @@ updates:
           - '@eslint/*'
           - '@typescript-eslint/*'
           - 'prettier'
-    ignore:
+    allow:
       - dependency-name: '*'
         update-types:
-          - 'version-update:semver-major'
-          - 'version-update:semver-minor'
+          - 'version-update:semver-patch'
 
   # Checkout Sheet Kit module dependencies
   - package-ecosystem: npm
     directory: '/modules/@shopify/checkout-sheet-kit'
     schedule:
-      interval: daily
+      interval: weekly
     cooldown:
       default-days: 7
     groups:
@@ -95,17 +94,16 @@ updates:
           - 'react-native-builder-bob'
           - '@microsoft/api-extractor'
           - 'typescript'
-    ignore:
+    allow:
       - dependency-name: '*'
         update-types:
-          - 'version-update:semver-major'
-          - 'version-update:semver-minor'
+          - 'version-update:semver-patch'
 
   # Sample app dependencies
   - package-ecosystem: npm
     directory: '/sample'
     schedule:
-      interval: daily
+      interval: weekly
     cooldown:
       default-days: 7
     groups:
@@ -129,16 +127,16 @@ updates:
           - 'react-native-nitro-modules'
           - 'react-native-quick-crypto'
           - 'react-native-quick-base64'
-    ignore:
+    allow:
       - dependency-name: '*'
         update-types:
-          - 'version-update:semver-major'
+          - 'version-update:semver-patch'
 
   # iOS dependencies (Bundler/CocoaPods via Gemfile)
   - package-ecosystem: bundler
     directory: '/sample'
     schedule:
-      interval: daily
+      interval: weekly
     cooldown:
       default-days: 7
     groups:
@@ -155,17 +153,16 @@ updates:
           - 'bigdecimal'
           - 'benchmark'
           - 'mutex_m'
-    ignore:
+    allow:
       - dependency-name: '*'
         update-types:
-          - 'version-update:semver-major'
-          - 'version-update:semver-minor'
+          - 'version-update:semver-patch'
 
   # Android dependencies (Gradle) - Sample app
   - package-ecosystem: gradle
     directory: '/sample/android'
     schedule:
-      interval: daily
+      interval: weekly
     cooldown:
       default-days: 7
     groups:
@@ -181,16 +178,16 @@ updates:
           - 'junit:junit'
           - 'org.mockito:*'
           - 'org.assertj:*'
-    ignore:
+    allow:
       - dependency-name: '*'
         update-types:
-          - 'version-update:semver-major'
+          - 'version-update:semver-patch'
 
   # Android dependencies (Gradle) - Module
   - package-ecosystem: gradle
     directory: '/modules/@shopify/checkout-sheet-kit/android'
     schedule:
-      interval: daily
+      interval: weekly
     cooldown:
       default-days: 7
     groups:
@@ -198,8 +195,7 @@ updates:
         applies-to: version-updates
         patterns:
           - 'com.android.tools.build:gradle'
-    ignore:
+    allow:
       - dependency-name: '*'
         update-types:
-          - 'version-update:semver-major'
-          - 'version-update:semver-minor'
+          - 'version-update:semver-patch'
